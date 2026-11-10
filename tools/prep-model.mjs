@@ -51,6 +51,8 @@ const DEVASTATOR = [
 ];
 
 // Hulk body (internally "lieutenant"); the eye (Head) has no mesh of its own, assign it in the editor
+// the eye: the rectangular plate on the front of the chest (frame, inner frame, eye block)
+const HULK_EYE = [{ mesh: 'chest', name: 'chest_eye', box: [[-0.34, 2.36, -0.8], [0.34, 3.08, -0.3]] }];
 const HULK = [
   [/^arm_(left|right)$/, 'Arms (2)'],
   [/^leg_(left|right)$/, 'Legs (2)'],
@@ -305,6 +307,43 @@ function splitShells(doc, node, sp, likeBoxes) {
   return [sp.rest];
 }
 
+/** Cut out the loose pieces that lie inside a box (posed model space): weak spots modelled into a bigger
+ *  mesh (the Hulk's eye plate, the War Strider's eye and visor). { mesh, name, box: [lo, hi] } */
+function cutBox(doc, node, cut) {
+  const skin = node.getSkin(), m16 = [];
+  const mats = skin ? skin.listJoints().map((j, i) => mat4Mul(j.getWorldMatrix(), skin.getInverseBindMatrices().getElement(i, m16).slice())) : null;
+  const world = node.getWorldMatrix();
+  const buffer = doc.getRoot().listBuffers()[0];
+  const idx = (list) => doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(list)).setBuffer(buffer);
+  const out = [];
+  for (const prim of node.getMesh().listPrimitives()) {
+    const P = prim.getAttribute('POSITION'), J = prim.getAttribute('JOINTS_0'), W = prim.getAttribute('WEIGHTS_0');
+    const v = [0, 0, 0], j4 = [], w4 = [];
+    const posed = (i) => {
+      P.getElement(i, v);
+      if (!mats || !J) return [0, 1, 2].map((r) => world[r] * v[0] + world[4 + r] * v[1] + world[8 + r] * v[2] + world[12 + r]);
+      J.getElement(i, j4); W.getElement(i, w4);
+      const o = [0, 0, 0];
+      for (let k = 0; k < 4; k++) { if (!w4[k]) continue; const m = mats[j4[k]]; for (let r = 0; r < 3; r++) o[r] += w4[k] * (m[r] * v[0] + m[4 + r] * v[1] + m[8 + r] * v[2] + m[12 + r]); }
+      return o;
+    };
+    const inside = [], rest = [];
+    for (const sh of shellsOf(prim)) {
+      const ok = [...new Set(sh.tris)].every((i) => posed(i).every((x, k) => x >= cut.box[0][k] && x <= cut.box[1][k]));
+      (ok ? inside : rest).push(...sh.tris);
+    }
+    if (!inside.length) continue;
+    const p = prim.clone(); p.setIndices(idx(inside)); out.push(p);
+    prim.setIndices(idx(rest));
+  }
+  if (!out.length) { console.warn(`cut ${cut.name}: nothing inside the box`); return []; }
+  const m = doc.createMesh(cut.name);
+  out.forEach((p) => m.addPrimitive(p));
+  const n = doc.createNode(cut.name).setMesh(m).setSkin(skin).setMatrix(node.getMatrix());
+  (node.getParentNode() || doc.getRoot().listScenes()[0]).addChild(n);
+  return [cut.name];
+}
+
 /** Bone that weighs most on a skinned mesh overall; for a rigid mesh, the bone nearest its centre. */
 function mainBone(node, doc) {
   const skin = node.getSkin();
@@ -439,12 +478,12 @@ const SOURCES = {
   },
   // 'lieutenant' is the game's internal name for the Hulk; the Commissar is the conscript commander
   commissar: { src: 'content/fac_cyborgs/cha_conscript_commander/cha_conscript_commander.unit.glb', rules: [[/^head$/, 'Head'], [/^body$/, 'Torso']] },
-  'hulk-bruiser': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
-  'hulk-obliterator': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
-  'hulk-firebomber': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
-  'hulk-scorcher': { src: 'content/fac_cyborgs/cha_lieutenant_assault/cha_lieutenant_assault.unit.glb', rules: HULK },
-  'jet-brigade-hulk-bruiser': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
-  'jet-brigade-hulk-scorcher': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
+  'hulk-bruiser': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
+  'hulk-obliterator': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
+  'hulk-firebomber': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
+  'hulk-scorcher': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant_assault/cha_lieutenant_assault.unit.glb', rules: HULK },
+  'jet-brigade-hulk-bruiser': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
+  'jet-brigade-hulk-scorcher': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
   // bugs: one-mesh bodies split by bone; hash-named legs and claws named by bone
   scavenger: { src: BG + 'cha_scavenger/cha_scavenger.unit.glb', ...SCAVENGER },
   'spore-burst-scavenger': { src: BG + 'cha_scavenger/cha_scavenger_gloom.unit.glb', ...SCAVENGER },
@@ -493,6 +532,11 @@ const SOURCES = {
   'shredder-tank': tank('Hull Side (2)'),
   'barrager-tank': tank('Hull Sides (2)'),
   'war-strider': {
+    // the eye box low on the hull front and the visor block on top (both glow: m_boteye)
+    cuts: [
+      { mesh: 'body_whole', name: 'body_eye', box: [[0.5, 3.84, -1.86], [0.87, 4.24, -1.58]] },
+      { mesh: 'body_whole', name: 'body_visor', box: [[-0.47, 4.47, -0.79], [0.47, 5.21, -0.21]] },
+    ],
     src: CY + 'vehicles/cyborg_assault_walker/cyborg_assault_walker.unit.glb',
     rules: [[/^body(_whole)?$/, 'Torso'], [/^(left|right)_leg(_whole)?$/, 'Legs (2)'], [/^(left|right)_rocketpod(_whole)?$/, 'Grenade Launchers (2)'], [/^platform(_whole)?$/, 'Crotch']],
   },
@@ -730,6 +774,12 @@ async function prep(id) {
     if (!node.getMesh() || node.getSkin() || !/^0x[0-9a-f]+$/i.test(node.getName())) continue;
     const pts = node.getMesh().listPrimitives().reduce((a, p) => a + (p.getAttribute('POSITION')?.getCount() || 0), 0);
     if (pts <= 36) { names.splice(names.indexOf(node.getName()), 1); node.dispose(); }
+  }
+  // weak spots inside a bigger mesh, cut out by box
+  for (const cut of cfg.cuts || []) {
+    const node = root.listNodes().find((x) => x.getMesh() && x.getName() === cut.mesh);
+    if (!node) { console.warn(`${id}: no mesh ${cut.mesh} to cut`); continue; }
+    names.push(...cutBox(doc, node, cut));
   }
   // tails: armor plates and soft body apart (plates of a damage-state copy are dropped)
   if (cfg.shells) {

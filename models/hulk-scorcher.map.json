@@ -7,7 +7,8 @@
     "chest": "Main",
     "arm_right": "Arms (2)",
     "leg_left": "Legs (2)",
-    "weapon_left": "Arms (2)"
+    "weapon_left": "Arms (2)",
+    "chest_eye": "Head"
   },
   "hidden": [
     "leg_left_damaged",

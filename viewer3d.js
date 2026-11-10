@@ -257,9 +257,9 @@ function swapBroken() {
   if (!current || editing) return;
   const hidden = new Set(current.map.hidden);
   // group every mesh by piece: intact meshes, its _damaged meshes, its _gib / _destroyed meshes, and the
-  // other half of a split tail ("butt_plates" over "butt", "tail_sac" under "tail"): it goes with the piece's
+  // other half of a split mesh ("butt_plates" over "butt", "tail_sac", "chest_eye", "body_visor"): it goes with the piece's
   // remains, and plates also go when their own hitzone breaks (a sac waits for its burst replacement)
-  const ATTACHED = /_(plates|sac)$/i;
+  const ATTACHED = /_(plates|sac|eye|visor)$/i;
   const groups = new Map();
   for (const m of current.meshes) {
     const st = stageOf(m.key);

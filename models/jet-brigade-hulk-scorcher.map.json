@@ -8,7 +8,8 @@
     "arm_left": "Arms (2)",
     "leg_left": "Legs (2)",
     "weapon_left": "Arms (2)",
-    "jetpack": "Jetpack"
+    "jetpack": "Jetpack",
+    "chest_eye": "Head"
   },
   "hidden": [
     "chest_damaged",

@@ -8,7 +8,9 @@
     "left_leg_whole": "Legs (2)",
     "platform_whole": "Crotch",
     "cannon_left": "Fusion Cannons (2)",
-    "cannon_right": "Fusion Cannons (2)"
+    "cannon_right": "Fusion Cannons (2)",
+    "body_eye": "Eyes (2)",
+    "body_visor": "Eyes (2)"
   },
   "hidden": [
     "platform_damaged",
