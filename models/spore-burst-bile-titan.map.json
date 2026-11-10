@@ -24,7 +24,8 @@
     "torso_left": "Torso Armor (2)",
     "torso_right": "Torso Armor (2)",
     "torso_left_plates": "Torso Armor (2)",
-    "torso_right_plates": "Torso Armor (2)"
+    "torso_right_plates": "Torso Armor (2)",
+    "torso_burst": "Underside"
   },
   "hidden": [
     "leg_right_back_inner_gibs",
@@ -36,7 +37,7 @@
     "leg_right_back_outer_bottom_gibs",
     "claw_right_gibs",
     "torso_left_gibs",
-    "torso_gibs",
+    "torso_burst",
     "leg_left_back_inner_gibs",
     "leg_right_front_inner_gibs",
     "torso_right_gibs",
@@ -53,6 +54,12 @@
       "part": "Lower Sac",
       "replaces": [
         "tail_sac"
+      ]
+    },
+    "torso_burst": {
+      "part": "Upper Sac",
+      "replaces": [
+        "torso"
       ]
     }
   }

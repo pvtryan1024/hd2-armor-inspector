@@ -36,7 +36,7 @@ const CHARGER = [
 // the torso: the soft body (Upper Sac) under the side plates (two hash meshes, 3 plates each) and a front plate;
 // each side's wound mesh shows when that side's armor breaks
 const BT_BODY = {
-  names: { '0x3f868f69': 'torso_left', '0x30fa360a': 'torso_right', torso_gibs_left: 'torso_left_gibs', torso_gibs_right: 'torso_right_gibs' },
+  names: { '0x3f868f69': 'torso_left', '0x30fa360a': 'torso_right', torso_gibs_left: 'torso_left_gibs', torso_gibs_right: 'torso_right_gibs', torso_gibs: 'torso_burst' },
   shells: [
     { mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail', tipBones: /^spine_lower_4$/ },
     { mesh: 'torso', main: 'torso', rest: 'torso_{side}_plates', halves: true, softBox: [[-0.6, 6.0, -1.6], [0.6, 7.4, 2.3]] }, // Torso Armor (2) is left and right
