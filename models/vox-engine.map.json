@@ -22,7 +22,9 @@
     "left_front_knee": "Trackpod Latches (4)",
     "torso_whole": "Torso",
     "right_flap": "Torso Flaps (2)",
-    "left_speaker": "Speakers (2)"
+    "left_speaker": "Speakers (2)",
+    "cannon_left": "Cannons (2)",
+    "cannon_right": "Cannons (2)"
   },
   "hidden": [
     "torso_damaged",
@@ -35,6 +37,8 @@
     "left_rocket_damaged",
     "vent_under_damaged",
     "right_speaker_damaged",
-    "left_speaker_damaged"
+    "left_speaker_damaged",
+    "cannon_left_destroyed",
+    "cannon_right_destroyed"
   ]
 }

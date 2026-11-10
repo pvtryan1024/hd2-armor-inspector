@@ -97,6 +97,7 @@ Object.assign(GEAR, {
 const SCOUT_HMG = { src: 'extra/0x2a346bf4552997e2.unit.glb', bone: 'gun_pitch', name: 'hmg', part: 'HMG' };
 const JUMP = { src: GEAR.cJump, bone: 'attach_backpack', name: 'jetpack', part: 'Jetpack' };
 const LOADOUT = {
+  'vox-engine': [{ src: GEAR.walkerCannon, bone: 'l_cannon_socket', name: 'cannon_left', part: 'Cannons (2)' }, { src: GEAR.walkerCannon, bone: 'r_cannon_socket', name: 'cannon_right', part: 'Cannons (2)' }],
   'scout-strider': [{ src: 'extra/0xee00bfe8ff769f70.unit.glb', bone: 'turret', name: 'hull', part: 'Front Plate' }, SCOUT_HMG],
   'reinforced-scout-strider': [
     { src: 'extra/0xd3cd6f0ca83bb51e.unit.glb', bone: 'turret', name: 'hull', part: 'Faceplate' }, SCOUT_HMG,
@@ -482,7 +483,9 @@ async function prep(id) {
     for (const n of adoc.getRoot().listNodes()) {
       if (!n.getMesh()) continue;
       if (!meshes.includes(n) || lodOf(n) !== best) { n.dispose(); continue; }
-      const state = (/_(damaged?|destroyed|gibs?|whole)$/i.exec(clean(n.getName())) || [''])[0].replace(/_whole$/i, '');
+      // "turret_damaged" or just "destroyed" (the Vox Engine cannon) → keep the state as a suffix
+      const sm = /(?:^|_)(damaged?|destroyed|gibs?)$/i.exec(clean(n.getName()));
+      const state = sm ? '_' + sm[1] : '';
       n.setName(a.name + state); n.getMesh().setName(a.name + state);
     }
     const aScene = adoc.getRoot().listScenes()[0];
@@ -582,6 +585,8 @@ async function prep(id) {
     const map = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
     const added = [];
     for (const a of gearNames) if (a.part && !(a.name in map.meshes)) { map.meshes[a.name] = a.part; added.push(`${a.name} → ${a.part}`); }
+    // gear damage-state pieces start hidden here too
+    for (const n of names) if (gearNames.some((a) => n.startsWith(a.name)) && HIDE.test(n) && !map.hidden.includes(n)) map.hidden.push(n);
     fs.writeFileSync(mapPath, JSON.stringify(map, null, 2) + '\n');
     note = `kept existing map${added.length ? '; added ' + added.join(', ') : ''}`;
   } else if (!fs.existsSync(mapPath)) {
