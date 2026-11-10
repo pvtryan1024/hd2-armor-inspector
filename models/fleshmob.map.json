@@ -1,0 +1,33 @@
+{
+  "enemy": "fleshmob",
+  "meshes": {
+    "right_front_face_mask": "Head Chunks (6)",
+    "left_front_face_mask": "Head Chunks (6)",
+    "left_arm_mask": "Arms (4)",
+    "right_arm_mask": "Arms (4)",
+    "back_face_mask": "Head Chunks (6)",
+    "upper_left_arm_mask": "Arms (4)",
+    "right_leg_mask": "Legs (2)",
+    "left_leg_mask": "Legs (2)",
+    "head_mask": "Head Chunks (6)",
+    "front_face_mask": "Head Chunks (6)",
+    "upper_right_arm_mask": "Arms (4)",
+    "lower_back_mask": "Stomach Chunks (2)",
+    "stomach_mask": "Stomach Chunks (2)"
+  },
+  "hidden": [
+    "left_front_face_gib_mask",
+    "upper_right_arm_gib_mask",
+    "front_face_gib_mask",
+    "left_leg_gib_mask",
+    "left_arm_gib_mask",
+    "lower_back_gib_mask",
+    "upper_left_arm_gib_mask",
+    "right_front_face_gib_mask",
+    "stomach_gib_mask",
+    "right_arm_gib_mask",
+    "back_face_gib_mask",
+    "right_leg_gib_mask",
+    "head_gib_mask"
+  ]
+}

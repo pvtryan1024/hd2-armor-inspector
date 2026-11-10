@@ -1,0 +1,9 @@
+{
+  "enemy": "stingray",
+  "meshes": {
+    "g_ias": "Main"
+  },
+  "hidden": [
+    "g_ias_damaged"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "enemy": "crescent-overseer",
+  "meshes": {
+    "arm_right_lower": "Right Arm",
+    "hip": "Crotch Armor",
+    "leg_right_upper_armor": "Limb Armor",
+    "arm_right_upper": "Right Arm",
+    "leg_right_lower_armor": "Limb Armor",
+    "arm_right_lower_armor": "Limb Armor",
+    "leg_right_lower": "Legs (2)",
+    "arm_left_upper_armor": "Limb Armor",
+    "torso": "Chest Armor",
+    "head": "Head",
+    "arm_left_upper": "Left Arm",
+    "arm_left_lower": "Left Arm",
+    "arm_left_lower_armor": "Limb Armor",
+    "leg_left_whole": "Legs (2)",
+    "leg_right_whole": "Legs (2)",
+    "leg_left_upper_armor": "Limb Armor",
+    "leg_left_lower_armor": "Limb Armor",
+    "arm_right_whole": "Right Arm",
+    "leg_right_upper": "Legs (2)",
+    "arm_right_upper_armor": "Limb Armor",
+    "leg_left_lower": "Legs (2)",
+    "leg_left_upper": "Legs (2)",
+    "arm_left_whole": "Left Arm",
+    "beamer_champion_pack_LOD1": "Backpack"
+  },
+  "hidden": [
+    "head_gib",
+    "hip_gib",
+    "arm_left_lower_armor_damaged",
+    "torso_gib"
+  ]
+}

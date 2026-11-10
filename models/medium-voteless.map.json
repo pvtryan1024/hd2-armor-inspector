@@ -1,0 +1,21 @@
+{
+  "enemy": "medium-voteless",
+  "meshes": {
+    "leg_left_whole": "Legs",
+    "arm_left_whole": "Upper Arms (2)",
+    "arm_right_whole": "Upper Arms (2)",
+    "body_whole": "Main",
+    "head_whole": "Head",
+    "leg_right_whole": "Legs"
+  },
+  "hidden": [
+    "leg_right_split",
+    "arm_right_split",
+    "arm_left_split",
+    "body_split",
+    "neck_stump",
+    "shoulder_left_stump",
+    "leg_left_split",
+    "shoulder_right_stump"
+  ]
+}

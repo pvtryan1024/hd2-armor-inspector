@@ -102,6 +102,27 @@ function mat4Mul(a, b) {
 }
 const isUnder = (n, anc) => { for (let p = n.getParentNode(); p; p = p.getParentNode()) if (p === anc) return true; return false; };
 
+// Illuminate
+const VOTELESS = [
+  [/^head(_whole)?$/, 'Head'],
+  [/^arm_(left|right)(_whole)?$/, 'Upper Arms (2)'],
+  [/^leg_(left|right)(_whole)?$/, 'Legs'],
+  [/^body(_whole)?$/, 'Main'],
+];
+const OVERSEER = [
+  [/^head(_jet)?$/, 'Head'],
+  [/^torso$/, 'Chest Armor'],
+  [/^hip$/, 'Crotch Armor'],
+  [/^(arm|leg)_(left|right)_(upper|lower)_armor$/, 'Limb Armor (8)'],
+  [/^arm_right(_(upper|lower|whole))?$/, 'Right Arm'],
+  [/^arm_left(_(upper|lower|whole))?$/, 'Left Arm'],
+  [/^leg_(left|right)(_(upper|lower|whole))?$/, 'Legs (2)'],
+  [/^jetpack$/, 'Jetpack'],
+];
+// the Elevated / Crescent Overseer list their limb plates as one "Limb Armor" hitzone
+const OVERSEER_1 = OVERSEER.map(([re, p]) => [re, p === 'Limb Armor (8)' ? 'Limb Armor' : p]);
+const IL = 'content/fac_illuminate/';
+
 const SOURCES = {
   charger: { src: 'content/fac_bugs/cha_charger/cha_charger.unit.glb', rules: CHARGER },
   'charger-behemoth': { src: 'content/fac_bugs/cha_charger_bull/cha_charger_bull.unit.glb', rules: CHARGER },
@@ -148,6 +169,46 @@ const SOURCES = {
   'hulk-scorcher': { src: 'content/fac_cyborgs/cha_lieutenant_assault/cha_lieutenant_assault.unit.glb', rules: HULK },
   'jet-brigade-hulk-bruiser': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
   'jet-brigade-hulk-scorcher': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
+  'light-voteless': { src: IL + 'cha_corrupted/cha_corrupted.unit.glb', rules: VOTELESS },
+  'medium-voteless': { src: IL + 'cha_corrupted/cha_corrupted_v2.unit.glb', rules: VOTELESS },
+  'heavy-voteless': { src: IL + 'cha_bodyhorror_helmetguy/cha_bodyhorror_helmetguy.unit.glb', rules: [[/^helmet(_whole)?$/, 'Head'], [/^generic(_whole)?$/, 'Main'], ...VOTELESS] },
+  overseer: { src: IL + 'cha_illuminate_guy_staff/cha_illuminate_guy_staff.unit.glb', rules: OVERSEER },
+  'elevated-overseer': { src: IL + 'cha_jet_champion/cha_jet_champion.unit.glb', rules: OVERSEER_1 },
+  'crescent-overseer': { src: IL + 'cha_beamer_champion/cha_beamer_champion.unit.glb', rules: [[/^beamer_champion_pack/, 'Backpack'], ...OVERSEER_1] },
+  watcher: {
+    src: IL + 'cha_observer/cha_observer.unit.glb',
+    rules: [[/^base$/, 'Body'], [/^eye(_whole)?$/, 'Eye'], [/^wing_top(_whole)?$/, 'Upper Fin'], [/^wing_bottom(_whole)?$/, 'Lower Fin'], [/^wing_(left|right)(_whole)?$/, 'Side Fins (2)']],
+  },
+  fleshmob: {
+    src: IL + 'cha_meatglue/cha_meatglue.unit.glb',
+    rules: [
+      [/^(head|front_face|back_face|left_front_face|right_front_face)_mask$/, 'Head Chunks (6)'],
+      [/^(stomach|lower_back)_mask$/, 'Stomach Chunks (2)'],
+      [/^(left|right|upper_left|upper_right)_arm_mask$/, 'Arms (4)'],
+      [/^(left|right)_leg_mask$/, 'Legs (2)'],
+    ],
+  },
+  harvester: {
+    src: IL + 'cha_tripod/cha_tripod.unit.glb',
+    rules: [[/^body_(left|right)(_whole)?$/, 'Carapace (2)'], [/^body_front(_whole)?$/, 'Chassis']],
+  },
+  crusher: {
+    src: IL + 'cha_exomech_melee/cha_exomech_melee.unit.glb',
+    rules: [[/^cockpit(_whole)?$/, 'Helmet'], [/^pilot(_whole)?$/, 'Head'], [/^arm_(left|right)(_whole)?$/, 'Arms (2)'], [/^generic(_whole)?$/, 'Torso']],
+  },
+  wretch: {
+    src: IL + 'cha_bodyhorror_bladed/cha_bodyhorror_bladed.unit.glb',
+    rules: [[/^head(_whole)?$/, 'Head'], [/^arm_(left|right)(_whole)?$/, 'Arms (4)'], [/^leg_(left|right)(_whole)?$/, 'Legs (2)'], [/^generic(_whole)?$/, 'Main']],
+  },
+  leviathan: {
+    src: IL + 'vehicles/illuminate_war_machine/illuminate_war_machine.unit.glb',
+    rules: [
+      [/^seg0_center(_whole)?$/, 'Front Vertebra'], [/^seg1_center(_whole)?$/, 'Forward-Middle Vertebra'],
+      [/^seg2_center(_whole)?$/, 'Rearward-Middle Vertebra'], [/^seg3_center(_whole)?$/, 'Rear Vertebra'],
+      [/^seg4(_whole)?$/, 'Tail'], [/^rotator(_whole)?$/, 'Warp Disc'],
+    ],
+  },
+  stingray: { src: IL + 'vehicles/illuminate_attack_ship/illuminate_attack_ship.unit.glb', rules: [[/^g_ias$/, 'Main'], [/^ias$/, 'Main']] },
   agitator: {
     src: 'content/fac_cyborgs/cha_cyborg_elite/cha_cyborg_elite_rusher.unit.glb',
     rules: [
@@ -162,7 +223,7 @@ const SOURCES = {
 };
 
 const DROP = /shadow|collision|culling|_lod[1-9]\b|LOD[1-9]$/i;          // not needed on the web
-const HIDE = /_(damaged|gibs?|destroyed|hurt|split|stump|gore\w*)($|_)/i;  // alternate states of a piece ("torso_destroyed_lower" too)
+const HIDE = /_(damaged|gibs?|destroyed|hurt|split|stump|damage|gore\w*)($|_)/i;  // alternate states of a piece ("torso_destroyed_lower" too)
 const clean = (name) => (name || '').replace(/^g_\S*\s+/, '').trim() || name;
 
 async function prep(id) {
@@ -210,11 +271,16 @@ async function prep(id) {
   }
   if (gearNames.length) doc.getRoot().listScenes().slice(1).forEach((sc) => sc.dispose());
 
+  // keep the most detailed level present (the Overseers only ship LOD1: "g_champion_LOD1 head")
+  const lodLevel = (n) => +(/LOD(\d)/i.exec(n) || [0, 0])[1];
+  const bodyMeshes = root.listNodes().filter((n) => n.getMesh() && !/shadow|collision|culling/i.test(n.getName()) && !gearNames.some((g) => g.name === n.getName()));
+  const bestLod = bodyMeshes.length ? Math.min(...bodyMeshes.map((n) => lodLevel(n.getName()))) : 0;
   const names = [];
   for (const node of root.listNodes()) {
     const mesh = node.getMesh();
     if (!mesh) continue;
-    if (DROP.test(node.getName())) { node.dispose(); continue; }
+    const isGear = gearNames.some((g) => g.name === node.getName());
+    if (!isGear && (/shadow|collision|culling/i.test(node.getName()) || lodLevel(node.getName()) !== bestLod)) { node.dispose(); continue; }
     const n = gearNames.some((a) => a.name === node.getName()) ? node.getName() : clean(node.getName());
     node.setName(n);
     mesh.setName(n);

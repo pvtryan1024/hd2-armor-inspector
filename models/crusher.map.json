@@ -1,0 +1,21 @@
+{
+  "enemy": "crusher",
+  "meshes": {
+    "cockpit_whole": "Helmet",
+    "arm_right_whole": "Arms (2)",
+    "generic_whole": "Torso",
+    "pilot_whole": "Head",
+    "arm_left_whole": "Arms (2)"
+  },
+  "hidden": [
+    "pilot_destroyed",
+    "shoulder_right_damaged",
+    "cockpit_damaged",
+    "bicep_left_damaged",
+    "arm_right_damaged",
+    "bicep_right_damaged",
+    "shoulder_left_damaged",
+    "arm_left_damaged",
+    "pilot_damaged"
+  ]
+}

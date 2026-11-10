@@ -1,0 +1,15 @@
+{
+  "enemy": "harvester",
+  "meshes": {
+    "body_left_whole": "Carapace (2)",
+    "body_right_whole": "Carapace (2)",
+    "body_front_whole": "Chassis"
+  },
+  "hidden": [
+    "shield_top_damaged",
+    "shield_bottom_damaged",
+    "body_right_damaged",
+    "body_left_damaged",
+    "body_front_damaged"
+  ]
+}

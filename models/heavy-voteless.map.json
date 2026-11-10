@@ -1,0 +1,20 @@
+{
+  "enemy": "heavy-voteless",
+  "meshes": {
+    "helmet_whole": "Head",
+    "arm_left_whole": "Upper Arms (2)",
+    "head_whole": "Head",
+    "generic_whole": "Main",
+    "leg_right_whole": "Legs",
+    "arm_right_whole": "Upper Arms (2)",
+    "leg_left_whole": "Legs"
+  },
+  "hidden": [
+    "arm_right_damaged",
+    "arm_left_damaged",
+    "leg_left_damaged",
+    "head_damaged",
+    "leg_right_damaged",
+    "helmet_damaged"
+  ]
+}

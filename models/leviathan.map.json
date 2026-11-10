@@ -1,0 +1,19 @@
+{
+  "enemy": "leviathan",
+  "meshes": {
+    "seg1_center_whole": "Forward-Middle Vertebra",
+    "seg2_center_whole": "Rearward-Middle Vertebra",
+    "seg0_center_whole": "Front Vertebra",
+    "seg3_center_whole": "Rear Vertebra",
+    "rotator_whole": "Warp Disc",
+    "seg4_whole": "Tail"
+  },
+  "hidden": [
+    "rotator_destroyed",
+    "seg2_center_destroyed",
+    "seg0_center_destroyed",
+    "seg1_center_destroyed",
+    "seg3_center_destroyed",
+    "seg4_destroyed"
+  ]
+}

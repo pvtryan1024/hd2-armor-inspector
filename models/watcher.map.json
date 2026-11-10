@@ -1,0 +1,18 @@
+{
+  "enemy": "watcher",
+  "meshes": {
+    "eye_whole": "Eye",
+    "base": "Body",
+    "wing_bottom_whole": "Lower Fin",
+    "wing_top_whole": "Upper Fin",
+    "wing_left_whole": "Side Fins (2)",
+    "wing_right_whole": "Side Fins (2)"
+  },
+  "hidden": [
+    "wing_top_damage",
+    "wing_left_damage",
+    "eye_damage",
+    "wing_bottom_damage",
+    "wing_right_damage"
+  ]
+}

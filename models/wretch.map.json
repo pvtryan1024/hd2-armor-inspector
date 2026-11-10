@@ -1,0 +1,18 @@
+{
+  "enemy": "wretch",
+  "meshes": {
+    "generic_whole": "Main",
+    "arm_right_whole": "Arms (4)",
+    "arm_left_whole": "Arms (4)",
+    "leg_right_whole": "Legs (2)",
+    "head_whole": "Head",
+    "leg_left_whole": "Legs (2)"
+  },
+  "hidden": [
+    "arm_left_damaged",
+    "head_damaged",
+    "arm_right_damaged",
+    "leg_right_damaged",
+    "leg_left_damaged"
+  ]
+}
