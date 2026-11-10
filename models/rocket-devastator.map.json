@@ -9,7 +9,12 @@
     "leg_left_whole": "Legs (2)",
     "hip_whole": "Pelvis",
     "rocket_pods_whole": "Rocket Pods",
-    "head_whole": "Head"
+    "head_whole": "Head",
+    "udim 0": null,
+    "0x09be09cf": null,
+    "0x0fb1fef6": null,
+    "0x7d4e2117": null,
+    "0x1111bf60": null
   },
   "hidden": [
     "rocket_pods_destroyed",
@@ -18,6 +23,11 @@
     "torso_destroyed_lower",
     "torso_destroyed",
     "leg_right_destroyed",
-    "hip_destroyed"
+    "hip_destroyed",
+    "udim 0",
+    "0x09be09cf",
+    "0x0fb1fef6",
+    "0x7d4e2117",
+    "0x1111bf60"
   ]
 }

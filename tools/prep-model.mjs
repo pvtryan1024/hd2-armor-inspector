@@ -355,6 +355,8 @@ const SOURCES = {
   'pyro-trooper': trooper('cha_conscript.unit.glb'),
   marauder: trooper('cha_conscript_tier_2.unit.glb'),
   'jet-brigade-commissar': { src: CY + 'cha_conscript_commander/cha_conscript_commander.unit.glb', ...TROOPER },
+  // the Scout Strider's pilot is a Commissar body
+  'scout-strider-pilot': { src: CY + 'cha_conscript_commander/cha_conscript_commander.unit.glb', ...TROOPER },
   radical: {
     src: CY + 'cha_cyborg_elite/cha_elite_female.unit.glb',
     rules: [[/^head(_whole)?$/, 'Head'], [/^armor_torso$/, 'Torso Circuits'], [/^(left|right)_shoulderpad$/, 'Pauldron'], [/^(left|right)_arm(_whole)?$/, 'Upper Arms (2)'], [/^body(_whole)?$/, 'Main']],
