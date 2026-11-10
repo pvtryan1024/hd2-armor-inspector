@@ -70,6 +70,7 @@ enemies.forEach((e) => {
   // Inner Flesh / Internals sit under the torso, back or carapace plate
   if (!/broken/i.test(e.name)) for (const p of e.parts) {
     if (p.coveredBy || !/\b(inner|internals?|flesh)\b/i.test(p.name)) continue;
+    if (/tentacle/i.test(p.name)) { p.open = true; continue; } // Impaler tentacles are their own hitzones, not under the tentacle armor
     const armor = e.parts.filter((q) => /\barmou?r\b|\bplates?\b|carapace/i.test(q.name) && !/weak ?spot/i.test(q.name));
     const words = p.name.toLowerCase().match(/[a-z]+/g).filter((w) => !/^(inner|internals?|exposed|flesh|front|rear|left|right)$/.test(w));
     let cover = words.length ? armor.find((q) => words.every((w) => q.name.toLowerCase().includes(w))) : null;
@@ -79,6 +80,7 @@ enemies.forEach((e) => {
   }
   // "Inner Flesh", "Internals", "Leg Flesh"…: behind armor until it breaks
   if (!/broken/i.test(e.name)) e.parts.forEach((p) => { if (p.coveredBy) return; // its plate gets stripped first instead
+    if (p.open) { delete p.open; return; }
     if (/\b(inner|internals?|flesh)\b/i.test(p.name)) p.hidden = true;
     // undersides aren't armored over, just hard to get an angle on
     else if (/\bunderside\b/i.test(p.name)) p.hidden = 'angle';
