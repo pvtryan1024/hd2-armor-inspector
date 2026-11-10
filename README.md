@@ -16,7 +16,7 @@ Enemy hitzones and weapon stats come from https://helldivers.wiki.gg/.
 ## Features
 
 - **Target / Weapon panels**: search and filter 104 enemies and 155 weapons (primaries, secondaries, throwables, support weapons, Eagles, orbitals, sentries).
-- **Penetration view**: every hitzone coloured green (AP > AV, 100%), amber (AP = AV, 65%), red (ricochet).
+- **Penetration view**: every hitzone coloured green (AP > AV, 100%), yellow-green (AP = AV, 65%), red (ricochet).
 - **Shots-to-kill view**: hitzones coloured by how many shots kill through them.
 - **Fire mode**: click hitzones to shoot one at a time; HP bars drop, and a KILLED / DOWNED banner shows when Main runs out or a fatal part is destroyed.
 - **Best weapons vs target**: every weapon ranked for the selected enemy.

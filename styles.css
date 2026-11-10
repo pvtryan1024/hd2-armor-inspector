@@ -12,8 +12,8 @@
   --accent-ink: #141414;
 
   --pen-full: #2fbf71;        /* AP > AV : 100% */
-  --pen-half: #e8b928;        /* AP = AV : 65%  */
-  --pen-none: #d6453d;        /* AP < AV : ricochet */
+  --pen-half: #c2dc35;        /* AP = AV : 65% (yellow-green) */
+  --pen-none: #e0412f;        /* AP < AV : ricochet */
   --pen-immune: #4a525c;      /* indestructible / no hitbox */
 
   --font-ui: "Barlow", system-ui, sans-serif;

@@ -216,7 +216,7 @@
     return r.mainEx > 0 ? 'half' : 'none';
   }
   const PEN_VAR = { full: 'var(--pen-full)', half: 'var(--pen-half)', none: 'var(--pen-none)', immune: 'var(--pen-immune)' };
-  const PEN_HEX = { full: '#2fbf71', half: '#e8b928', none: '#d6453d', immune: '#4a525c' };
+  const PEN_HEX = { full: '#2fbf71', half: '#c2dc35', none: '#e0412f', immune: '#4a525c' };
   const PEN_LABEL = { full: 'Penetrates · 100%', half: 'Reduced · 65%', none: 'Ricochet · 0', immune: 'Immune' };
 
   function ttkColor(n) {
@@ -316,7 +316,7 @@
       </div>
       <div>
         <div class="ap-scale">${scale}</div>
-        <div class="ap-caption">Armor values this shot defeats (green = full, amber = 65%)</div>
+        <div class="ap-caption">Armor values this shot defeats (green = full, yellow-green = 65%, red = ricochet)</div>
       </div>
       <div class="opts">
         ${w.modes.length > 1 ? `<label class="opt">Ammo / mode
