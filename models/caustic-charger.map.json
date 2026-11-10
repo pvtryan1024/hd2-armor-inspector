@@ -55,5 +55,8 @@
     "butt_damaged",
     "claw_left_gib",
     "head_damaged"
+  ],
+  "vanish": [
+    "Spore Flesh (6)"
   ]
 }

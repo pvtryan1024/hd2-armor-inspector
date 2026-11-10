@@ -151,9 +151,11 @@ function instanceFor(entry, key, i) {
     const pos = /(front|fore)/i.test(b) ? 'f' : /(back|rear|hind)/i.test(b) ? 'b' : '';
     return side ? side + pos : '';
   };
-  if (bases.length > n && bases.every((b) => tok(b))) {
-    const keys = [...new Set(bases.map(tok))].sort();
-    if (keys.length === n) return keys.indexOf(tok(baseOf(key)));
+  if (bases.length > n) {
+    const keys = [...new Set(bases.filter(tok).map(tok))].sort();
+    // the named pieces give exactly the count: they decide; an unnamed extra (spore growths on the Caustic
+    // Charger's body) belongs to the whole part
+    if (keys.length === n) return tok(baseOf(key)) ? keys.indexOf(tok(baseOf(key))) : null;
   }
   const at = bases.indexOf(baseOf(key));
   return at < 0 ? null : at % n;
@@ -302,6 +304,18 @@ function swapBroken() {
     for (const m of dmg) { m.mesh.visible = stage === 1 || remains === dmg; m.mesh.userData.revealed = stage === 1; m.mesh.userData.remains = remains === dmg; }
     for (const m of gib) { m.mesh.visible = remains === gib; m.mesh.userData.remains = remains === gib; m.mesh.userData.revealed = false; }
     if (stage === 2) for (const m of attached) m.mesh.visible = false;
+  }
+  // map "vanish": [part…]: those parts leave nothing behind (Caustic Charger spore sacs): each piece disappears
+  // when its health runs out, a mesh of the whole part once every piece is gone
+  for (const name of current.map.vanish || []) {
+    const i = (lastDetail?.enemy.parts || []).findIndex((p) => p.name === name);
+    if (i < 0 || !lastDetail?.fire) continue;
+    for (const m of current.meshes) {
+      if (partIndexFor(current, m.key) !== i) continue;
+      const k = instanceFor(current, m.key, i);
+      const inst = lastDetail.goneInst?.[i];
+      if (k != null && inst ? inst[k] : lastDetail.gone[i]) m.mesh.visible = false;
+    }
   }
   // map "after": { mesh: { part, replaces: [mesh…] } }: a mesh that takes over from others once a part dies
   // (Bile Titan: the burst-sac butt replaces the butt when the Lower Sac pops), while those still show intact
@@ -802,7 +816,7 @@ $('#v3Save').addEventListener('click', async () => {
   if (!current) return;
   // inner hitboxes are saved too (the auto-placed ones become fixed once saved)
   const colliders = (current.colliders || []).map(({ def }) => ({ part: def.part, from: def.from.map((v) => +(+v).toFixed(4)), to: def.to.map((v) => +(+v).toFixed(4)), radius: def.radius }));
-  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(colliders.length ? { colliders } : {}) }, null, 2);
+  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(current.map.vanish ? { vanish: current.map.vanish } : {}), ...(colliders.length ? { colliders } : {}) }, null, 2);
   if (SERVED) {
     try {
       const r = await fetch(`api/map/${encodeURIComponent(currentId)}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });

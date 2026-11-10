@@ -2125,6 +2125,7 @@
         "constitution": null,
         "fatal": false,
         "exdr": 1,
+        "open": true,
         "location": "Front, Side, Rear"
       },
       {
