@@ -42,7 +42,10 @@ const normPart = (p) => {
   if (q.health == null) q.health = 'main';
   if (typeof q.av !== 'number') q.av = Number(q.av);
   if (Number.isNaN(q.av)) q.av = -1;
-  const m = /\((\d+)\)\s*$/.exec(q.name);
+  // the scraped field is the wiki's "Overflow Cap?" column: Yes = Main transfer capped at the part's HP.
+  // The app's `overflow` means the opposite (excess damage spills into Main), so flip it.
+  if (typeof q.overflow === 'boolean') q.overflow = !q.overflow;
+  const m =/\((\d+)\)\s*$/.exec(q.name);
   q.count = q.count || (m ? +m[1] : 1);
   return q;
 };
