@@ -118,11 +118,16 @@ function partIndexFor(entry, key) {
   return n ? parts.findIndex((p) => norm(p.name) === n) : -1;
 }
 
+const VARIANT = /_(damaged|gibs?|destroyed|hurt)$/i;
+const baseOf = (key) => key.replace(VARIANT, '');
+
+/** Which piece of a counted part a mesh is: pieces ordered by base name (left before right), so a
+ *  mesh and its _damaged / _gib versions always count as the same piece. */
 function instanceFor(entry, key, i) {
   const n = lastDetail?.enemy.parts[i]?.count || 1;
   if (n < 2) return null;
-  const same = entry.meshes.map((m) => m.key).filter((k) => partIndexFor(entry, k) === i).sort();
-  const at = same.indexOf(key);
+  const bases = [...new Set(entry.meshes.map((m) => m.key).filter((k) => partIndexFor(entry, k) === i).map(baseOf))].sort();
+  const at = bases.indexOf(baseOf(key));
   return at < 0 ? null : at % n;
 }
 
@@ -221,21 +226,41 @@ function show(entry) {
   status(`${entry.meshes.length} meshes · ${linked} linked to hitzones`);
 }
 
-/** Fire mode: once a piece breaks, hide it and show its "<name>_damaged" mesh (the flesh under a plate). */
+/** Each piece with variants shows one mesh at a time, only for itself (never its partner):
+ *  intact → stripped ("<name>_damaged": the flesh under the plate, shootable)
+ *         → destroyed ("<name>_gib" / "_destroyed": grey remains, no hitbox).
+ *  Outside fire mode every piece shows intact; the editor shows the map's own hidden list. */
+const GIB = ['_gib', '_gibs', '_destroyed'];
+function pieceGone(key) {
+  const i = partIndexFor(current, key);
+  if (i < 0 || !lastDetail?.fire) return false;
+  const k = instanceFor(current, key, i);
+  return !!(k != null && lastDetail.goneInst?.[i] ? lastDetail.goneInst[i][k] : lastDetail.gone[i]);
+}
 function swapBroken() {
-  if (!current || !lastDetail?.fire || editing) return;
+  if (!current || editing) return;
   const byKey = new Map(current.meshes.map((m) => [m.key, m.mesh]));
   const hidden = new Set(current.map.hidden);
   for (const { key, mesh } of current.meshes) {
-    const v = byKey.get(`${key}_damaged`);
-    if (!v || hidden.has(key)) continue;
+    if (VARIANT.test(key) || hidden.has(key)) continue; // bases only
+    const dmgKey = `${key}_damaged`;
+    const dmg = byKey.get(dmgKey);
+    const gibKey = GIB.map((s) => key + s).find((k) => byKey.has(k));
+    const gib = gibKey && byKey.get(gibKey);
+    if (!dmg && !gib) continue;
     const i = partIndexFor(current, key);
-    if (i < 0) continue;
-    const k = instanceFor(current, key, i);
-    const broken = !!(k != null && lastDetail.goneInst?.[i] ? lastDetail.goneInst[i][k] : lastDetail.gone[i]);
-    mesh.visible = !broken;
-    v.visible = broken;
-    v.userData.revealed = broken;
+    // stage 0 intact · 1 stripped (flesh of another hitzone showing) · 2 destroyed
+    let stage = 0;
+    if (pieceGone(key)) {
+      const di = dmg ? partIndexFor(current, dmgKey) : -1;
+      stage = dmg && di >= 0 && di !== i && !pieceGone(dmgKey) ? 1 : 2;
+    }
+    const remains = stage === 2 ? gib || dmg || null : null;
+    mesh.visible = stage === 0;
+    mesh.userData.remains = false;
+    if (dmg) { dmg.visible = stage === 1 || remains === dmg; dmg.userData.revealed = stage === 1; dmg.userData.remains = remains === dmg; }
+    if (gib) { gib.visible = remains === gib; gib.userData.remains = remains === gib; gib.userData.revealed = false; }
+    if (stage === 2 && !remains) { mesh.visible = true; mesh.userData.remains = true; }
   }
 }
 
@@ -333,7 +358,11 @@ function paint() {
     const mat = mesh.userData.hz;
     const u = mat.userData.u;
     mesh.material = mat;
-    if (i >= 0) {
+    if (mesh.userData.remains && !editing) { // what's left of a destroyed piece: visible, but no hitbox
+      u.uAngle.value = 0;
+      u.uFlat.value.copy(UNMAPPED);
+      mat.opacity = 0.4;
+    } else if (i >= 0) {
       u.uAngle.value = angleMode ? 1 : 0;
       u.uFlat.value.set(colors[i]);
       if (ap4) u.uAP.value.set(...ap4);
@@ -444,7 +473,7 @@ blastRay.firstHitOnly = true;
 function blastHits(h, outer) {
   const out = new Map(); // "part:piece" -> { idx, k, d }
   if (!(outer > 0)) return [];
-  const targets = current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2);
+  const targets = current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains);
   const origin = h.point.clone().addScaledVector(h.normal, 0.01); // just off the surface that was struck
   blastRay.far = outer;
   for (const dir of DODECA) {
@@ -475,7 +504,7 @@ function pick(ev) {
   ray.setFromCamera(ptr, camera);
   const hits = ray.intersectObjects(current.meshes.map((m) => m.mesh).filter((m) => m.visible), false);
   // destroyed parts have no hitbox: the shot goes through to whatever is behind them
-  const hit = hits.find((h) => h.object.material.opacity > 0.2);
+  const hit = hits.find((h) => h.object.material.opacity > 0.2 && !h.object.userData.remains);
   if (!hit) return null;
   let deg = 0;
   let n = ray.ray.direction.clone().negate();
