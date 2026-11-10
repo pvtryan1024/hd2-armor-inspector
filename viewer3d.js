@@ -44,6 +44,17 @@ rim.position.set(-6, 4, -8);
 scene.add(rim);
 const grid = new THREE.GridHelper(40, 40, 0x323c47, 0x1d242c);
 scene.add(grid);
+// the ground around the enemy's feet: with an explosive weapon in Fire mode a press there is a ground shot
+// (the blast goes up into the enemy); everywhere else, and with any other weapon, a press rotates the camera
+const ground = new THREE.Group();
+const groundDisc = new THREE.Mesh(new THREE.CircleGeometry(1, 64).rotateX(-Math.PI / 2),
+  new THREE.MeshBasicMaterial({ color: 0xffe710, transparent: true, opacity: 0.05, depthWrite: false, side: THREE.DoubleSide }));
+const groundRing = new THREE.Mesh(new THREE.RingGeometry(0.985, 1, 96).rotateX(-Math.PI / 2),
+  new THREE.MeshBasicMaterial({ color: 0xffe710, transparent: true, opacity: 0.35, depthWrite: false, side: THREE.DoubleSide }));
+ground.add(groundDisc, groundRing);
+ground.visible = false;
+scene.add(ground);
+const groundActive = () => !!(current && !editing && lastDetail?.fire && lastDetail.explosive);
 
 function resize() {
   const w = host.clientWidth, h = host.clientHeight;
@@ -224,6 +235,8 @@ function frame() {
   camera.near = r / 200; camera.far = r * 50; camera.updateProjectionMatrix();
   grid.position.y = box.min.y;
   grid.scale.setScalar(Math.max(0.1, r / 8));
+  ground.position.set(center.x, box.min.y + 0.002, center.z);
+  ground.scale.setScalar(Math.max(size.x, size.z) / 2 + 2); // its footprint plus 2 m
 }
 
 function show(entry) {
@@ -399,6 +412,7 @@ function paint() {
   const { colors, gone, goneInst, colorMode, ap4, avs, bands } = lastDetail;
   applyHidden();
   swapBroken();
+  ground.visible = groundActive();
   const angleMode = colorMode === 'pen' && !!ap4;
   // editing: only the selected mesh's part keeps its colour; the other parts go plain grey
   const selPart = editing && selectedKey ? partIndexFor(current, selectedKey) : -1;
@@ -540,7 +554,7 @@ function fibDirs(n) {
  *  "surface" spread (Eruptor): a half sphere pointing into the surface that was hit; "sphere" (flak): all round. */
 function shrapnelHits(h, spec) {
   if (!spec?.count) return null;
-  const into = h.normal.clone().negate();
+  const into = h.ground ? new THREE.Vector3(0, 1, 0) : h.normal.clone().negate();
   let dirs;
   if (spec.spread === 'surface') {
     dirs = fibDirs(spec.count * 2).filter((d) => d.dot(into) > 0).slice(0, spec.count);
@@ -600,6 +614,15 @@ function pick(ev) {
   const hits = ray.intersectObjects(current.meshes.map((m) => m.mesh).filter((m) => m.visible), false);
   // destroyed parts have no hitbox: the shot goes through to whatever is behind them
   const hit = hits.find((h) => h.object.material.opacity > 0.2 && !h.object.userData.remains);
+  if (groundActive()) {
+    ground.updateMatrixWorld();
+    const g = ray.intersectObject(groundDisc, false)[0];
+    if (g && (!hit || g.distance < hit.distance)) {
+      const up = new THREE.Vector3(0, 1, 0);
+      const deg = THREE.MathUtils.radToDeg(Math.acos(Math.min(1, Math.abs(up.dot(ray.ray.direction)))));
+      return { ground: true, deg, point: g.point.clone(), normal: up, origin: ray.ray.origin.clone() };
+    }
+  }
   if (!hit) return null;
   let deg = 0;
   let n = ray.ray.direction.clone().negate();
@@ -640,7 +663,7 @@ renderer.domElement.addEventListener('pointermove', (ev) => {
 });
 function hover(ev) {
   const h = pick(ev);
-  if (!h) { HD2.hideTip(); return; }
+  if (!h || h.ground) { HD2.hideTip(); return; }
   const i = partIndexFor(current, h.mesh.userData.key);
   if (editing) { status(`${h.mesh.userData.key}${i >= 0 ? ' → ' + lastDetail.enemy.parts[i].name : ' (unassigned)'}`); return; }
   HD2.hideTip();
@@ -648,6 +671,12 @@ function hover(ev) {
 }
 renderer.domElement.addEventListener('pointerleave', () => HD2.hideTip());
 function shoot(h) {
+  if (h.ground) { // only the explosion (and shrapnel) reaches the enemy
+    const blast = blastHits(h, lastDetail?.radii?.outer);
+    const said = HD2.hit({ ground: true, idx: -1, k: null, blastHits: blast, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), deg: h.deg, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+    if (said) status(said);
+    return;
+  }
   if (editing) {
     selectedKey = h.mesh.userData.key; renderEditor(); paint();
     if (lastDetail?.fire) status(`Editing hitzones: click selects "${selectedKey}". Turn off "Edit hitzones" to fire.`);
@@ -656,7 +685,7 @@ function shoot(h) {
   const i = partIndexFor(current, h.mesh.userData.key);
   if (i < 0) { status(`"${h.mesh.userData.key}" isn't linked to a hitzone yet (grey). Assign it in "Edit hitzones".`); return; }
   // blast rays from the impact point (the result of every press shows in the status line)
-  const blast = blastHits(h, lastDetail?.blast?.outer);
+  const blast = blastHits(h, lastDetail?.radii?.outer);
   const parts = {};
   for (const b of blast) if (parts[b.idx] == null || b.d < parts[b.idx]) parts[b.idx] = b.d;
   const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), thru: innerAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });

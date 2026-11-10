@@ -972,6 +972,7 @@
     const mode = w.modes[state.mode] || w.modes[0];
     const band = bandOf(hit.deg);
     const o = { ...opts(), band };
+    if (hit.ground) return resolveGround(hit, mode, band, o);
     const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0, noShrap: true }) }];
     // 3D shots: only an inner hitbox the ray actually passes through counts (hit.thru from the viewer)
     const thru = overpen(mode, e, hit.idx, rows[0].s, o, 'thru' in hit ? hit.thru?.idx ?? null : undefined);
@@ -1007,10 +1008,78 @@
     return { mode, band, rows, radii, thru, shrap };
   }
 
+  /** A shot into the ground next to the enemy (3D view): no part is struck, so only the explosion counts:
+   *  every piece the blast rays reach takes falloff damage (Main's share once per blast), plus shrapnel. */
+  function resolveGround(hit, mode, band, o) {
+    const e = enemy();
+    const radii = blastRadii(mode);
+    const rows = [];
+    if (radii) {
+      for (const b of hit.blastHits || []) {
+        if (b.d > radii.outer) continue;
+        rows.push({ idx: b.idx, k: b.k, dist: b.d, s: shotDamage(mode, e.parts[b.idx], e, { ...o, noProj: true, exDist: b.d }) });
+      }
+      rows.sort((a, b) => a.dist - b.dist);
+      const top = Math.max(0, ...rows.map((r) => r.s.mainEx));
+      let used = false;
+      rows.forEach((r) => {
+        if (!used && top > 0 && r.s.mainEx === top) used = true;
+        else r.s = { ...r.s, mainEx: 0 };
+      });
+    }
+    let shrap = null;
+    if (mode.shrapnel && state.explosion && hit.shrapHits) {
+      const fm = shrapnelMode(mode), by = new Map();
+      for (const f of hit.shrapHits) {
+        const sf = shotDamage(fm, e.parts[f.idx], e, { ...o, band: bandOf(f.deg), dist: f.d, explosion: false, noShrap: true });
+        const id = `${f.idx}:${f.k}`;
+        const acc = by.get(id) || { idx: f.idx, k: f.k, n: 0, s: { proj: 0, partEx: 0, mainEx: 0, total: 0 } };
+        acc.n++; acc.s.proj += sf.proj; acc.s.total += sf.total;
+        by.set(id, acc);
+      }
+      shrap = { count: mode.shrapnel.count, hit: hit.shrapHits.length, rows: [...by.values()] };
+    }
+    return { mode, band, rows, radii, thru: null, shrap, ground: true };
+  }
+
+  function placeGround(hit) {
+    state.hit = hit;
+    const res = resolveHit(hit);
+    if (!res?.radii && !res?.shrap) { render(); return 'Ground: no explosion with this weapon, nothing happens'; }
+    if (state.fire && state.sim && !state.sim.dead) {
+      const e = enemy(), notes = [];
+      const tag = shotClock();
+      state.sim.shots++;
+      let n = 0;
+      for (const r of res.rows) {
+        if (state.sim.dead) break;
+        if (r.s.total > 0 || r.s.mainEx > 0) n++;
+        const o = applyShot(state.sim, e, r.idx, r.s, true, r.k ?? undefined);
+        if (o.broke) notes.push(`${pieceName(e.parts[r.idx], r.k)} destroyed`);
+      }
+      if (res.shrap) {
+        for (const f of res.shrap.rows) {
+          if (state.sim.dead || !(f.s.total > 0)) continue;
+          const of = applyShot(state.sim, e, f.idx, f.s, true, f.k ?? undefined);
+          if (of.broke) notes.push(`${pieceName(e.parts[f.idx], f.k)} destroyed by shrapnel`);
+        }
+        notes.push(`shrapnel ${res.shrap.hit}/${res.shrap.count} hit`);
+      }
+      state.sim.log.unshift(`#${state.sim.shots} ${tag}ground: ${res.rows.length ? `blast reached ${res.rows.length} part${res.rows.length > 1 ? 's' : ''}, ${n} damaged` : 'blast reached nothing'}${notes.length ? ' — ' + notes.join(', ') : ''}`);
+      state.sim.log.length = Math.min(state.sim.log.length, 8);
+      render();
+      return `Fired #${state.sim.shots}: ground, blast reached ${res.rows.length} part${res.rows.length === 1 ? '' : 's'}`;
+    }
+    render();
+    if (state.fire && state.sim?.dead) return 'Enemy is already down. Press Reset or "Fire again" to keep shooting.';
+    return state.fire ? '' : 'Shot inspected. Turn on Fire mode to deal damage.';
+  }
+
   /** "Torso Armor 2/2" for one piece of a counted part, the plain name otherwise. */
   const pieceName = (p, k) => (k != null && (p.count || 1) > 1 ? `${p.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${p.count}` : p.name);
 
   function placeHit(hit) {
+    if (hit.ground) return placeGround(hit);
     const e0 = enemy();
     if (state.fire && state.sim && e0) {
       const l = partLeft(hit.idx); // that piece is destroyed: no hitbox (the viewer normally shoots past it)
@@ -1072,6 +1141,19 @@
     }
     const res = state.stageView === '3d' ? resolveHit(state.hit) : null;
     if (!res) { el.classList.add('hidden'); return; }
+    if (res.ground) {
+      el.classList.remove('hidden');
+      el.innerHTML = `
+        <button class="sp-close" id="shotClose" title="Clear shot">×</button>
+        <div class="sp-title">Ground</div>
+        <div class="sp-sub">Impact on the ground: only the explosion reaches the enemy</div>
+        ${res.radii ? `<div class="sp-blast"><b>Blast</b> ${res.radii.inner}m inner / ${res.radii.outer}m outer
+          ${res.rows.length ? '<ul>' + res.rows.map((r) => `<li><span>${esc(pieceName(e.parts[r.idx], r.k))} <i>${r.dist.toFixed(1)}m</i></span><span>${r.s.partEx > 0 ? fmt(r.s.partEx) : '<span class="muted" title="The blast AP does not beat this armor">0 · armor holds</span>'}</span></li>`).join('') + '</ul>' : '<div class="muted">No hitzone reached by the blast</div>'}
+          ${res.rows.some((r) => r.s.mainEx) ? `<div class="muted">+${fmt(res.rows.reduce((a, r) => a + r.s.mainEx, 0))} redirected to Main (once per blast)</div>` : ''}</div>` : '<div class="muted">This weapon has no explosion: a ground hit does nothing</div>'}
+        ${res.shrap ? `<div class="sp-blast"><b>Shrapnel</b> ${res.shrap.hit} of ${res.shrap.count} fragments hit${res.shrap.rows.length ? '<ul>' + res.shrap.rows.map((r) => `<li><span>${esc(pieceName(e.parts[r.idx], r.k))} <i>×${r.n}</i></span><span>${r.s.total > 0 ? fmt(r.s.total) : '<span class="muted">0 · armor holds</span>'}</span></li>`).join('') + '</ul>' : ''}</div>` : ''}
+        ${state.fire ? '' : '<div class="sp-hint">Turn on Fire mode to apply shots.</div>'}`;
+      return;
+    }
     el.classList.remove('hidden');
     const d = res.rows[0];
     const part = e.parts[d.idx];
@@ -1113,7 +1195,7 @@
     const goneInst = e.parts.map((_, i) => (state.fire ? partLeft(i)?.gones || null : null));
     // fire mode: remaining health of the piece hit last, for the floating card on the 3D model
     let hitHp = null;
-    if (state.fire && state.sim && state.hit && !state.hit.covered) {
+    if (state.fire && state.sim && state.hit && !state.hit.covered && !state.hit.ground) {
       const p = e.parts[state.hit.idx], l = partLeft(state.hit.idx);
       const k = state.hit.k ?? ((p.count || 1) === 1 ? 0 : null); // a single part reads like one piece
       if (l) {
@@ -1140,7 +1222,7 @@
       shrapnel: m?.shrapnel && state.explosion ? { count: m.shrapnel.count, spread: m.shrapnel.spread, range: blastRadii(m)?.outer || 7 } : null,
       enemy: e, colors, gone, goneInst, hitHp, fire: state.fire, stageView: state.stageView,
       colorMode: state.color, ap4, avs: e.parts.map((p) => p.av), bands: ANGLE_BANDS,
-      hit: state.hit, blast: state.hit?.ricochet ? null : blastRadii(m),
+      hit: state.hit, blast: state.hit?.ricochet ? null : blastRadii(m), radii: blastRadii(m), explosive: !!(blastRadii(m) || (m?.shrapnel && state.explosion)),
     } }));
   }
 
