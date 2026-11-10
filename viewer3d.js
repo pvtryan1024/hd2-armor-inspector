@@ -101,7 +101,52 @@ function instanceFor(entry, key, i) {
   return at < 0 ? null : at % n;
 }
 
+/** Freeze a skinned mesh in its current pose as a plain mesh. The exports are skinned (and their positions
+ *  quantized), so the raw geometry is not where the mesh is drawn; picking, bounds and blast distances
+ *  need the posed shape. The models never animate, so nothing is lost. */
+function bakeSkin(sm) {
+  const g = sm.geometry;
+  const pos = g.attributes.position, nor = g.attributes.normal;
+  const si = g.attributes.skinIndex, sw = g.attributes.skinWeight;
+  sm.skeleton.update();
+  const bones = sm.skeleton.boneMatrices; // bone.matrixWorld × boneInverse, packed
+  const P = new Float32Array(pos.count * 3), N = nor ? new Float32Array(nor.count * 3) : null;
+  const m = new THREE.Matrix4(), b = new THREE.Matrix4(), v = new THREE.Vector3(), n = new THREE.Vector3(), nm3 = new THREE.Matrix3();
+  for (let i = 0; i < pos.count; i++) {
+    m.multiplyScalar(0).elements.fill(0);
+    for (let j = 0; j < 4; j++) {
+      const w = sw.getComponent(i, j);
+      if (!w) continue;
+      b.fromArray(bones, si.getComponent(i, j) * 16);
+      for (let e = 0; e < 16; e++) m.elements[e] += b.elements[e] * w;
+    }
+    m.premultiply(sm.bindMatrixInverse).multiply(sm.bindMatrix);
+    v.fromBufferAttribute(pos, i).applyMatrix4(m);
+    P.set([v.x, v.y, v.z], i * 3);
+    if (N) {
+      n.fromBufferAttribute(nor, i).applyMatrix3(nm3.getNormalMatrix(m)).normalize();
+      N.set([n.x, n.y, n.z], i * 3);
+    }
+  }
+  const out = new THREE.BufferGeometry();
+  out.setAttribute('position', new THREE.BufferAttribute(P, 3));
+  if (N) out.setAttribute('normal', new THREE.BufferAttribute(N, 3));
+  for (const k of Object.keys(g.attributes)) if (/^(uv|uv\d|color)/.test(k)) out.setAttribute(k, g.attributes[k]);
+  if (g.index) out.setIndex(g.index);
+  out.groups = g.groups;
+  const mesh = new THREE.Mesh(out, sm.material);
+  mesh.name = sm.name;
+  mesh.position.copy(sm.position); mesh.quaternion.copy(sm.quaternion); mesh.scale.copy(sm.scale);
+  sm.parent.add(mesh);
+  sm.parent.remove(sm);
+  return mesh;
+}
+
 function prepare(root) {
+  root.updateMatrixWorld(true);
+  const skinned = [];
+  root.traverse((o) => { if (o.isSkinnedMesh) skinned.push(o); });
+  skinned.forEach(bakeSkin);
   const meshes = [];
   const seen = new Map();
   root.traverse((o) => {
@@ -111,7 +156,7 @@ function prepare(root) {
     seen.set(key, n + 1);
     if (n) key = `${key}#${n + 1}`;
     o.userData.key = key;
-    if (!o.isSkinnedMesh) o.geometry.computeBoundsTree();
+    o.geometry.computeBoundsTree();
     o.userData.orig = o.material;
     o.userData.hz = hitzoneMaterial();
     meshes.push({ key, mesh: o });
@@ -128,7 +173,7 @@ function frame() {
   const center = box.getCenter(new THREE.Vector3());
   const r = Math.max(size.x, size.y, size.z) || 1;
   controls.target.copy(center);
-  camera.position.copy(center).add(new THREE.Vector3(r * 1.5, r * 0.8, r * 2.1));
+  camera.position.copy(center).add(new THREE.Vector3(r * 0.9, r * 0.5, r * 1.3));
   camera.near = r / 200; camera.far = r * 50; camera.updateProjectionMatrix();
   grid.position.y = box.min.y;
   grid.scale.setScalar(Math.max(0.1, r / 8));
