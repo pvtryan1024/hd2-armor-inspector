@@ -278,16 +278,12 @@
 
   // Faction picker → enemy list, like choosing a nation before a tank.
   const FACTION_INFO = {
-    Terminids: { short: 'Bugs', color: '#f2a516', blurb: 'Swarming arthropods' },
-    Automatons: { short: 'Bots', color: '#e2412f', blurb: 'Cyborg war machines' },
-    Illuminate: { short: 'Squids', color: '#a46cf2', blurb: 'Psionic invaders' },
+    Terminids: { short: 'Bugs', color: '#ffb901', blurb: 'Swarming arthropods' },
+    Automatons: { short: 'Bots', color: '#ff6161', blurb: 'Cyborg war machines' },
+    Illuminate: { short: 'Squids', color: '#cd8aea', blurb: 'Psionic invaders' },
   };
-  // simple original glyphs, not game logos
-  const FACTION_ICON = {
-    Terminids: '<svg viewBox="0 0 32 32"><path d="M16 4c4 0 7 3 7 7 0 2-1 4-2 5l5 3-1 2-5-2v3l5 4-1 2-5-4c-1 2-2 4-3 4s-2-2-3-4l-5 4-1-2 5-4v-3l-5 2-1-2 5-3c-1-1-2-3-2-5 0-4 3-7 7-7z"/></svg>',
-    Automatons: '<svg viewBox="0 0 32 32"><path d="M8 6h16l3 5v9l-4 6H9l-4-6v-9zm3 7v4h4v-4zm6 0v4h4v-4zm-5 8h8v2h-8z"/></svg>',
-    Illuminate: '<svg viewBox="0 0 32 32"><path d="M16 3l13 23H3zm0 8c-4 0-7 3-8 6 1 3 4 6 8 6s7-3 8-6c-1-3-4-6-8-6zm0 3a3 3 0 110 6 3 3 0 010-6z"/></svg>',
-  };
+  // faction emblems in images/factions/ (community traces by Dogo314)
+  const FACTION_ICON = Object.fromEntries(Object.keys(FACTION_INFO).map((f) => [f, `<img src="images/factions/${f.toLowerCase()}.svg" alt="">`]));
   const factionColor = (f) => FACTION_INFO[f]?.color || 'var(--accent)';
 
   function thumbHtml(e) {
