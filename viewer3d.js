@@ -86,7 +86,9 @@ function updateHpCard() {
   if (hpAt.z > 1) { hpCard.classList.add('hidden'); return; } // behind the camera
   const w = host.clientWidth, h = host.clientHeight;
   hpCard.style.left = `${((hpAt.x + 1) / 2) * w}px`;
-  hpCard.style.top = `${((1 - hpAt.y) / 2) * h}px`;
+  const top = ((1 - hpAt.y) / 2) * h;
+  hpCard.style.top = `${top}px`;
+  hpCard.classList.toggle('below', top - hpCard.offsetHeight - 22 < 4);
   hpCard.classList.remove('hidden');
 }
 
