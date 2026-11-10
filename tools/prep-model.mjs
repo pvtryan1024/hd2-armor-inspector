@@ -95,8 +95,23 @@ Object.assign(GEAR, {
 });
 // Scout Strider upper hulls and HMG: unnamed models from its archive (exported by hash into extra/)
 const SCOUT_HMG = { src: 'extra/0x2a346bf4552997e2.unit.glb', bone: 'gun_pitch', name: 'hmg', part: 'HMG' };
+// Factory Strider ("cyborg_big_walker_skeleton"): leg pieces by bone
+const FS_BONES = (bone) => {
+  const b = bone.toLowerCase();
+  if (/knee_(front|back)_shield/.test(b)) return 'knee_armor';
+  if (/leg_(hip|thigh)/.test(b)) return 'leg_armor';
+  if (/leg_(knee|foot|toe)/.test(b)) return 'leg_assembly';
+  if (/head/.test(b)) return 'head';
+  if (/neck/.test(b)) return 'neck';
+  return 'body';
+};
 const JUMP = { src: GEAR.cJump, bone: 'attach_backpack', name: 'jetpack', part: 'Jetpack' };
 const LOADOUT = {
+  'factory-strider': [
+    { src: GEAR.walkerCannon, bone: 'attach_turret', name: 'cannon_turret', part: 'Cannon Turret' },
+    { src: 'extra/0x48c91e42b9f16512.unit.glb', bone: 'l_front_turret_attach', name: 'gatling_left', part: 'Fusion Gatling Guns (2)' },
+    { src: 'extra/0x48c91e42b9f16512.unit.glb', bone: 'r_front_turret_attach', name: 'gatling_right', part: 'Fusion Gatling Guns (2)' },
+  ],
   'vox-engine': [{ src: GEAR.walkerCannon, bone: 'l_cannon_socket', name: 'cannon_left', part: 'Cannons (2)' }, { src: GEAR.walkerCannon, bone: 'r_cannon_socket', name: 'cannon_right', part: 'Cannons (2)' }],
   'scout-strider': [{ src: 'extra/0xee00bfe8ff769f70.unit.glb', bone: 'turret', name: 'hull', part: 'Front Plate' }, SCOUT_HMG],
   'reinforced-scout-strider': [
@@ -392,7 +407,18 @@ const SOURCES = {
       [/^(left|right)_(front|back)_knee$/, 'Trackpod Latches (4)'], [/^vent_/, 'Vents (6)'], [/^boss_lid$/, 'Hatches (2)'], [/^body(_whole)?$/, 'Undercarriage'],
     ],
   },
-  'automaton-fabricator': { src: CY + 'vehicles/cyborg_spawner/cyborg_spawner.unit.glb', boneNames: false, rules: MAIN_ONLY },
+  // cyborg_spawner is the Factory Strider (skeleton "cyborg_big_walker_skeleton"); the Fabricator is a building: best guess the bunker
+  'automaton-fabricator': { src: 'extra/0x3ce73c30ff7e3146.unit.glb', boneNames: false, rules: MAIN_ONLY },
+  'factory-strider': {
+    src: CY + 'vehicles/cyborg_spawner/cyborg_spawner.unit.glb',
+    boneGroups: FS_BONES,
+    rules: [
+      [/^armor_head(_whole)?$/, 'Head Armor'], [/^(head(_whole)?|head)$/, 'Head Body'], [/^neck(_whole)?$/, 'Neck'],
+      [/^armor_front(_whole)?$/, 'Front Armor'], [/^front(_whole)?$/, 'Front Top Armor'], [/^armor_rear(_whole)?$/, 'Rear Armor'],
+      [/^engine_rear(_whole)?$/, 'Rear Engine Armor'], [/^body_static$/, 'Main'],
+      [/^knee_armor$/, 'Knee Armor (4)'], [/^leg_armor$/, 'Leg Armor (8)'], [/^leg_assembly$/, 'Leg Assembly (4)'], [/^neck$/, 'Neck'], [/^body$/, 'Main'],
+    ],
+  },
   'cannon-turret': { src: CY + 'turrets/cyborg_turret_command_bunker_hmg/cyborg_turret_command_bunker_hmg.unit.glb', rules: MAIN_ONLY },
   'bunker-turret': { src: CY + 'turrets/cyborg_turret_small_autocannon/cyborg_turret_small_autocannon.unit.glb', rules: MAIN_ONLY },
   'mg-emplacement-light-fusion-cycler': { src: CY + 'emplacements/cyborg_emplacement_mg/cyborg_emplacement_mg.unit.glb', rules: MAIN_ONLY },
@@ -425,6 +451,20 @@ const SOURCES = {
     src: IL + 'cha_bodyhorror_helmetguy/cha_bodyhorror_helmetguy.unit.glb',
     rules: [[/^helmet(_whole)?$/, 'Helmet'], [/^head(_whole)?$/, 'Head'], [/^arm_(left|right)(_whole)?$/, 'Arms (2)'], [/^leg_(left|right)(_whole)?$/, 'Legs (2)'], [/^generic(_whole)?$/, 'Torso']],
   },
+  // archive clues: the ranged exomech is the Gatekeeper; the Obtruder shares the Watcher's body
+  gatekeeper: {
+    src: IL + 'cha_exomech_ranged/cha_exomech_ranged.unit.glb',
+    rules: [
+      [/^cockpit(_whole)?$/, 'Cockpit'], [/^pilot(_whole)?$/, 'Pilot'], [/^shield(_whole)?$/, 'Shield'],
+      [/^shoulder_(left|right)(_whole)?$/, 'Shoulder Armor (2)'], [/^bicep_(left|right)(_whole)?$/, 'Arm Armor (2)'],
+      [/^arm_(left|right)(_whole)?$/, 'Arms (2)'], [/^generic(_whole)?$/, 'Chassis'],
+    ],
+  },
+  obtruder: {
+    src: IL + 'cha_observer/cha_observer.unit.glb',
+    rules: [[/^base$/, 'Body'], [/^eye(_whole)?$/, 'Eye'], [/^wing_(top|bottom)(_whole)?$/, 'Vertical Fins (2)'], [/^wing_(left|right)(_whole)?$/, 'Lateral Fins (2)']],
+  },
+  'illuminate-overship': { src: 'extra/0xe7074f10233cd0b8.unit.glb', boneNames: false, rules: MAIN_ONLY },
   veracitor: {
     src: IL + 'cha_exomech_melee/cha_exomech_melee.unit.glb',
     rules: [

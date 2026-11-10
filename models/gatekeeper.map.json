@@ -1,0 +1,26 @@
+{
+  "enemy": "gatekeeper",
+  "meshes": {
+    "cockpit_whole": "Cockpit",
+    "shoulder_right_whole": "Shoulder Armor (2)",
+    "shield_whole": "Shield",
+    "arm_left_whole": "Arms (2)",
+    "bicep_right_whole": "Arm Armor (2)",
+    "bicep_left_whole": "Arm Armor (2)",
+    "pilot_whole": "Pilot",
+    "shoulder_left_whole": "Shoulder Armor (2)",
+    "arm_right_whole": "Arms (2)",
+    "generic_whole": "Chassis"
+  },
+  "hidden": [
+    "cockpit_damaged",
+    "pilot_damaged",
+    "bicep_left_damaged",
+    "shoulder_left_damaged",
+    "bicep_right_damaged",
+    "shoulder_right_damaged",
+    "pilot_destroyed",
+    "arm_left_damaged",
+    "arm_right_damaged"
+  ]
+}

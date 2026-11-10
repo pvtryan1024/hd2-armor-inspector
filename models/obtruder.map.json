@@ -1,0 +1,18 @@
+{
+  "enemy": "obtruder",
+  "meshes": {
+    "eye_whole": "Eye",
+    "base": "Body",
+    "wing_bottom_whole": "Vertical Fins (2)",
+    "wing_top_whole": "Vertical Fins (2)",
+    "wing_left_whole": "Lateral Fins (2)",
+    "wing_right_whole": "Lateral Fins (2)"
+  },
+  "hidden": [
+    "wing_top_damage",
+    "wing_left_damage",
+    "eye_damage",
+    "wing_bottom_damage",
+    "wing_right_damage"
+  ]
+}
