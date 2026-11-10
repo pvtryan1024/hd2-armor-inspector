@@ -4,11 +4,17 @@
     "r_hip": "Waist",
     "l_hip": "Waist",
     "body": "Main",
-    "legs": "Legs (2)"
+    "legs": "Legs (2)",
+    "hull": "Front Plate",
+    "hmg": "HMG"
   },
   "hidden": [
     "body_damaged",
     "l_hip_damaged",
-    "r_hip_damaged"
+    "r_hip_damaged",
+    "hull_destroyed",
+    "hull_destroyed",
+    "hull_damaged",
+    "hull_damaged"
   ]
 }

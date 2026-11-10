@@ -93,8 +93,12 @@ Object.assign(GEAR, {
   tankMg: 'content/fac_cyborgs/turrets/cyborg_tank_hull_hmg/cyborg_tank_hull_mg.unit.glb',
   walkerCannon: 'content/fac_cyborgs/turrets/cyborg_big_walker_turret_cannon/cyborg_big_walker_turret_cannon.unit.glb',
 });
+// Scout Strider upper hulls and HMG: unnamed models from its archive (exported by hash into extra/)
+const SCOUT_HMG = { src: 'extra/0x2a346bf4552997e2.unit.glb', bone: 'gun_pitch', name: 'hmg', part: 'HMG' };
 const JUMP = { src: GEAR.cJump, bone: 'attach_backpack', name: 'jetpack', part: 'Jetpack' };
 const LOADOUT = {
+  'scout-strider': [{ src: 'extra/0xee00bfe8ff769f70.unit.glb', bone: 'turret', name: 'hull', part: 'Front Plate' }, SCOUT_HMG],
+  'reinforced-scout-strider': [{ src: 'extra/0xd3cd6f0ca83bb51e.unit.glb', bone: 'turret', name: 'hull', part: 'Faceplate' }, SCOUT_HMG],
   'mg-raider': [{ src: GEAR.cLmg, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.cLmgPack, bone: 'attach_backpack', name: 'backpack', part: 'Backpack' }],
   'jet-brigade-mg-raider': [{ src: GEAR.cLmg, bone: 'attach_r_hand', name: 'weapon_right' }, JUMP],
   'rocket-raider': [{ src: GEAR.cCannon, bone: 'attach_r_hand', name: 'weapon_right', part: 'Right Arm' }],
@@ -384,8 +388,8 @@ const SOURCES = {
     ],
   },
   'automaton-fabricator': { src: CY + 'vehicles/cyborg_spawner/cyborg_spawner.unit.glb', boneNames: false, rules: MAIN_ONLY },
-  'cannon-turret': { src: CY + 'turrets/cyborg_turret_small_autocannon/cyborg_turret_small_autocannon.unit.glb', rules: MAIN_ONLY },
-  'bunker-turret': { src: CY + 'turrets/cyborg_turret_command_bunker_hmg/cyborg_turret_command_bunker_hmg.unit.glb', rules: MAIN_ONLY },
+  'cannon-turret': { src: CY + 'turrets/cyborg_turret_command_bunker_hmg/cyborg_turret_command_bunker_hmg.unit.glb', rules: MAIN_ONLY },
+  'bunker-turret': { src: CY + 'turrets/cyborg_turret_small_autocannon/cyborg_turret_small_autocannon.unit.glb', rules: MAIN_ONLY },
   'mg-emplacement-light-fusion-cycler': { src: CY + 'emplacements/cyborg_emplacement_mg/cyborg_emplacement_mg.unit.glb', rules: MAIN_ONLY },
   'mg-emplacement-heavy-fusion-repeater': { src: CY + 'emplacements/cyborg_emplacement_hmg/cyborg_emplacement_hmg.unit.glb', rules: MAIN_ONLY },
   'light-voteless': { src: IL + 'cha_corrupted/cha_corrupted.unit.glb', rules: VOTELESS },
