@@ -160,7 +160,7 @@
     if (sim.dead || part.av < 0 || part.av >= 11) return out;
     if (!extra) sim.shots++; // blast damage to other parts belongs to the same shot
     const mi = mainIndexFor(enemy, idx);
-    const toMain = part.toMain ?? 1;
+    const toMain = part.toMain ?? 0; // "-" on the wiki: nothing reaches Main (shields, jetpacks, mounted guns)
 
     if (mi === idx) {
       out.toMain = s.total;
