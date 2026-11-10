@@ -32,6 +32,16 @@ const CHARGER = [
 ];
 
 // Bile Titans: 3 armor plates per leg (inner, outer top, outer bottom); the tail is the butt armor
+// the abdomen: armor plates ("tail", Butt Armor) over the soft sac (Lower Sac); 0xf4fb223e is the burst sac.
+// the torso: the soft body (Upper Sac) under the side plates (two hash meshes, 3 plates each) and a front plate;
+// each side's wound mesh shows when that side's armor breaks
+const BT_BODY = {
+  names: { '0x3f868f69': 'torso_left', '0x30fa360a': 'torso_right', torso_gibs_left: 'torso_left_gibs', torso_gibs_right: 'torso_right_gibs' },
+  shells: [
+    { mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail', tipBones: /^spine_lower_4$/ },
+    { mesh: 'torso', main: 'torso', rest: 'torso_{side}_plates', halves: true }, // Torso Armor (2) is left and right
+  ],
+};
 const BILE_TITAN = [
   [/^head$/, 'Head'],
   [/^torso$/, 'Torso Armor (2)'],
@@ -300,11 +310,30 @@ function splitShells(doc, node, sp, likeBoxes) {
   }
   node.setName(sp.main); mesh.setName(sp.main);
   if (!restPrims.length || !sp.rest) return [];
-  const m = doc.createMesh(sp.rest);
-  restPrims.forEach((p) => m.addPrimitive(p));
-  const n = doc.createNode(sp.rest).setMesh(m).setSkin(node.getSkin()).setMatrix(node.getMatrix());
-  (node.getParentNode() || doc.getRoot().listScenes()[0]).addChild(n);
-  return [sp.rest];
+  const add = (name, prims) => {
+    const m = doc.createMesh(name);
+    prims.forEach((p) => m.addPrimitive(p));
+    const n = doc.createNode(name).setMesh(m).setSkin(node.getSkin()).setMatrix(node.getMatrix());
+    (node.getParentNode() || doc.getRoot().listScenes()[0]).addChild(n);
+    return name;
+  };
+  if (!sp.halves) return [add(sp.rest, restPrims)];
+  // halves: the plates cut down the middle (x < 0 is left), one per side of a counted part
+  const halves = { left: [], right: [] };
+  const skin = node.getSkin(), m16 = [];
+  const mats = skin.listJoints().map((j, i) => mat4Mul(j.getWorldMatrix(), skin.getInverseBindMatrices().getElement(i, m16).slice()));
+  for (const p of restPrims) {
+    const P = p.getAttribute('POSITION'), J = p.getAttribute('JOINTS_0'), W = p.getAttribute('WEIGHTS_0'), I = p.getIndices();
+    const v = [0, 0, 0], j4 = [], w4 = [];
+    const x = (i) => { P.getElement(i, v); J.getElement(i, j4); W.getElement(i, w4); let o = 0; for (let k = 0; k < 4; k++) if (w4[k]) { const m = mats[j4[k]]; o += w4[k] * (m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12]); } return o; };
+    const side = { left: [], right: [] };
+    for (let t = 0; t + 2 < I.getCount(); t += 3) {
+      const tri = [I.getScalar(t), I.getScalar(t + 1), I.getScalar(t + 2)];
+      side[x(tri[0]) + x(tri[1]) + x(tri[2]) < 0 ? 'left' : 'right'].push(...tri);
+    }
+    for (const k of ['left', 'right']) if (side[k].length) { const q = p.clone(); q.setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(side[k])).setBuffer(buffer)); halves[k].push(q); }
+  }
+  return ['left', 'right'].filter((k) => halves[k].length).map((k) => add(sp.rest.replace('{side}', k), halves[k]));
 }
 
 /** Cut out the loose pieces that lie inside a box (posed model space): weak spots modelled into a bigger
@@ -442,9 +471,8 @@ const SOURCES = {
   // the Rupture's front legs are its digging plates (Frontal Tarsal Plate Armor, AV5)
   'rupture-charger': { src: 'content/fac_bugs/cha_charger_burrower/cha_charger_burrower.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', tipBones: /^spine4$/ }], rules: [[/^(left|right)_front_leg$/, 'Frontal Tarsal Plate Armor (2)'], ...CHARGER] },
   'caustic-charger': { src: 'content/fac_bugs/cha_charger_acid/cha_charger_acid.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', prim: /cha_charger/, tipBones: /^spine4$/ }], rules: [[/_blob$/, 'Spore Flesh (6)'], ...CHARGER] },
-  // the abdomen: armor plates ("tail", Butt Armor) over the soft sac; 0xf4fb223e is the burst sac
-  'bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider.unit.glb', shells: [{ mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail', tipBones: /^spine_lower_4$/ }], rules: BILE_TITAN },
-  'spore-burst-bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider_gloom.unit.glb', shells: [{ mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail', tipBones: /^spine_lower_4$/ }], rules: BILE_TITAN },
+  'bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider.unit.glb', ...BT_BODY, rules: BILE_TITAN },
+  'spore-burst-bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider_gloom.unit.glb', ...BT_BODY, rules: BILE_TITAN },
   impaler: {
     src: 'content/fac_bugs/cha_impaler/cha_impaler.unit.glb',
     shells: [{ mesh: 'tail', main: 'tail', rest: 'tail_plates', tipBones: /^spine[56]$/ }],
