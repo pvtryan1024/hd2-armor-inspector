@@ -1,23 +1,34 @@
-# Shrinks downloaded enemy icons into 72x72 PNG thumbnails at images/enemies/<enemy-id>.png.
-# Usage: powershell -File tools/make-thumbs.ps1 <folder with originals + map.json>
-param([Parameter(Mandatory)] [string]$Src)
+# Shrinks downloaded wiki images into small PNG thumbnails named after enemy/weapon ids.
+#   Enemies: powershell -File tools/make-thumbs.ps1 -Src <folder> -Out images/enemies -Width 72 -Height 72
+#   Weapons: powershell -File tools/make-thumbs.ps1 -Src <folder> -Out images/weapons -Width 128 -Height 64
+# <folder> holds the originals plus map.json ({ "file.png": ["id", ...] }). SVG icons are copied as-is.
+param(
+  [Parameter(Mandatory)] [string]$Src,
+  [string]$Out = 'images/enemies',
+  [int]$Width = 72,
+  [int]$Height = 72
+)
 Add-Type -AssemblyName System.Drawing
-$size = 72
-$out = Join-Path $PSScriptRoot '..\images\enemies'
-New-Item -ItemType Directory -Force $out | Out-Null
+$outDir = Join-Path (Join-Path $PSScriptRoot '..') $Out
+New-Item -ItemType Directory -Force $outDir | Out-Null
 $map = Get-Content (Join-Path $Src 'map.json') -Raw | ConvertFrom-Json
 foreach ($p in $map.PSObject.Properties) {
-  $img = [System.Drawing.Image]::FromFile((Join-Path $Src $p.Name))
+  $file = Join-Path $Src $p.Name
+  if ($p.Name -like '*.svg') {
+    foreach ($id in $p.Value) { Copy-Item $file (Join-Path $outDir "$id.svg") -Force }
+    continue
+  }
+  $img = [System.Drawing.Image]::FromFile($file)
   try {
-    # fit inside the square, keep aspect ratio, transparent padding
-    $scale = [Math]::Min($size / $img.Width, $size / $img.Height)
+    # fit inside the box, keep aspect ratio, transparent padding
+    $scale = [Math]::Min($Width / $img.Width, $Height / $img.Height)
     $w = [int]($img.Width * $scale); $h = [int]($img.Height * $scale)
-    $bmp = New-Object System.Drawing.Bitmap $size, $size
+    $bmp = New-Object System.Drawing.Bitmap $Width, $Height
     $g = [System.Drawing.Graphics]::FromImage($bmp)
     $g.InterpolationMode = 'HighQualityBicubic'; $g.SmoothingMode = 'HighQuality'; $g.PixelOffsetMode = 'HighQuality'
-    $g.DrawImage($img, [int](($size - $w) / 2), [int](($size - $h) / 2), $w, $h)
-    foreach ($id in $p.Value) { $bmp.Save((Join-Path $out "$id.png"), [System.Drawing.Imaging.ImageFormat]::Png) }
+    $g.DrawImage($img, [int](($Width - $w) / 2), [int](($Height - $h) / 2), $w, $h)
+    foreach ($id in $p.Value) { $bmp.Save((Join-Path $outDir "$id.png"), [System.Drawing.Imaging.ImageFormat]::Png) }
     $g.Dispose(); $bmp.Dispose()
   } finally { $img.Dispose() }
 }
-Write-Output "thumbnails: $((Get-ChildItem $out -Filter *.png).Count)"
+Write-Output "thumbnails in ${Out}: $((Get-ChildItem $outDir -File).Count)"

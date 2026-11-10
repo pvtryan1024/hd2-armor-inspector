@@ -13,6 +13,7 @@
   // Model loading/mapping tools only show when running locally (node serve.js) or with ?edit in the URL.
   const EDITOR = ['localhost', '127.0.0.1'].includes(location.hostname) || /[?&]edit/.test(location.search);
   const MAX_SHOTS = 999;
+  const DEFAULT_RANGE = 30; // metres; a typical engagement distance
   const AV_NAMES = ['Unarmored', 'Very Light', 'Light', 'Medium', 'Heavy', 'Tank I', 'Tank II', 'Tank III', 'Tank IV', 'Tank V', 'Tank VI', 'Indestructible'];
   // Impact angle bands from the wiki's Damage page; weapons list one AP per band.
   const ANGLE_BANDS = [
@@ -37,13 +38,13 @@
 
   const state = {
     faction: null, // null = faction picker
-    cat: 'all',
+    cat: null, // null = weapon category picker
     enemyId: null,
     weaponId: null,
     mode: 0,
     explosion: true,
     allPellets: true,
-    dist: 0, // range to target in metres (drag falloff)
+    dist: DEFAULT_RANGE, // range to target in metres (drag falloff)
     hit: null, // last shot placed on the 3D model: { idx, deg, parts: { partIdx: distance from impact } }
     band: 0, // impact angle band for the body map / tables (3D uses the real angle)
     view: 'all',
@@ -278,9 +279,9 @@
 
   // Faction picker → enemy list, like choosing a nation before a tank.
   const FACTION_INFO = {
-    Terminids: { short: 'Bugs', color: '#ffb901', blurb: 'Swarming arthropods' },
-    Automatons: { short: 'Bots', color: '#ff6161', blurb: 'Cyborg war machines' },
-    Illuminate: { short: 'Squids', color: '#cd8aea', blurb: 'Psionic invaders' },
+    Terminids: { short: 'Bugs', color: '#ffb901', blurb: 'Bugs' },
+    Automatons: { short: 'Bots', color: '#ff6161', blurb: 'Bots' },
+    Illuminate: { short: 'Squids', color: '#cd8aea', blurb: 'Squids' },
   };
   // faction emblems in images/factions/ (community traces by Dogo314)
   const FACTION_ICON = Object.fromEntries(Object.keys(FACTION_INFO).map((f) => [f, `<img src="images/factions/${f.toLowerCase()}.svg" alt="">`]));
@@ -320,24 +321,56 @@
       </li>`).join('') || '<li class="empty">No enemies match.</li>';
   }
 
+  // Weapon category picker → weapon list, mirroring the faction picker.
+  const CAT_INFO = {
+    Primary: { blurb: 'Rifles, shotguns, energy', icon: 'ar-23-liberator' },
+    Secondary: { blurb: 'Sidearms and melee', icon: 'p-4-senator' },
+    Throwable: { blurb: 'Grenades and throwables', icon: 'g-6-frag' },
+    Support: { blurb: 'Support weapon stratagems', icon: 'gr-8-recoilless-rifle' },
+    Eagle: { blurb: 'Eagle airstrikes', icon: 'eagle-500kg-bomb' },
+    Orbital: { blurb: 'Orbital strikes', icon: 'orbital-railcannon-strike' },
+    Sentry: { blurb: 'Automated sentries', icon: 'a-ac-8-autocannon-sentry' },
+    Emplacement: { blurb: 'Manned emplacements', icon: 'e-mg-101-hmg-emplacement' },
+  };
+
+  function weaponThumbHtml(w, cls = 'wthumb') {
+    const ext = DATA.wthumbs?.[w.id];
+    if (ext) return `<img class="${cls}${ext === 'svg' ? ' strat' : ''}" src="images/weapons/${esc(w.id)}.${ext}" alt="" loading="lazy">`;
+    return `<span class="${cls} ph">${esc((w.name.match(/^[A-Z0-9/-]+/) || [w.name.slice(0, 3)])[0].slice(0, 6))}</span>`;
+  }
+
   function renderCatTabs() {
-    const cats = CAT_ORDER.filter((c) => DATA.weapons.some((w) => w.category === c));
-    const extra = [...new Set(DATA.weapons.map((w) => w.category))].filter((c) => !cats.includes(c));
-    $('#catTabs').innerHTML = ['all', ...cats, ...extra]
-      .map((c) => `<button data-c="${esc(c)}" class="${state.cat === c ? 'on' : ''}">${c === 'all' ? 'All' : esc(c)}</button>`)
-      .join('');
+    const head = $('#catTabs');
+    if (!state.cat) { head.innerHTML = ''; head.classList.add('hidden'); return; }
+    head.classList.remove('hidden');
+    head.innerHTML = `<button class="back" data-c="" title="Back to categories">← Categories</button>
+      <span class="fac-chip cat-chip">${esc(state.cat)}</span>`;
   }
 
   function renderWeaponList() {
     const q = $('#weaponSearch').value.trim().toLowerCase();
-    const list = DATA.weapons.filter((w) => (state.cat === 'all' || w.category === state.cat) && (!q || w.name.toLowerCase().includes(q) || (w.type || '').toLowerCase().includes(q)));
-    $('#weaponList').innerHTML =
-      list
-        .map((w) => {
-          const aps = [...new Set(w.modes.map((m) => m.ap))].join('/');
-          return `<li data-id="${esc(w.id)}" class="${w.id === state.weaponId ? 'on' : ''}"><span>${esc(w.name)}</span><span class="sub">AP${aps}</span></li>`;
-        })
-        .join('') || '<li class="empty">No weapons match.</li>';
+    const el = $('#weaponList');
+    el.classList.toggle('cat-grid', !state.cat && !q);
+    if (!state.cat && !q) {
+      const cats = [...CAT_ORDER, ...new Set(DATA.weapons.map((w) => w.category))].filter((c, i, arr) => arr.indexOf(c) === i && DATA.weapons.some((w) => w.category === c));
+      el.innerHTML = cats.map((c) => {
+        const rep = weaponById(CAT_INFO[c]?.icon) || DATA.weapons.find((w) => w.category === c);
+        return `<li class="cat-card" data-c="${esc(c)}">
+          <span class="cat-icon">${weaponThumbHtml(rep, 'cat-img')}</span>
+          <span class="cat-name"><b>${esc(c)}</b><i>${DATA.weapons.filter((w) => w.category === c).length}</i></span>
+        </li>`;
+      }).join('');
+      return;
+    }
+    const list = DATA.weapons.filter((w) => (!state.cat || q || w.category === state.cat) && (!q || w.name.toLowerCase().includes(q) || (w.type || '').toLowerCase().includes(q)));
+    el.innerHTML = list.map((w) => {
+      const aps = [...new Set(w.modes.map((m) => m.ap))].join('/');
+      return `<li data-id="${esc(w.id)}" class="weapon ${w.id === state.weaponId ? 'on' : ''}">
+        ${weaponThumbHtml(w)}
+        <span class="en-name">${esc(w.name)}${q && !state.cat ? ` <i class="muted">${esc(w.category)}</i>` : ''}</span>
+        <span class="sub">AP${aps}</span>
+      </li>`;
+    }).join('') || '<li class="empty">No weapons match.</li>';
   }
 
   function renderWeaponCard() {
@@ -787,7 +820,7 @@
     if (!state.explosion) p.set('x', '0');
     if (!state.allPellets) p.set('p', '0');
     if (state.band) p.set('a', state.band);
-    if (state.dist) p.set('d', state.dist);
+    if (state.dist !== DEFAULT_RANGE) p.set('d', state.dist);
     if (state.view !== 'all') p.set('v', state.view);
     if (state.color !== 'pen') p.set('c', state.color);
     if (state.stagePinned) p.set('s', state.stageView);
@@ -801,7 +834,7 @@
     state.explosion = p.get('x') !== '0';
     state.allPellets = p.get('p') !== '0';
     state.band = Math.min(3, Math.max(0, +p.get('a') || 0));
-    state.dist = Math.min(200, Math.max(0, +p.get('d') || 0));
+    state.dist = p.has('d') ? Math.min(200, Math.max(0, +p.get('d') || 0)) : DEFAULT_RANGE;
     if (['front', 'side', 'rear'].includes(p.get('v'))) state.view = p.get('v');
     if (p.get('c') === 'ttk') state.color = 'ttk';
     if (p.has('s')) { state.stageView = p.get('s') === '3d' ? '3d' : 'map'; state.stagePinned = true; }
@@ -840,7 +873,7 @@
     });
     $('#catTabs').addEventListener('click', (ev) => {
       const b = ev.target.closest('button'); if (!b) return;
-      state.cat = b.dataset.c; render();
+      state.cat = b.dataset.c || null; render();
     });
     $('#enemySearch').addEventListener('input', renderEnemyList);
     $('#weaponSearch').addEventListener('input', renderWeaponList);
@@ -854,8 +887,13 @@
       resetSim(); autoStageView(); render();
     });
     $('#weaponList').addEventListener('click', (ev) => {
+      const card = ev.target.closest('li[data-c]');
+      if (card) { state.cat = card.dataset.c; render(); return; }
       const li = ev.target.closest('li[data-id]'); if (!li) return;
-      state.weaponId = li.dataset.id; state.mode = 0; resetSim(); render();
+      state.weaponId = li.dataset.id; state.mode = 0;
+      state.cat = weaponById(li.dataset.id).category;
+      if ($('#weaponSearch').value) $('#weaponSearch').value = '';
+      resetSim(); render();
     });
     $('#weaponCard').addEventListener('click', (ev) => {
       const b = ev.target.closest('[data-band]'); if (!b) return;
@@ -950,6 +988,7 @@
     $('#buildInfo').textContent = `${DATA.enemies.length} enemies · ${DATA.weapons.length} weapons · data ${DATA.built || ''}`;
     readHash();
     if (state.enemyId) state.faction = enemyById(state.enemyId).faction; // shared link: open its faction
+    if (state.weaponId) state.cat = weaponById(state.weaponId).category;
     if (EDITOR) document.body.classList.add('editor');
     state.enemyId ||= (DATA.enemies.find((e) => e.id === 'charger') || DATA.enemies[0]).id;
     autoStageView();

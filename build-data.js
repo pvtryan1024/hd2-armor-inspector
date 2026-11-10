@@ -155,10 +155,16 @@ const thumbsDir = path.join(__dirname, 'images', 'enemies');
 const thumbs = {};
 if (fs.existsSync(thumbsDir)) for (const f of fs.readdirSync(thumbsDir)) { const m = /^([a-z0-9-]+).png$/.exec(f); if (m) thumbs[m[1]] = 1; }
 
+// Weapon thumbnails in images/weapons/<id>.png (renders) or .svg (stratagem icons)
+const wthumbsDir = path.join(__dirname, 'images', 'weapons');
+const wthumbs = {};
+if (fs.existsSync(wthumbsDir)) for (const f of fs.readdirSync(wthumbsDir)) { const m = /^([a-z0-9-]+).(png|svg)$/.exec(f); if (m) wthumbs[m[1]] = m[2]; }
+
 const out = {
   built: new Date().toISOString().slice(0, 10),
   models,
   thumbs,
+  wthumbs,
   enemies: uniq(enemies),
   weapons: uniq(weapons).filter((w) => Array.isArray(w.modes) && w.modes.length),
 };
