@@ -119,7 +119,10 @@ function partIndexFor(entry, key) {
 }
 
 const VARIANT = /_(damaged|gibs?|destroyed|hurt)$/i;
-const baseOf = (key) => key.replace(VARIANT, '');
+// a mesh with several materials loads as numbered sub-meshes ("right_front_leg_1", "_2"): same piece
+const primOf = (key) => key.replace(/_\d+$/, '');
+const baseOf = (key) => primOf(key).replace(VARIANT, '');
+const stageOf = (key) => { const p = primOf(key); return /_damaged$/i.test(p) ? 1 : /_(gibs?|destroyed)$/i.test(p) ? 2 : /_hurt$/i.test(p) ? 3 : 0; };
 
 /** Which piece of a counted part a mesh is: pieces ordered by base name (left before right), so a
  *  mesh and its _damaged / _gib versions always count as the same piece. */
@@ -239,28 +242,33 @@ function pieceGone(key) {
 }
 function swapBroken() {
   if (!current || editing) return;
-  const byKey = new Map(current.meshes.map((m) => [m.key, m.mesh]));
   const hidden = new Set(current.map.hidden);
-  for (const { key, mesh } of current.meshes) {
-    if (VARIANT.test(key) || hidden.has(key)) continue; // bases only
-    const dmgKey = `${key}_damaged`;
-    const dmg = byKey.get(dmgKey);
-    const gibKey = GIB.map((s) => key + s).find((k) => byKey.has(k));
-    const gib = gibKey && byKey.get(gibKey);
-    if (!dmg && !gib) continue;
-    const i = partIndexFor(current, key);
+  // group every mesh by piece: intact meshes, its _damaged meshes, its _gib / _destroyed meshes
+  const groups = new Map();
+  for (const m of current.meshes) {
+    const st = stageOf(m.key);
+    if (st === 3) continue; // "_hurt": not used
+    const b = baseOf(m.key);
+    if (!groups.has(b)) groups.set(b, [[], [], []]);
+    groups.get(b)[st].push(m);
+  }
+  for (const [intact, dmg, gib] of groups.values()) {
+    if (!dmg.length && !gib.length) continue;
+    // the piece's own plate: intact meshes of its hitzone (a spore blob of another hitzone stays put)
+    const linked = intact.filter((m) => !hidden.has(m.key) && partIndexFor(current, m.key) >= 0);
+    if (!linked.length) continue;
+    const i = partIndexFor(current, linked[0].key);
+    const mine = linked.filter((m) => partIndexFor(current, m.key) === i);
     // stage 0 intact · 1 stripped (flesh of another hitzone showing) · 2 destroyed
     let stage = 0;
-    if (pieceGone(key)) {
-      const di = dmg ? partIndexFor(current, dmgKey) : -1;
-      stage = dmg && di >= 0 && di !== i && !pieceGone(dmgKey) ? 1 : 2;
+    if (pieceGone(mine[0].key)) {
+      const di = dmg.length ? partIndexFor(current, dmg[0].key) : -1;
+      stage = dmg.length && di >= 0 && di !== i && !pieceGone(dmg[0].key) ? 1 : 2;
     }
-    const remains = stage === 2 ? gib || dmg || null : null;
-    mesh.visible = stage === 0;
-    mesh.userData.remains = false;
-    if (dmg) { dmg.visible = stage === 1 || remains === dmg; dmg.userData.revealed = stage === 1; dmg.userData.remains = remains === dmg; }
-    if (gib) { gib.visible = remains === gib; gib.userData.remains = remains === gib; gib.userData.revealed = false; }
-    if (stage === 2 && !remains) { mesh.visible = true; mesh.userData.remains = true; }
+    const remains = stage === 2 ? (gib.length ? gib : dmg.length ? dmg : null) : null;
+    for (const m of mine) { m.mesh.visible = stage === 0 || (stage === 2 && !remains); m.mesh.userData.remains = stage === 2 && !remains; }
+    for (const m of dmg) { m.mesh.visible = stage === 1 || remains === dmg; m.mesh.userData.revealed = stage === 1; m.mesh.userData.remains = remains === dmg; }
+    for (const m of gib) { m.mesh.visible = remains === gib; m.mesh.userData.remains = remains === gib; m.mesh.userData.revealed = false; }
   }
 }
 
