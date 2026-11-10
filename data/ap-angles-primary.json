@@ -1,0 +1,744 @@
+{
+  "ar-23-liberator": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "ar-23p-liberator-penetrator": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "ar-23c-liberator-concussive": {
+    "Standard": [
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  "ar-23a-liberator-carbine": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "ar-23l-liberator-legacy": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "sta-52-assault-rifle": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "ar-32-pacifier": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "ma5c-assault-rifle": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "ar-2-coyote": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "ar-59-suppressor": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "ar-61-tenderizer": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "br-14-adjudicator": {
+    "Standard": [
+      3,
+      3,
+      3,
+      1
+    ]
+  },
+  "ar-gl-21-one-two": {
+    "8mm Rifle": [
+      2,
+      2,
+      2,
+      0
+    ],
+    "40mm Grenade": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "ar-11-arbitrator": {
+    "4mm Rifle": [
+      2,
+      2,
+      2,
+      0
+    ],
+    "10g Underbarrel Shotgun": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "r-63-diligence": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "r-63cs-diligence-counter-sniper": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "r-2124-constitution": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "r-6-deadeye": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "r-2-amendment": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "r-72-censor": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "r-4-hyena": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "r-40-sightliner": {
+    "Standard": [
+      4,
+      4,
+      4,
+      0
+    ]
+  },
+  "r-40-k-hot-shot-marksman-rifle": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "mp-98-knight": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "smg-37-defender": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "smg-72-pummeler": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "smg-32-reprimand": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "sta-11-smg": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "m7s-smg": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "smg-flam-34-stoker": {
+    "12mm": [
+      2,
+      2,
+      2,
+      0
+    ],
+    "Flamethrower": [
+      4,
+      4,
+      4,
+      0
+    ]
+  },
+  "smg-203-gallant": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "sg-8-punisher": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "sg-225-breaker": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "sg-8s-slugger": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "sg-225sp-breaker-sprayandpray": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "sg-225ie-breaker-incendiary": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "sg-451-cookout": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "sg-20-halt": {
+    "Flechette": [
+      3,
+      3,
+      3,
+      0
+    ],
+    "Stun": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "dbs-2-double-freedom": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "m90a-shotgun": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "sg-97-sweeper": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "r-36-eruptor": {
+    "Standard": [
+      4,
+      4,
+      4,
+      0
+    ]
+  },
+  "cb-9-exploding-crossbow": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "gl-15-evictor": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "las-5-scythe": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "plas-1-scorcher": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "las-16-sickle": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "sg-8p-punisher-plasma": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "arc-12-blitzer": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "plas-101-purifier": {
+    "Charged": [
+      3,
+      3,
+      3,
+      0
+    ],
+    "Uncharged": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "plas-39-accelerator-rifle": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "las-17-double-edge-sickle": {
+    "LAS-16_P": [
+      2,
+      2,
+      2,
+      0
+    ],
+    "LAS-17_P": [
+      3,
+      3,
+      3,
+      0
+    ],
+    "LAS-17_P1": [
+      3,
+      3,
+      3,
+      0
+    ],
+    "LAS-17_P2": [
+      4,
+      4,
+      4,
+      0
+    ]
+  },
+  "las-13-trident": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "las-12-sai": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "jar-5-dominator": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "flam-66-torcher": {
+    "Standard": [
+      4,
+      4,
+      4,
+      0
+    ]
+  },
+  "vg-70-variable": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "p-2-peacemaker": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "p-19-redeemer": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "p-4-senator": {
+    "Standard": [
+      4,
+      4,
+      4,
+      0
+    ]
+  },
+  "p-113-verdict": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "p-92-warrant": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "m6c-socom-pistol": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "p-69-veto": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "p-44-mist": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "cqc-19-stun-lance": {
+    "Standard": [
+      3,
+      0,
+      0,
+      0
+    ]
+  },
+  "cqc-30-stun-baton": {
+    "Standard": [
+      3,
+      0,
+      0,
+      0
+    ]
+  },
+  "cqc-5-combat-hatchet": {
+    "Standard": [
+      3,
+      0,
+      0,
+      0
+    ]
+  },
+  "cqc-2-saber": {
+    "Standard": [
+      3,
+      0,
+      0,
+      0
+    ]
+  },
+  "cqc-42-machete": {
+    "Standard": [
+      3,
+      0,
+      0,
+      0
+    ]
+  },
+  "cqc-73-entrenchment-tool": {
+    "Standard": [
+      3,
+      0,
+      0,
+      0
+    ]
+  },
+  "las-7-dagger": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "gp-31-grenade-pistol": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "sg-22-bushwhacker": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "p-72-crisper": {
+    "Standard": [
+      4,
+      4,
+      4,
+      0
+    ]
+  },
+  "plas-15-loyalist": {
+    "Uncharged": [
+      3,
+      3,
+      3,
+      0
+    ],
+    "Charged": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "gp-20-ultimatum": {
+    "Standard": [
+      6,
+      6,
+      6,
+      6
+    ]
+  },
+  "las-58-talon": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "p-35-re-educator": {
+    "Standard": [
+      4,
+      4,
+      3,
+      0
+    ]
+  },
+  "p-33-missile-pistol": {
+    "Standard": [
+      5,
+      5,
+      5,
+      0
+    ]
+  },
+  "p-40-k-bolt-pistol": {
+    "Standard": [
+      4,
+      4,
+      4,
+      0
+    ]
+  },
+  "p-34-breacher": {
+    "Standard": [
+      4,
+      4,
+      3,
+      0
+    ]
+  },
+  "g-7-pineapple": {
+    "Bomblets": [
+      3,
+      0,
+      0,
+      0
+    ]
+  },
+  "k-2-throwing-knife": {
+    "Standard": [
+      3,
+      3,
+      3,
+      3
+    ]
+  },
+  "tm-1-lure-mine": {
+    "Shrapnel": [
+      3,
+      3,
+      2,
+      0
+    ]
+  },
+  "g-31-arc": {
+    "Standard": [
+      4,
+      4,
+      4,
+      0
+    ]
+  }
+}

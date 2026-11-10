@@ -17,6 +17,7 @@ Enemy hitzones and weapon stats come from https://helldivers.wiki.gg/.
 
 - **Target / Weapon panels**: search and filter 104 enemies and 155 weapons (primaries, secondaries, throwables, support weapons, Eagles, orbitals, sentries).
 - **Penetration view**: every hitzone coloured green (AP > AV, 100%), yellow-green (AP = AV, 65%), red (ricochet).
+- **Impact angle**: weapons have four AP values (Direct 0–25°, Slight 26–60°, Large 61–80°, Extreme 81–90°). The 3D view colours every pixel by its real angle to the camera, like the tank inspector, and fire-mode clicks in 3D use the angle where you clicked. The body map and tables use the angle picked in the weapon card.
 - **Shots-to-kill view**: hitzones coloured by how many shots kill through them.
 - **Fire mode**: click hitzones to shoot one at a time; HP bars drop, and a KILLED / DOWNED banner shows when Main runs out or a fatal part is destroyed.
 - **Best weapons vs target**: every weapon ranked for the selected enemy.
@@ -29,7 +30,7 @@ Enemy hitzones and weapon stats come from https://helldivers.wiki.gg/.
 3. Save it as `models/<enemy-id>.glb`. The id is shown in the 3D view's empty state and in the URL (`#e=charger`). You can also use **Load .glb** in the 3D view; with `serve.js` running it is copied into `models/` for you.
 4. Click **Edit hitzones**, click each mesh, and choose its wiki part from the dropdown. Hide LOD/shadow meshes with the checkbox. **Save mapping** writes `models/<enemy-id>.map.json`.
 
-`models/charger.glb` is a box-built placeholder made by `tools/make-test-glb.js`. Overwrite it with a real model.
+`node tools/make-test-glb.js` writes a box-built test Charger to `models/charger.glb`. It's tagged as a test model, so `build-data.js` never publishes it; overwrite it with a real model.
 
 Extracted game assets belong to Arrowhead. Keep them local and don't redistribute them.
 
@@ -41,4 +42,4 @@ From the wiki's Damage page:
 - Explosions deal durable damage. ExDR moves that share from the part straight to Main.
 - Death happens when Main reaches 0 or a fatal part is destroyed. Tanks use their Turret Main and Hull Main pools.
 
-Not modelled: angle-based AP bands (use the AP override), explosion falloff, bleed-out time, and limbs exposing flesh after their armor breaks. Expect a few percent error.
+Not modelled: explosion falloff, bleed-out time, and limbs exposing flesh after their armor breaks. Expect a few percent error.

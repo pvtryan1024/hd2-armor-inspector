@@ -99,7 +99,7 @@ function prepare(root) {
     if (n) key = `${key}#${n + 1}`;
     o.userData.key = key;
     o.userData.orig = o.material;
-    o.userData.hz = new THREE.MeshStandardMaterial({ color: UNMAPPED, roughness: 0.55, metalness: 0.1, transparent: true });
+    o.userData.hz = hitzoneMaterial();
     meshes.push({ key, mesh: o });
   });
   return meshes;
@@ -126,7 +126,7 @@ function show(entry) {
   selectedKey = null;
   $('#v3Empty').classList.toggle('hidden', !!entry);
   $('#v3Id').textContent = currentId || '';
-  if (!entry) { status(SERVED ? '' : 'Open via "node serve.js" to auto-load models'); renderEditor(); return; }
+  if (!entry) { $('#v3Legend').classList.add('hidden'); status(SERVED ? '' : 'Open via "node serve.js" to auto-load models'); renderEditor(); return; }
   scene.add(entry.root);
   applyHidden();
   frame();
@@ -172,31 +172,90 @@ async function loadForEnemy(id) {
   }
 }
 
-/* ---------- colouring ---------- */
+/* ---------- colouring ----------
+ * In penetration mode every pixel picks its own AP from the angle between the camera ray and the
+ * surface normal (same bands as the weapon card), then compares it with the part's AV — like the
+ * tank inspector, rotating the model changes what penetrates. Shots-to-kill mode uses flat colours. */
+const PEN = { full: new THREE.Color('#2fbf71'), half: new THREE.Color('#c2dc35'), none: new THREE.Color('#e0412f'), immune: new THREE.Color('#4a525c') };
+
+function hitzoneMaterial() {
+  const mat = new THREE.MeshStandardMaterial({ color: UNMAPPED, roughness: 0.55, metalness: 0.1, transparent: true });
+  const u = {
+    uAP: { value: new THREE.Vector4() },
+    uMax: { value: new THREE.Vector3(25, 60, 80) },
+    uAV: { value: 0 },
+    uAngle: { value: 0 },
+    uFlat: { value: new THREE.Color() },
+    uFull: { value: PEN.full }, uHalf: { value: PEN.half }, uNone: { value: PEN.none }, uImmune: { value: PEN.immune },
+  };
+  mat.userData.u = u;
+  mat.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, u);
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', `#include <common>
+        uniform vec4 uAP; uniform vec3 uMax; uniform float uAV; uniform float uAngle;
+        uniform vec3 uFlat; uniform vec3 uFull; uniform vec3 uHalf; uniform vec3 uNone; uniform vec3 uImmune;`)
+      .replace('#include <color_fragment>', `#include <color_fragment>
+        {
+          #ifdef FLAT_SHADED
+            vec3 hzN = normalize(cross(dFdx(vViewPosition), dFdy(vViewPosition)));
+          #else
+            vec3 hzN = normalize(vNormal);
+          #endif
+          float hzDeg = degrees(acos(clamp(abs(dot(hzN, normalize(vViewPosition))), 0.0, 1.0)));
+          float hzAP = hzDeg <= uMax.x ? uAP.x : hzDeg <= uMax.y ? uAP.y : hzDeg <= uMax.z ? uAP.z : uAP.w;
+          vec3 hzCol = uFlat;
+          if (uAngle > 0.5) {
+            if (uAV < -0.5 || uAV > 10.5) hzCol = uImmune;
+            else if (hzAP > uAV + 0.5) hzCol = uFull;
+            else if (hzAP > uAV - 0.5) hzCol = uHalf;
+            else hzCol = uNone;
+          }
+          diffuseColor.rgb = hzCol;
+        }`);
+  };
+  mat.customProgramCacheKey = () => 'hd2-hitzone';
+  return mat;
+}
+
 function paint() {
   if (!current || !lastDetail) return;
-  const { colors, gone } = lastDetail;
+  const { colors, gone, colorMode, ap4, avs, bands } = lastDetail;
+  const angleMode = colorMode === 'pen' && !!ap4;
   for (const { key, mesh } of current.meshes) {
     if (showTex && !editing) { mesh.material = mesh.userData.orig; continue; }
     const i = partIndexFor(current, key);
     const mat = mesh.userData.hz;
+    const u = mat.userData.u;
     mesh.material = mat;
     if (i >= 0) {
-      mat.color.set(colors[i]);
+      u.uAngle.value = angleMode ? 1 : 0;
+      u.uFlat.value.set(colors[i]);
+      if (ap4) u.uAP.value.set(...ap4);
+      u.uAV.value = avs[i];
       mat.opacity = gone[i] ? 0.15 : 1;
     } else {
-      mat.color.copy(UNMAPPED);
+      u.uAngle.value = 0;
+      u.uFlat.value.copy(UNMAPPED);
       mat.opacity = editing ? 0.9 : 0.5;
     }
+    if (bands) u.uMax.value.set(bands[0].max, bands[1].max, bands[2].max);
     mat.depthWrite = mat.opacity >= 1;
     mat.emissive.set(editing && key === selectedKey ? 0xffe710 : 0x000000);
     mat.emissiveIntensity = editing && key === selectedKey ? 0.6 : 0;
+  }
+  const lg = $('#v3Legend');
+  lg.classList.toggle('hidden', !angleMode || editing || showTex);
+  if (angleMode) {
+    lg.innerHTML = `Colours follow the impact angle from your camera<br>` +
+      bands.map((b, k) => `${b.name.replace(' angle', '')} ${b.range}: <b>AP ${ap4[k]}</b>`).join(' · ');
   }
 }
 
 /* ---------- picking ---------- */
 const ray = new THREE.Raycaster();
 const ptr = new THREE.Vector2();
+const nm = new THREE.Matrix3();
 function pick(ev) {
   if (!current) return null;
   const r = renderer.domElement.getBoundingClientRect();
@@ -205,28 +264,34 @@ function pick(ev) {
   const hits = ray.intersectObjects(current.meshes.map((m) => m.mesh).filter((m) => m.visible), false);
   // skip see-through destroyed parts so you can shoot what's behind them
   const hit = hits.find((h) => h.object.material.opacity > 0.2) || hits[0];
-  return hit ? hit.object : null;
+  if (!hit) return null;
+  let deg = 0;
+  if (hit.face) {
+    const n = hit.face.normal.clone().applyMatrix3(nm.getNormalMatrix(hit.object.matrixWorld)).normalize();
+    deg = THREE.MathUtils.radToDeg(Math.acos(Math.min(1, Math.abs(n.dot(ray.ray.direction)))));
+  }
+  return { mesh: hit.object, deg };
 }
 
 let downAt = null;
 renderer.domElement.addEventListener('pointerdown', (ev) => { downAt = [ev.clientX, ev.clientY]; });
 renderer.domElement.addEventListener('pointermove', (ev) => {
   if (ev.buttons) { HD2.hideTip(); return; }
-  const m = pick(ev);
-  if (!m) { HD2.hideTip(); return; }
-  const i = partIndexFor(current, m.userData.key);
-  if (editing) { status(`${m.userData.key}${i >= 0 ? ' → ' + lastDetail.enemy.parts[i].name : ' (unassigned)'}`); return; }
+  const h = pick(ev);
+  if (!h) { HD2.hideTip(); return; }
+  const i = partIndexFor(current, h.mesh.userData.key);
+  if (editing) { status(`${h.mesh.userData.key}${i >= 0 ? ' → ' + lastDetail.enemy.parts[i].name : ' (unassigned)'}`); return; }
   HD2.hideTip();
-  if (i >= 0) HD2.tip(i, ev.clientX, ev.clientY);
+  if (i >= 0) HD2.tip(i, ev.clientX, ev.clientY, { deg: h.deg });
 });
 renderer.domElement.addEventListener('pointerleave', () => HD2.hideTip());
 renderer.domElement.addEventListener('pointerup', (ev) => {
   if (!downAt || Math.hypot(ev.clientX - downAt[0], ev.clientY - downAt[1]) > 5) return; // it was a drag
-  const m = pick(ev);
-  if (!m) return;
-  if (editing) { selectedKey = m.userData.key; renderEditor(); paint(); return; }
-  const i = partIndexFor(current, m.userData.key);
-  if (i >= 0) HD2.click(i);
+  const h = pick(ev);
+  if (!h) return;
+  if (editing) { selectedKey = h.mesh.userData.key; renderEditor(); paint(); return; }
+  const i = partIndexFor(current, h.mesh.userData.key);
+  if (i >= 0) HD2.click(i, { deg: h.deg });
 });
 
 /* ---------- hitzone editor ---------- */

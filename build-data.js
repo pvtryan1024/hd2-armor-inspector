@@ -90,6 +90,22 @@ enemies.forEach((e) => {
   if (found.length) e.archives = found.map((a) => ({ id: a.id, name: a.name, note: a.note, exact: !!exact.length }));
 });
 
+// Per-impact-angle AP from the weapon pages: { weaponId: { modeName: [direct, slight, large, extreme] } }
+const apAngles = {};
+for (const f of ['ap-angles-primary.json', 'ap-angles-support.json']) {
+  const p = path.join(dir, f);
+  if (fs.existsSync(p)) Object.assign(apAngles, JSON.parse(fs.readFileSync(p, 'utf8')));
+}
+let angleModes = 0;
+weapons.forEach((w) => {
+  const a = apAngles[w.id];
+  if (!a) return;
+  (w.modes || []).forEach((m) => {
+    const v = a[m.name] || (w.modes.length === 1 ? Object.values(a)[0] : null);
+    if (Array.isArray(v) && v.length === 4 && v.every((n) => typeof n === 'number')) { m.apAngles = v; angleModes++; }
+  });
+});
+
 // Which enemies have a 3D model in models/, so the site can badge them and skip pointless requests.
 const modelsDir = path.join(__dirname, 'models');
 const models = {};
@@ -97,6 +113,8 @@ if (fs.existsSync(modelsDir)) {
   for (const f of fs.readdirSync(modelsDir)) {
     const m = /^([a-z0-9-]+)\.glb$/.exec(f);
     if (!m) continue;
+    // the box-built test model from tools/make-test-glb.js stays local-only
+    if (fs.readFileSync(path.join(modelsDir, f)).subarray(0, 2048).toString('latin1').includes('hd2-armor test')) continue;
     const mb = fs.statSync(path.join(modelsDir, f)).size / 1048576;
     if (mb > 50) console.warn(`models/${f} is ${mb.toFixed(0)} MB — compress it (see README) before publishing`);
     models[m[1]] = { mapped: fs.existsSync(path.join(modelsDir, `${m[1]}.map.json`)), mb: +mb.toFixed(2) };
@@ -110,4 +128,4 @@ const out = {
   weapons: uniq(weapons).filter((w) => Array.isArray(w.modes) && w.modes.length),
 };
 fs.writeFileSync(path.join(dir, 'data.js'), 'window.HD2_DATA = ' + JSON.stringify(out) + ';\n');
-console.log(`enemies: ${out.enemies.length}, weapons: ${out.weapons.length}`);
+console.log(`enemies: ${out.enemies.length}, weapons: ${out.weapons.length}, modes with angle AP: ${angleModes}`);

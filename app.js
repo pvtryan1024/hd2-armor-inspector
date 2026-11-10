@@ -14,6 +14,14 @@
   const EDITOR = ['localhost', '127.0.0.1'].includes(location.hostname) || /[?&]edit/.test(location.search);
   const MAX_SHOTS = 999;
   const AV_NAMES = ['Unarmored', 'Very Light', 'Light', 'Medium', 'Heavy', 'Tank I', 'Tank II', 'Tank III', 'Tank IV', 'Tank V', 'Tank VI', 'Indestructible'];
+  // Impact angle bands from the wiki's Damage page; weapons list one AP per band.
+  const ANGLE_BANDS = [
+    { name: 'Direct', range: '0–25°', max: 25 },
+    { name: 'Slight angle', range: '26–60°', max: 60 },
+    { name: 'Large angle', range: '61–80°', max: 80 },
+    { name: 'Extreme angle', range: '81–90°', max: 90 },
+  ];
+  const bandOf = (deg) => ANGLE_BANDS.findIndex((b) => deg <= b.max + 0.5);
   const FACTION_ORDER = ['Terminids', 'Automatons', 'Illuminate'];
   const CAT_ORDER = ['Primary', 'Secondary', 'Throwable', 'Support', 'Eagle', 'Orbital', 'Sentry', 'Emplacement'];
   // shots-to-kill ramp: 1, 2, 3–4, 5–7, 8–12, 13–20, 21+
@@ -35,7 +43,7 @@
     mode: 0,
     explosion: true,
     allPellets: true,
-    apOverride: null,
+    band: 0, // impact angle band for the body map / tables (3D uses the real angle)
     view: 'all',
     color: 'pen',
     tab: 'parts',
@@ -72,9 +80,14 @@
     return mains.find((i) => /^main$/i.test(enemy.parts[i].name.trim())) ?? mains[0];
   }
 
+  /** Projectile AP for an angle band; weapons without angle data keep one AP. */
+  function apFor(mode, band) {
+    return mode.apAngles?.[band || 0] ?? mode.ap;
+  }
+
   /** Damage a single trigger pull does to one part, before HP caps. */
   function shotDamage(mode, part, enemy, opts) {
-    const ap = opts.apOverride ?? mode.ap;
+    const ap = apFor(mode, opts.band);
     const pellets = opts.allPellets ? Math.max(1, mode.pellets || 1) : 1;
     const m = penMult(ap, part.av);
     const d = part.durable ?? 0;
@@ -85,7 +98,7 @@
     const ex = opts.explosion ? mode.explosion : null;
     if (ex && (ex.damage || ex.durable)) {
       const e = ex.durable ?? ex.damage;
-      const exAp = opts.apOverride != null ? Math.min(opts.apOverride, ex.ap ?? opts.apOverride) : ex.ap ?? 0;
+      const exAp = ex.ap ?? 0; // explosions don't care about impact angle
       exMult = penMult(exAp, part.av);
       const exdr = part.exdr ?? 0;
       partEx = exMult == null ? 0 : Math.floor(e * (1 - exdr) * exMult);
@@ -231,7 +244,7 @@
   const weaponById = (id) => DATA.weapons.find((w) => w.id === id);
   const enemy = () => enemyById(state.enemyId);
   const weapon = () => weaponById(state.weaponId);
-  const opts = () => ({ explosion: state.explosion, allPellets: state.allPellets, apOverride: state.apOverride });
+  const opts = () => ({ explosion: state.explosion, allPellets: state.allPellets, band: state.band });
 
   /* ---------------- rendering: lists ---------------- */
 
@@ -291,7 +304,7 @@
     const el = $('#weaponCard');
     if (!w) { el.innerHTML = '<p class="note">Pick a weapon.</p>'; return; }
     const m = w.modes[state.mode] || w.modes[0];
-    const ap = state.apOverride ?? m.ap;
+    const ap = apFor(m, state.band);
     const pellets = m.pellets || 1;
     const scale = Array.from({ length: 11 }, (_, av) => {
       const p = penMult(ap, av);
@@ -307,24 +320,26 @@
       <div class="stats">
         <div class="stat"><div class="k">Damage</div><div class="v">${fmt(m.damage)}</div></div>
         <div class="stat"><div class="k">Durable</div><div class="v">${fmt(m.durable)}</div></div>
-        <div class="stat"><div class="k">AP</div><div class="v">${ap}${state.apOverride != null ? '*' : ''}</div></div>
+        <div class="stat"><div class="k">AP</div><div class="v">${ap}</div></div>
         ${pellets > 1 ? `<div class="stat"><div class="k">Pellets</div><div class="v">${pellets}</div></div>` : ''}
         ${w.rpm ? `<div class="stat"><div class="k">RPM</div><div class="v">${fmt(w.rpm)}</div></div>` : ''}
         ${w.mag ? `<div class="stat"><div class="k">Mag</div><div class="v">${fmt(w.mag)}</div></div>` : ''}
         ${ex ? `<div class="stat"><div class="k">Expl. dmg</div><div class="v">${fmt(ex.durable ?? ex.damage)}</div></div>
                 <div class="stat"><div class="k">Expl. AP</div><div class="v">${ex.ap ?? '—'}</div></div>` : ''}
       </div>
+      <div class="angles">
+        <div class="ap-caption">AP by impact angle${m.apAngles ? '' : ' <span class="muted">(no angle data — same AP at every angle)</span>'}</div>
+        <div class="angle-row">${ANGLE_BANDS.map((b, i) => `<button data-band="${i}" class="${i === state.band ? 'on' : ''}" title="${b.name} (${b.range})"><span>${b.name.replace(' angle', '')}</span><b>${apFor(m, i)}</b><i>${b.range}</i></button>`).join('')}</div>
+      </div>
       <div>
         <div class="ap-scale">${scale}</div>
-        <div class="ap-caption">Armor values this shot defeats (green = full, yellow-green = 65%, red = ricochet)</div>
+        <div class="ap-caption">Armor this shot defeats at ${ANGLE_BANDS[state.band].name.toLowerCase()} (green = full, yellow-green = 65%, red = ricochet). Body map and tables use this angle; the 3D view uses the real angle from your camera.</div>
       </div>
       <div class="opts">
         ${w.modes.length > 1 ? `<label class="opt">Ammo / mode
           <select id="modeSel">${w.modes.map((mm, i) => `<option value="${i}" ${i === state.mode ? 'selected' : ''}>${esc(mm.name || 'Mode ' + (i + 1))}</option>`).join('')}</select></label>` : ''}
         ${ex ? `<label class="opt">Include explosion (direct hit) <input type="checkbox" id="exChk" ${state.explosion ? 'checked' : ''}></label>` : ''}
         ${pellets > 1 ? `<label class="opt">All ${pellets} pellets hit <input type="checkbox" id="pelChk" ${state.allPellets ? 'checked' : ''}></label>` : ''}
-        <label class="opt">AP override (angled hits)
-          <select id="apSel"><option value="">Weapon default</option>${Array.from({ length: 11 }, (_, i) => `<option value="${i}" ${state.apOverride === i ? 'selected' : ''}>AP ${i}</option>`).join('')}</select></label>
       </div>
       ${m.note || w.note ? `<p class="note">${esc(m.note || w.note)}</p>` : ''}
     `;
@@ -451,7 +466,7 @@
     for (const w of DATA.weapons) {
       let best = null;
       w.modes.forEach((m, mi) => {
-        const b = bestOf(evalEnemy(w, mi, e, { ...o, apOverride: null }), state.view);
+        const b = bestOf(evalEnemy(w, mi, e, o), state.view);
         if (b && (!best || b.r.killAt < best.b.r.killAt || (b.r.killAt === best.b.r.killAt && b.r.total > best.b.r.total))) best = { b, mi };
       });
       rows.push({ w, best });
@@ -514,14 +529,16 @@
     return { frac: sum / total, label: `${alive}/${inst.length} intact · ${fmt(sum)} HP left`, alive };
   }
 
-  function fireAt(i) {
+  /** hit = { deg } when fired from the 3D view, so the real impact angle picks the AP. */
+  function fireAt(i, hit) {
     const e = enemy(), w = weapon();
     if (!e || !w || !state.sim || state.sim.dead) return;
     const mode = w.modes[state.mode] || w.modes[0];
     const part = e.parts[i];
-    const s = shotDamage(mode, part, e, opts());
+    const band = hit ? bandOf(hit.deg) : state.band;
+    const s = shotDamage(mode, part, e, { ...opts(), band });
     const o = applyShot(state.sim, e, i, s);
-    state.sim.log.unshift(`#${state.sim.shots} ${part.name}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}`);
+    state.sim.log.unshift(`#${state.sim.shots} ${part.name}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}`);
     state.sim.log.length = Math.min(state.sim.log.length, 6);
     render();
   }
@@ -563,21 +580,32 @@
       const l = partLeft(i);
       return !!(l && !l.main && l.frac <= 0);
     });
-    window.dispatchEvent(new CustomEvent('hd2:update', { detail: { enemy: e, colors, gone, fire: state.fire, stageView: state.stageView } }));
+    const w = weapon();
+    const m = w ? w.modes[state.mode] || w.modes[0] : null;
+    // projectile AP per angle band; the 3D shader colours each pixel by its own impact angle
+    // explosions ignore angle, so with explosions on a part counts as hurt if either AP beats it
+    const exAp = state.explosion && m?.explosion ? m.explosion.ap ?? -1 : -1;
+    const ap4 = m ? ANGLE_BANDS.map((_, b) => Math.max(m.explosionOnly ? -1 : apFor(m, b), exAp)) : null;
+    window.dispatchEvent(new CustomEvent('hd2:update', { detail: {
+      enemy: e, colors, gone, fire: state.fire, stageView: state.stageView,
+      colorMode: state.color, ap4, avs: e.parts.map((p) => p.av), bands: ANGLE_BANDS,
+    } }));
   }
 
-  function partClick(i) {
-    if (state.fire) fireAt(i);
+  function partClick(i, hit) {
+    if (state.fire) fireAt(i, hit);
   }
 
   /* ---------------- tooltip ---------------- */
 
-  function showTip(i, x, y) {
+  function showTip(i, x, y, hit) {
     const e = enemy();
     const w = weapon();
     const part = e.parts[i];
     if (!part) return;
-    const r = w ? simulate(w.modes[state.mode] || w.modes[0], e, i, opts()) : null;
+    const band = hit ? bandOf(hit.deg) : state.band;
+    const mode = w ? w.modes[state.mode] || w.modes[0] : null;
+    const r = w ? simulate(mode, e, i, { ...opts(), band }) : null;
     const pc = r ? penClass(r, part) : null;
     let verdict = '';
     if (r) {
@@ -591,6 +619,7 @@
     tip.innerHTML = `<h4>${esc(part.name)}</h4>
       <dl>
         <dt>Armor</dt><dd>AV${part.av} · ${esc(avName(part.av))}</dd>
+        ${w ? `<dt>Impact</dt><dd>${hit ? Math.round(hit.deg) + '° · ' : ''}${ANGLE_BANDS[band].name} → AP ${apFor(mode, band)}</dd>` : ''}
         <dt>Health</dt><dd>${typeof part.health === 'number' ? fmt(part.health) : 'uses Main'}</dd>
         <dt>Durable</dt><dd>${pct(part.durable)}</dd>
         ${isMainRow(part) ? '' : `<dt>To Main</dt><dd>${pct(part.toMain)}${part.overflow ? ' (overflow)' : ''}</dd>`}
@@ -625,7 +654,7 @@
     if (state.mode) p.set('m', state.mode);
     if (!state.explosion) p.set('x', '0');
     if (!state.allPellets) p.set('p', '0');
-    if (state.apOverride != null) p.set('ap', state.apOverride);
+    if (state.band) p.set('a', state.band);
     if (state.view !== 'all') p.set('v', state.view);
     if (state.color !== 'pen') p.set('c', state.color);
     if (state.stagePinned) p.set('s', state.stageView);
@@ -638,7 +667,7 @@
     state.mode = +p.get('m') || 0;
     state.explosion = p.get('x') !== '0';
     state.allPellets = p.get('p') !== '0';
-    state.apOverride = p.has('ap') ? +p.get('ap') : null;
+    state.band = Math.min(3, Math.max(0, +p.get('a') || 0));
     if (['front', 'side', 'rear'].includes(p.get('v'))) state.view = p.get('v');
     if (p.get('c') === 'ttk') state.color = 'ttk';
     if (p.has('s')) { state.stageView = p.get('s') === '3d' ? '3d' : 'map'; state.stagePinned = true; }
@@ -681,14 +710,17 @@
     });
     $('#weaponList').addEventListener('click', (ev) => {
       const li = ev.target.closest('li[data-id]'); if (!li) return;
-      state.weaponId = li.dataset.id; state.mode = 0; state.apOverride = null; resetSim(); render();
+      state.weaponId = li.dataset.id; state.mode = 0; resetSim(); render();
+    });
+    $('#weaponCard').addEventListener('click', (ev) => {
+      const b = ev.target.closest('[data-band]'); if (!b) return;
+      state.band = +b.dataset.band; render();
     });
     $('#weaponCard').addEventListener('change', (ev) => {
       const t = ev.target;
       if (t.id === 'modeSel') state.mode = +t.value;
       if (t.id === 'exChk') state.explosion = t.checked;
       if (t.id === 'pelChk') state.allPellets = t.checked;
-      if (t.id === 'apSel') state.apOverride = t.value === '' ? null : +t.value;
       resetSim();
       render();
     });
@@ -706,7 +738,7 @@
     });
     $('#rankTable').addEventListener('click', (ev) => {
       const tr = ev.target.closest('tr[data-w]'); if (!tr) return;
-      state.weaponId = tr.dataset.w; state.mode = +tr.dataset.m; state.apOverride = null; state.tab = 'parts'; render();
+      state.weaponId = tr.dataset.w; state.mode = +tr.dataset.m; state.tab = 'parts'; render();
       scrollTo({ top: 0, behavior: 'smooth' });
     });
 

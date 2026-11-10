@@ -1,0 +1,478 @@
+{
+  "mg-43-machine-gun": {
+    "Standard": [
+      3,
+      3,
+      3,
+      1
+    ]
+  },
+  "m-105-stalwart": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "mg-206-heavy-machine-gun": {
+    "Standard": [
+      4,
+      4,
+      4,
+      0
+    ]
+  },
+  "m-1000-maxigun": {
+    "Standard": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "mgx-42-bullet-storm": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "apw-1-anti-materiel-rifle": {
+    "Standard": [
+      4,
+      4,
+      4,
+      0
+    ]
+  },
+  "amw-20-apex": {
+    "Standard": [
+      5,
+      5,
+      5,
+      0
+    ]
+  },
+  "rs-422-railgun": {
+    "Minimum charge (0.45s)": [
+      5,
+      5,
+      5,
+      5
+    ],
+    "Max charge (Unsafe, 3.0s)": [
+      5,
+      5,
+      5,
+      5
+    ]
+  },
+  "gr-8-recoilless-rifle": {
+    "HEAT": [
+      6,
+      6,
+      6,
+      3
+    ],
+    "HE": [
+      5,
+      5,
+      5,
+      0
+    ]
+  },
+  "eat-17-expendable-anti-tank": {
+    "Standard": [
+      6,
+      6,
+      6,
+      3
+    ]
+  },
+  "eat-700-expendable-napalm": {
+    "Rocket": [
+      3,
+      3,
+      3,
+      0
+    ],
+    "Napalm bomblet": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "eat-411-leveller": {
+    "Standard": [
+      6,
+      6,
+      6,
+      6
+    ]
+  },
+  "las-99-quasar-cannon": {
+    "Standard": [
+      6,
+      6,
+      6,
+      3
+    ]
+  },
+  "faf-14-spear": {
+    "Standard": [
+      7,
+      7,
+      7,
+      7
+    ]
+  },
+  "mls-4x-commando": {
+    "Standard": [
+      6,
+      6,
+      6,
+      3
+    ]
+  },
+  "rl-77-airburst-rocket-launcher": {
+    "Rocket (direct)": [
+      3,
+      3,
+      3,
+      0
+    ],
+    "Bomblet": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "sta-x3-w-a-s-p-launcher": {
+    "Burst": [
+      6,
+      6,
+      6,
+      6
+    ],
+    "Artillery (carrier)": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "ac-8-autocannon": {
+    "APHET": [
+      4,
+      4,
+      4,
+      0
+    ],
+    "Flak": [
+      3,
+      3,
+      2,
+      0
+    ]
+  },
+  "gl-21-grenade-launcher": {
+    "Standard": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "gl-28-belt-fed-grenade-launcher": {
+    "Standard": [
+      4,
+      4,
+      4,
+      0
+    ]
+  },
+  "gl-52-de-escalator": {
+    "Grenade impact": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "Arc discharge": [
+      4,
+      4,
+      4,
+      0
+    ]
+  },
+  "plas-45-epoch": {
+    "Uncharged": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "Full charge (2.6s)": [
+      5,
+      5,
+      5,
+      5
+    ]
+  },
+  "s-11-speargun": {
+    "Standard": [
+      5,
+      5,
+      5,
+      5
+    ]
+  },
+  "sg-88-break-action-shotgun": {
+    "Standard": [
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  "las-98-laser-cannon": {
+    "Beam": [
+      4,
+      4,
+      4,
+      4
+    ]
+  },
+  "las-44-nova": {
+    "Standard": [
+      5,
+      5,
+      5,
+      0
+    ]
+  },
+  "40-k-meltagun": {
+    "Standard": [
+      7,
+      7,
+      7,
+      7
+    ]
+  },
+  "arc-3-arc-thrower": {
+    "Standard": [
+      7,
+      7,
+      7,
+      0
+    ]
+  },
+  "flam-40-flamethrower": {
+    "Spray": [
+      4,
+      4,
+      4,
+      4
+    ]
+  },
+  "b-flam-80-cremator": {
+    "Spray": [
+      4,
+      4,
+      4,
+      4
+    ]
+  },
+  "tx-41-sterilizer": {
+    "Spray": [
+      5,
+      5,
+      5,
+      0
+    ]
+  },
+  "eagle-500kg-bomb": {
+    "Bomb": [
+      7,
+      7,
+      7,
+      7
+    ]
+  },
+  "eagle-airstrike": {
+    "Bomb (x6)": [
+      7,
+      7,
+      7,
+      7
+    ]
+  },
+  "eagle-cluster-bomb": {
+    "Bomb casing": [
+      7,
+      7,
+      7,
+      7
+    ],
+    "Bomblet": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "eagle-strafing-run": {
+    "Cannon round": [
+      5,
+      5,
+      4,
+      0
+    ]
+  },
+  "eagle-110mm-rocket-pods": {
+    "Rocket": [
+      7,
+      7,
+      7,
+      7
+    ]
+  },
+  "orbital-railcannon-strike": {
+    "Shell": [
+      7,
+      7,
+      7,
+      7
+    ]
+  },
+  "orbital-precision-strike": {
+    "Shell": [
+      8,
+      7,
+      6,
+      6
+    ]
+  },
+  "orbital-380mm-he-barrage": {
+    "Shell": [
+      8,
+      7,
+      6,
+      6
+    ]
+  },
+  "orbital-walking-barrage": {
+    "Shell": [
+      8,
+      7,
+      6,
+      6
+    ]
+  },
+  "orbital-120mm-he-barrage": {
+    "Shell": [
+      7,
+      7,
+      6,
+      6
+    ]
+  },
+  "orbital-gatling-barrage": {
+    "Round": [
+      5,
+      5,
+      4,
+      0
+    ]
+  },
+  "orbital-airburst-strike": {
+    "Shell": [
+      7,
+      7,
+      6,
+      6
+    ],
+    "Shrapnel": [
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  "orbital-laser": {
+    "Beam": [
+      6,
+      6,
+      6,
+      0
+    ]
+  },
+  "a-mg-43-machine-gun-sentry": {
+    "Standard": [
+      3,
+      3,
+      3,
+      1
+    ]
+  },
+  "a-g-16-gatling-sentry": {
+    "Standard": [
+      3,
+      3,
+      3,
+      1
+    ]
+  },
+  "a-ac-8-autocannon-sentry": {
+    "Standard": [
+      5,
+      5,
+      5,
+      0
+    ]
+  },
+  "a-mls-4x-rocket-sentry": {
+    "Standard": [
+      5,
+      5,
+      5,
+      0
+    ]
+  },
+  "a-m-12-mortar-sentry": {
+    "Standard": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "a-las-98-laser-sentry": {
+    "Beam": [
+      4,
+      4,
+      4,
+      4
+    ]
+  },
+  "e-mg-101-hmg-emplacement": {
+    "Standard": [
+      4,
+      4,
+      4,
+      0
+    ]
+  },
+  "e-at-12-anti-tank-emplacement": {
+    "APHE 75mm": [
+      6,
+      6,
+      6,
+      3
+    ]
+  }
+}
