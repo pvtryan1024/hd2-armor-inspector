@@ -104,6 +104,36 @@
     return 1 - 0.75 * (1 - Math.exp(-2 * D * dist));
   }
 
+  /* Overpenetration (wiki "Cleave"): the projectile goes on through a part if its AP beats the part's AV
+   * both before and after paying a cost of AV + 1/2/3 (durable 0–24% / 25–75% / 76–100%); breakable armor
+   * plates also need AP ≥ 3 × AV. It continues with the AP that's left into the part behind (p.behind).
+   * Projectiles lose speed (penetration slowdown) and with it damage, on the range-falloff curve;
+   * beams carry full damage. */
+  const cleaveCost = (p) => p.av + ((p.durable ?? 0) >= 0.76 ? 3 : (p.durable ?? 0) >= 0.25 ? 2 : 1);
+  function overpen(mode, enemy, idx, s, opts) {
+    const p = enemy.parts[idx];
+    if (!p.behind || !(s.proj > 0) || mode.explosionOnly) return null;
+    const ap = s.ap;
+    if (!(ap > p.av)) return null;
+    if (ARMOR_RE.test(p.name) && p.av > 0 && ap < 3 * p.av) return null;
+    const left = ap - cleaveCost(p);
+    if (!(left > p.av)) return null;
+    const j = enemy.parts.findIndex((q) => q.name === p.behind);
+    if (j < 0) return null;
+    const s2 = shotDamage({ ...mode, ap: left, apAngles: null, explosion: null }, enemy.parts[j], enemy, { ...opts, explosion: false, exDist: 0 });
+    // speed lost going through → damage lost (projectiles only)
+    const b = mode.ballistics, slow = !mode.beam && b?.penSlowdown ? 1 - b.penSlowdown : 1;
+    if (slow < 1 && s2.proj > 0) {
+      const D = b.drag && b.caliber && b.mass ? (0.0004712389 * b.caliber * b.caliber * b.drag) / b.mass : 0;
+      const v = Math.exp(-D * (opts.dist || 0)); // speed left after drag, as a fraction
+      const curve = (r) => 1 - 0.75 * (1 - r * r);
+      const f = curve(v * slow) / curve(v);
+      const proj = Math.floor(s2.proj * f);
+      Object.assign(s2, { proj, total: proj + s2.partEx });
+    }
+    return s2.total > 0 ? { idx: j, s: s2, ap: left } : null;
+  }
+
   /** Explosion strength at a distance from the blast centre: full inside the inner radius, falling off
    *  to 0 at the outer radius (quick: 1 − x, slow: 1 − x²), with AP −1 in the outer ring (min 2). */
   function blastAt(ex, dist) {
@@ -238,9 +268,11 @@
       }
       res.strip = { part: part.coveredBy, shots: shot0 };
     }
+    const thru = overpen(mode, enemy, idx, s, opts);
     for (let n = 1; shot0 + n <= MAX_SHOTS; n++) {
       const shot = shot0 + n;
       const o = applyShot(sim, enemy, idx, s);
+      if (thru && !sim.dead) { const o2 = applyShot(sim, enemy, thru.idx, thru.s, true); o.toMain += o2.toMain; o.progress = o.progress || o2.progress; }
       if (n === 1) res.perMain = o.toMain;
       if (o.broke && res.breakAt == null) res.breakAt = shot;
       if (sim.dead) {
@@ -867,8 +899,10 @@
     const s = shotDamage(mode, part, e, { ...opts(), band });
     const tag = shotClock();
     const o = applyShot(state.sim, e, i, s, false, k);
+    const thru = !state.sim.dead ? overpen(mode, e, i, s, { ...opts(), band }) : null;
+    const o2 = thru ? applyShot(state.sim, e, thru.idx, thru.s, true) : null;
     const label = k != null && (part.count || 1) > 1 ? `${part.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${part.count}` : part.name;
-    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
+    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
     state.sim.log.length = Math.min(state.sim.log.length, 8);
     render();
   }
@@ -925,6 +959,7 @@
     const band = bandOf(hit.deg);
     const o = { ...opts(), band };
     const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0 }) }];
+    const thru = overpen(mode, e, hit.idx, rows[0].s, o);
     const radii = blastRadii(mode);
     if (radii) {
       // pieces reached by the blast rays (3D view); the struck piece already took the full blast
@@ -941,7 +976,7 @@
         else r.s = { ...r.s, mainEx: 0 };
       });
     }
-    return { mode, band, rows, radii };
+    return { mode, band, rows, radii, thru };
   }
 
   /** "Torso Armor 2/2" for one piece of a counted part, the plain name otherwise. */
@@ -972,6 +1007,10 @@
         const piece = k === 0 ? hit.k : r.k;
         const o = applyShot(state.sim, e, r.idx, r.s, k > 0, piece ?? undefined);
         if (o.broke) notes.push(`${pieceName(e.parts[r.idx], piece)} destroyed`);
+        if (k === 0 && res.thru && !state.sim.dead) { // over-penetration into the part behind
+          const o2 = applyShot(state.sim, e, res.thru.idx, res.thru.s, true);
+          notes.push(`through into ${e.parts[res.thru.idx].name} (AP ${res.thru.ap}): ${fmt(res.thru.s.total)} dmg${o2.broke ? ', destroyed' : ''}`);
+        }
       });
       const d = res.rows[0];
       state.sim.log.unshift(`#${state.sim.shots} ${tag}${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : 'ricochet'}${(() => { const n = res.rows.slice(1).filter((r) => r.s.partEx > 0 || r.s.mainEx > 0).length; return n ? ` + blast on ${n} part${n > 1 ? 's' : ''}` : ''; })()}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}`);

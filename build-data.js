@@ -77,6 +77,10 @@ const COVERS = [
   { enemy: /bile titan/i, parts: { 'Inner Flesh': ['Torso Armor (2)'], 'Front Left Leg Flesh': ['Leg Armor (12)'], 'Leg Flesh (3)': ['Leg Armor (12)'] } },
 ];
 
+// What a projectile reaches after over-penetrating a part (inner hitboxes aren't meshes in the models).
+// Charger butt → Inner Flesh is the wiki's own overpenetration example.
+const BEHIND = [{ enemy: /charger/i, parts: { 'Butt': 'Inner Flesh' } }];
+
 // Wiki location fixes: where a hitzone really faces when the wiki table disagrees with the game
 const LOCATION_FIX = [{ enemy: /hulk/i, part: /^heatsink$/i, location: 'Rear, Side' }];
 
@@ -85,6 +89,7 @@ const INDESTRUCTIBLE = [{ enemy: /hive guard/i, part: /armou?r|plate/i }];
 
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
+  for (const c of BEHIND) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.behind = c.parts[p.name]; });
   for (const c of LOCATION_FIX) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.location = c.location; });
   for (const c of INDESTRUCTIBLE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.indestructible = true; });
   for (const c of COVERS) {
