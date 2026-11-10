@@ -150,9 +150,15 @@ if (fs.existsSync(modelsDir)) {
   }
 }
 
+// Enemy preview thumbnails in images/enemies/<id>.png (made by tools/make-thumbs.ps1 from the wiki's enemy icons)
+const thumbsDir = path.join(__dirname, 'images', 'enemies');
+const thumbs = {};
+if (fs.existsSync(thumbsDir)) for (const f of fs.readdirSync(thumbsDir)) { const m = /^([a-z0-9-]+).png$/.exec(f); if (m) thumbs[m[1]] = 1; }
+
 const out = {
   built: new Date().toISOString().slice(0, 10),
   models,
+  thumbs,
   enemies: uniq(enemies),
   weapons: uniq(weapons).filter((w) => Array.isArray(w.modes) && w.modes.length),
 };

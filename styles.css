@@ -405,3 +405,41 @@ body.editor .public-only { display: none !important; }
 .sp-blast li i { color: var(--dim); font-style: normal; margin-left: 4px; }
 .sp-hint { color: var(--dim); font-size: 11px; }
 @media (max-width: 760px) { .shot-panel { left: 10px; right: 10px; width: auto; } }
+
+/* ---------- faction picker + enemy list ---------- */
+.fac-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.fac-head .back {
+  background: none; border: 1px solid var(--line-2); border-radius: var(--r); padding: 4px 8px; cursor: pointer;
+  color: var(--muted); font: 600 12px var(--font-head); letter-spacing: 0.06em; text-transform: uppercase;
+}
+.fac-head .back:hover { color: var(--accent); border-color: var(--accent); }
+.fac-chip { display: inline-flex; align-items: center; gap: 6px; color: var(--fc); font: 700 14px var(--font-head); letter-spacing: 0.08em; text-transform: uppercase; }
+.fac-chip svg { width: 18px; height: 18px; fill: currentColor; }
+
+.list li.fac-card {
+  --fc: var(--accent);
+  display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 12px;
+  padding: 14px 12px; margin-bottom: 8px; border-radius: 10px;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--fc) 16%, var(--panel-2)), var(--panel) 70%);
+  border: 1px solid color-mix(in srgb, var(--fc) 35%, var(--line));
+}
+.list li.fac-card:hover { border-color: var(--fc); background: linear-gradient(100deg, color-mix(in srgb, var(--fc) 26%, var(--panel-2)), var(--panel) 75%); }
+.fac-icon { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 10px; background: color-mix(in srgb, var(--fc) 18%, transparent); color: var(--fc); }
+.fac-icon svg { width: 30px; height: 30px; fill: currentColor; }
+.fac-text { display: grid; gap: 2px; min-width: 0; }
+.fac-text b { font: 700 18px/1 var(--font-head); letter-spacing: 0.06em; text-transform: uppercase; }
+.fac-text i { font-style: normal; color: var(--muted); font-size: 12px; }
+.fac-go { color: var(--fc); font-size: 22px; }
+
+.list li.enemy { justify-content: flex-start; gap: 10px; padding: 5px 8px; }
+.en-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.en-name i { font-style: normal; font-size: 11px; }
+.thumb {
+  width: 36px; height: 36px; flex: none; border-radius: 6px; object-fit: contain;
+  background: radial-gradient(circle at 50% 40%, #3a434e, #20262d 75%); border: 1px solid var(--line-2);
+}
+.thumb.ph {
+  display: grid; place-items: center; color: var(--fc);
+  background: color-mix(in srgb, var(--fc) 12%, var(--bg-2)); border-color: color-mix(in srgb, var(--fc) 30%, var(--line));
+  font: 700 12px var(--font-head); letter-spacing: 0.04em;
+}

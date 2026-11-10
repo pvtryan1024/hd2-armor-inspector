@@ -36,7 +36,7 @@
   const avName = (av) => (av < 0 ? 'No hitbox' : AV_NAMES[av] ?? `AV${av}`);
 
   const state = {
-    faction: 'all',
+    faction: null, // null = faction picker
     cat: 'all',
     enemyId: null,
     weaponId: null,
@@ -276,35 +276,52 @@
 
   /* ---------------- rendering: lists ---------------- */
 
+  // Faction picker → enemy list, like choosing a nation before a tank.
+  const FACTION_INFO = {
+    Terminids: { short: 'Bugs', color: '#f2a516', blurb: 'Swarming arthropods' },
+    Automatons: { short: 'Bots', color: '#e2412f', blurb: 'Cyborg war machines' },
+    Illuminate: { short: 'Squids', color: '#a46cf2', blurb: 'Psionic invaders' },
+  };
+  // simple original glyphs, not game logos
+  const FACTION_ICON = {
+    Terminids: '<svg viewBox="0 0 32 32"><path d="M16 4c4 0 7 3 7 7 0 2-1 4-2 5l5 3-1 2-5-2v3l5 4-1 2-5-4c-1 2-2 4-3 4s-2-2-3-4l-5 4-1-2 5-4v-3l-5 2-1-2 5-3c-1-1-2-3-2-5 0-4 3-7 7-7z"/></svg>',
+    Automatons: '<svg viewBox="0 0 32 32"><path d="M8 6h16l3 5v9l-4 6H9l-4-6v-9zm3 7v4h4v-4zm6 0v4h4v-4zm-5 8h8v2h-8z"/></svg>',
+    Illuminate: '<svg viewBox="0 0 32 32"><path d="M16 3l13 23H3zm0 8c-4 0-7 3-8 6 1 3 4 6 8 6s7-3 8-6c-1-3-4-6-8-6zm0 3a3 3 0 110 6 3 3 0 010-6z"/></svg>',
+  };
+  const factionColor = (f) => FACTION_INFO[f]?.color || 'var(--accent)';
+
+  function thumbHtml(e) {
+    if (DATA.thumbs?.[e.id]) return `<img class="thumb" src="images/enemies/${esc(e.id)}.png" alt="" loading="lazy" width="36" height="36">`;
+    const initials = e.name.split(/\s+/).filter((w) => !w.startsWith('(')).slice(0, 2).map((w) => w[0]).join('');
+    return `<span class="thumb ph" style="--fc:${factionColor(e.faction)}">${esc(initials)}</span>`;
+  }
+
   function renderFactionTabs() {
-    const factions = FACTION_ORDER.filter((f) => DATA.enemies.some((e) => e.faction === f));
-    const extra = [...new Set(DATA.enemies.map((e) => e.faction))].filter((f) => !factions.includes(f));
-    const all = ['all', ...factions, ...extra];
-    $('#factionTabs').innerHTML = all
-      .map((f) => `<button data-f="${esc(f)}" class="${state.faction === f ? 'on' : ''}">${f === 'all' ? 'All' : esc(f.replace('Automatons', 'Bots').replace('Terminids', 'Bugs').replace('Illuminate', 'Squids'))}</button>`)
-      .join('');
+    const head = $('#factionTabs');
+    if (!state.faction) { head.innerHTML = ''; head.classList.add('hidden'); return; }
+    head.classList.remove('hidden');
+    head.innerHTML = `<button class="back" data-f="" title="Back to factions">← Factions</button>
+      <span class="fac-chip" style="--fc:${factionColor(state.faction)}">${FACTION_ICON[state.faction] || ''}${esc(state.faction)}</span>`;
   }
 
   function renderEnemyList() {
     const q = $('#enemySearch').value.trim().toLowerCase();
-    const list = DATA.enemies.filter((e) => (state.faction === 'all' || e.faction === state.faction) && (!q || e.name.toLowerCase().includes(q)));
-    const groups = {};
-    list.forEach((e) => (groups[e.faction] ||= []).push(e));
-    const order = Object.keys(groups).sort((a, b) => (FACTION_ORDER.indexOf(a) + 99) % 99 - (FACTION_ORDER.indexOf(b) + 99) % 99);
-    const w = weapon();
-    let html = '';
-    for (const f of order) {
-      if (state.faction === 'all') html += `<li class="group">${esc(f)}</li>`;
-      for (const e of groups[f]) {
-        let sub = '';
-        if (w) {
-          const b = bestOf(evalEnemy(w, state.mode, e, opts()), state.view);
-          sub = b ? `${b.r.killAt} shot${b.r.killAt > 1 ? 's' : ''}` : 'no kill';
-        }
-        html += `<li data-id="${esc(e.id)}" class="${e.id === state.enemyId ? 'on' : ''}"><span>${esc(e.name)}${hasModel(e.id) ? ' <span class="badge3d" title="3D model available">3D</span>' : ''}</span><span class="sub">${sub}</span></li>`;
-      }
+    const list$ = $('#enemyList');
+    if (!state.faction && !q) {
+      const factions = [...FACTION_ORDER, ...new Set(DATA.enemies.map((e) => e.faction))].filter((f, i, arr) => arr.indexOf(f) === i && DATA.enemies.some((e) => e.faction === f));
+      list$.innerHTML = factions.map((f) => `<li class="fac-card" data-f="${esc(f)}" style="--fc:${factionColor(f)}">
+          <span class="fac-icon">${FACTION_ICON[f] || ''}</span>
+          <span class="fac-text"><b>${esc(f)}</b><i>${esc(FACTION_INFO[f]?.blurb || '')} · ${DATA.enemies.filter((e) => e.faction === f).length} enemies</i></span>
+          <span class="fac-go">›</span>
+        </li>`).join('');
+      return;
     }
-    $('#enemyList').innerHTML = html || '<li class="empty">No enemies match.</li>';
+    const list = DATA.enemies.filter((e) => (!state.faction || q || e.faction === state.faction) && (!q || e.name.toLowerCase().includes(q)));
+    list$.innerHTML = list.map((e) => `<li data-id="${esc(e.id)}" class="enemy ${e.id === state.enemyId ? 'on' : ''}">
+        ${thumbHtml(e)}
+        <span class="en-name">${esc(e.name)}${q && !state.faction ? ` <i class="muted">${esc(FACTION_INFO[e.faction]?.short || e.faction)}</i>` : ''}</span>
+        ${hasModel(e.id) ? '<span class="badge3d" title="3D model available">3D</span>' : ''}
+      </li>`).join('') || '<li class="empty">No enemies match.</li>';
   }
 
   function renderCatTabs() {
@@ -823,7 +840,7 @@
   function bind() {
     $('#factionTabs').addEventListener('click', (ev) => {
       const b = ev.target.closest('button'); if (!b) return;
-      state.faction = b.dataset.f; render();
+      state.faction = b.dataset.f || null; render();
     });
     $('#catTabs').addEventListener('click', (ev) => {
       const b = ev.target.closest('button'); if (!b) return;
@@ -832,8 +849,13 @@
     $('#enemySearch').addEventListener('input', renderEnemyList);
     $('#weaponSearch').addEventListener('input', renderWeaponList);
     $('#enemyList').addEventListener('click', (ev) => {
+      const card = ev.target.closest('li[data-f]');
+      if (card) { state.faction = card.dataset.f; render(); return; }
       const li = ev.target.closest('li[data-id]'); if (!li) return;
-      state.enemyId = li.dataset.id; state.hit = null; resetSim(); autoStageView(); render();
+      state.enemyId = li.dataset.id; state.hit = null;
+      state.faction = enemyById(li.dataset.id).faction;
+      if ($('#enemySearch').value) $('#enemySearch').value = '';
+      resetSim(); autoStageView(); render();
     });
     $('#weaponList').addEventListener('click', (ev) => {
       const li = ev.target.closest('li[data-id]'); if (!li) return;
@@ -931,6 +953,7 @@
     }
     $('#buildInfo').textContent = `${DATA.enemies.length} enemies · ${DATA.weapons.length} weapons · data ${DATA.built || ''}`;
     readHash();
+    if (state.enemyId) state.faction = enemyById(state.enemyId).faction; // shared link: open its faction
     if (EDITOR) document.body.classList.add('editor');
     state.enemyId ||= (DATA.enemies.find((e) => e.id === 'charger') || DATA.enemies[0]).id;
     autoStageView();
