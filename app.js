@@ -238,6 +238,7 @@
         break;
       }
       if (!o.progress) break;
+      if (sim.hp[idx] && sim.hp[idx].every((h) => h <= 0)) break; // destroyed: no hitbox left to shoot
     }
     return res;
   }
@@ -803,6 +804,9 @@
     if (!e || !w || !state.sim || state.sim.dead) return;
     const mode = w.modes[state.mode] || w.modes[0];
     const part = e.parts[i];
+    // destroyed parts have no hitbox anymore
+    const left = partLeft(i);
+    if (left && !left.main && (k != null && left.segs ? left.segs[k] <= 0 : left.frac <= 0)) return;
     if (!isExposed(e, i, state.sim, k)) {
       state.sim.log.unshift(part.coveredBy && !part.hidden
         ? `${part.name} is under ${part.coveredBy} — break it first`

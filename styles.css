@@ -49,6 +49,8 @@ button { font: inherit; color: inherit; }
   backdrop-filter: blur(6px);
 }
 .brand { display: flex; align-items: center; gap: 10px; }
+.brand-home { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-home:hover .brand-name, .brand-home:hover .brand-name b { color: var(--accent); }
 .brand-mark { width: 28px; height: 28px; }
 .brand-name { font: 600 20px/1 var(--font-head); letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
 .brand-name b { color: var(--text); font-weight: 700; }
@@ -308,7 +310,7 @@ table.data tr.click { cursor: pointer; }
 .hpbar b { display: block; height: 100%; background: var(--text); transition: width 0.15s; }
 .hpbar.wide { width: 140px; }
 .hpbar.wide b { background: var(--pen-none); }
-.tile.gone { opacity: 0.3; filter: grayscale(1); }
+.tile.gone { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
 
 .stage-view { position: relative; }
 .kill-banner {

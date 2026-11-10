@@ -262,8 +262,8 @@ function pick(ev) {
   ptr.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
   ray.setFromCamera(ptr, camera);
   const hits = ray.intersectObjects(current.meshes.map((m) => m.mesh).filter((m) => m.visible), false);
-  // skip see-through destroyed parts so you can shoot what's behind them
-  const hit = hits.find((h) => h.object.material.opacity > 0.2) || hits[0];
+  // destroyed parts have no hitbox: the shot goes through to whatever is behind them
+  const hit = hits.find((h) => h.object.material.opacity > 0.2);
   if (!hit) return null;
   let deg = 0;
   let n = ray.ray.direction.clone().negate();
