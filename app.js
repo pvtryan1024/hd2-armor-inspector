@@ -52,7 +52,7 @@
     color: 'pen',
     tab: 'parts',
     stageView: 'map', // 'map' | '3d'
-    fire: false,
+    fire: true, // fire mode is the default view
     showInner: false, // treat inner parts as already exposed
     sim: null,
   };
@@ -1016,6 +1016,7 @@
     if (state.color !== 'pen') p.set('c', state.color);
     if (state.stagePinned) p.set('s', state.stageView);
     if (state.showInner) p.set('in', '1');
+    if (!state.fire) p.set('f', '0');
     history.replaceState(null, '', '#' + p.toString());
   }
   function readHash() {
@@ -1030,6 +1031,7 @@
     if (['front', 'side', 'rear'].includes(p.get('v'))) state.view = p.get('v');
     if (p.get('c') === 'ttk') state.color = 'ttk';
     state.showInner = p.get('in') === '1';
+    state.fire = p.get('f') !== '0';
     if (p.has('s')) { state.stageView = p.get('s') === '3d' ? '3d' : 'map'; state.stagePinned = true; }
   }
 
