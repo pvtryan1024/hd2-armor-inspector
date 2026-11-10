@@ -2,23 +2,14 @@
   "enemy": "hive-guard",
   "meshes": {
     "body": "Main",
-    "leg_left_front_socket": "Front Legs (2)",
-    "leg_left_back_socket": "Rear Legs (2)",
-    "leg_right_back_socket": "Rear Legs (2)",
-    "claw_left_socket": "Claws (2)",
-    "leg_right_front_socket": "Front Legs (2)",
-    "claw_right_socket": "Claws (2)",
-    "head": "Head",
-    "leg_left_front": "Front Legs (2)",
-    "claw_left": "Claws (2)",
-    "leg_left_back": "Rear Legs (2)",
-    "leg_right_back": "Rear Legs (2)",
     "leg_right_front": "Front Legs (2)",
+    "leg_left_front": "Front Legs (2)",
+    "leg_left_back": "Rear Legs (2)",
+    "claw_left": "Claws (2)",
+    "leg_right_back": "Rear Legs (2)",
     "claw_right": "Claws (2)"
   },
   "hidden": [
-    "head_damaged",
-    "tail_damaged",
-    "tail_gore_extra"
+    "head_damaged"
   ]
 }
