@@ -69,8 +69,8 @@ const DEVASTATOR = [
 ];
 
 // Hulk body (internally "lieutenant"); the eye (Head) has no mesh of its own, assign it in the editor
-// the eye: the rectangular plate on the front of the chest (frame, inner frame, eye block)
-const HULK_EYE = [{ mesh: 'chest', name: 'chest_eye', box: [[-0.34, 2.36, -0.8], [0.34, 3.08, -0.3]] }];
+// the eye: the box sticking out of the middle of the chest plate (the frame around it is armor)
+const HULK_EYE = [{ mesh: 'chest', name: 'chest_eye', box: [[-0.17, 2.57, -0.74], [0.17, 2.89, -0.39]] }];
 const HULK = [
   [/^arm_(left|right)$/, 'Arms (2)'],
   [/^leg_(left|right)$/, 'Legs (2)'],
