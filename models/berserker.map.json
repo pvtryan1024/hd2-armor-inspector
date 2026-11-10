@@ -1,0 +1,18 @@
+{
+  "enemy": "berserker",
+  "meshes": {
+    "leg_right_whole": "Leg (2)",
+    "leg_left_whole": "Leg (2)",
+    "hip_whole": "Pelvis",
+    "head_whole": "Head",
+    "torso_whole": "Chest"
+  },
+  "hidden": [
+    "torso_destroyed_upper",
+    "head_destroyed",
+    "torso_destroyed_lower",
+    "hip_destroyed",
+    "leg_right_destroyed",
+    "leg_left_destroyed"
+  ]
+}

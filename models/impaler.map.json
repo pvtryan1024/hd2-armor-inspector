@@ -1,0 +1,42 @@
+{
+  "enemy": "impaler",
+  "meshes": {
+    "torso": "Torso Armor (2)",
+    "leg_right_back": "Leg Armor (4)",
+    "leg_right_front_damaged": "Leg Flesh (4)",
+    "leg_left_front": "Leg Armor (4)",
+    "tail_damaged": "Butt",
+    "head_shield": "Crest Armor",
+    "leg_right_back_damaged": "Leg Flesh (4)",
+    "middle_tentacle": "Tentacle Armor (3)",
+    "head": "Head",
+    "leg_left_front_damaged": "Leg Flesh (4)",
+    "tail": "Rear Armor Plates",
+    "left_tentacle": "Tentacle Armor (3)",
+    "leg_left_back": "Leg Armor (4)",
+    "right_tentacle": "Tentacle Armor (3)",
+    "leg_right_front": "Leg Armor (4)",
+    "leg_left_back_damaged": "Leg Flesh (4)"
+  },
+  "hidden": [
+    "head_destroyed",
+    "claw_left_gibs",
+    "leg_right_front_damaged",
+    "leg_left_front_gibs",
+    "leg_left_back_gibs",
+    "tail_damaged",
+    "torso_gibs_left",
+    "leg_right_back_gibs",
+    "leg_right_back_damaged",
+    "tail_destroyed",
+    "right_tentacle_gibs",
+    "leg_left_front_damaged",
+    "head_shield_gibs",
+    "claw_right_gibs",
+    "leg_right_front_gibs",
+    "middle_tentacle_gibs",
+    "torso_gibs_right",
+    "left_tentacle_gibs",
+    "leg_left_back_damaged"
+  ]
+}

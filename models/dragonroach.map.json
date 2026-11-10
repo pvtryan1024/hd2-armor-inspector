@@ -1,0 +1,21 @@
+{
+  "enemy": "dragonroach",
+  "meshes": {
+    "claw_right_whole": "Claws (2)",
+    "stomach_whole": "Abdomen Armor",
+    "head_whole": "Head",
+    "body_left_whole": "Carapace (2)",
+    "claw_left_whole": "Claws (2)",
+    "body_right_whole": "Carapace (2)",
+    "stomach_damaged": "Abdomen Innards"
+  },
+  "hidden": [
+    "claw_left_damaged",
+    "tail_damaged",
+    "head_damaged",
+    "tail_gib",
+    "claw_right_damaged",
+    "body_right_damaged",
+    "stomach_damaged"
+  ]
+}

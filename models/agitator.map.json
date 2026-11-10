@@ -1,0 +1,19 @@
+{
+  "enemy": "agitator",
+  "meshes": {
+    "right_shoulderpad": "Pauldrons (2)",
+    "armor_torso": "Torso Armor",
+    "armor_head": "Helmet",
+    "left_shoulderpad": "Pauldrons (2)",
+    "left_arm_whole": "Upper Arms (2)",
+    "body_whole": "Torso",
+    "head_whole": "Head",
+    "right_arm_whole": "Upper Arms (2)"
+  },
+  "hidden": [
+    "torso_gib",
+    "right_arm_damaged",
+    "left_arm_damaged",
+    "head_damaged"
+  ]
+}

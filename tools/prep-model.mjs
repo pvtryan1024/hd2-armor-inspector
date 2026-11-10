@@ -31,16 +31,82 @@ const CHARGER = [
   [/^head_damaged$/, 'Head'],
 ];
 
+// Bile Titans: 3 armor plates per leg (inner, outer top, outer bottom); the tail is the butt armor
+const BILE_TITAN = [
+  [/^head$/, 'Head'],
+  [/^torso$/, 'Torso Armor (2)'],
+  [/^tail$/, 'Butt Armor'],
+  [/^claw_(left|right)$/, 'Claws (2)'],
+  [/^leg_(left|right)_(front|back)_(inner|outer_top|outer_bottom)$/, 'Leg Armor (12)'],
+  [/^head_damaged$/, 'Head'],
+];
+
+// Automaton "soldier" body shared by the Devastators (intact pieces end in _whole)
+const DEVASTATOR = [
+  [/^head(_whole)?$/, 'Head'],
+  [/^torso(_whole)?$/, 'Torso'],
+  [/^hip(_whole)?$/, 'Pelvis'],
+  [/^leg_(left|right)(_whole)?$/, 'Legs (2)'],
+  [/^shoulder_(left|right)$/, 'Shoulders (2)'],
+];
+
 const SOURCES = {
   charger: { src: 'content/fac_bugs/cha_charger/cha_charger.unit.glb', rules: CHARGER },
   'charger-behemoth': { src: 'content/fac_bugs/cha_charger_bull/cha_charger_bull.unit.glb', rules: CHARGER },
   // the Rupture's front legs are its digging plates (Frontal Tarsal Plate Armor, AV5)
   'rupture-charger': { src: 'content/fac_bugs/cha_charger_burrower/cha_charger_burrower.unit.glb', rules: [[/^(left|right)_front_leg$/, 'Frontal Tarsal Plate Armor (2)'], ...CHARGER] },
   'caustic-charger': { src: 'content/fac_bugs/cha_charger_acid/cha_charger_acid.unit.glb', rules: [[/_blob$/, 'Spore Flesh (6)'], ...CHARGER] },
+  'bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider.unit.glb', rules: BILE_TITAN },
+  'spore-burst-bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider_gloom.unit.glb', rules: BILE_TITAN },
+  impaler: {
+    src: 'content/fac_bugs/cha_impaler/cha_impaler.unit.glb',
+    rules: [
+      [/^head$/, 'Head'],
+      [/^head_shield$/, 'Crest Armor'],
+      [/^(left|middle|right)_tentacle$/, 'Tentacle Armor (3)'],
+      [/^torso$/, 'Torso Armor (2)'],
+      [/^leg_(left|right)_(front|back)$/, 'Leg Armor (4)'],
+      [/^leg_(left|right)_(front|back)_damaged$/, 'Leg Flesh (4)'],
+      [/^tail$/, 'Rear Armor Plates'],
+      [/^tail_damaged$/, 'Butt'],
+    ],
+  },
+  dragonroach: {
+    src: 'content/fac_bugs/cha_dragon/cha_dragon.unit.glb',
+    rules: [
+      [/^head(_whole)?$/, 'Head'],
+      [/^claw_(left|right)(_whole)?$/, 'Claws (2)'],
+      [/^body_(left|right)(_whole)?$/, 'Carapace (2)'],
+      [/^stomach(_whole)?$/, 'Abdomen Armor'],
+      [/^stomach_damaged$/, 'Abdomen Innards'],
+    ],
+  },
+  devastator: { src: 'content/fac_cyborgs/cha_soldier/cha_soldier.unit.glb', rules: DEVASTATOR },
+  'heavy-devastator': { src: 'content/fac_cyborgs/cha_soldier/cha_soldier_heavy_weapon.unit.glb', rules: [[/^weapon_backpack(_whole)?$/, 'Backpack'], ...DEVASTATOR] },
+  'rocket-devastator': { src: 'content/fac_cyborgs/cha_soldier/cha_soldier_rocket.unit.glb', rules: [[/^backpack_rockets$/, 'Rockets'], [/^rocket_pods(_whole)?$/, 'Rocket Pods'], ...DEVASTATOR] },
+  berserker: {
+    src: 'content/fac_cyborgs/cha_berserker/cha_berserker.unit.glb',
+    rules: [[/^head(_whole)?$/, 'Head'], [/^torso(_whole)?$/, 'Chest'], [/^hip(_whole)?$/, 'Pelvis'], [/^leg_(left|right)(_whole)?$/, 'Leg (2)']],
+  },
+  commissar: {
+    src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb',
+    rules: [[/^arm_(left|right)$/, 'Arms (2)'], [/^leg_(left|right)$/, 'Legs (2)'], [/^(chest|torso|back)$/, 'Torso']],
+  },
+  agitator: {
+    src: 'content/fac_cyborgs/cha_cyborg_elite/cha_cyborg_elite_rusher.unit.glb',
+    rules: [
+      [/^armor_head$/, 'Helmet'],
+      [/^armor_torso$/, 'Torso Armor'],
+      [/^head(_whole)?$/, 'Head'],
+      [/^body(_whole)?$/, 'Torso'],
+      [/^(left|right)_shoulderpad$/, 'Pauldrons (2)'],
+      [/^(left|right)_arm(_whole)?$/, 'Upper Arms (2)'],
+    ],
+  },
 };
 
 const DROP = /shadow|collision|culling|_lod[1-9]\b|LOD[1-9]$/i;          // not needed on the web
-const HIDE = /_(damaged|gibs?|destroyed|hurt|split|stump|gore\w*)$/i;  // alternate states of a piece
+const HIDE = /_(damaged|gibs?|destroyed|hurt|split|stump|gore\w*)($|_)/i;  // alternate states of a piece ("torso_destroyed_lower" too)
 const clean = (name) => (name || '').replace(/^g_\S*\s+/, '').trim() || name;
 
 async function prep(id) {

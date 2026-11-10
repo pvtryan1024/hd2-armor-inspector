@@ -1,0 +1,23 @@
+{
+  "enemy": "rocket-devastator",
+  "meshes": {
+    "backpack_rockets": "Rockets",
+    "shoulder_right": "Shoulders (2)",
+    "leg_right_whole": "Legs (2)",
+    "shoulder_left": "Shoulders (2)",
+    "torso_whole": "Torso",
+    "leg_left_whole": "Legs (2)",
+    "hip_whole": "Pelvis",
+    "rocket_pods_whole": "Rocket Pods",
+    "head_whole": "Head"
+  },
+  "hidden": [
+    "rocket_pods_destroyed",
+    "leg_left_destroyed",
+    "head_destroyed",
+    "torso_destroyed_lower",
+    "torso_destroyed",
+    "leg_right_destroyed",
+    "hip_destroyed"
+  ]
+}

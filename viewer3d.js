@@ -121,7 +121,8 @@ function partIndexFor(entry, key) {
 const VARIANT = /_(damaged|gibs?|destroyed|hurt)$/i;
 // a mesh with several materials loads as numbered sub-meshes ("right_front_leg_1", "_2"): same piece
 const primOf = (key) => key.replace(/_\d+$/, '');
-const baseOf = (key) => primOf(key).replace(VARIANT, '');
+// "head_whole" (intact, Automaton models) and "head_destroyed" are the same piece as "head"
+const baseOf = (key) => primOf(key).replace(VARIANT, '').replace(/_whole$/i, '');
 const stageOf = (key) => { const p = primOf(key); return /_damaged$/i.test(p) ? 1 : /_(gibs?|destroyed)$/i.test(p) ? 2 : /_hurt$/i.test(p) ? 3 : 0; };
 
 /** Which piece of a counted part a mesh is: pieces ordered by base name (left before right), so a

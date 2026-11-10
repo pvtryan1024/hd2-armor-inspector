@@ -1,0 +1,22 @@
+{
+  "enemy": "heavy-devastator",
+  "meshes": {
+    "weapon_backpack_whole": "Backpack",
+    "leg_right_whole": "Legs (2)",
+    "shoulder_left": "Shoulders (2)",
+    "hip_whole": "Pelvis",
+    "shoulder_right": "Shoulders (2)",
+    "head_whole": "Head",
+    "torso_whole": "Torso",
+    "leg_left_whole": "Legs (2)"
+  },
+  "hidden": [
+    "torso_destroyed",
+    "leg_left_destroyed",
+    "head_destroyed",
+    "torso_destroyed_lower",
+    "weapon_backpack_destroyed",
+    "leg_right_destroyed",
+    "hip_destroyed"
+  ]
+}
