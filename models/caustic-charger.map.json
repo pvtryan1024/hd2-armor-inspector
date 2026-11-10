@@ -36,7 +36,8 @@
     "left_front_leg_gib_1": "Main",
     "left_front_leg_gib_2": "Main",
     "head_1": "Spore Flesh (6)",
-    "butt_plates": "Rear Armor Plates"
+    "butt_plates": "Rear Armor Plates",
+    "body_underside": "Underside"
   },
   "hidden": [
     "butt_hurt",

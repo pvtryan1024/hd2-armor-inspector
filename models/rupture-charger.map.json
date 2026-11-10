@@ -19,7 +19,8 @@
     "side_left": "Torso Armor (2)",
     "claw_right": "Claws (2)",
     "body": "Main",
-    "butt_plates": "Rear Armor Plates"
+    "butt_plates": "Rear Armor Plates",
+    "body_underside": "Underside"
   },
   "hidden": [
     "butt_damaged",
