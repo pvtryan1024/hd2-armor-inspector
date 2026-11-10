@@ -1,0 +1,22 @@
+{
+  "enemy": "jet-brigade-devastator",
+  "meshes": {
+    "leg_right_whole": "Legs (2)",
+    "head_whole": "Head",
+    "hip_whole": "Pelvis",
+    "leg_left_whole": "Legs (2)",
+    "torso_whole": "Torso",
+    "shoulder_right": "Shoulders (2)",
+    "shoulder_left": "Shoulders (2)",
+    "jetpack": "Jetpack"
+  },
+  "hidden": [
+    "leg_left_destroyed",
+    "hip_destroyed",
+    "torso_destroyed",
+    "sigil_destroyed",
+    "torso_destroyed_lower",
+    "head_destroyed",
+    "leg_right_destroyed"
+  ]
+}

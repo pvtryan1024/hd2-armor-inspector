@@ -1,0 +1,17 @@
+{
+  "enemy": "dropship",
+  "meshes": {
+    "front_right_thruster": "Thruster (4)",
+    "front_left_thruster": "Thruster (4)",
+    "back_left_thruster": "Thruster (4)",
+    "back_right_thruster": "Thruster (4)",
+    "body": "Fuselage"
+  },
+  "hidden": [
+    "back_right_thruster_damaged",
+    "front_left_thruster_damaged",
+    "body_damaged",
+    "front_right_thruster_damaged",
+    "back_left_thruster_damaged"
+  ]
+}

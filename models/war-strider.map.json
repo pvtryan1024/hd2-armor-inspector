@@ -1,0 +1,21 @@
+{
+  "enemy": "war-strider",
+  "meshes": {
+    "right_leg_whole": "Legs (2)",
+    "body_whole": "Torso",
+    "right_rocketpod_whole": "Grenade Launchers (2)",
+    "left_rocketpod_whole": "Grenade Launchers (2)",
+    "left_leg_whole": "Legs (2)",
+    "platform_whole": "Crotch",
+    "cannon_left": "Fusion Cannons (2)",
+    "cannon_right": "Fusion Cannons (2)"
+  },
+  "hidden": [
+    "platform_damaged",
+    "body_damaged",
+    "right_rocketpod_damaged",
+    "left_leg_damaged",
+    "right_leg_damaged",
+    "left_rocketpod_damaged"
+  ]
+}

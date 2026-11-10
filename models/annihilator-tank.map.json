@@ -1,0 +1,23 @@
+{
+  "enemy": "annihilator-tank",
+  "meshes": {
+    "body_right": "Hull Sides (2)",
+    "tracks_left": "Tracks (2)",
+    "rear": "Engine Bay",
+    "front": "Hull Front",
+    "tracks_right": "Tracks (2)",
+    "body_left": "Hull Sides (2)",
+    "udim 0": "Hull Main",
+    "turret": "Turret Front"
+  },
+  "hidden": [
+    "front_damaged",
+    "body_right_damaged",
+    "tracks_right_damaged",
+    "rear_damaged",
+    "tracks_left_damaged",
+    "body_left_damaged",
+    "turret_damaged",
+    "turret_damaged"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "enemy": "gunship",
+  "meshes": {
+    "l_back_engine": "Rear Thrusters (2)",
+    "body": "Fuselage",
+    "r_front_engine": "Front Thrusters (2)",
+    "r_back_engine": "Rear Thrusters (2)",
+    "l_front_engine": "Front Thrusters (2)"
+  },
+  "hidden": [
+    "body_damaged",
+    "r_back_engine_damaged",
+    "l_front_engine_damaged",
+    "l_back_engine_damaged",
+    "r_front_engine_damaged"
+  ]
+}

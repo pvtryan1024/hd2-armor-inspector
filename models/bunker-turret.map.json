@@ -1,0 +1,7 @@
+{
+  "enemy": "bunker-turret",
+  "meshes": {
+    "g_body": "Main"
+  },
+  "hidden": []
+}

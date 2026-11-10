@@ -1,0 +1,18 @@
+{
+  "enemy": "radical",
+  "meshes": {
+    "body_whole": "Main",
+    "right_arm_whole": "Upper Arms (2)",
+    "left_arm_whole": "Upper Arms (2)",
+    "head_whole": "Head",
+    "left_shoulderpad": "Pauldron",
+    "right_shoulderpad": "Pauldron",
+    "armor_torso": "Torso Circuits"
+  },
+  "hidden": [
+    "head_damaged",
+    "right_arm_damaged",
+    "left_arm_damaged",
+    "torso_gib"
+  ]
+}

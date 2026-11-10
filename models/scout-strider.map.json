@@ -1,0 +1,14 @@
+{
+  "enemy": "scout-strider",
+  "meshes": {
+    "r_hip": "Waist",
+    "l_hip": "Waist",
+    "body": "Main",
+    "legs": "Legs (2)"
+  },
+  "hidden": [
+    "body_damaged",
+    "l_hip_damaged",
+    "r_hip_damaged"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "enemy": "vox-engine",
+  "meshes": {
+    "right_rocket": "Missile Launchers (2)",
+    "left_rocket": "Missile Launchers (2)",
+    "right_back_tracks_whole": "Tracks (4)",
+    "boss_lid": "Hatches (2)",
+    "vent_under_damaged": "Vents (6)",
+    "left_back_knee": "Trackpod Latches (4)",
+    "body_whole": "Undercarriage",
+    "left_flap": "Torso Flaps (2)",
+    "left_back_tracks_whole": "Tracks (4)",
+    "right_front_knee": "Trackpod Latches (4)",
+    "vent_under": "Vents (6)",
+    "sarcophagus": "Sarcophagus",
+    "right_back_knee": "Trackpod Latches (4)",
+    "vent_sarcophagus": "Vents (6)",
+    "vent_back_bar": "Vents (6)",
+    "right_speaker": "Speakers (2)",
+    "left_front_tracks_whole": "Tracks (4)",
+    "right_front_tracks_whole": "Tracks (4)",
+    "left_front_knee": "Trackpod Latches (4)",
+    "torso_whole": "Torso",
+    "right_flap": "Torso Flaps (2)",
+    "left_speaker": "Speakers (2)"
+  },
+  "hidden": [
+    "torso_damaged",
+    "body_damaged",
+    "right_front_tracks_damaged",
+    "left_front_tracks_damaged",
+    "left_back_tracks_damaged",
+    "right_back_tracks_damaged",
+    "right_rocket_damaged",
+    "left_rocket_damaged",
+    "vent_under_damaged",
+    "right_speaker_damaged",
+    "left_speaker_damaged"
+  ]
+}

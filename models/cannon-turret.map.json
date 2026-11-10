@@ -1,0 +1,10 @@
+{
+  "enemy": "cannon-turret",
+  "meshes": {
+    "body": "Main",
+    "body_damaged": "Main"
+  },
+  "hidden": [
+    "body_damaged"
+  ]
+}

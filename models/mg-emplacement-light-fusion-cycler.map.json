@@ -1,0 +1,7 @@
+{
+  "enemy": "mg-emplacement-light-fusion-cycler",
+  "meshes": {
+    "g_gun": "Main"
+  },
+  "hidden": []
+}

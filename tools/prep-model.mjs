@@ -71,7 +71,45 @@ const GEAR = {
   hulkSaw: W + 'weapons/lieutenant_saw/lieutenant_saw.unit.glb',
   hulkJetpack: W + 'backpacks/lieutenant_jetpack/lieutenant_jetpack.unit.glb',
 };
+// Automaton bones: head, arm_left/right, leg_left/right, the rest torso
+const BOT_BONES = (bone) => {
+  const b = bone.toLowerCase();
+  if (/(^|_)(head|neck|eye)/.test(b)) return 'head';
+  const side = /^(l_|attach_l_)/.test(b) ? 'left' : /^(r_|attach_r_)/.test(b) ? 'right' : '';
+  if (side && /(shoulder|elbow|forearm|wrist|collar|finger|index|thumb|hand)/.test(b)) return `arm_${side}`;
+  if (side && /(hip|leg|knee|ankle|foot|heel|toe)/.test(b)) return `leg_${side}`;
+  return 'torso';
+};
+Object.assign(GEAR, {
+  cLmg: W + 'weapons/conscript_lmg/conscript_lmg.unit.glb',
+  cLmgPack: W + 'backpacks/conscript_backpack_lmg/conscript_backpack_lmg.unit.glb',
+  cCannon: W + 'weapons/conscript_cannon/conscript_cannon.unit.glb',
+  cFlamer: W + 'weapons/conscript_flamer/conscript_flamer.unit.glb',
+  cJump: W + 'backpacks/conscript_jumppack/conscript_jumppack.unit.glb',
+  sJump: W + 'backpacks/soldier_jumppack/soldier_jumppack.unit.glb',
+  tankCannon: 'content/fac_cyborgs/turrets/cyborg_tank_turret_cannon/cyborg_tank_turret_cannon.unit.glb',
+  tankAuto: 'content/fac_cyborgs/turrets/cyborg_tank_turret_autocannons/cyborg_tank_turret_autocannons.unit.glb',
+  tankRockets: 'content/fac_cyborgs/turrets/cyborg_tank_turret_rocketlauncher/cyborg_tank_turret_rocketlauncher.unit.glb',
+  tankMg: 'content/fac_cyborgs/turrets/cyborg_tank_hull_hmg/cyborg_tank_hull_mg.unit.glb',
+  walkerCannon: 'content/fac_cyborgs/turrets/cyborg_big_walker_turret_cannon/cyborg_big_walker_turret_cannon.unit.glb',
+});
+const JUMP = { src: GEAR.cJump, bone: 'attach_backpack', name: 'jetpack', part: 'Jetpack' };
 const LOADOUT = {
+  'mg-raider': [{ src: GEAR.cLmg, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.cLmgPack, bone: 'attach_backpack', name: 'backpack', part: 'Backpack' }],
+  'jet-brigade-mg-raider': [{ src: GEAR.cLmg, bone: 'attach_r_hand', name: 'weapon_right' }, JUMP],
+  'rocket-raider': [{ src: GEAR.cCannon, bone: 'attach_r_hand', name: 'weapon_right', part: 'Right Arm' }],
+  'incendiary-rocket-raider': [{ src: GEAR.cCannon, bone: 'attach_r_hand', name: 'weapon_right' }],
+  'pyro-trooper': [{ src: GEAR.cFlamer, bone: 'attach_r_hand', name: 'weapon_right' }],
+  'assault-raider': [JUMP],
+  'jet-brigade-trooper': [JUMP],
+  'jet-brigade-commissar': [JUMP],
+  'jet-brigade-devastator': [{ src: GEAR.rifle, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.sJump, bone: 'attach_backpack', name: 'jetpack', part: 'Jetpack' }],
+  'conflagration-devastator': [{ src: GEAR.shield, bone: 'attach_shield', name: 'shield', part: 'Shield' }],
+  'incendiary-mg-devastator': [{ src: GEAR.machinegun, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.shield, bone: 'attach_shield', name: 'shield', part: 'Shield' }],
+  'annihilator-tank': [{ src: GEAR.tankCannon, bone: 'attach_turret', name: 'turret', part: 'Turret Front' }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
+  'shredder-tank': [{ src: GEAR.tankAuto, bone: 'attach_turret', name: 'turret', part: 'Turret Front and Sides' }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
+  'barrager-tank': [{ src: GEAR.tankRockets, bone: 'attach_turret', name: 'turret', part: 'Launch Tubes' }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
+  'war-strider': [{ src: GEAR.walkerCannon, bone: 'attach_left_gun', name: 'cannon_left', part: 'Fusion Cannons (2)' }, { src: GEAR.walkerCannon, bone: 'attach_right_gun', name: 'cannon_right', part: 'Fusion Cannons (2)' }],
   devastator: [{ src: GEAR.rifle, bone: 'attach_r_hand', name: 'weapon_right' }],
   'heavy-devastator': [{ src: GEAR.machinegun, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.shield, bone: 'attach_shield', name: 'shield', part: 'Shield' }],
   berserker: [{ src: GEAR.chainsaw, bone: 'attach_l_hand', name: 'chainsaw_left', part: 'Arm (2)' }, { src: GEAR.chainsaw, bone: 'attach_r_hand', name: 'chainsaw_right', part: 'Arm (2)' }],
@@ -229,6 +267,13 @@ const warriorBody = (rules) => { const b = bugBody('Main', rules); b.split.skinn
 const WARRIOR = warriorBody([[/^claw_/, 'Claws (2)'], [/^leg_/, 'Legs (4)']]);
 const SPEWER = bugBody('Main', [[/^butt$/i, 'Butt'], [/^leg_\w+_front$/, 'Front Legs (2)'], [/^leg_\w+_back$/, 'Rear Legs (2)']]);
 
+const CY = 'content/fac_cyborgs/';
+const TROOPER = { split: { mesh: /^body$/, bones: BOT_BONES }, rules: [[/^head$/, 'Head'], [/^arm_/, 'Arms (2)'], [/^leg_/, 'Legs (2)'], [/^(torso|collar_\w+)$/, 'Torso']] };
+const trooper = (file, extra = []) => ({ src: CY + 'cha_conscript/' + file, ...TROOPER, rules: [...extra, ...TROOPER.rules] });
+const TANK_HULL = [[/^front$/, 'Hull Front'], [/^body_(left|right)$/, 'Hull Sides (2)'], [/^rear$/, 'Engine Bay'], [/^tracks_(left|right)$/, 'Tracks (2)'], [/^udim 0$/, 'Hull Main']];
+const tank = (sides) => ({ src: CY + 'vehicles/cyborg_tank/cyborg_tank.unit.glb', boneNames: false, rules: TANK_HULL.map(([re, p]) => [re, p === 'Hull Sides (2)' ? sides : p]) });
+const MAIN_ONLY = [[/./, 'Main']];
+
 const SOURCES = {
   charger: { src: 'content/fac_bugs/cha_charger/cha_charger.unit.glb', rules: CHARGER },
   'charger-behemoth': { src: 'content/fac_bugs/cha_charger_bull/cha_charger_bull.unit.glb', rules: CHARGER },
@@ -299,6 +344,48 @@ const SOURCES = {
   'caustic-spewer': { src: BG + 'cha_boomer/cha_boomer.unit.glb', ...SPEWER },
   'noxious-spewer': { src: BG + 'cha_boomer_defiler/cha_boomer_defiler.unit.glb', ...SPEWER },
   'rupture-spewer': { src: BG + 'cha_boomer_burrower/cha_boomer_burrower.unit.glb', ...SPEWER },
+  // automatons
+  trooper: trooper('cha_conscript.unit.glb'),
+  'mg-raider': trooper('cha_conscript.unit.glb'),
+  'jet-brigade-mg-raider': trooper('cha_conscript.unit.glb'),
+  'rocket-raider': trooper('cha_conscript.unit.glb', [[/^arm_left$/, 'Left Arm'], [/^arm_right$/, 'Right Arm']]),
+  'incendiary-rocket-raider': trooper('cha_conscript.unit.glb'),
+  'assault-raider': trooper('cha_conscript.unit.glb'),
+  'jet-brigade-trooper': trooper('cha_conscript.unit.glb'),
+  'pyro-trooper': trooper('cha_conscript.unit.glb'),
+  marauder: trooper('cha_conscript_tier_2.unit.glb'),
+  'jet-brigade-commissar': { src: CY + 'cha_conscript_commander/cha_conscript_commander.unit.glb', ...TROOPER },
+  radical: {
+    src: CY + 'cha_cyborg_elite/cha_elite_female.unit.glb',
+    rules: [[/^head(_whole)?$/, 'Head'], [/^armor_torso$/, 'Torso Circuits'], [/^(left|right)_shoulderpad$/, 'Pauldron'], [/^(left|right)_arm(_whole)?$/, 'Upper Arms (2)'], [/^body(_whole)?$/, 'Main']],
+  },
+  'jet-brigade-devastator': { src: CY + 'cha_soldier/cha_soldier.unit.glb', rules: DEVASTATOR },
+  'conflagration-devastator': { src: CY + 'cha_soldier/cha_soldier_heavy_weapon.unit.glb', rules: [[/^weapon_backpack(_whole)?$/, 'Main'], ...DEVASTATOR] }, // the shield body
+  'incendiary-mg-devastator': { src: CY + 'cha_soldier/cha_soldier_heavy_weapon.unit.glb', rules: [[/^weapon_backpack(_whole)?$/, 'Main'], ...DEVASTATOR] }, // the shield body
+  'annihilator-tank': tank('Hull Sides (2)'),
+  'shredder-tank': tank('Hull Side (2)'),
+  'barrager-tank': tank('Hull Sides (2)'),
+  'war-strider': {
+    src: CY + 'vehicles/cyborg_assault_walker/cyborg_assault_walker.unit.glb',
+    rules: [[/^body(_whole)?$/, 'Torso'], [/^(left|right)_leg(_whole)?$/, 'Legs (2)'], [/^(left|right)_rocketpod(_whole)?$/, 'Grenade Launchers (2)'], [/^platform(_whole)?$/, 'Crotch']],
+  },
+  'scout-strider': { src: CY + 'vehicles/cyborg_walker_scout/cyborg_walker_scout.unit.glb', rules: [[/^[lr]_hip$/, 'Waist'], [/^legs$/, 'Legs (2)'], [/^body$/, 'Main']] },
+  'reinforced-scout-strider': { src: CY + 'vehicles/cyborg_walker_scout/cyborg_walker_scout.unit.glb', rules: [[/^[lr]_hip$/, 'Waist'], [/^legs$/, 'Legs (2)'], [/^body$/, 'Main']] },
+  gunship: { src: CY + 'vehicles/cyborg_gunship/cyborg_gunship.unit.glb', rules: [[/^body$/, 'Fuselage'], [/^[lr]_front_engine$/, 'Front Thrusters (2)'], [/^[lr]_back_engine$/, 'Rear Thrusters (2)']] },
+  dropship: { src: CY + 'vehicles/cyborg_dropship/cyborg_dropship.unit.glb', rules: [[/^body$/, 'Fuselage'], [/thruster$/, 'Thruster (4)']] },
+  'vox-engine': {
+    src: CY + 'vehicles/cyborg_siege_engine/cyborg_siege_engine.unit.glb',
+    rules: [
+      [/^sarcophagus$/, 'Sarcophagus'], [/^torso(_whole)?$/, 'Torso'], [/^(left|right)_rocket$/, 'Missile Launchers (2)'],
+      [/^(left|right)_speaker$/, 'Speakers (2)'], [/^(left|right)_flap$/, 'Torso Flaps (2)'], [/^(left|right)_(front|back)_tracks(_whole)?$/, 'Tracks (4)'],
+      [/^(left|right)_(front|back)_knee$/, 'Trackpod Latches (4)'], [/^vent_/, 'Vents (6)'], [/^boss_lid$/, 'Hatches (2)'], [/^body(_whole)?$/, 'Undercarriage'],
+    ],
+  },
+  'automaton-fabricator': { src: CY + 'vehicles/cyborg_spawner/cyborg_spawner.unit.glb', boneNames: false, rules: MAIN_ONLY },
+  'cannon-turret': { src: CY + 'turrets/cyborg_turret_small_autocannon/cyborg_turret_small_autocannon.unit.glb', rules: MAIN_ONLY },
+  'bunker-turret': { src: CY + 'turrets/cyborg_turret_command_bunker_hmg/cyborg_turret_command_bunker_hmg.unit.glb', rules: MAIN_ONLY },
+  'mg-emplacement-light-fusion-cycler': { src: CY + 'emplacements/cyborg_emplacement_mg/cyborg_emplacement_mg.unit.glb', rules: MAIN_ONLY },
+  'mg-emplacement-heavy-fusion-repeater': { src: CY + 'emplacements/cyborg_emplacement_hmg/cyborg_emplacement_hmg.unit.glb', rules: MAIN_ONLY },
   'light-voteless': { src: IL + 'cha_corrupted/cha_corrupted.unit.glb', rules: VOTELESS },
   'medium-voteless': { src: IL + 'cha_corrupted/cha_corrupted_v2.unit.glb', rules: VOTELESS },
   'heavy-voteless': { src: IL + 'cha_corrupted/cha_corrupted_v3.unit.glb', rules: VOTELESS },
@@ -385,7 +472,8 @@ async function prep(id) {
     for (const n of adoc.getRoot().listNodes()) {
       if (!n.getMesh()) continue;
       if (!meshes.includes(n) || lodOf(n) !== best) { n.dispose(); continue; }
-      n.setName(a.name); n.getMesh().setName(a.name);
+      const state = (/_(damaged?|destroyed|gibs?|whole)$/i.exec(clean(n.getName())) || [''])[0].replace(/_whole$/i, '');
+      n.setName(a.name + state); n.getMesh().setName(a.name + state);
     }
     const aScene = adoc.getRoot().listScenes()[0];
     // its skeleton sits under its own axis-conversion node; the bone is already in the game's axes
@@ -413,15 +501,15 @@ async function prep(id) {
 
   // keep the most detailed level present (the Overseers only ship LOD1: "g_champion_LOD1 head")
   const lodLevel = (n) => +(/LOD(\d)/i.exec(n) || [0, 0])[1];
-  const bodyMeshes = root.listNodes().filter((n) => n.getMesh() && !/shadow|collision|culling/i.test(n.getName()) && !gearNames.some((g) => g.name === n.getName()));
+  const bodyMeshes = root.listNodes().filter((n) => n.getMesh() && !/shadow|collision|culling/i.test(n.getName()) && !gearNames.some((g) => n.getName().startsWith(g.name)));
   const bestLod = bodyMeshes.length ? Math.min(...bodyMeshes.map((n) => lodLevel(n.getName()))) : 0;
   const names = [];
   for (const node of root.listNodes()) {
     const mesh = node.getMesh();
     if (!mesh) continue;
-    const isGear = gearNames.some((g) => g.name === node.getName());
+    const isGear = gearNames.some((g) => node.getName().startsWith(g.name));
     if (!isGear && (/shadow|collision|culling/i.test(node.getName()) || lodLevel(node.getName()) !== bestLod)) { node.dispose(); continue; }
-    const n = gearNames.some((a) => a.name === node.getName()) ? node.getName() : clean(node.getName());
+    const n = gearNames.some((a) => node.getName().startsWith(a.name)) ? node.getName() : clean(node.getName());
     node.setName(n);
     mesh.setName(n);
     names.push(n);
@@ -486,6 +574,7 @@ async function prep(id) {
       const key = cfg.boneGroups && n.startsWith('b_') ? cfg.boneGroups(n.slice(2).replace(/_\d+$/, '')) : n;
       const rule = cfg.rules.find(([re]) => re.test(key));
       const gear = gearNames.find((a) => a.name === n && a.part);
+      if (!gear && gearNames.some((a) => n.startsWith(a.name)) && HIDE.test(n)) map.hidden.push(n);
       if (gear) map.meshes[n] = gear.part;
       else if (rule) map.meshes[n] = rule[1];
       if (HIDE.test(n)) map.hidden.push(n);

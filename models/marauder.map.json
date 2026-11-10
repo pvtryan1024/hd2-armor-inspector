@@ -1,0 +1,16 @@
+{
+  "enemy": "marauder",
+  "meshes": {
+    "head": "Head",
+    "collar_right": "Torso",
+    "collar_left": "Torso",
+    "leg_left": "Legs (2)",
+    "torso": "Torso",
+    "leg_right": "Legs (2)",
+    "arm_right": "Arms (2)",
+    "arm_left": "Arms (2)"
+  },
+  "hidden": [
+    "head_destroyed"
+  ]
+}

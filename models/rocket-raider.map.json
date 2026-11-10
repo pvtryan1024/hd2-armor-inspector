@@ -1,0 +1,17 @@
+{
+  "enemy": "rocket-raider",
+  "meshes": {
+    "head": "Head",
+    "collar_right": "Torso",
+    "collar_left": "Torso",
+    "weapon_right": "Right Arm",
+    "torso": "Torso",
+    "leg_left": "Legs (2)",
+    "arm_right": "Right Arm",
+    "arm_left": "Left Arm",
+    "leg_right": "Legs (2)"
+  },
+  "hidden": [
+    "head_destroyed"
+  ]
+}
