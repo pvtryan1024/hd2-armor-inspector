@@ -144,6 +144,13 @@
 
   /* Stateful simulation: shared by the shots-to-kill numbers and fire mode.
    * Parts with a count, e.g. "Claws (2)", track each instance; shots hit the first one still standing. */
+  /** A part's constitution: extra pool after its health is gone, during which it can still be hit. */
+  const consOf = (p) => (p.indestructible ? 0 : p.cons || 0);
+  /** Gone for good: health and constitution both used up, so the hitbox is gone too. */
+  const instGone = (p, h) => h <= -consOf(p);
+  const partGone = (sim, enemy, idx) => !!sim.hp[idx] && sim.hp[idx].every((h) => instGone(enemy.parts[idx], h));
+  const bleedNote = (p) => (p.cons && p.bleed < 0 ? ` (bleeds out in ${fmtTime(p.cons / -p.bleed)})` : '');
+
   function newSim(enemy) {
     return {
       hp: enemy.parts.map((p) => (isMainRow(p) || typeof p.health !== 'number' ? null : Array(p.count || 1).fill(p.health))),
@@ -168,9 +175,11 @@
       out.toMain = s.total * toMain + s.mainEx;
     } else {
       const inst = sim.hp[idx];
-      const k = want != null ? (inst[want] > 0 ? want : -1) : inst.findIndex((h) => h > 0);
+      const cons = consOf(part);
+      const k = want != null ? (instGone(part, inst[want]) ? -1 : want) : inst.findIndex((h) => !instGone(part, h));
       if (k >= 0) {
-        const capped = part.overflow ? s.total : Math.min(s.total, inst[k]);
+        const wasUp = inst[k] > 0;
+        const capped = part.overflow ? s.total : Math.min(s.total, inst[k] + cons);
         out.toMain = capped * toMain + s.mainEx;
         if (part.indestructible) {
           if (out.toMain > 0) out.progress = true;
@@ -178,11 +187,14 @@
         }
         inst[k] -= s.total;
         if (s.total > 0) out.progress = true;
-        if (inst[k] <= 0) {
-          out.broke = true;
-          const allGone = inst.every((h) => h <= 0);
-          if ((part.fatal === true || part.fatal === 'downs') && (!part.fatalAll || allGone)) {
-            sim.dead = { how: part.fatal === 'downs' ? 'downed' : 'killed', why: `${part.name} destroyed`, idx };
+        if (wasUp && inst[k] <= 0) out.broke = true;
+        // fatal parts: with a bleed rate the enemy is done once the part breaks (it bleeds out);
+        // with constitution that doesn't drain, it has to be shot through the constitution too
+        const fatalNow = cons && !(part.bleed < 0) ? instGone(part, inst[k]) : out.broke;
+        if (fatalNow && (part.fatal === true || part.fatal === 'downs')) {
+          const allDown = inst.every((h) => (cons && !(part.bleed < 0) ? instGone(part, h) : h <= 0));
+          if (!part.fatalAll || allDown) {
+            sim.dead = { how: part.fatal === 'downs' ? 'downed' : 'killed', why: `${part.name} destroyed${bleedNote(part)}`, idx };
           }
         }
       } else {
@@ -198,7 +210,7 @@
         out.progress = true;
         const mp = enemy.parts[mi];
         if (sim.pool[mi] <= 0 && !sim.dead && (/^main$/i.test(mp.name.trim()) || mp.fatal)) {
-          sim.dead = { how: 'killed', why: `${mp.name} health depleted`, idx: mi };
+          sim.dead = { how: 'killed', why: `${mp.name} health depleted${bleedNote(mp)}`, idx: mi };
         }
       }
       return out;
@@ -238,7 +250,7 @@
         break;
       }
       if (!o.progress) break;
-      if (sim.hp[idx] && sim.hp[idx].every((h) => h <= 0)) break; // destroyed: no hitbox left to shoot
+      if (partGone(sim, enemy, idx)) break; // destroyed (constitution too): no hitbox left to shoot
     }
     return res;
   }
@@ -605,15 +617,22 @@
             }
           }
           let left = state.fire ? partLeft(i) : null;
-          if (left && inst != null && left.segs) left = { ...left, frac: left.segs[inst], segs: [left.segs[inst]], label: left.segs[inst] > 0 ? (part.indestructible ? 'Indestructible' : `${fmt(left.segs[inst] * part.health)} HP left`) : 'Destroyed' };
+          if (left && inst != null && left.segs) {
+            const c = left.csegs?.[inst];
+            left = { ...left, frac: left.segs[inst], segs: [left.segs[inst]], csegs: [c], gone: left.gones[inst],
+              label: left.segs[inst] > 0 ? (part.indestructible ? 'Indestructible' : `${fmt(left.segs[inst] * part.health)} HP left`)
+                : c > 0 ? `Broken · ${fmt(c * part.cons)} constitution left` : 'Destroyed' };
+          }
           const fatal = part.fatal === true ? '<span class="fatal" title="Destroying this kills">☠ fatal</span>' : part.fatal === 'downs' ? '<span class="fatal" title="Destroying this downs the enemy">☠ downs</span>' : '';
           const covered = !isExposed(e, i, state.fire ? state.sim : null, inst);
-          return `<div class="tile ${vis ? '' : 'dim'} ${covered ? 'covered' : ''} ${left && left.frac <= 0 ? 'gone' : ''}" data-i="${i}"${inst != null ? ` data-k="${inst}"` : ''} style="--c:${color};${size}" ${covered ? 'title="Behind armor: break the armor first"' : ''}>
+          return `<div class="tile ${vis ? '' : 'dim'} ${covered ? 'covered' : ''} ${left && (left.gone ?? left.frac <= 0) ? 'gone' : ''}" data-i="${i}"${inst != null ? ` data-k="${inst}"` : ''} style="--c:${color};${size}" ${covered ? 'title="Behind armor: break the armor first"' : ''}>
               ${part.hidden ? `<span class="inner-tag">${hiddenTag(part, !covered)}</span>` : part.coveredBy ? `<span class="inner-tag">${coverTag(part, state.fire && isExposed(e, i, state.sim, inst))}</span>` : ''}
               <span class="av">AV${part.av}</span>
               <div class="name">${inst != null ? `${esc(part.name.replace(/\s*\(\d+\)$/, ''))} <span class="muted">${inst + 1}/${n}</span>` : esc(part.name)}</div>
               <div class="row"><span>${part.indestructible ? 'Indestructible' : typeof part.health === 'number' ? fmt(part.health) + ' HP' : 'Main HP'} ${fatal}</span><span><span class="big">${big}</span> ${small}</span></div>
-              ${left ? `<div class="hpbars" title="${esc(left.label)}">${(left.segs || [left.frac]).map((f) => `<div class="hpbar"><b style="width:${Math.max(0, f * 100)}%"></b></div>`).join('')}</div>` : ''}
+              ${left ? `<div class="hpbars" title="${esc(left.label)}">${(left.segs || [left.frac]).map((f, n) => left.csegs?.[n] != null
+                ? `<div class="hpbar cons"><b style="width:${Math.max(0, left.csegs[n] * 100)}%"></b></div>`
+                : `<div class="hpbar"><b style="width:${Math.max(0, f * 100)}%"></b></div>`).join('')}</div>` : ''}
             </div>`;
         })
         .join('');
@@ -764,7 +783,26 @@
 
   function resetSim() {
     const e = enemy();
-    state.sim = e ? { ...newSim(e), enemyId: e.id } : null;
+    state.sim = e ? { ...newSim(e), enemyId: e.id, time: 0, last: null, weapons: new Set(), swaps: 0 } : null;
+  }
+  /** Changing weapon in fire mode keeps the damage done so far, so loadouts can be mixed. */
+  function swapWeapon() {
+    const sim = state.sim;
+    if (!state.fire || !sim || !sim.shots || sim.dead) { resetSim(); return; }
+    const w = weapon();
+    sim.log.unshift(`— switched to ${w.name}${w.modes.length > 1 ? ` (${(w.modes[state.mode] || w.modes[0]).name})` : ''} —`);
+    sim.log.length = Math.min(sim.log.length, 8);
+  }
+  /** Before each fired shot: advance the clock by the weapon's fire interval and note which weapon fired. */
+  function shotClock() {
+    const sim = state.sim, w = weapon();
+    const key = `${w.id}:${state.mode}`;
+    const fm = fireModel(w, w.modes[state.mode] || w.modes[0]);
+    if (sim.last === key) sim.time += fm && fm.kind === 'shot' && fm.interval ? fm.interval : 0;
+    else if (sim.last) sim.swaps++;
+    sim.last = key;
+    sim.weapons.add(w.id);
+    return sim.weapons.size > 1 ? `[${w.name.replace(/^\S+-\d+\S*\s+/, '')}] ` : '';
   }
 
   /** Remaining health of a part in the live simulation, for the HP bars. */
@@ -782,8 +820,13 @@
     const total = p.health * inst.length;
     const sum = inst.reduce((a, h) => a + Math.max(0, h), 0);
     const alive = inst.filter((h) => h > 0).length;
-    if (p.indestructible) return { frac: 1, segs: inst.map(() => 1), label: 'Indestructible', alive: inst.length };
-    return { frac: sum / total, segs: inst.map((h) => Math.max(0, h) / p.health), label: `${alive}/${inst.length} intact · ${fmt(sum)} HP left`, alive };
+    if (p.indestructible) return { frac: 1, segs: inst.map(() => 1), gones: inst.map(() => false), gone: false, label: 'Indestructible', alive: inst.length };
+    const cons = consOf(p);
+    const csegs = inst.map((h) => (cons && h <= 0 ? Math.max(0, cons + h) / cons : null));
+    const gones = inst.map((h) => instGone(p, h));
+    const consLeft = inst.reduce((a, h) => a + (cons && h <= 0 ? Math.max(0, cons + h) : 0), 0);
+    return { frac: sum / total, segs: inst.map((h) => Math.max(0, h) / p.health), csegs, gones, gone: gones.every(Boolean),
+      label: `${alive}/${inst.length} intact · ${fmt(sum)} HP left${consLeft > 0 ? ` · ${fmt(consLeft)} constitution left` : ''}`, alive };
   }
 
   /** hit = { deg } when fired from the 3D view, so the real impact angle picks the AP. */
@@ -807,7 +850,7 @@
     const part = e.parts[i];
     // destroyed parts have no hitbox anymore
     const left = partLeft(i);
-    if (left && !left.main && (k != null && left.segs ? left.segs[k] <= 0 : left.frac <= 0)) return;
+    if (left && !left.main && (k != null && left.gones ? left.gones[k] : left.gone ?? left.frac <= 0)) return;
     if (!isExposed(e, i, state.sim, k)) {
       state.sim.log.unshift(part.coveredBy && !part.hidden
         ? `${part.name} is under ${part.coveredBy} — break it first`
@@ -818,19 +861,19 @@
     }
     const band = hit ? bandOf(hit.deg) : state.band;
     const s = shotDamage(mode, part, e, { ...opts(), band });
+    const tag = shotClock();
     const o = applyShot(state.sim, e, i, s, false, k);
     const label = k != null && (part.count || 1) > 1 ? `${part.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${part.count}` : part.name;
-    state.sim.log.unshift(`#${state.sim.shots} ${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
+    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
     state.sim.log.length = Math.min(state.sim.log.length, 6);
     render();
   }
 
   /** Elapsed time for the shots fired so far, from the weapon's RPM. */
   function fireElapsed(shots) {
-    const w = weapon();
-    const fm = w ? fireModel(w, w.modes[state.mode] || w.modes[0]) : null;
-    if (!fm || fm.kind !== 'shot' || !fm.interval || shots < 2) return '';
-    return `<span class="hud-k">Elapsed</span><span class="hud-v">${fmtTime((shots - 1) * fm.interval)}</span>`;
+    const sim = state.sim;
+    if (!sim || shots < 2 || !sim.time) return '';
+    return `<span class="hud-k">Elapsed</span><span class="hud-v">${fmtTime(sim.time)}${sim.swaps ? ` <span class="muted" title="Time to switch weapons isn't included">+${sim.swaps} swap${sim.swaps > 1 ? 's' : ''}</span>` : ''}</span>`;
   }
 
   function renderFireHud(e) {
@@ -912,12 +955,13 @@
     if (res && state.fire && state.sim && !state.sim.dead) {
       const e = enemy();
       const notes = [];
+      const tag = shotClock();
       res.rows.forEach((r, k) => {
         const o = applyShot(state.sim, e, r.idx, r.s, k > 0);
         if (o.broke) notes.push(`${e.parts[r.idx].name} destroyed`);
       });
       const d = res.rows[0];
-      state.sim.log.unshift(`#${state.sim.shots} ${e.parts[d.idx].name} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : 'ricochet'}${res.rows.length > 1 ? ` + blast on ${res.rows.length - 1} part${res.rows.length > 2 ? 's' : ''}` : ''}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}`);
+      state.sim.log.unshift(`#${state.sim.shots} ${tag}${e.parts[d.idx].name} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : 'ricochet'}${res.rows.length > 1 ? ` + blast on ${res.rows.length - 1} part${res.rows.length > 2 ? 's' : ''}` : ''}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}`);
       state.sim.log.length = Math.min(state.sim.log.length, 6);
     }
     render();
@@ -969,7 +1013,7 @@
     const gone = e.parts.map((_, i) => {
       if (!state.fire) return false;
       const l = partLeft(i);
-      return !!(l && !l.main && l.frac <= 0);
+      return !!(l && !l.main && (l.gone ?? l.frac <= 0));
     });
     const w = weapon();
     const m = w ? w.modes[state.mode] || w.modes[0] : null;
@@ -1132,7 +1176,7 @@
       state.weaponId = li.dataset.id; state.mode = 0;
       state.cat = weaponById(li.dataset.id).category;
       if ($('#weaponSearch').value) $('#weaponSearch').value = '';
-      resetSim(); render();
+      swapWeapon(); render();
     });
     $('#weaponCard').addEventListener('click', (ev) => {
       const b = ev.target.closest('[data-band]'); if (!b) return;
@@ -1150,7 +1194,7 @@
       if (t.id === 'modeSel') state.mode = +t.value;
       if (t.id === 'exChk') state.explosion = t.checked;
       if (t.id === 'pelChk') state.allPellets = t.checked;
-      resetSim();
+      swapWeapon();
       render();
     });
     $('#viewTabs').addEventListener('click', (ev) => {

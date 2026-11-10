@@ -56,6 +56,10 @@ const normPart = (p) => {
   // the scraped field is the wiki's "Overflow Cap?" column: Yes = Main transfer capped at the part's HP.
   // The app's `overflow` means the opposite (excess damage spills into Main), so flip it.
   if (typeof q.overflow === 'boolean') q.overflow = !q.overflow;
+  // Constitution "500 [-0/s]": a second pool after the part's health runs out; the part stays hittable
+  // (and keeps feeding Main) until it's gone. A negative rate drains it on its own (bleeding out).
+  const con = /^\s*([\d,]+)\s*\[\s*(-?[\d,]+)\s*\/s\]/.exec(q.constitution || '');
+  if (con) { q.cons = Number(con[1].replace(/,/g, '')); q.bleed = Math.min(0, Number(con[2].replace(/,/g, ''))); }
   const m =/\((\d+)\)\s*$/.exec(q.name);
   q.count = q.count || (m ? +m[1] : 1);
   return q;

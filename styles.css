@@ -309,6 +309,7 @@ table.data tr.click { cursor: pointer; }
 .hpbar { height: 5px; border-radius: 3px; background: rgba(0,0,0,0.45); overflow: hidden; }
 .hpbar b { display: block; height: 100%; background: var(--text); transition: width 0.15s; }
 .hpbar.wide { width: 140px; }
+.hpbar.cons b { background: #ff9b3d; } /* constitution: broken but still taking hits */
 .hpbar.wide b { background: var(--pen-none); }
 .tile.gone { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
 
