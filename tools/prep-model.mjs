@@ -118,7 +118,7 @@ Object.assign(GEAR, {
   walkerCannon: 'content/fac_cyborgs/turrets/cyborg_big_walker_turret_cannon/cyborg_big_walker_turret_cannon.unit.glb',
 });
 // Scout Strider upper hulls and HMG: unnamed models from its archive (exported by hash into extra/)
-const SCOUT_HMG = { src: 'extra/0x2a346bf4552997e2.unit.glb', bone: 'gun_pitch', name: 'hmg', part: 'HMG' };
+const SCOUT_HMG = { src: 'extra/0x2a346bf4552997e2.unit.glb', bone: 'gun_pitch', name: 'hmg', part: 'HMG', offset: [0, 0, 0.3] }; // raised 0.3 m: the barrels come out through the gap in the front plate
 // Factory Strider ("cyborg_big_walker_skeleton"): leg pieces by bone
 const FS_BONES = (bone) => {
   const b = bone.toLowerCase();
