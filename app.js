@@ -936,12 +936,16 @@
     hud.classList.remove('hidden');
     const sim = state.sim;
     const pools = e.parts.map((p, i) => ({ p, i })).filter(({ i }) => sim.pool[i] != null);
+    // dead some other way than this pool running out (a fatal part destroyed): say so next to its health
+    const deadAt = sim.dead && sim.dead.idx != null && sim.pool[sim.dead.idx] == null ? mainIndexFor(e, sim.dead.idx) : -1;
+    const deadTag = (i) => (i === deadAt || (deadAt < 0 && sim.dead && sim.pool[sim.dead.idx] == null && i === pools[0]?.i)
+      ? `<span class="hud-dead">☠ ${sim.dead.how === 'downed' ? 'Downed' : 'Killed'}: ${esc(sim.dead.why)}</span>` : '');
     hud.innerHTML = `
       <div class="hud-row">
         <span class="hud-k">Shots fired</span><span class="hud-v">${sim.shots}</span>${fireElapsed(sim.shots)}
         ${pools.map(({ p, i }) => `<span class="hud-k">${esc(p.name)}</span>
           <span class="hpbar wide"><b style="width:${Math.max(0, (sim.pool[i] / p.health) * 100)}%"></b></span>
-          <span class="hud-v">${fmt(Math.max(0, sim.pool[i]))}</span>`).join('')}
+          <span class="hud-v">${fmt(Math.max(0, sim.pool[i]))}</span>${deadTag(i)}`).join('')}
         <button class="btn ghost sm" id="resetSim">Reset</button>
       </div>
       <div class="hud-log">${sim.log.length ? sim.log.map((l) => esc(l).replace(/\[\[(\w+)\]\]/g, '<span class="force-tag">$1</span>')).join('<br>') : 'Click a hitzone to fire one shot of the selected weapon.'}</div>`;

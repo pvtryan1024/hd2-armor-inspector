@@ -531,3 +531,6 @@ body.editor .public-only { display: none !important; }
 .lang-switch button svg { width: 28px; height: 18px; display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4); }
 .lang-switch button:hover { opacity: 0.85; }
 .lang-switch button.on { opacity: 1; border-color: var(--accent); }
+
+/* fire HUD: killed without Main running out (a fatal part destroyed) */
+.hud-dead { color: var(--pen-none); font-weight: 700; white-space: nowrap; }
