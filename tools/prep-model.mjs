@@ -90,6 +90,8 @@ const GEAR = {
   hulkLauncher: W + 'weapons/lieutenant_launcher/lieutenant_launcher.unit.glb',
   hulkSaw: W + 'weapons/lieutenant_saw/lieutenant_saw.unit.glb',
   hulkJetpack: W + 'backpacks/lieutenant_jetpack/lieutenant_jetpack.unit.glb',
+  // unnamed: muzzle, muzzle2, cables and a vent; only in the Hulk archives: the Scorcher's flamethrower
+  hulkFlamer: 'extra/0x08886d27a6f6db8c.unit.glb',
 };
 // Automaton bones: head, arm_left/right, leg_left/right, the rest torso
 const BOT_BONES = (bone) => {
@@ -160,10 +162,12 @@ const LOADOUT = {
   'barrager-tank': [{ src: GEAR.tankRockets, bone: 'attach_turret', name: 'turret', part: 'Launch Tubes' }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
   'war-strider': [{ src: 'extra/0x8372619b2702d743.unit.glb', bone: 'attach_left_gun', name: 'cannon_left', part: 'Fusion Cannons (2)' }, { src: 'extra/0x9ab036439f74c115.unit.glb', bone: 'attach_right_gun', name: 'cannon_right', part: 'Fusion Cannons (2)' }],
   devastator: [{ src: GEAR.rifle, bone: 'attach_r_hand', name: 'weapon_right' }],
+  // the gun arm: the body only has the left forearm; the right hand holds the Devastator's gun
+  'rocket-devastator': [{ src: GEAR.rifle, bone: 'attach_r_hand', name: 'weapon_right', part: 'Arms (2)' }],
   'heavy-devastator': [{ src: GEAR.machinegun, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.shield, bone: 'attach_shield', name: 'shield', part: 'Shield' }],
   berserker: [{ src: GEAR.chainsaw, bone: 'attach_l_hand', name: 'chainsaw_left', part: 'Arm (2)' }, { src: GEAR.chainsaw, bone: 'attach_r_hand', name: 'chainsaw_right', part: 'Arm (2)' }],
   'hulk-bruiser': [{ src: GEAR.hulkCannon, bone: 'r_hand_attach', name: 'weapon_right', part: 'Arms (2)' }, { src: GEAR.hulkLauncher, bone: 'l_hand_attach', name: 'weapon_left', part: 'Arms (2)' }],
-  'hulk-scorcher': [{ src: GEAR.hulkSaw, bone: 'l_hand_attach', name: 'weapon_left', part: 'Arms (2)' }],
+  'hulk-scorcher': [{ src: GEAR.hulkSaw, bone: 'l_hand_attach', name: 'weapon_left', part: 'Arms (2)' }, { src: GEAR.hulkFlamer, bone: 'r_hand_attach', name: 'weapon_right', part: 'Arms (2)' }],
 };
 LOADOUT['jet-brigade-hulk-bruiser'] = [...LOADOUT['hulk-bruiser'], { src: GEAR.hulkJetpack, bone: 'attach_backpack_socket', name: 'jetpack', part: 'Jetpack' }];
 LOADOUT['jet-brigade-hulk-scorcher'] = [...LOADOUT['hulk-scorcher'], { src: GEAR.hulkJetpack, bone: 'attach_backpack_socket', name: 'jetpack', part: 'Jetpack' }];
@@ -534,7 +538,15 @@ const SOURCES = {
   },
   devastator: { src: 'content/fac_cyborgs/cha_soldier/cha_soldier.unit.glb', rules: DEVASTATOR },
   'heavy-devastator': { src: 'content/fac_cyborgs/cha_soldier/cha_soldier_heavy_weapon.unit.glb', rules: [[/^weapon_backpack(_whole)?$/, 'Backpack'], ...DEVASTATOR] },
-  'rocket-devastator': { src: 'content/fac_cyborgs/cha_soldier/cha_soldier_rocket.unit.glb', rules: [[/^backpack_rockets$/, 'Rockets'], [/^rocket_pods(_whole)?$/, 'Rocket Pods'], ...DEVASTATOR] },
+  'rocket-devastator': {
+    src: 'content/fac_cyborgs/cha_soldier/cha_soldier_rocket.unit.glb',
+    // the unnamed arm meshes: upper arms, shoulder joints, the left forearm with its hand (left is -x)
+    names: {
+      'g_body 0x09be09cf': 'arm_left_upper', 'g_body 0x0fb1fef6': 'arm_right_upper',
+      'g_body 0x7d4e2117': 'arm_left_joint', 'g_body 0x1111bf60': 'arm_right_joint', 'g_body udim 0': 'arm_left_lower',
+    },
+    rules: [[/^backpack_rockets$/, 'Rockets'], [/^rocket_pods(_whole)?$/, 'Rocket Pods'], [/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR],
+  },
   berserker: {
     src: 'content/fac_cyborgs/cha_berserker/cha_berserker.unit.glb',
     rules: [[/^head(_whole)?$/, 'Head'], [/^torso(_whole)?$/, 'Chest'], [/^hip(_whole)?$/, 'Pelvis'], [/^leg_(left|right)(_whole)?$/, 'Leg (2)']],
@@ -546,7 +558,8 @@ const SOURCES = {
   'hulk-firebomber': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
   'hulk-scorcher': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant_assault/cha_lieutenant_assault.unit.glb', rules: HULK },
   'jet-brigade-hulk-bruiser': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
-  'jet-brigade-hulk-scorcher': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
+  // the Scorcher body: its right arm is the flamethrower (the Bruiser body has a plain hand there)
+  'jet-brigade-hulk-scorcher': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant_assault/cha_lieutenant_assault.unit.glb', rules: HULK },
   // bugs: one-mesh bodies split by bone; hash-named legs and claws named by bone
   scavenger: { src: BG + 'cha_scavenger/cha_scavenger.unit.glb', ...SCAVENGER },
   'spore-burst-scavenger': { src: BG + 'cha_scavenger/cha_scavenger_gloom.unit.glb', ...SCAVENGER },
