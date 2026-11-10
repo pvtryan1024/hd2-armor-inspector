@@ -146,8 +146,8 @@ const LOADOUT = {
   'reinforced-scout-strider': [
     { src: 'extra/0xd3cd6f0ca83bb51e.unit.glb', bone: 'turret', name: 'hull', part: 'Faceplate' }, SCOUT_HMG,
     // rocket rails on the hull sides, rockets pointing forward (its four meshes are hash-named LODs: keep the best)
-    { src: 'extra/0xe5b14182b25f7f7d.unit.glb', bone: 'turret', name: 'rail_left', part: 'Rocket Rails (2)', biggestOnly: true, offset: [-0.61, 0, 0.45] },
-    { src: 'extra/0xe5b14182b25f7f7d.unit.glb', bone: 'turret', name: 'rail_right', part: 'Rocket Rails (2)', biggestOnly: true, offset: [0.57, 0, 0.45], roll: 'y' }, // mirrored by flipping on its forward axis, not turned around
+    { src: 'extra/0xe5b14182b25f7f7d.unit.glb', bone: 'turret', name: 'rail_left', part: 'Rocket Rails (2)', biggestOnly: true, offset: [-0.49, 0, 0.45] },
+    { src: 'extra/0xe5b14182b25f7f7d.unit.glb', bone: 'turret', name: 'rail_right', part: 'Rocket Rails (2)', biggestOnly: true, offset: [0.51, 0, 0.45], roll: 'y' }, // mirrored by flipping on its forward axis, not turned around
   ],
   'mg-raider': [{ src: GEAR.cLmg, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.cLmgPack, bone: 'attach_backpack', name: 'backpack', part: 'Backpack' }],
   'jet-brigade-mg-raider': [{ src: GEAR.cLmg, bone: 'attach_r_hand', name: 'weapon_right' }, JUMP],
