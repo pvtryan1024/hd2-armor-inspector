@@ -143,10 +143,6 @@ const stageOf = (key) => { const p = primOf(key); return /_damaged?$/i.test(p) ?
 function instanceFor(entry, key, i) {
   const n = lastDetail?.enemy.parts[i]?.count || 1;
   if (n < 2) return null;
-  // map "pieces": { mesh: piece index } fixes which piece a mesh is (Caustic Charger spore sacs: each its own)
-  // (null: the whole part, no single piece)
-  const pk = entry.map.pieces && [key, key.replace(/(_\d+|#\d+)$/, '')].find((x) => x in entry.map.pieces);
-  if (pk) return entry.map.pieces[pk];
   const bases = [...new Set(entry.meshes.map((m) => m.key).filter((k) => partIndexFor(entry, k) === i).map(baseOf))].sort();
   // pieces in several bits (Overseer upper + lower leg, a Warrior leg in 3 segments): side and position
   // in the name decide the piece (l/left, r/right × front/fore, back/rear/hind)
@@ -278,6 +274,7 @@ function swapBroken() {
   // other half of a split mesh ("butt_plates" over "butt", "tail_sac", "chest_eye", "body_visor"): it goes with the piece's
   // remains, and plates also go when their own hitzone breaks (a sac waits for its burst replacement)
   const ATTACHED = /_(plates|sac|eye|visor)$/i;
+  const vanishIdx = new Set((current.map.vanish || []).map((n) => (lastDetail?.enemy.parts || []).findIndex((p) => p.name === n)).filter((i) => i >= 0));
   const groups = new Map();
   for (const m of current.meshes) {
     const st = stageOf(m.key);
@@ -291,7 +288,8 @@ function swapBroken() {
     for (const m of attached) if (!hidden.has(m.key)) m.mesh.visible = !(/_plates$/i.test(primOf(m.key)) && pieceGone(m.key));
     if (!dmg.length && !gib.length) continue;
     // the piece's own plate: intact meshes of its hitzone (a spore blob of another hitzone stays put)
-    const linked = intact.filter((m) => !hidden.has(m.key) && partIndexFor(current, m.key) >= 0);
+    // (a "vanish" part sharing the mesh, like the spore coat on the Caustic Charger's head, never decides it)
+    const linked = intact.filter((m) => !hidden.has(m.key) && partIndexFor(current, m.key) >= 0 && !vanishIdx.has(partIndexFor(current, m.key)));
     if (!linked.length) continue;
     const i = partIndexFor(current, linked[0].key);
     const mine = linked.filter((m) => partIndexFor(current, m.key) === i);
@@ -818,7 +816,7 @@ $('#v3Save').addEventListener('click', async () => {
   if (!current) return;
   // inner hitboxes are saved too (the auto-placed ones become fixed once saved)
   const colliders = (current.colliders || []).map(({ def }) => ({ part: def.part, from: def.from.map((v) => +(+v).toFixed(4)), to: def.to.map((v) => +(+v).toFixed(4)), radius: def.radius }));
-  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(current.map.vanish ? { vanish: current.map.vanish } : {}), ...(current.map.pieces ? { pieces: current.map.pieces } : {}), ...(colliders.length ? { colliders } : {}) }, null, 2);
+  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(current.map.vanish ? { vanish: current.map.vanish } : {}), ...(colliders.length ? { colliders } : {}) }, null, 2);
   if (SERVED) {
     try {
       const r = await fetch(`api/map/${encodeURIComponent(currentId)}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });

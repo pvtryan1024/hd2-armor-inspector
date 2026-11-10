@@ -505,7 +505,7 @@ const SOURCES = {
   'charger-behemoth': { src: 'content/fac_bugs/cha_charger_bull/cha_charger_bull.unit.glb', cuts: CHARGER_BELLY, shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', tipBones: /^spine4$/ }], rules: CHARGER },
   // the Rupture's front legs are its digging plates (Frontal Tarsal Plate Armor, AV5)
   'rupture-charger': { src: 'content/fac_bugs/cha_charger_burrower/cha_charger_burrower.unit.glb', cuts: CHARGER_BELLY, shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', tipBones: /^spine4$/ }], rules: [[/^(left|right)_front_leg$/, 'Frontal Tarsal Plate Armor (2)'], ...CHARGER] },
-  'caustic-charger': { src: 'content/fac_bugs/cha_charger_acid/cha_charger_acid.unit.glb', cuts: CHARGER_BELLY, shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', prim: /cha_charger/, tipBones: /^spine4$/ }], rules: [[/_blob$/, 'Spore Flesh (6)'], ...CHARGER] },
+  'caustic-charger': { src: 'content/fac_bugs/cha_charger_acid/cha_charger_acid.unit.glb', cuts: CHARGER_BELLY, shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', prim: /cha_charger/, tipBones: /^spine4$/ }], rules: [[/_blob$/, 'Spore Flesh'], ...CHARGER] },
   'bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider.unit.glb', ...BT_BODY, rules: BILE_TITAN },
   'spore-burst-bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider_gloom.unit.glb', ...BT_BODY, rules: BILE_TITAN },
   impaler: {

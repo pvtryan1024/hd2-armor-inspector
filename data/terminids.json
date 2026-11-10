@@ -2115,8 +2115,8 @@
         "location": "Rear, Side"
       },
       {
-        "name": "Spore Flesh (6)",
-        "count": 6,
+        "name": "Spore Flesh",
+        "count": 1,
         "health": 500,
         "av": 1,
         "durable": 1,
