@@ -7,7 +7,10 @@
     "back": "Heatsink",
     "arm_left": "Arms (2)",
     "leg_left": "Legs (2)",
-    "chest_eye": "Head"
+    "chest_eye": "Head",
+    "weapon_right": "Arms (2)",
+    "weapon_left": "Arms (2)",
+    "back_plates": "Main"
   },
   "hidden": [
     "chest_damaged",

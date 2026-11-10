@@ -21,6 +21,7 @@
     "leg_left_damaged",
     "shoulder_right_damaged",
     "torso_damaged",
-    "back"
+    "back",
+    "back_plates"
   ]
 }

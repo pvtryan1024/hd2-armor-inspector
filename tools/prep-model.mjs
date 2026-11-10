@@ -70,7 +70,9 @@ const DEVASTATOR = [
 
 // Hulk body (internally "lieutenant"); the eye (Head) has no mesh of its own, assign it in the editor
 // the eye: the box sticking out of the middle of the chest plate (the frame around it is armor)
-const HULK_EYE = [{ mesh: 'chest', name: 'chest_eye', box: [[-0.17, 2.57, -0.74], [0.17, 2.89, -0.39]] }];
+const HULK_EYE = [{ mesh: 'chest', name: 'chest_eye', box: [[-0.17, 2.57, -0.74], [0.17, 2.89, -0.39]] },
+  // the heat sink: only the 3x3 grid of vent squares on the back; the frame around it is armor (Main)
+  { mesh: 'back', name: 'back', rest: 'back_plates', box: [[-0.48, 2.2, 0.5], [0.48, 3.32, 1.16]] }];
 const HULK = [
   [/^arm_(left|right)$/, 'Arms (2)'],
   [/^leg_(left|right)$/, 'Legs (2)'],
@@ -167,10 +169,13 @@ const LOADOUT = {
   'heavy-devastator': [{ src: GEAR.machinegun, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.shield, bone: 'attach_shield', name: 'shield', part: 'Shield' }],
   berserker: [{ src: GEAR.chainsaw, bone: 'attach_l_hand', name: 'chainsaw_left', part: 'Arm (2)' }, { src: GEAR.chainsaw, bone: 'attach_r_hand', name: 'chainsaw_right', part: 'Arm (2)' }],
   'hulk-bruiser': [{ src: GEAR.hulkCannon, bone: 'r_hand_attach', name: 'weapon_right', part: 'Arms (2)' }, { src: GEAR.hulkLauncher, bone: 'l_hand_attach', name: 'weapon_left', part: 'Arms (2)' }],
+  // the Obliterator: a rocket launcher on each arm
+  'hulk-obliterator': [{ src: GEAR.hulkLauncher, bone: 'r_hand_attach', name: 'weapon_right', part: 'Arms (2)' }, { src: GEAR.hulkLauncher, bone: 'l_hand_attach', name: 'weapon_left', part: 'Arms (2)' }],
   'hulk-scorcher': [{ src: GEAR.hulkSaw, bone: 'l_hand_attach', name: 'weapon_left', part: 'Arms (2)' }, { src: GEAR.hulkFlamer, bone: 'r_hand_attach', name: 'weapon_right', part: 'Arms (2)' }],
 };
-LOADOUT['jet-brigade-hulk-bruiser'] = [...LOADOUT['hulk-bruiser'], { src: GEAR.hulkJetpack, bone: 'attach_backpack_socket', name: 'jetpack', part: 'Jetpack' }];
-LOADOUT['jet-brigade-hulk-scorcher'] = [...LOADOUT['hulk-scorcher'], { src: GEAR.hulkJetpack, bone: 'attach_backpack_socket', name: 'jetpack', part: 'Jetpack' }];
+const HULK_JETPACK = { src: GEAR.hulkJetpack, bone: 'attach_backpack_socket', name: 'jetpack', part: 'Jetpack', rot: [90, 0, 0] }; // stood up on the back, thrusters up (as in game)
+LOADOUT['jet-brigade-hulk-bruiser'] = [...LOADOUT['hulk-bruiser'], HULK_JETPACK];
+LOADOUT['jet-brigade-hulk-scorcher'] = [...LOADOUT['hulk-scorcher'], HULK_JETPACK];
 
 // 4×4 column-major helpers for placing gear
 function mat4Invert(m) {
@@ -405,11 +410,12 @@ function cutBox(doc, node, cut) {
     prim.setIndices(idx(rest));
   }
   if (!out.length) { console.warn(`cut ${cut.name}: nothing inside the box`); return []; }
+  if (cut.rest) { node.setName(cut.rest); node.getMesh().setName(cut.rest); }
   const m = doc.createMesh(cut.name);
   out.forEach((p) => m.addPrimitive(p));
   const n = doc.createNode(cut.name).setMesh(m).setSkin(skin).setMatrix(node.getMatrix());
   (node.getParentNode() || doc.getRoot().listScenes()[0]).addChild(n);
-  return [cut.name];
+  return cut.rest ? [cut.name, cut.rest] : [cut.name];
 }
 
 /** Bone that weighs most on a skinned mesh overall; for a rigid mesh, the bone nearest its centre. */
@@ -807,10 +813,17 @@ async function prep(id) {
     const moved = mergeDocuments(doc, adoc);
     let bone = root.listNodes().find((n) => n.getName() === a.bone);
     if (!bone) { console.warn(`${id}: bone ${a.bone} not found; ${a.name} skipped`); moved.get(aScene)?.dispose(); continue; }
-    if (a.offset || a.turn || a.roll) {
+    if (a.offset || a.turn || a.roll || a.rot) {
       const holder = doc.createNode(`${a.name}_mount`).setTranslation(a.offset || [0, 0, 0]);
       if (a.turn) holder.setRotation([0, 0, Math.sin((a.turn * Math.PI) / 360), Math.cos((a.turn * Math.PI) / 360)]);
       if (a.roll) holder.setRotation({ x: [1, 0, 0, 0], y: [0, 1, 0, 0], z: [0, 0, 1, 0] }[a.roll]); // upside down
+      if (a.rot) { // [x, y, z] degrees in the bone's frame, applied x then y then z
+        const q = (ax, deg) => { const h = (deg * Math.PI) / 360, v = [0, 0, 0, Math.cos(h)]; v[ax] = Math.sin(h); return v; };
+        const mul = (a1, b1) => [
+          a1[3] * b1[0] + a1[0] * b1[3] + a1[1] * b1[2] - a1[2] * b1[1], a1[3] * b1[1] - a1[0] * b1[2] + a1[1] * b1[3] + a1[2] * b1[0],
+          a1[3] * b1[2] + a1[0] * b1[1] - a1[1] * b1[0] + a1[2] * b1[3], a1[3] * b1[3] - a1[0] * b1[0] - a1[1] * b1[1] - a1[2] * b1[2]];
+        holder.setRotation(mul(q(2, a.rot[2]), mul(q(1, a.rot[1]), q(0, a.rot[0]))));
+      }
       bone.addChild(holder);
       bone = holder;
     }
@@ -855,7 +868,9 @@ async function prep(id) {
   for (const cut of cfg.cuts || []) {
     const node = root.listNodes().find((x) => x.getMesh() && x.getName() === cut.mesh);
     if (!node) { console.warn(`${id}: no mesh ${cut.mesh} to cut`); continue; }
-    names.push(...cutBox(doc, node, cut));
+    const made = cutBox(doc, node, cut);
+    if (cut.rest && made.length) names[names.indexOf(cut.mesh)] = cut.rest, made.pop();
+    names.push(...made);
   }
   // tails: armor plates and soft body apart (plates of a damage-state copy are dropped)
   if (cfg.shells) {
