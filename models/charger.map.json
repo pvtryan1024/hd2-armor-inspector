@@ -17,7 +17,8 @@
     "left_front_leg_damaged": "Leg Flesh (4)",
     "side_right": "Torso Armor (2)",
     "claw_left": "Claws (2)",
-    "left_back_leg_damaged": "Leg Flesh (4)"
+    "left_back_leg_damaged": "Leg Flesh (4)",
+    "body": "Main"
   },
   "hidden": [
     "head_damaged",
