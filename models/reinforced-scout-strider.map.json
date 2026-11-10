@@ -6,7 +6,9 @@
     "body": "Main",
     "legs": "Legs (2)",
     "hull": "Faceplate",
-    "hmg": "HMG"
+    "hmg": "HMG",
+    "rail_left": "Rocket Rails (2)",
+    "rail_right": "Rocket Rails (2)"
   },
   "hidden": [
     "body_damaged",

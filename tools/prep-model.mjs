@@ -98,7 +98,11 @@ const SCOUT_HMG = { src: 'extra/0x2a346bf4552997e2.unit.glb', bone: 'gun_pitch',
 const JUMP = { src: GEAR.cJump, bone: 'attach_backpack', name: 'jetpack', part: 'Jetpack' };
 const LOADOUT = {
   'scout-strider': [{ src: 'extra/0xee00bfe8ff769f70.unit.glb', bone: 'turret', name: 'hull', part: 'Front Plate' }, SCOUT_HMG],
-  'reinforced-scout-strider': [{ src: 'extra/0xd3cd6f0ca83bb51e.unit.glb', bone: 'turret', name: 'hull', part: 'Faceplate' }, SCOUT_HMG],
+  'reinforced-scout-strider': [
+    { src: 'extra/0xd3cd6f0ca83bb51e.unit.glb', bone: 'turret', name: 'hull', part: 'Faceplate' }, SCOUT_HMG,
+    { src: 'extra/0xe5b14182b25f7f7d.unit.glb', bone: 'turret', name: 'rail_left', part: 'Rocket Rails (2)', offset: [-0.61, 0, 0.55] },
+    { src: 'extra/0xe5b14182b25f7f7d.unit.glb', bone: 'turret', name: 'rail_right', part: 'Rocket Rails (2)', offset: [0.57, 0, 0.55], turn: 180 },
+  ],
   'mg-raider': [{ src: GEAR.cLmg, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.cLmgPack, bone: 'attach_backpack', name: 'backpack', part: 'Backpack' }],
   'jet-brigade-mg-raider': [{ src: GEAR.cLmg, bone: 'attach_r_hand', name: 'weapon_right' }, JUMP],
   'rocket-raider': [{ src: GEAR.cCannon, bone: 'attach_r_hand', name: 'weapon_right', part: 'Right Arm' }],
@@ -113,7 +117,7 @@ const LOADOUT = {
   'annihilator-tank': [{ src: GEAR.tankCannon, bone: 'attach_turret', name: 'turret', part: 'Turret Front' }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
   'shredder-tank': [{ src: GEAR.tankAuto, bone: 'attach_turret', name: 'turret', part: 'Turret Front and Sides' }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
   'barrager-tank': [{ src: GEAR.tankRockets, bone: 'attach_turret', name: 'turret', part: 'Launch Tubes' }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
-  'war-strider': [{ src: GEAR.walkerCannon, bone: 'attach_left_gun', name: 'cannon_left', part: 'Fusion Cannons (2)' }, { src: GEAR.walkerCannon, bone: 'attach_right_gun', name: 'cannon_right', part: 'Fusion Cannons (2)' }],
+  'war-strider': [{ src: 'extra/0x8372619b2702d743.unit.glb', bone: 'attach_left_gun', name: 'cannon_left', part: 'Fusion Cannons (2)' }, { src: 'extra/0x9ab036439f74c115.unit.glb', bone: 'attach_right_gun', name: 'cannon_right', part: 'Fusion Cannons (2)' }],
   devastator: [{ src: GEAR.rifle, bone: 'attach_r_hand', name: 'weapon_right' }],
   'heavy-devastator': [{ src: GEAR.machinegun, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.shield, bone: 'attach_shield', name: 'shield', part: 'Shield' }],
   berserker: [{ src: GEAR.chainsaw, bone: 'attach_l_hand', name: 'chainsaw_left', part: 'Arm (2)' }, { src: GEAR.chainsaw, bone: 'attach_r_hand', name: 'chainsaw_right', part: 'Arm (2)' }],
@@ -490,8 +494,14 @@ async function prep(id) {
     const loose = adoc.getRoot().listNodes().filter((n) => n.getMesh() && !isUnder(n, conv))
       .map((n) => ({ n, local: mat4Mul(toConv, n.getWorldMatrix()) }));
     const moved = mergeDocuments(doc, adoc);
-    const bone = root.listNodes().find((n) => n.getName() === a.bone);
+    let bone = root.listNodes().find((n) => n.getName() === a.bone);
     if (!bone) { console.warn(`${id}: bone ${a.bone} not found; ${a.name} skipped`); moved.get(aScene)?.dispose(); continue; }
+    if (a.offset || a.turn) {
+      const holder = doc.createNode(`${a.name}_mount`).setTranslation(a.offset || [0, 0, 0]);
+      if (a.turn) holder.setRotation([0, 0, Math.sin((a.turn * Math.PI) / 360), Math.cos((a.turn * Math.PI) / 360)]);
+      bone.addChild(holder);
+      bone = holder;
+    }
     const mConv = moved.get(conv);
     for (const child of mConv.listChildren()) { mConv.removeChild(child); bone.addChild(child); }
     for (const { n, local } of loose) {
