@@ -2,39 +2,39 @@
 ui,HD{n},,start page
 ui,Armor Inspector,,start page
 ui,Alpha,,start page
-ui,Alpha version · numbers and features may change,,start page
-ui,{n} enemies · {n} weapons · data {n}-{n}-{n},,start page
+ui,Alpha version · numbers and features may change,알파 버전 · 수치와 기능은 추후 변경 예정,start page
+ui,{n} enemies · {n} weapons · data {n}-{n}-{n},{n} 구현된 적 · {n} 구현된 무기 · 마지막 빌드 날짜 {n}-{n}-{n},start page
 ui,Copy link,,start page
-ui,Target,,start page
+ui,Target,목표,start page
 ui,Bugs · {n} enemies,,start page
 ui,Bots · {n} enemies,,start page
 ui,Squids · {n} enemies,,start page
 ui,wiki ↗,,start page
 ui,{n}D model,,start page
 ui,Body map,,start page
-ui,Fire mode,,start page
-ui,Covered parts: hidden,,start page
-ui,All,,start page
-ui,Front,,start page
-ui,Side,,start page
-ui,Rear,,start page
-ui,Penetration,,start page
+ui,Fire mode,피격 시뮬레이션,start page
+ui,Covered parts: hidden,장갑에 덥힌 부위: 가려짐,start page
+ui,All,전부,start page
+ui,Front,정면,start page
+ui,Side,측면,start page
+ui,Rear,후면,start page
+ui,Penetration,관통,start page
 ui,Time to kill,,start page
-ui,Main health,,start page
+ui,Main health,전체 체력,start page
 ui,Heavy · AV{n},,start page
 ui,{n} s,,start page
 ui,{n} shots · via Butt (downs),,start page
-ui,Damageable zones,,start page
-ui,hitzones this weapon hurts,,start page
-ui,Fatal parts,,start page
+ui,Damageable zones,타격 가능 구역,start page
+ui,hitzones this weapon hurts,본 무기로 피해 줄 수 있는 구역,start page
+ui,Fatal parts,치명 부위,start page
 ui,besides Main,,start page
-ui,Shots fired,,start page
-ui,Reset,,start page
-ui,Click a hitzone to fire one shot of the selected weapon.,,start page
-ui,Load .glb,,start page
+ui,Shots fired,발사한 탄수,start page
+ui,Reset,초기화,start page
+ui,Click a hitzone to fire one shot of the selected weapon.,클릭해서 무기를 선택한 무기를 발사,start page
+ui,Load .glb,.glb 파일 로드,start page
 ui,Edit hitzones,,start page
 ui,Save mapping,,start page
-ui,Reset camera,,start page
+ui,Reset camera,카메라 재설정,start page
 ui,Original materials,,start page
 ui,{n} meshes · {n} linked to hitzones,,start page
 ui,Colours follow the impact angle from your camera,,start page
@@ -58,54 +58,54 @@ ui,Then use,,start page
 ui,to click each mesh and pick which wiki part it is.,,start page
 ui,AV{n},,start page
 ui,{n} HP,,start page
-ui,☠ fatal,,start page
-ui,no dmg,,start page
+ui,☠ fatal,☠ 치명,start page
+ui,no dmg,피해 못줌,start page
 ui,Arms & weapons,,start page
 ui,Rear & weak spots,,start page
-ui,🛡 Torso Armor,,start page
-ui,Main HP,,start page
-ui,dmg/shot,,start page
-ui,hard to reach,,start page
+ui,🛡 Torso Armor,🛡 상체 장갑,start page
+ui,Main HP,전체 체력,start page
+ui,dmg/shot,발당 데미지,start page
+ui,hard to reach,접근 어려움,start page
 ui,☠ downs,,start page
-ui,🛡 Front Leg Armor,,start page
-ui,Penetrates · {n}%,,start page
-ui,Reduced · {n}%,,start page
-ui,Ricochet · {n},,start page
-ui,Immune,,start page
-ui,Tile size ≈ part health · ☠ = fatal when destroyed,,start page
-ui,Hitzones,,start page
-ui,Best weapons vs target,,start page
-ui,Real life case,,start page
-ui,Hitzone,,start page
-ui,Health,,start page
-ui,Durable,,start page
-ui,To main,,start page
-ui,Fatal,,start page
-ui,ExDR,,start page
-ui,Result,,start page
-ui,Dmg/shot,,start page
+ui,🛡 Front Leg Armor,🛡 정면 다리 장갑,start page
+ui,Penetrates · {n}%,관통함 · {n}%,start page
+ui,Reduced · {n}%,일부 감소함 · {n}%,start page
+ui,Ricochet · {n},튕겨남 · {n},start page
+ui,Immune,면역,start page
+ui,Tile size ≈ part health · ☠ = fatal when destroyed,타일 크기 ≈ 부위의 체력 · ☠ = 파괴시 치명 (사망) ,start page
+ui,Hitzones,피격 부위,start page
+ui,Best weapons vs target,가장 유용한 무기,start page
+ui,Real life case,실제 전투시,start page
+ui,Hitzone,피격,start page
+ui,Health,체력,start page
+ui,Durable,내구력,start page
+ui,To main,전체 체력으로 전달 비율,start page
+ui,Fatal,치명 부위,start page
+ui,ExDR,폭발 저항,start page
+ui,Result,결과,start page
+ui,Dmg/shot,발당 데미지,start page
 ui,Main/shot,,start page
-ui,Break,,start page
-ui,Shots,,start page
+ui,Break,파괴,start page
+ui,Shots,발수,start page
 ui,TTK,,start page
-ui,Yes,,start page
-ui,+of,,start page
+ui,Yes,예,start page
+ui,#NAME?,,start page
 ui,No,,start page
 ui,Downs,,start page
 ui,"One-shot kills come first, sorted by damage (highest first); everything else is ranked by time to kill on its best hitzone in the current view. Time comes from RPM with the first shot at {n} s; reloads are not included (* = needs more than one magazine). Weapons without an RPM are ranked by shot count after timed kills.",,start page
 ui,"You won't always hit the weak spot. For each weapon this takes every reachable hitzone in the current view that can kill, then uses the midpoint between the fastest and the slowest time to kill. Weapons are ranked by that midpoint.",,start page
-ui,Weapon,,start page
-ui,Primary · Assault Rifle,,start page
-ui,Damage,,start page
-ui,RPM,,start page
-ui,Mag,,start page
-ui,AP by impact angle,,start page
-ui,Direct,,start page
-ui,Slight,,start page
-ui,Large,,start page
-ui,Extreme,,start page
+ui,Weapon,무기,start page
+ui,Primary · Assault Rifle,주무기,start page
+ui,Damage,피해량,start page
+ui,RPM,분당발수,start page
+ui,Mag,탄창,start page
+ui,AP by impact angle,각도에 따른 관통력,start page
+ui,Direct,직격,start page
+ui,Slight,약간의 각도,start page
+ui,Large,큰 각도,start page
+ui,Extreme,매우 큰 각도,start page
 ui,"Armor this shot defeats at direct (green = full, yellow-green = {n}%, red = ricochet). Body map and tables use this angle; the {n}D view uses the real angle from your camera.",,start page
-ui,Range,,start page
+ui,Range,거리,start page
 ui,{n} m,,start page
 ui,Projectile damage at {n} m:,,start page
 ui,(drag falloff),,start page
@@ -130,15 +130,15 @@ ui,Show the model's own materials instead of hitzone colours,,start page (title)
 ui,Destroying this kills,,start page (title)
 ui,{n}/{n} intact · {n} HP left,,start page (title)
 ui,{n} HP left,,start page (title)
-ui,Behind armor: break the armor first,,start page (title)
-ui,uses Main health,,start page (title)
-ui,Destroying this downs the enemy,,start page (title)
+ui,Behind armor: break the armor first,갑옷 먼저 파괴시 접근 가능,start page (title)
+ui,uses Main health,메인 체력 사용,start page (title)
+ui,Destroying this downs the enemy,파괴하면 적이 쓰러짐,start page (title)
 ui,Heavy,,start page (title)
-ui,Excess damage overflows to Main,,start page (title)
+ui,Excess damage overflows to Main,초과 데미지는 전체 체력에 적용됨,start page (title)
 ui,Very Light,,start page (title)
 ui,Light,,start page (title)
-ui,More shots than one magazine,,start page (title)
-ui,Unarmored,,start page (title)
+ui,More shots than one magazine,탄창 하나 이상 사용,start page (title)
+ui,Unarmored,장갑 없음,start page (title)
 ui,Search all weapons…,,start page (placeholder)
 ui,Direct ({n}–{n}°),,start page (title)
 ui,Slight angle ({n}–{n}°),,start page (title)
@@ -155,66 +155,66 @@ ui,AV{n} Tank III: ricochet,,start page (title)
 ui,AV{n} Tank IV: ricochet,,start page (title)
 ui,AV{n} Tank V: ricochet,,start page (title)
 ui,AV{n} Tank VI: ricochet,,start page (title)
-ui,Loading model…,,start page (fire off)
+ui,Loading model…,모델 로딩중…,start page (fire off)
 ui,← Factions,,enemy page
 ui,← Categories,,enemy page
 ui,AP{n},,enemy page
 ui,AP{n}/{n},,enemy page
 ui,AP{n}/{n}/{n},,enemy page
-ui,Back to factions,,enemy page (title)
+ui,Back to factions,팩션 선택으로,enemy page (title)
 ui,{n}D model available,,enemy page (title)
-ui,Back to categories,,enemy page (title)
+ui,Back to categories,카테고리 선택으로,enemy page (title)
 ui,Light · AV{n},,enemy page
 ui,{n} shots · via Head,,enemy page
 ui,"In Filediver, look in archives:",,enemy page
 ui,Missle Variant,,enemy page
 ui,Medium,,enemy page (title)
-ui,Language,,enemy page (aria-label)
-ui,English,,enemy page (title)
+ui,Language,언어,enemy page (aria-label)
+ui,English,영어,enemy page (title)
 ui,Unarmored · AV{n},,enemy page
 ui,{n} shots · via Right Arm,,enemy page
 ui,Armored Overseer + Staff,,enemy page
-ui,Overseer Only,,enemy page
-ui,🛡 Limb Armor,,enemy page
-ui,🛡 Chest Armor,,enemy page
+ui,Overseer Only,오버시어에만 적용,enemy page
+ui,🛡 Limb Armor,🛡 사지 갑옷,enemy page
+ui,🛡 Chest Armor,🛡 흉갑,enemy page
 ui,({n} armor),,enemy page
-ui,Includes shots to destroy Chest Armor,,enemy page (title)
-ui,Includes shots to destroy Limb Armor ({n}),,enemy page (title)
+ui,Includes shots to destroy Chest Armor,흉갑 파괴까지의 발수 포함,enemy page (title)
+ui,Includes shots to destroy Limb Armor ({n}),사지 갑옷 파괴까지의 발수 포함 ({n}),enemy page (title)
 ui,{n} shots · via Heatsink (downs),,enemy page
 ui,"In Filediver, look in archives for the",,enemy page
-ui,Hulk,,enemy page
+ui,Hulk,헐크,enemy page
 ui,family:,,enemy page
 ui,None,,enemy page
 ui,Nothing in view dies to this,,enemy page
-ui,🛡 Front Armor,,enemy page
-ui,🛡 Side Armor,,enemy page
-ui,🛡 Rear Armor,,enemy page
-ui,Tank I,,enemy page (title)
-ui,Primary · Explosive,,explosive weapon
-ui,Radius,,explosive weapon
+ui,🛡 Front Armor,🛡 정면 갑옷,enemy page
+ui,🛡 Side Armor,🛡 측면 갑옷,enemy page
+ui,🛡 Rear Armor,🛡 후면 갑옷,enemy page
+ui,Tank I,전차 장갑 1단계,enemy page (title)
+ui,Primary · Explosive,주무기 · 폭발성,explosive weapon
+ui,Radius,반경,explosive weapon
 ui,{n}/{n}m,,explosive weapon
-ui,Expl. dmg,,explosive weapon
-ui,Expl. AP,,explosive weapon
-ui,No drag: no falloff over range,,explosive weapon
-ui,Include explosion (direct hit),,explosive weapon
+ui,Expl. dmg,폭발 데미지,explosive weapon
+ui,Expl. AP,폭발 관통력,explosive weapon
+ui,No drag: no falloff over range,거리에 따른 데미지 감소 없음,explosive weapon
+ui,Include explosion (direct hit),폭발 데미지 포함 (직격),explosive weapon
 ui,All {n} shrapnel hit the part,,explosive weapon
 ui,Also {n} shrapnel x{n} (AP/durable not listed; omitted),,explosive weapon
-ui,Includes shots to destroy Torso Armor ({n}),,explosive weapon (title)
-ui,Includes shots to destroy Front Leg Armor ({n}),,explosive weapon (title)
+ui,Includes shots to destroy Torso Armor ({n}),흉갑 파괴까지의 발수 포함,explosive weapon (title)
+ui,Includes shots to destroy Front Leg Armor ({n}),다리 장갑 파괴까지의 발수 포함,explosive weapon (title)
 ui,AV{n} Medium: {n}%,,explosive weapon (title)
 ui,AV{n} Heavy: {n}%,,explosive weapon (title)
 ui,Body map and time to kill: count every fragment on the struck part (an upper bound). The {n}D view traces each fragment instead.,,explosive weapon (title)
-ui,Support · Autocannon,,flak
-ui,Ammo / mode,,flak
+ui,Support · Autocannon,지원 · 오토캐논,flak
+ui,Ammo / mode,발사 모드 변경,flak
 ui,burn · Burning on Main health,,flamethrower
 ui,Support · Flame,,flamethrower
 ui,No ballistics data: range has no effect,,flamethrower
 ui,Damage per flame particle tick as listed; ignites targets: burn {n} Fire/s (AP{n}) for {n}s.,,flamethrower
-ui,Category,,tab rank
-ui,Mode,,tab rank
+ui,Category,카테고리,tab rank
+ui,Mode,모드,tab rank
 ui,Best hitzone,,tab rank
 ui,{n} shot,,tab rank
-ui,One shot,,tab rank
+ui,One shot,한 방,tab rank
 ui,{n} shots,,tab rank
 ui,{n} s*,,tab rank
 ui,Fastest,,tab real
@@ -223,10 +223,10 @@ ui,Real life,,tab real
 ui,~{n} shots,,tab real
 ui,no kill,,time-to-kill colours
 ui,{n} shots +reload,,time-to-kill colours
-ui,Time to kill: instant,,time-to-kill colours
+ui,Time to kill: instant,즉시 죽임,time-to-kill colours
 ui,{n} s+,,time-to-kill colours
 ui,"From RPM; first shot at {n} s, reloads not included",,time-to-kill colours
-ui,Can't kill through this zone,,time-to-kill colours
+ui,Can't kill through this zone,피해 못줌,time-to-kill colours
 ui,Elapsed,,body map fire
 ui,"#{n} Butt: {n} dmg, {n} to Main — destroyed",,body map fire
 ui,"#{n} Butt: {n} dmg, {n} to Main · no stagger ({n} < {n})",,body map fire
@@ -243,65 +243,65 @@ ui,New Variant?,,no model
 faction,Terminids,,faction picker
 faction,Automatons,,faction picker
 faction,Illuminate,,faction picker
-category,Primary,,weapon categories
-category,Secondary,,weapon categories
-category,Throwable,,weapon categories
-category,Support,,weapon categories
-category,Eagle,,weapon categories
-category,Orbital,,weapon categories
-category,Sentry,,weapon categories
+category,Primary,주무기,weapon categories
+category,Secondary,보조무기,weapon categories
+category,Throwable,투척무기,weapon categories
+category,Support,지원무기,weapon categories
+category,Eagle,이글,weapon categories
+category,Orbital,궤도 폭격,weapon categories
+category,Sentry,센트리,weapon categories
 category,Emplacement,,weapon categories
-weapon type,Assault Rifle,,weapon card
-weapon type,Marksman Rifle,,weapon card
-weapon type,Sniper Rifle,,weapon card
-weapon type,Energy-Based,,weapon card
-weapon type,Submachine Gun,,weapon card
-weapon type,Shotgun,,weapon card
-weapon type,Explosive,,weapon card
-weapon type,Special,,weapon card
-weapon type,Pistol,,weapon card
-weapon type,Melee,,weapon card
+weapon type,Assault Rifle,돌격소총,weapon card
+weapon type,Marksman Rifle,지정사수소총,weapon card
+weapon type,Sniper Rifle,저격총,weapon card
+weapon type,Energy-Based,에너지 무기,weapon card
+weapon type,Submachine Gun,기관단총,weapon card
+weapon type,Shotgun,산탄총,weapon card
+weapon type,Explosive,폭발성,weapon card
+weapon type,Special,특수,weapon card
+weapon type,Pistol,권총,weapon card
+weapon type,Melee,근접무기,weapon card
 weapon type,Standard,,weapon card
-weapon type,Machine Gun,,weapon card
-weapon type,Rifle,,weapon card
-weapon type,Launcher,,weapon card
-weapon type,Energy,,weapon card
-weapon type,Autocannon,,weapon card
-weapon type,Flame,,weapon card
-enemy,Scavenger,,enemy list
-enemy,Pouncer,,enemy list
+weapon type,Machine Gun,기관총,weapon card
+weapon type,Rifle,소총,weapon card
+weapon type,Launcher,발사기,weapon card
+weapon type,Energy,에너지 무기,weapon card
+weapon type,Autocannon,오토캐논,weapon card
+weapon type,Flame,화염,weapon card
+enemy,Scavenger,스캐빈저,enemy list
+enemy,Pouncer,파운서,enemy list
 enemy,Caustic Spitter,,enemy list
 enemy,Spore Burst Scavenger,,enemy list
 enemy,Noxious Scavenger,,enemy list
-enemy,Shrieker,,enemy list
-enemy,Hunter,,enemy list
-enemy,Predator Hunter,,enemy list
-enemy,Spore Burst Hunter,,enemy list
-enemy,Warrior,,enemy list
-enemy,Alpha Warrior,,enemy list
-enemy,Spore Burst Warrior,,enemy list
-enemy,Rupture Warrior,,enemy list
+enemy,Shrieker,슈리커,enemy list
+enemy,Hunter,헌터,enemy list
+enemy,Predator Hunter,프레데터 헌터,enemy list
+enemy,Spore Burst Hunter,스포어 버스트 헌터,enemy list
+enemy,Warrior,워리어,enemy list
+enemy,Alpha Warrior,알파 워리어,enemy list
+enemy,Spore Burst Warrior,스포어 버스트 워리어,enemy list
+enemy,Rupture Warrior,럽쳐 워리어,enemy list
 enemy,Caustic Warrior,,enemy list
-enemy,Hive Guard,,enemy list
-enemy,Brood Commander,,enemy list
-enemy,Alpha Commander,,enemy list
-enemy,Stalker,,enemy list
-enemy,Predator Stalker,,enemy list
-enemy,Nursing Spewer,,enemy list
+enemy,Hive Guard,하이브 가드,enemy list
+enemy,Brood Commander,브루드 커맨더,enemy list
+enemy,Alpha Commander,알파 커맨더,enemy list
+enemy,Stalker,스토커,enemy list
+enemy,Predator Stalker,프레데터 스토커,enemy list
+enemy,Nursing Spewer,너싱 스퓨어,enemy list
 enemy,Noxious Spewer,,enemy list
 enemy,Caustic Spewer,,enemy list
-enemy,Rupture Spewer,,enemy list
-enemy,Charger,,enemy list
-enemy,Charger Behemoth,,enemy list
+enemy,Rupture Spewer,럽쳐 스퓨어,enemy list
+enemy,Charger,차저,enemy list
+enemy,Charger Behemoth,차저 베히모스,enemy list
 enemy,Rupture Charger,,enemy list
 enemy,Caustic Charger,,enemy list
-enemy,Impaler,,enemy list
-enemy,Bile Titan,,enemy list
-enemy,Spore Burst Bile Titan,,enemy list
-enemy,Dragonroach,,enemy list
-enemy,Hive Lord,,enemy list
-enemy,Trooper,,enemy list
-enemy,Commissar,,enemy list
+enemy,Impaler,임페일러,enemy list
+enemy,Bile Titan,바일 타이탄,enemy list
+enemy,Spore Burst Bile Titan,스포어 버스트 바일 타이탄,enemy list
+enemy,Dragonroach,드래곤 로치,enemy list
+enemy,Hive Lord,하이브로드,enemy list
+enemy,Trooper,트루퍼,enemy list
+enemy,Commissar,코미사르,enemy list
 enemy,Marauder,,enemy list
 enemy,Brawler,,enemy list
 enemy,MG Raider,,enemy list
@@ -312,15 +312,15 @@ enemy,Jet Brigade MG Raider,,enemy list
 enemy,Jet Brigade Trooper,,enemy list
 enemy,Incendiary Rocket Raider,,enemy list
 enemy,Pyro Trooper,,enemy list
-enemy,Devastator,,enemy list
-enemy,Heavy Devastator,,enemy list
-enemy,Rocket Devastator,,enemy list
+enemy,Devastator,데바스테이터,enemy list
+enemy,Heavy Devastator,방패 데바스테이터,enemy list
+enemy,Rocket Devastator,로켓 데바스테이터,enemy list
 enemy,Jet Brigade Devastator,,enemy list
 enemy,Conflagration Devastator,,enemy list
 enemy,Incendiary MG Devastator,,enemy list
-enemy,Berserker,,enemy list
-enemy,Hulk Bruiser,,enemy list
-enemy,Hulk Scorcher,,enemy list
+enemy,Berserker,버서커,enemy list
+enemy,Hulk Bruiser,헐크 브루저,enemy list
+enemy,Hulk Scorcher,헐크 스코처,enemy list
 enemy,Hulk Obliterator,,enemy list
 enemy,Hulk Firebomber,,enemy list
 enemy,Jet Brigade Hulk Bruiser,,enemy list
@@ -331,8 +331,8 @@ enemy,Reinforced Scout Strider,,enemy list
 enemy,Annihilator Tank,,enemy list
 enemy,Shredder Tank,,enemy list
 enemy,Barrager Tank,,enemy list
-enemy,Cannon Turret,,enemy list
-enemy,Bunker Turret,,enemy list
+enemy,Cannon Turret,캐논 포탑,enemy list
+enemy,Bunker Turret,쁘띠 포탑,enemy list
 enemy,Mortar Emplacement,,enemy list
 enemy,Anti-Air Emplacement,,enemy list
 enemy,MG Emplacement (Light Fusion Cycler),,enemy list
@@ -345,13 +345,13 @@ enemy,Factory Strider,,enemy list
 enemy,Agitator,,enemy list
 enemy,Radical,,enemy list
 enemy,Vox Engine,,enemy list
-enemy,Light Voteless,,enemy list
-enemy,Medium Voteless,,enemy list
-enemy,Heavy Voteless,,enemy list
-enemy,Overseer,,enemy list
-enemy,Elevated Overseer,,enemy list
-enemy,Crescent Overseer,,enemy list
-enemy,Watcher,,enemy list
+enemy,Light Voteless,무권자 (경),enemy list
+enemy,Medium Voteless,무권자 ,enemy list
+enemy,Heavy Voteless,무권자 (헤비),enemy list
+enemy,Overseer,오버시어,enemy list
+enemy,Elevated Overseer,비행 오버시어,enemy list
+enemy,Crescent Overseer,박격포 오버시어,enemy list
+enemy,Watcher,와쳐,enemy list
 enemy,Fleshmob,,enemy list
 enemy,Harvester,,enemy list
 enemy,Harvester (Armor Broken),,enemy list
