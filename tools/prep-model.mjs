@@ -172,6 +172,8 @@ const LOADOUT = {
   'hulk-bruiser': [{ src: GEAR.hulkCannon, bone: 'r_hand_attach', name: 'weapon_right', part: 'Arms (2)' }, { src: GEAR.hulkLauncher, bone: 'l_hand_attach', name: 'weapon_left', part: 'Arms (2)' }],
   // the Obliterator: a rocket launcher on each arm
   'hulk-obliterator': [{ src: GEAR.hulkLauncher, bone: 'r_hand_attach', name: 'weapon_right', part: 'Arms (2)' }, { src: GEAR.hulkLauncher, bone: 'l_hand_attach', name: 'weapon_left', part: 'Arms (2)' }],
+  // the Firebomber (wiki): the rotary munition launcher on the right arm, a flamethrower on the left
+  'hulk-firebomber': [{ src: GEAR.hulkLauncher, bone: 'r_hand_attach', name: 'weapon_right', part: 'Arms (2)' }, { src: GEAR.hulkFlamer, bone: 'l_hand_attach', name: 'weapon_left', part: 'Arms (2)' }],
   'hulk-scorcher': [{ src: GEAR.hulkSaw, bone: 'l_hand_attach', name: 'weapon_left', part: 'Arms (2)' }, { src: GEAR.hulkFlamer, bone: 'r_hand_attach', name: 'weapon_right', part: 'Arms (2)' }],
 };
 const HULK_JETPACK = { src: GEAR.hulkJetpack, bone: 'attach_backpack_socket', name: 'jetpack', part: 'Jetpack', rot: [90, 0, 0] }; // stood up on the back, thrusters up (as in game)
