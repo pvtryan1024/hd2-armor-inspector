@@ -332,6 +332,40 @@ function paint() {
   }
 }
 
+/* ---------- explosions ----------
+ * Blast rays leave the impact point along the 20 corners of a dodecahedron (evenly spread). Each ray ends at
+ * the first hitzone it meets inside the outer radius; that piece takes blast damage at that distance (full
+ * inside the inner radius, falling off out to the outer). A ray that meets nothing does nothing, and parts
+ * shielded by others aren't reached. A piece hit by several rays counts once, at its nearest distance. */
+const PHI = (1 + Math.sqrt(5)) / 2;
+const DODECA = [];
+for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) DODECA.push(new THREE.Vector3(x, y, z));
+for (const a of [-1, 1]) for (const b of [-1, 1]) {
+  DODECA.push(new THREE.Vector3(0, a / PHI, b * PHI), new THREE.Vector3(a / PHI, b * PHI, 0), new THREE.Vector3(a * PHI, 0, b / PHI));
+}
+DODECA.forEach((v) => v.normalize());
+const blastRay = new THREE.Raycaster();
+blastRay.firstHitOnly = true;
+
+function blastHits(h, outer) {
+  const out = new Map(); // "part:piece" -> { idx, k, d }
+  if (!(outer > 0)) return [];
+  const targets = current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2);
+  const origin = h.point.clone().addScaledVector(h.normal, 0.01); // just off the surface that was struck
+  blastRay.far = outer;
+  for (const dir of DODECA) {
+    blastRay.set(origin, dir);
+    const first = blastRay.intersectObjects(targets, false)[0];
+    if (!first) continue; // this line hit nothing
+    const idx = partIndexFor(current, first.object.userData.key);
+    if (idx < 0) continue; // a mesh that isn't a hitzone still stops the line
+    const k = instanceFor(current, first.object.userData.key, idx);
+    const id = `${idx}:${k}`;
+    if (!out.has(id) || first.distance < out.get(id).d) out.set(id, { idx, k, d: first.distance });
+  }
+  return [...out.values()];
+}
+
 /* ---------- picking ---------- */
 const ray = new THREE.Raycaster();
 ray.firstHitOnly = true;
@@ -403,17 +437,11 @@ function shoot(h) {
   }
   const i = partIndexFor(current, h.mesh.userData.key);
   if (i < 0) { status(`"${h.mesh.userData.key}" isn't linked to a hitzone yet (grey). Assign it in "Edit hitzones".`); return; }
-  // distance from the impact to every hitzone, for blast damage (nearest point of each mesh's bounds)
-  // (the result of every press is shown in the status line, so a "lost" click always says why)
+  // blast rays from the impact point (the result of every press shows in the status line)
+  const blast = blastHits(h, lastDetail?.blast?.outer);
   const parts = {};
-  for (const { key, mesh } of current.meshes) {
-    if (!mesh.visible) continue;
-    const k = partIndexFor(current, key);
-    if (k < 0) continue;
-    const d = new THREE.Box3().setFromObject(mesh).distanceToPoint(h.point);
-    if (parts[k] == null || d < parts[k]) parts[k] = d;
-  }
-  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  for (const b of blast) if (parts[b.idx] == null || b.d < parts[b.idx]) parts[b.idx] = b.d;
+  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
   if (said) status(said);
 }
 

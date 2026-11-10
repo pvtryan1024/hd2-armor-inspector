@@ -927,11 +927,12 @@
     const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0 }) }];
     const radii = blastRadii(mode);
     if (radii) {
-      for (const [k, d] of Object.entries(hit.parts || {})) {
-        const idx = +k;
-        if (idx === hit.idx || d > radii.outer) continue;
-        const sx = shotDamage(mode, e.parts[idx], e, { ...o, noProj: true, exDist: d });
-        if (sx.partEx > 0 || sx.mainEx > 0) rows.push({ idx, dist: d, s: sx });
+      // pieces reached by the blast rays (3D view); the struck piece already took the full blast
+      const reached = hit.blastHits || Object.entries(hit.parts || {}).map(([k, d]) => ({ idx: +k, k: null, d }));
+      for (const b of reached) {
+        if ((b.idx === hit.idx && (b.k == null || b.k === hit.k)) || b.d > radii.outer) continue;
+        const sx = shotDamage(mode, e.parts[b.idx], e, { ...o, noProj: true, exDist: b.d });
+        rows.push({ idx: b.idx, k: b.k, dist: b.d, s: sx }); // listed even when the armor stops it
       }
       const top = Math.max(0, ...rows.map((r) => r.s.mainEx));
       let used = false;
@@ -968,11 +969,12 @@
       const notes = [];
       const tag = shotClock();
       res.rows.forEach((r, k) => {
-        const o = applyShot(state.sim, e, r.idx, r.s, k > 0, k === 0 ? hit.k : undefined);
-        if (o.broke) notes.push(`${pieceName(e.parts[r.idx], k === 0 ? hit.k : null)} destroyed`);
+        const piece = k === 0 ? hit.k : r.k;
+        const o = applyShot(state.sim, e, r.idx, r.s, k > 0, piece ?? undefined);
+        if (o.broke) notes.push(`${pieceName(e.parts[r.idx], piece)} destroyed`);
       });
       const d = res.rows[0];
-      state.sim.log.unshift(`#${state.sim.shots} ${tag}${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : 'ricochet'}${res.rows.length > 1 ? ` + blast on ${res.rows.length - 1} part${res.rows.length > 2 ? 's' : ''}` : ''}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}`);
+      state.sim.log.unshift(`#${state.sim.shots} ${tag}${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : 'ricochet'}${(() => { const n = res.rows.slice(1).filter((r) => r.s.partEx > 0 || r.s.mainEx > 0).length; return n ? ` + blast on ${n} part${n > 1 ? 's' : ''}` : ''; })()}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}`);
       state.sim.log.length = Math.min(state.sim.log.length, 8);
       render();
       return `Fired #${state.sim.shots}: ${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°`;
@@ -1013,7 +1015,7 @@
         <dt>To Main</dt><dd>${fmt(main)}</dd>
       </dl>
       ${res.radii ? `<div class="sp-blast"><b>Blast</b> ${res.radii.inner}m inner / ${res.radii.outer}m outer
-        ${blastRows.length ? '<ul>' + blastRows.map((r) => `<li><span>${esc(e.parts[r.idx].name)} <i>${r.dist.toFixed(1)}m</i></span><span>${fmt(r.s.partEx)}</span></li>`).join('') + '</ul>' : '<div class="muted">No other hitzones in range</div>'}
+        ${blastRows.length ? '<ul>' + blastRows.map((r) => `<li><span>${esc(pieceName(e.parts[r.idx], r.k))} <i>${r.dist.toFixed(1)}m</i></span><span>${r.s.partEx > 0 ? fmt(r.s.partEx) : '<span class="muted" title="The blast AP does not beat this armor">0 · armor holds</span>'}</span></li>`).join('') + '</ul>' : '<div class="muted">No other hitzone reached by the blast</div>'}
         ${mainOnce ? `<div class="muted">+${fmt(mainOnce)} redirected to Main (once per blast)</div>` : ''}</div>` : ''}
       ${state.fire ? '' : '<div class="sp-hint">Turn on Fire mode to apply shots. Change weapon or range to compare on this spot.</div>'}`;
   }
