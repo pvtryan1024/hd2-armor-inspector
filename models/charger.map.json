@@ -18,7 +18,8 @@
     "side_right": "Torso Armor (2)",
     "claw_left": "Claws (2)",
     "left_back_leg_damaged": "Leg Flesh (4)",
-    "body": "Main"
+    "body": "Main",
+    "left_front_leg_gib": "Front Leg Armor (2)"
   },
   "hidden": [
     "head_damaged",
@@ -32,7 +33,6 @@
     "butt_hurt",
     "right_front_leg_damaged",
     "side_left_damaged",
-    "left_front_leg_gib",
     "left_front_leg_damaged",
     "claw_right_gib",
     "left_back_leg_damaged"
