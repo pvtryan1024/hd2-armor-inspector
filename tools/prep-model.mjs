@@ -254,8 +254,20 @@ function splitShells(doc, node, sp, likeBoxes) {
     const sh = shellsOf(prim);
     const total = sh.reduce((a, x) => a + x.n, 0);
     const isPlate = (x, i) => (likeBoxes ? likeBoxes.some((b) => sameBox(b, x.box)) : i > 0 && x.n >= total * 0.02);
-    const body = sh.filter((x, i) => !isPlate(x, i)).flatMap((x) => x.tris);
-    const plates = sh.filter(isPlate).flatMap((x) => x.tris);
+    let body = sh.filter((x, i) => !isPlate(x, i)).flatMap((x) => x.tris);
+    let plates = sh.filter(isPlate).flatMap((x) => x.tris);
+    // endBones: the last plate is welded to the body (the spiky tail tip): its triangles go by bone
+    if (sp.endBones && !likeBoxes) {
+      const joints = node.getSkin().listJoints().map((j) => j.getName());
+      const J = prim.getAttribute('JOINTS_0'), W = prim.getAttribute('WEIGHTS_0'), j4 = [], w4 = [];
+      const end = (v) => { J.getElement(v, j4); W.getElement(v, w4); let b = 0; for (let k = 1; k < 4; k++) if (w4[k] > w4[b]) b = k; return sp.endBones.test(joints[j4[b]]); };
+      const keep = [];
+      for (let t = 0; t < body.length; t += 3) {
+        const tri = body.slice(t, t + 3);
+        (tri.filter(end).length >= 2 ? plates : keep).push(...tri);
+      }
+      body = keep;
+    }
     if (!plates.length) continue;
     const idx = (list) => doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(list)).setBuffer(buffer);
     if (!likeBoxes) { const p = prim.clone(); p.setIndices(idx(plates)); restPrims.push(p); }
@@ -363,17 +375,17 @@ const MAIN_ONLY = [[/./, 'Main']];
 
 const SOURCES = {
   // charger butts: the armor plates on top and the soft butt below are pieces of one mesh
-  charger: { src: 'content/fac_bugs/cha_charger/cha_charger.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates' }], rules: CHARGER },
-  'charger-behemoth': { src: 'content/fac_bugs/cha_charger_bull/cha_charger_bull.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates' }], rules: CHARGER },
+  charger: { src: 'content/fac_bugs/cha_charger/cha_charger.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', endBones: /^spine4$/ }], rules: CHARGER },
+  'charger-behemoth': { src: 'content/fac_bugs/cha_charger_bull/cha_charger_bull.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', endBones: /^spine4$/ }], rules: CHARGER },
   // the Rupture's front legs are its digging plates (Frontal Tarsal Plate Armor, AV5)
-  'rupture-charger': { src: 'content/fac_bugs/cha_charger_burrower/cha_charger_burrower.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates' }], rules: [[/^(left|right)_front_leg$/, 'Frontal Tarsal Plate Armor (2)'], ...CHARGER] },
-  'caustic-charger': { src: 'content/fac_bugs/cha_charger_acid/cha_charger_acid.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', prim: /cha_charger/ }], rules: [[/_blob$/, 'Spore Flesh (6)'], ...CHARGER] },
+  'rupture-charger': { src: 'content/fac_bugs/cha_charger_burrower/cha_charger_burrower.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', endBones: /^spine4$/ }], rules: [[/^(left|right)_front_leg$/, 'Frontal Tarsal Plate Armor (2)'], ...CHARGER] },
+  'caustic-charger': { src: 'content/fac_bugs/cha_charger_acid/cha_charger_acid.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', prim: /cha_charger/, endBones: /^spine4$/ }], rules: [[/_blob$/, 'Spore Flesh (6)'], ...CHARGER] },
   // the abdomen: armor plates ("tail", Butt Armor) over the soft sac; 0xf4fb223e is the burst sac
-  'bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider.unit.glb', shells: [{ mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail' }], rules: BILE_TITAN },
-  'spore-burst-bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider_gloom.unit.glb', shells: [{ mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail' }], rules: BILE_TITAN },
+  'bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider.unit.glb', shells: [{ mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail', endBones: /^spine_lower_4$/ }], rules: BILE_TITAN },
+  'spore-burst-bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider_gloom.unit.glb', shells: [{ mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail', endBones: /^spine_lower_4$/ }], rules: BILE_TITAN },
   impaler: {
     src: 'content/fac_bugs/cha_impaler/cha_impaler.unit.glb',
-    shells: [{ mesh: 'tail', main: 'tail', rest: 'tail_plates' }],
+    shells: [{ mesh: 'tail', main: 'tail', rest: 'tail_plates', endBones: /^spine[56]$/ }],
     rules: [
       [/^head$/, 'Head'],
       [/^head_shield$/, 'Crest Armor'],
