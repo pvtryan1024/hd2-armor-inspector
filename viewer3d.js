@@ -320,9 +320,13 @@ renderer.domElement.addEventListener('pointerup', (ev) => {
   if (!downAt || Math.hypot(ev.clientX - downAt[0], ev.clientY - downAt[1]) > 5) return; // it was a drag
   const h = pick(ev);
   if (!h) return;
-  if (editing) { selectedKey = h.mesh.userData.key; renderEditor(); paint(); return; }
+  if (editing) {
+    selectedKey = h.mesh.userData.key; renderEditor(); paint();
+    if (lastDetail?.fire) status(`Editing hitzones: click selects "${selectedKey}". Turn off "Edit hitzones" to fire.`);
+    return;
+  }
   const i = partIndexFor(current, h.mesh.userData.key);
-  if (i < 0) return;
+  if (i < 0) { status(`"${h.mesh.userData.key}" isn't linked to a hitzone yet (grey). Assign it in "Edit hitzones".`); return; }
   // distance from the impact to every hitzone, for blast damage (nearest point of each mesh's bounds)
   const parts = {};
   for (const { key, mesh } of current.meshes) {
