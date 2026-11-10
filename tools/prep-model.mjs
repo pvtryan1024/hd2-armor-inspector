@@ -112,7 +112,12 @@ const LOADOUT = {
     { src: 'extra/0x48c91e42b9f16512.unit.glb', bone: 'l_front_turret_attach', name: 'gatling_left', part: 'Fusion Gatling Guns (2)', roll: 'y' },
     { src: 'extra/0x48c91e42b9f16512.unit.glb', bone: 'r_front_turret_attach', name: 'gatling_right', part: 'Fusion Gatling Guns (2)', roll: 'y' },
   ],
-  'vox-engine': [{ src: GEAR.walkerCannon, bone: 'l_cannon_socket', name: 'cannon_left', part: 'Cannons (2)' }, { src: GEAR.walkerCannon, bone: 'r_cannon_socket', name: 'cannon_right', part: 'Cannons (2)' }],
+  'vox-engine': [
+    { src: GEAR.walkerCannon, bone: 'l_cannon_socket', name: 'cannon_left', part: 'Cannons (2)' }, { src: GEAR.walkerCannon, bone: 'r_cannon_socket', name: 'cannon_right', part: 'Cannons (2)' },
+    // the miniguns: the Factory Strider's gatling turret on the gattling sockets
+    { src: 'extra/0x48c91e42b9f16512.unit.glb', bone: 'l_gattling_socket', name: 'minigun_left', part: 'Miniguns (2)' },
+    { src: 'extra/0x48c91e42b9f16512.unit.glb', bone: 'r_gattling_socket', name: 'minigun_right', part: 'Miniguns (2)' },
+  ],
   'scout-strider': [{ src: 'extra/0xee00bfe8ff769f70.unit.glb', bone: 'turret', name: 'hull', part: 'Front Plate' }, SCOUT_HMG],
   'reinforced-scout-strider': [
     { src: 'extra/0xd3cd6f0ca83bb51e.unit.glb', bone: 'turret', name: 'hull', part: 'Faceplate' }, SCOUT_HMG,

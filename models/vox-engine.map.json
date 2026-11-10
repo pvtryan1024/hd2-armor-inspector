@@ -28,7 +28,9 @@
     "vent_lower_right": "Vents (6)",
     "vent_upper_left": "Vents (6)",
     "vent_upper_right": "Vents (6)",
-    "right_rocket_cap": "Missile Launchers (2)"
+    "right_rocket_cap": "Missile Launchers (2)",
+    "minigun_left": "Miniguns (2)",
+    "minigun_right": "Miniguns (2)"
   },
   "hidden": [
     "torso_damaged",
@@ -49,6 +51,8 @@
     "vent_lower_right_damaged",
     "vent_upper_left_damaged",
     "vent_upper_right_damaged",
-    "tracks_static"
+    "tracks_static",
+    "minigun_left_damaged",
+    "minigun_right_damaged"
   ]
 }
