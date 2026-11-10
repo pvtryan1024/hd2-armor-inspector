@@ -266,11 +266,13 @@ function pick(ev) {
   const hit = hits.find((h) => h.object.material.opacity > 0.2) || hits[0];
   if (!hit) return null;
   let deg = 0;
+  let n = ray.ray.direction.clone().negate();
   if (hit.face) {
-    const n = hit.face.normal.clone().applyMatrix3(nm.getNormalMatrix(hit.object.matrixWorld)).normalize();
+    n = hit.face.normal.clone().applyMatrix3(nm.getNormalMatrix(hit.object.matrixWorld)).normalize();
+    if (n.dot(ray.ray.direction) > 0) n.negate(); // face the shooter
     deg = THREE.MathUtils.radToDeg(Math.acos(Math.min(1, Math.abs(n.dot(ray.ray.direction)))));
   }
-  return { mesh: hit.object, deg };
+  return { mesh: hit.object, deg, point: hit.point.clone(), normal: n, origin: ray.ray.origin.clone() };
 }
 
 let downAt = null;
@@ -291,8 +293,65 @@ renderer.domElement.addEventListener('pointerup', (ev) => {
   if (!h) return;
   if (editing) { selectedKey = h.mesh.userData.key; renderEditor(); paint(); return; }
   const i = partIndexFor(current, h.mesh.userData.key);
-  if (i >= 0) HD2.click(i, { deg: h.deg });
+  if (i < 0) return;
+  // distance from the impact to every hitzone, for blast damage (nearest point of each mesh's bounds)
+  const parts = {};
+  for (const { key, mesh } of current.meshes) {
+    if (!mesh.visible) continue;
+    const k = partIndexFor(current, key);
+    if (k < 0) continue;
+    const d = new THREE.Box3().setFromObject(mesh).distanceToPoint(h.point);
+    if (parts[k] == null || d < parts[k]) parts[k] = d;
+  }
+  HD2.hit({ idx: i, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
 });
+
+/* ---------- shot visuals: ray, impact marker, explosion radii ---------- */
+const shotGroup = new THREE.Group();
+shotGroup.renderOrder = 10;
+scene.add(shotGroup);
+const fx = (color, opacity) => new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false });
+const unitSphere = new THREE.SphereGeometry(1, 48, 24);
+
+function drawShot(hit, blast) {
+  shotGroup.children.forEach((c) => { if (c.material) c.material.dispose(); if (c.geometry && c.geometry !== unitSphere) c.geometry.dispose(); });
+  shotGroup.clear();
+  if (!hit || !current) return;
+  const p = new THREE.Vector3().fromArray(hit.point);
+  const o = new THREE.Vector3().fromArray(hit.origin);
+  const n = new THREE.Vector3().fromArray(hit.normal);
+  const size = new THREE.Box3().setFromObject(current.root).getSize(new THREE.Vector3()).length() || 1;
+
+  // ray from where the camera was when you clicked; rotate away to see it
+  const ray = new THREE.Line(new THREE.BufferGeometry().setFromPoints([o, p]), new THREE.LineBasicMaterial({ color: 0xffe710, transparent: true, opacity: 0.9, depthTest: false }));
+  const normal = new THREE.Line(new THREE.BufferGeometry().setFromPoints([p, p.clone().addScaledVector(n, size * 0.08)]), new THREE.LineBasicMaterial({ color: 0xffffff, depthTest: false }));
+  const dot = new THREE.Mesh(unitSphere, new THREE.MeshBasicMaterial({ color: 0xffe710, depthTest: false }));
+  dot.scale.setScalar(size * 0.008);
+  dot.position.copy(p);
+  [ray, normal, dot].forEach((m) => { m.renderOrder = 12; shotGroup.add(m); });
+
+  if (blast) {
+    // inner radius: translucent red; outer: orange shells fading out toward the edge
+    if (blast.inner > 0) {
+      const inner = new THREE.Mesh(unitSphere, fx(0xff2a1a, 0.32));
+      inner.scale.setScalar(blast.inner);
+      inner.position.copy(p);
+      inner.renderOrder = 11;
+      shotGroup.add(inner);
+    }
+    const SHELLS = 8;
+    if (blast.outer > blast.inner) {
+      for (let k = 1; k <= SHELLS; k++) {
+        const r = blast.inner + ((blast.outer - blast.inner) * k) / SHELLS;
+        const shell = new THREE.Mesh(unitSphere, fx(0xff8a1f, 0.16 * (1 - (k - 1) / SHELLS) ** 1.5));
+        shell.scale.setScalar(r);
+        shell.position.copy(p);
+        shell.renderOrder = 11;
+        shotGroup.add(shell);
+      }
+    }
+  }
+}
 
 /* ---------- hitzone editor ---------- */
 function renderEditor() {
@@ -398,8 +457,8 @@ $('#v3File').addEventListener('change', async (ev) => {
 /* ---------- link to app.js ---------- */
 window.addEventListener('hd2:update', (ev) => {
   lastDetail = ev.detail;
-  if (ev.detail.enemy.id !== currentId) loadForEnemy(ev.detail.enemy.id);
-  else { paint(); if (editing) renderEditor(); }
+  if (ev.detail.enemy.id !== currentId) { drawShot(null); loadForEnemy(ev.detail.enemy.id); }
+  else { paint(); if (editing) renderEditor(); drawShot(ev.detail.hit, ev.detail.blast); }
   if (ev.detail.stageView === '3d') requestAnimationFrame(resize);
 });
 HD2.refresh();

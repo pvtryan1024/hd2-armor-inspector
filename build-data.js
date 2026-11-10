@@ -106,6 +106,35 @@ weapons.forEach((w) => {
   });
 });
 
+// Projectile ballistics (drag falloff) and explosion radii: { weaponId: { modeName: { velocity, caliber, mass, drag, ..., explosion } } }
+const ballistics = {};
+for (const f of ['ballistics-primary.json', 'ballistics-support.json']) {
+  const p = path.join(dir, f);
+  if (fs.existsSync(p)) Object.assign(ballistics, JSON.parse(fs.readFileSync(p, 'utf8')));
+}
+let ballisticModes = 0, radiusModes = 0;
+weapons.forEach((w) => {
+  const b = ballistics[w.id];
+  if (!b) return;
+  (w.modes || []).forEach((m) => {
+    const v = b[m.name] || (w.modes.length === 1 ? Object.values(b)[0] : null);
+    if (!v) return;
+    const { explosion, ...proj } = v;
+    // Eagles and orbitals fall from the sky, so range to the target doesn't apply
+    if (!['Eagle', 'Orbital'].includes(w.category) && (proj.caliber || proj.drag != null || proj.velocity)) { m.ballistics = proj; ballisticModes++; }
+    if (explosion && m.explosion) {
+      const ex = m.explosion;
+      ex.inner = explosion.inner ?? ex.inner ?? ex.innerRadius ?? null;
+      ex.outer = explosion.outer ?? ex.outer ?? ex.outerRadius ?? null;
+      if (explosion.shockwave != null) ex.shockwave = explosion.shockwave;
+      if (explosion.falloff) ex.falloff = String(explosion.falloff).toLowerCase();
+      if (explosion.apOuter != null) ex.apOuter = explosion.apOuter;
+      if (ex.ap == null && explosion.ap != null) ex.ap = explosion.ap;
+      if (ex.inner != null || ex.outer != null) radiusModes++;
+    }
+  });
+});
+
 // Which enemies have a 3D model in models/, so the site can badge them and skip pointless requests.
 const modelsDir = path.join(__dirname, 'models');
 const models = {};
@@ -128,4 +157,4 @@ const out = {
   weapons: uniq(weapons).filter((w) => Array.isArray(w.modes) && w.modes.length),
 };
 fs.writeFileSync(path.join(dir, 'data.js'), 'window.HD2_DATA = ' + JSON.stringify(out) + ';\n');
-console.log(`enemies: ${out.enemies.length}, weapons: ${out.weapons.length}, modes with angle AP: ${angleModes}`);
+console.log(`enemies: ${out.enemies.length}, weapons: ${out.weapons.length}, modes with angle AP: ${angleModes}, ballistics: ${ballisticModes}, blast radii: ${radiusModes}`);

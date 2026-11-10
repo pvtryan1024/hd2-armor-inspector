@@ -43,6 +43,8 @@
     mode: 0,
     explosion: true,
     allPellets: true,
+    dist: 0, // range to target in metres (drag falloff)
+    hit: null, // last shot placed on the 3D model: { idx, deg, parts: { partIdx: distance from impact } }
     band: 0, // impact angle band for the body map / tables (3D uses the real angle)
     view: 'all',
     color: 'pen',
@@ -86,25 +88,51 @@
   }
 
   /** Damage a single trigger pull does to one part, before HP caps. */
+  /** Velocity falloff from the wiki's simplified drag formula (ignores gravity):
+   *  mult = 1 − 0.75 × (1 − e^(−2·D·x)),  D ≈ 0.0004712389 × caliber² × Cd / mass */
+  function rangeMult(mode, dist) {
+    const b = mode.ballistics;
+    if (!dist || !b || !b.drag || !b.caliber || !b.mass) return 1;
+    const D = (0.0004712389 * b.caliber * b.caliber * b.drag) / b.mass;
+    return 1 - 0.75 * (1 - Math.exp(-2 * D * dist));
+  }
+
+  /** Explosion strength at a distance from the blast centre: full inside the inner radius, falling off
+   *  to 0 at the outer radius (quick: 1 − x, slow: 1 − x²), with AP −1 in the outer ring (min 2). */
+  function blastAt(ex, dist) {
+    const inner = ex.inner ?? ex.innerRadius ?? null;
+    const outer = ex.outer ?? ex.outerRadius ?? null;
+    const ap = ex.ap ?? 0;
+    if (!dist || inner == null || dist <= inner) return { mult: 1, ap };
+    if (outer == null || dist >= outer) return { mult: 0, ap };
+    const x = (dist - inner) / (outer - inner);
+    return { mult: ex.falloff === 'slow' ? 1 - x * x : 1 - x, ap: ex.apOuter ?? (ap > 2 ? Math.max(2, ap - 1) : ap) };
+  }
+
+  /** Damage one hit does to one part, before HP caps.
+   *  opts: band (impact angle), dist (range, metres), exDist (part's distance from the blast; 0 = direct hit),
+   *  noProj (part only caught in the blast). */
   function shotDamage(mode, part, enemy, opts) {
     const ap = apFor(mode, opts.band);
     const pellets = opts.allPellets ? Math.max(1, mode.pellets || 1) : 1;
     const m = penMult(ap, part.av);
     const d = part.durable ?? 0;
-    const raw = (mode.damage || 0) * (1 - d) + (mode.durable ?? mode.damage ?? 0) * d;
-    const proj = m == null || mode.explosionOnly ? 0 : Math.floor(raw * m) * pellets;
+    const raw = ((mode.damage || 0) * (1 - d) + (mode.durable ?? mode.damage ?? 0) * d) * rangeMult(mode, opts.dist);
+    const proj = m == null || mode.explosionOnly || opts.noProj ? 0 : Math.floor(raw * m) * pellets;
 
     let partEx = 0, mainEx = 0, exMult = null;
     const ex = opts.explosion ? mode.explosion : null;
     if (ex && (ex.damage || ex.durable)) {
-      const e = ex.durable ?? ex.damage;
-      const exAp = ex.ap ?? 0; // explosions don't care about impact angle
-      exMult = penMult(exAp, part.av);
+      const blast = blastAt(ex, opts.exDist || 0);
+      const e = (ex.durable ?? ex.damage) * blast.mult;
+      exMult = blast.mult > 0 ? penMult(blast.ap, part.av) : 0;
       const exdr = part.exdr ?? 0;
       partEx = exMult == null ? 0 : Math.floor(e * (1 - exdr) * exMult);
-      if (!isMainRow(part)) mainEx = Math.floor(e * exdr); // redirected share ignores Main AV
+      // redirected share skips Main's ExDR but still needs AP ≥ Main's AV
+      const main = mainPart(enemy);
+      if (!isMainRow(part) && (!main || blast.ap >= main.av)) mainEx = Math.floor(e * exdr);
     }
-    return { proj, partEx, mainEx, pen: m, exPen: exMult, total: proj + partEx };
+    return { proj, partEx, mainEx, pen: opts.noProj ? null : m, exPen: exMult, total: proj + partEx, ap, range: rangeMult(mode, opts.dist) };
   }
 
   /* Stateful simulation: shared by the shots-to-kill numbers and fire mode.
@@ -119,11 +147,11 @@
     };
   }
 
-  function applyShot(sim, enemy, idx, s) {
+  function applyShot(sim, enemy, idx, s, extra) {
     const part = enemy.parts[idx];
     const out = { progress: false, toMain: 0, broke: false, dealt: s.total };
     if (sim.dead || part.av < 0 || part.av >= 11) return out;
-    sim.shots++;
+    if (!extra) sim.shots++; // blast damage to other parts belongs to the same shot
     const mi = mainIndexFor(enemy, idx);
     const toMain = part.toMain ?? 1;
 
@@ -244,7 +272,7 @@
   const weaponById = (id) => DATA.weapons.find((w) => w.id === id);
   const enemy = () => enemyById(state.enemyId);
   const weapon = () => weaponById(state.weaponId);
-  const opts = () => ({ explosion: state.explosion, allPellets: state.allPellets, band: state.band });
+  const opts = () => ({ explosion: state.explosion, allPellets: state.allPellets, band: state.band, dist: state.dist });
 
   /* ---------------- rendering: lists ---------------- */
 
@@ -324,6 +352,7 @@
         ${pellets > 1 ? `<div class="stat"><div class="k">Pellets</div><div class="v">${pellets}</div></div>` : ''}
         ${w.rpm ? `<div class="stat"><div class="k">RPM</div><div class="v">${fmt(w.rpm)}</div></div>` : ''}
         ${w.mag ? `<div class="stat"><div class="k">Mag</div><div class="v">${fmt(w.mag)}</div></div>` : ''}
+        ${ex && (ex.inner ?? ex.innerRadius) != null ? `<div class="stat"><div class="k">Radius</div><div class="v">${ex.inner ?? ex.innerRadius}/${ex.outer ?? ex.outerRadius ?? '?'}m</div></div>` : ''}
         ${ex ? `<div class="stat"><div class="k">Expl. dmg</div><div class="v">${fmt(ex.durable ?? ex.damage)}</div></div>
                 <div class="stat"><div class="k">Expl. AP</div><div class="v">${ex.ap ?? '—'}</div></div>` : ''}
       </div>
@@ -334,6 +363,11 @@
       <div>
         <div class="ap-scale">${scale}</div>
         <div class="ap-caption">Armor this shot defeats at ${ANGLE_BANDS[state.band].name.toLowerCase()} (green = full, yellow-green = 65%, red = ricochet). Body map and tables use this angle; the 3D view uses the real angle from your camera.</div>
+      </div>
+      <div class="range">
+        <label class="opt">Range <b id="distVal">${state.dist} m</b></label>
+        <input type="range" id="distSlider" min="0" max="200" step="5" value="${state.dist}">
+        <div class="ap-caption">${m.ballistics?.drag ? `Projectile damage at ${state.dist} m: <b>${Math.round(rangeMult(m, state.dist) * 100)}%</b> (drag falloff)` : m.ballistics ? 'No drag: no falloff over range' : '<span class="muted">No ballistics data: range has no effect</span>'}</div>
       </div>
       <div class="opts">
         ${w.modes.length > 1 ? `<label class="opt">Ammo / mode
@@ -363,6 +397,7 @@
     renderSummary(e, w, results);
     renderFireHud(e);
     renderSchematic(e, results);
+    renderShotPanel(e);
     publish3d(e, results);
     renderLegend();
     renderPartsTable(e, results);
@@ -568,6 +603,89 @@
     } else banner.classList.add('hidden');
   }
 
+  /* ---------------- shots placed on the 3D model ---------------- */
+
+  /** Explosion radii of the current mode, when explosions are on and the wiki lists them. */
+  function blastRadii(mode) {
+    const ex = state.explosion ? mode?.explosion : null;
+    if (!ex || !(ex.damage || ex.durable)) return null;
+    const inner = ex.inner ?? ex.innerRadius, outer = ex.outer ?? ex.outerRadius;
+    if (inner == null && outer == null) return null;
+    return { inner: inner ?? 0, outer: outer ?? inner, shockwave: ex.shockwave ?? null };
+  }
+
+  /** Damage from one shot at a 3D impact point: the struck part takes projectile + full blast, other parts
+   *  inside the outer radius take falloff blast, and Main gets the redirected share only once per blast. */
+  function resolveHit(hit) {
+    const e = enemy(), w = weapon();
+    if (!e || !w || !hit) return null;
+    const mode = w.modes[state.mode] || w.modes[0];
+    const band = bandOf(hit.deg);
+    const o = { ...opts(), band };
+    const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0 }) }];
+    const radii = blastRadii(mode);
+    if (radii) {
+      for (const [k, d] of Object.entries(hit.parts || {})) {
+        const idx = +k;
+        if (idx === hit.idx || d > radii.outer) continue;
+        const sx = shotDamage(mode, e.parts[idx], e, { ...o, noProj: true, exDist: d });
+        if (sx.partEx > 0 || sx.mainEx > 0) rows.push({ idx, dist: d, s: sx });
+      }
+      const top = Math.max(0, ...rows.map((r) => r.s.mainEx));
+      let used = false;
+      rows.forEach((r) => {
+        if (!used && top > 0 && r.s.mainEx === top) used = true;
+        else r.s = { ...r.s, mainEx: 0 };
+      });
+    }
+    return { mode, band, rows, radii };
+  }
+
+  function placeHit(hit) {
+    state.hit = hit;
+    const res = resolveHit(hit);
+    if (res && state.fire && state.sim && !state.sim.dead) {
+      const e = enemy();
+      const notes = [];
+      res.rows.forEach((r, k) => {
+        const o = applyShot(state.sim, e, r.idx, r.s, k > 0);
+        if (o.broke) notes.push(`${e.parts[r.idx].name} destroyed`);
+      });
+      const d = res.rows[0];
+      state.sim.log.unshift(`#${state.sim.shots} ${e.parts[d.idx].name} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : 'ricochet'}${res.rows.length > 1 ? ` + blast on ${res.rows.length - 1} part${res.rows.length > 2 ? 's' : ''}` : ''}${notes.length ? ' — ' + notes.join(', ') : ''}`);
+      state.sim.log.length = Math.min(state.sim.log.length, 6);
+    }
+    render();
+  }
+
+  function renderShotPanel(e) {
+    const el = $('#shotPanel');
+    const res = state.stageView === '3d' ? resolveHit(state.hit) : null;
+    if (!res) { el.classList.add('hidden'); return; }
+    el.classList.remove('hidden');
+    const d = res.rows[0];
+    const part = e.parts[d.idx];
+    const pc = penClass(d.s, part);
+    const main = d.s.proj > 0 || d.s.partEx > 0 ? simulate(res.mode, e, d.idx, { ...opts(), band: res.band }).perMain : 0;
+    const blastRows = res.rows.slice(1);
+    const mainOnce = res.rows.reduce((a, r) => a + r.s.mainEx, 0);
+    el.innerHTML = `
+      <button class="sp-close" id="shotClose" title="Clear shot">×</button>
+      <div class="sp-title">${esc(part.name)}</div>
+      <div class="sp-sub">${Math.round(state.hit.deg)}° · ${ANGLE_BANDS[res.band].name} · AP ${d.s.ap} vs AV ${part.av}</div>
+      <div class="sp-verdict" style="--c:${PEN_VAR[pc]}">${PEN_LABEL[pc]}</div>
+      <dl>
+        <dt>Projectile</dt><dd>${fmt(d.s.proj)}${state.dist && d.s.range < 1 ? ` <span class="muted">(${Math.round(d.s.range * 100)}% at ${state.dist} m)</span>` : ''}</dd>
+        ${res.radii || d.s.partEx ? `<dt>Explosion</dt><dd>${fmt(d.s.partEx)}</dd>` : ''}
+        <dt>Total to part</dt><dd><b>${fmt(d.s.total)}</b></dd>
+        <dt>To Main</dt><dd>${fmt(main)}</dd>
+      </dl>
+      ${res.radii ? `<div class="sp-blast"><b>Blast</b> ${res.radii.inner}m inner / ${res.radii.outer}m outer
+        ${blastRows.length ? '<ul>' + blastRows.map((r) => `<li><span>${esc(e.parts[r.idx].name)} <i>${r.dist.toFixed(1)}m</i></span><span>${fmt(r.s.partEx)}</span></li>`).join('') + '</ul>' : '<div class="muted">No other hitzones in range</div>'}
+        ${mainOnce ? `<div class="muted">+${fmt(mainOnce)} redirected to Main (once per blast)</div>` : ''}</div>` : ''}
+      ${state.fire ? '' : '<div class="sp-hint">Turn on Fire mode to apply shots. Change weapon or range to compare on this spot.</div>'}`;
+  }
+
   /* ---------------- 3D viewer bridge (viewer3d.js listens) ---------------- */
 
   function publish3d(e, results) {
@@ -589,6 +707,7 @@
     window.dispatchEvent(new CustomEvent('hd2:update', { detail: {
       enemy: e, colors, gone, fire: state.fire, stageView: state.stageView,
       colorMode: state.color, ap4, avs: e.parts.map((p) => p.av), bands: ANGLE_BANDS,
+      hit: state.hit, blast: blastRadii(m),
     } }));
   }
 
@@ -655,6 +774,7 @@
     if (!state.explosion) p.set('x', '0');
     if (!state.allPellets) p.set('p', '0');
     if (state.band) p.set('a', state.band);
+    if (state.dist) p.set('d', state.dist);
     if (state.view !== 'all') p.set('v', state.view);
     if (state.color !== 'pen') p.set('c', state.color);
     if (state.stagePinned) p.set('s', state.stageView);
@@ -668,6 +788,7 @@
     state.explosion = p.get('x') !== '0';
     state.allPellets = p.get('p') !== '0';
     state.band = Math.min(3, Math.max(0, +p.get('a') || 0));
+    state.dist = Math.min(200, Math.max(0, +p.get('d') || 0));
     if (['front', 'side', 'rear'].includes(p.get('v'))) state.view = p.get('v');
     if (p.get('c') === 'ttk') state.color = 'ttk';
     if (p.has('s')) { state.stageView = p.get('s') === '3d' ? '3d' : 'map'; state.stagePinned = true; }
@@ -675,12 +796,17 @@
 
   /* ---------------- wiring ---------------- */
 
-  function render() {
+  function render(keepCard) {
     renderFactionTabs();
     renderEnemyList();
     renderCatTabs();
     renderWeaponList();
-    renderWeaponCard();
+    if (!keepCard) renderWeaponCard();
+    else if (weapon()) { // dragging the range slider: refresh only its caption so the drag isn't interrupted
+      const m = weapon().modes[state.mode] || weapon().modes[0];
+      const cap = $('#distSlider')?.parentElement.querySelector('.ap-caption');
+      if (cap && m.ballistics?.drag) cap.innerHTML = `Projectile damage at ${state.dist} m: <b>${Math.round(rangeMult(m, state.dist) * 100)}%</b> (drag falloff)`;
+    }
     renderStage();
     $$('#viewTabs button').forEach((b) => b.classList.toggle('on', b.dataset.view === state.view));
     $$('#colorTabs button').forEach((b) => b.classList.toggle('on', b.dataset.color === state.color));
@@ -693,6 +819,7 @@
     writeHash();
   }
 
+  let distTimer = null;
   function bind() {
     $('#factionTabs').addEventListener('click', (ev) => {
       const b = ev.target.closest('button'); if (!b) return;
@@ -706,7 +833,7 @@
     $('#weaponSearch').addEventListener('input', renderWeaponList);
     $('#enemyList').addEventListener('click', (ev) => {
       const li = ev.target.closest('li[data-id]'); if (!li) return;
-      state.enemyId = li.dataset.id; resetSim(); autoStageView(); render();
+      state.enemyId = li.dataset.id; state.hit = null; resetSim(); autoStageView(); render();
     });
     $('#weaponList').addEventListener('click', (ev) => {
       const li = ev.target.closest('li[data-id]'); if (!li) return;
@@ -715,6 +842,13 @@
     $('#weaponCard').addEventListener('click', (ev) => {
       const b = ev.target.closest('[data-band]'); if (!b) return;
       state.band = +b.dataset.band; render();
+    });
+    $('#weaponCard').addEventListener('input', (ev) => {
+      if (ev.target.id !== 'distSlider') return;
+      state.dist = +ev.target.value;
+      $('#distVal').textContent = state.dist + ' m';
+      clearTimeout(distTimer);
+      distTimer = setTimeout(() => render(true), 120);
     });
     $('#weaponCard').addEventListener('change', (ev) => {
       const t = ev.target;
@@ -765,6 +899,7 @@
     $('#fireBtn').addEventListener('click', () => { state.fire = !state.fire; resetSim(); render(); });
     $('.stage').addEventListener('click', (ev) => {
       if (ev.target.closest('#resetSim, #resetSim2')) { resetSim(); render(); }
+      if (ev.target.closest('#shotClose')) { state.hit = null; render(); }
     });
     $('#stageTabs').addEventListener('click', (ev) => {
       const b = ev.target.closest('button'); if (!b) return;
@@ -808,7 +943,7 @@
   window.HD2 = {
     simulate, shotDamage, penMult, evalEnemy,
     // used by viewer3d.js
-    enemy, tip: showTip, hideTip, click: partClick,
+    enemy, tip: showTip, hideTip, click: partClick, hit: placeHit,
     refresh: () => render(),
   };
   init();

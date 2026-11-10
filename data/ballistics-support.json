@@ -1,0 +1,953 @@
+{
+  "mg-43-machine-gun": {
+    "Standard": {
+      "velocity": 820,
+      "caliber": 8,
+      "mass": 11,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": null
+    }
+  },
+  "m-105-stalwart": {
+    "Standard": {
+      "velocity": 900,
+      "caliber": 5.5,
+      "mass": 4.5,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": null
+    }
+  },
+  "mg-206-heavy-machine-gun": {
+    "Standard": {
+      "velocity": 980,
+      "caliber": 12.5,
+      "mass": 52,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": null
+    }
+  },
+  "m-1000-maxigun": {
+    "Standard": {
+      "velocity": 920,
+      "caliber": 8,
+      "mass": 11,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": null
+    }
+  },
+  "mgx-42-bullet-storm": {
+    "Standard": {
+      "velocity": 450,
+      "caliber": 9,
+      "mass": 4.5,
+      "drag": 0.6,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": null
+    }
+  },
+  "apw-1-anti-materiel-rifle": {
+    "Standard": {
+      "velocity": 880,
+      "caliber": 12.5,
+      "mass": 52,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": null
+    }
+  },
+  "amw-20-apex": {
+    "Standard": {
+      "velocity": 1500,
+      "caliber": 20,
+      "mass": 70,
+      "drag": 0.1,
+      "gravity": 0.35,
+      "penSlowdown": 0.1,
+      "explosion": null
+    }
+  },
+  "rs-422-railgun": {
+    "Minimum charge (0.45s)": {
+      "velocity": 2000,
+      "caliber": 10,
+      "mass": 50,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0,
+      "explosion": null
+    },
+    "Max charge (Unsafe, 3.0s)": {
+      "velocity": 2000,
+      "caliber": 10,
+      "mass": 50,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0,
+      "explosion": {
+        "inner": 0.4,
+        "outer": 2,
+        "shockwave": 3,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "gr-8-recoilless-rifle": {
+    "HEAT": {
+      "velocity": 250,
+      "caliber": 85,
+      "mass": 3300,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 1.5,
+        "outer": 3,
+        "shockwave": 6,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    },
+    "HE": {
+      "velocity": 250,
+      "caliber": 85,
+      "mass": 3300,
+      "drag": 0,
+      "gravity": 1,
+      "penSlowdown": 0.85,
+      "explosion": {
+        "inner": 3,
+        "outer": 7.5,
+        "shockwave": 12,
+        "ap": 4,
+        "falloff": "quick"
+      }
+    }
+  },
+  "eat-17-expendable-anti-tank": {
+    "Standard": {
+      "velocity": 200,
+      "caliber": 75,
+      "mass": 2500,
+      "drag": 0,
+      "gravity": 1,
+      "penSlowdown": 0.85,
+      "explosion": {
+        "inner": 1.5,
+        "outer": 3,
+        "shockwave": 6,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "eat-700-expendable-napalm": {
+    "Rocket": {
+      "velocity": 200,
+      "caliber": 75,
+      "mass": 2500,
+      "drag": 0,
+      "gravity": 1,
+      "penSlowdown": 0.85,
+      "explosion": {
+        "inner": 1.6,
+        "outer": 8,
+        "shockwave": 10,
+        "ap": 6,
+        "falloff": "quick"
+      }
+    },
+    "Napalm bomblet": {
+      "velocity": 15,
+      "caliber": 85,
+      "mass": 3000,
+      "drag": 15,
+      "gravity": 4,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 1.6,
+        "outer": 5,
+        "shockwave": 5,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "eat-411-leveller": {
+    "Standard": {
+      "velocity": 50,
+      "caliber": 80,
+      "mass": 500,
+      "drag": 0.5,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 10,
+        "outer": 25,
+        "shockwave": 35,
+        "ap": 6,
+        "falloff": "quick"
+      }
+    }
+  },
+  "las-99-quasar-cannon": {
+    "Standard": {
+      "velocity": 1300,
+      "caliber": 10,
+      "mass": 12,
+      "drag": 0,
+      "gravity": 0,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 1.5,
+        "outer": 3,
+        "shockwave": 6,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "faf-14-spear": {
+    "Standard": {
+      "velocity": 70,
+      "caliber": 66,
+      "mass": 350,
+      "drag": 0,
+      "gravity": 0,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 1.5,
+        "outer": 3,
+        "shockwave": 6,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "mls-4x-commando": {
+    "Standard": {
+      "velocity": 70,
+      "caliber": 66,
+      "mass": 350,
+      "drag": 0,
+      "gravity": 0,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 1,
+        "outer": 2,
+        "shockwave": 4,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "rl-77-airburst-rocket-launcher": {
+    "Rocket (direct)": {
+      "velocity": 250,
+      "caliber": 85,
+      "mass": 3300,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 3,
+        "outer": 5,
+        "shockwave": 7,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    },
+    "Bomblet": {
+      "velocity": 25,
+      "caliber": 40,
+      "mass": 100,
+      "drag": 0.5,
+      "gravity": 4,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 4,
+        "outer": 6,
+        "shockwave": 8,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "sta-x3-w-a-s-p-launcher": {
+    "Burst": {
+      "velocity": 500,
+      "caliber": 1,
+      "mass": 11,
+      "drag": 0,
+      "gravity": 0,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 2.5,
+        "outer": 5,
+        "shockwave": 7,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    },
+    "Artillery (carrier)": {
+      "velocity": 500,
+      "caliber": 1,
+      "mass": 11,
+      "drag": 0,
+      "gravity": 0,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 3,
+        "outer": 5,
+        "shockwave": 7,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "ac-8-autocannon": {
+    "APHET": {
+      "velocity": 820,
+      "caliber": 20,
+      "mass": 120,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.55,
+      "explosion": {
+        "inner": 2,
+        "outer": 4,
+        "shockwave": 5.5,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    },
+    "Flak": {
+      "velocity": 820,
+      "caliber": 40,
+      "mass": 130,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 2,
+        "outer": 7,
+        "shockwave": 8,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "gl-21-grenade-launcher": {
+    "Standard": {
+      "velocity": 100,
+      "caliber": 40,
+      "mass": 50,
+      "drag": 1.2,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 3.5,
+        "outer": 7.5,
+        "shockwave": 8,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "gl-28-belt-fed-grenade-launcher": {
+    "Standard": {
+      "velocity": 100,
+      "caliber": 40,
+      "mass": 50,
+      "drag": 1.2,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 2,
+        "outer": 4,
+        "shockwave": 5.5,
+        "ap": 4,
+        "falloff": "quick"
+      }
+    }
+  },
+  "gl-52-de-escalator": {
+    "Grenade impact": {
+      "velocity": 100,
+      "caliber": 40,
+      "mass": 50,
+      "drag": 1.2,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 1,
+        "outer": 3,
+        "shockwave": 4,
+        "ap": 6,
+        "falloff": "quick"
+      }
+    },
+    "Arc discharge": {
+      "velocity": null,
+      "caliber": null,
+      "mass": null,
+      "drag": null,
+      "gravity": null,
+      "penSlowdown": null,
+      "explosion": null
+    }
+  },
+  "plas-45-epoch": {
+    "Uncharged": {
+      "velocity": 250,
+      "caliber": 20,
+      "mass": 100,
+      "drag": 0.1,
+      "gravity": 2,
+      "penSlowdown": 0.35,
+      "explosion": {
+        "inner": 2.3,
+        "outer": 3,
+        "shockwave": 4,
+        "ap": 4,
+        "falloff": "quick"
+      }
+    },
+    "Full charge (2.6s)": {
+      "velocity": 250,
+      "caliber": 20,
+      "mass": 100,
+      "drag": 0.1,
+      "gravity": 2,
+      "penSlowdown": 0.35,
+      "explosion": {
+        "inner": 3,
+        "outer": 4,
+        "shockwave": 5,
+        "ap": 5,
+        "falloff": "quick"
+      }
+    }
+  },
+  "s-11-speargun": {
+    "Standard": {
+      "velocity": 300,
+      "caliber": 10,
+      "mass": 100,
+      "drag": 4,
+      "gravity": 1,
+      "penSlowdown": 0,
+      "explosion": {
+        "inner": 2,
+        "outer": 5,
+        "shockwave": 7,
+        "ap": 6,
+        "falloff": "quick"
+      }
+    }
+  },
+  "sg-88-break-action-shotgun": {
+    "Standard": {
+      "velocity": 385,
+      "caliber": 8,
+      "mass": 6,
+      "drag": 0.5,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": null
+    }
+  },
+  "las-98-laser-cannon": {
+    "Beam": {
+      "velocity": null,
+      "caliber": null,
+      "mass": null,
+      "drag": null,
+      "gravity": null,
+      "penSlowdown": null,
+      "explosion": null
+    }
+  },
+  "las-44-nova": {
+    "Standard": {
+      "velocity": 1500,
+      "caliber": 10,
+      "mass": 8,
+      "drag": 0,
+      "gravity": 0,
+      "penSlowdown": 0.25,
+      "explosion": null
+    }
+  },
+  "40-k-meltagun": {
+    "Standard": {
+      "velocity": null,
+      "caliber": null,
+      "mass": null,
+      "drag": null,
+      "gravity": null,
+      "penSlowdown": null,
+      "explosion": null
+    }
+  },
+  "arc-3-arc-thrower": {
+    "Standard": {
+      "velocity": null,
+      "caliber": null,
+      "mass": null,
+      "drag": null,
+      "gravity": null,
+      "penSlowdown": null,
+      "explosion": null
+    }
+  },
+  "flam-40-flamethrower": {
+    "Spray": {
+      "velocity": null,
+      "caliber": null,
+      "mass": null,
+      "drag": null,
+      "gravity": null,
+      "penSlowdown": null,
+      "explosion": null
+    }
+  },
+  "b-flam-80-cremator": {
+    "Spray": {
+      "velocity": null,
+      "caliber": null,
+      "mass": null,
+      "drag": null,
+      "gravity": null,
+      "penSlowdown": null,
+      "explosion": null
+    }
+  },
+  "tx-41-sterilizer": {
+    "Spray": {
+      "velocity": null,
+      "caliber": null,
+      "mass": null,
+      "drag": null,
+      "gravity": null,
+      "penSlowdown": null,
+      "explosion": null
+    }
+  },
+  "ms-11-solo-silo": {
+    "Impact explosion": {
+      "velocity": null,
+      "caliber": null,
+      "mass": null,
+      "drag": null,
+      "gravity": null,
+      "penSlowdown": null,
+      "explosion": {
+        "inner": 3,
+        "outer": 6,
+        "shockwave": 6,
+        "ap": 9,
+        "falloff": "quick"
+      }
+    },
+    "Main explosion": {
+      "velocity": null,
+      "caliber": null,
+      "mass": null,
+      "drag": null,
+      "gravity": null,
+      "penSlowdown": null,
+      "explosion": {
+        "inner": 10,
+        "outer": 25,
+        "shockwave": 35,
+        "ap": 7,
+        "falloff": "quick"
+      }
+    }
+  },
+  "b-md-c4-pack": {
+    "Detonation": {
+      "velocity": null,
+      "caliber": null,
+      "mass": null,
+      "drag": null,
+      "gravity": null,
+      "penSlowdown": null,
+      "explosion": {
+        "inner": 3,
+        "outer": 7,
+        "shockwave": 8,
+        "ap": 7,
+        "falloff": "quick"
+      }
+    }
+  },
+  "eagle-500kg-bomb": {
+    "Bomb": {
+      "velocity": 500,
+      "caliber": 50,
+      "mass": 500,
+      "drag": 0.5,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 10,
+        "outer": 25,
+        "shockwave": 35,
+        "ap": 6,
+        "falloff": "slow"
+      }
+    }
+  },
+  "eagle-airstrike": {
+    "Bomb (x6)": {
+      "velocity": 500,
+      "caliber": 25,
+      "mass": 100,
+      "drag": 0.5,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 5,
+        "outer": 10,
+        "shockwave": 14,
+        "ap": 5,
+        "falloff": "quick"
+      }
+    }
+  },
+  "eagle-cluster-bomb": {
+    "Bomb casing": {
+      "velocity": 300,
+      "caliber": 25,
+      "mass": 100,
+      "drag": 0.5,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 1,
+        "outer": 2,
+        "shockwave": 10,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    },
+    "Bomblet": {
+      "velocity": 30,
+      "caliber": 40,
+      "mass": 50,
+      "drag": 0.5,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 3,
+        "outer": 6,
+        "shockwave": 8,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "eagle-strafing-run": {
+    "Cannon round": {
+      "velocity": 1050,
+      "caliber": 23,
+      "mass": 400,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 2.5,
+        "outer": 5,
+        "shockwave": 6.5,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "eagle-110mm-rocket-pods": {
+    "Rocket": {
+      "velocity": 700,
+      "caliber": 110,
+      "mass": 3300,
+      "drag": 0,
+      "gravity": 2.1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 1.6,
+        "outer": 5,
+        "shockwave": 8,
+        "ap": 4,
+        "falloff": "quick"
+      }
+    }
+  },
+  "orbital-railcannon-strike": {
+    "Shell": {
+      "velocity": 14000,
+      "caliber": 100,
+      "mass": 5000,
+      "drag": 0,
+      "gravity": 1,
+      "penSlowdown": 0,
+      "explosion": {
+        "inner": 2.5,
+        "outer": 2.5,
+        "shockwave": 10,
+        "ap": 6,
+        "falloff": "quick"
+      }
+    }
+  },
+  "orbital-precision-strike": {
+    "Shell": {
+      "velocity": 400,
+      "caliber": 406,
+      "mass": 30000,
+      "drag": 0,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 4,
+        "outer": 12,
+        "shockwave": 18,
+        "ap": 6,
+        "falloff": "quick"
+      }
+    }
+  },
+  "orbital-380mm-he-barrage": {
+    "Shell": {
+      "velocity": 400,
+      "caliber": 406,
+      "mass": 30000,
+      "drag": 0,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 4,
+        "outer": 12,
+        "shockwave": 18,
+        "ap": 6,
+        "falloff": "quick"
+      }
+    }
+  },
+  "orbital-walking-barrage": {
+    "Shell": {
+      "velocity": 400,
+      "caliber": 406,
+      "mass": 30000,
+      "drag": 0,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 4,
+        "outer": 12,
+        "shockwave": 18,
+        "ap": 6,
+        "falloff": "quick"
+      }
+    }
+  },
+  "orbital-120mm-he-barrage": {
+    "Shell": {
+      "velocity": 400,
+      "caliber": 84,
+      "mass": 5000,
+      "drag": 0,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 3.3,
+        "outer": 10,
+        "shockwave": 11,
+        "ap": 5,
+        "falloff": "quick"
+      }
+    }
+  },
+  "orbital-gatling-barrage": {
+    "Round": {
+      "velocity": 1050,
+      "caliber": 23,
+      "mass": 400,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 1.5,
+        "outer": 4.5,
+        "shockwave": 6.5,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "orbital-airburst-strike": {
+    "Shell": {
+      "velocity": 400,
+      "caliber": 110,
+      "mass": 5000,
+      "drag": 0,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 0.2,
+        "outer": 0.5,
+        "shockwave": 4,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    },
+    "Shrapnel": {
+      "velocity": 300,
+      "caliber": 8,
+      "mass": 2,
+      "drag": 0.5,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 3,
+        "outer": 6,
+        "shockwave": 8,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "orbital-laser": {
+    "Beam": {
+      "velocity": null,
+      "caliber": null,
+      "mass": null,
+      "drag": null,
+      "gravity": null,
+      "penSlowdown": null,
+      "explosion": null
+    }
+  },
+  "a-mg-43-machine-gun-sentry": {
+    "Standard": {
+      "velocity": 820,
+      "caliber": 8,
+      "mass": 11,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": null
+    }
+  },
+  "a-g-16-gatling-sentry": {
+    "Standard": {
+      "velocity": 820,
+      "caliber": 8,
+      "mass": 11,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": null
+    }
+  },
+  "a-ac-8-autocannon-sentry": {
+    "Standard": {
+      "velocity": 1021,
+      "caliber": 40,
+      "mass": 900,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 2,
+        "outer": 6,
+        "shockwave": 8,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "a-mls-4x-rocket-sentry": {
+    "Standard": {
+      "velocity": 100,
+      "caliber": 70,
+      "mass": 6000,
+      "drag": 0,
+      "gravity": 0.1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 1,
+        "outer": 4,
+        "shockwave": 6,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "a-m-12-mortar-sentry": {
+    "Standard": {
+      "velocity": 100,
+      "caliber": 360,
+      "mass": 70000,
+      "drag": 0.25,
+      "gravity": 6,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 3,
+        "outer": 9,
+        "shockwave": 13,
+        "ap": 3,
+        "falloff": "quick"
+      }
+    }
+  },
+  "a-las-98-laser-sentry": {
+    "Beam": {
+      "velocity": null,
+      "caliber": null,
+      "mass": null,
+      "drag": null,
+      "gravity": null,
+      "penSlowdown": null,
+      "explosion": null
+    }
+  },
+  "e-mg-101-hmg-emplacement": {
+    "Standard": {
+      "velocity": 880,
+      "caliber": 12.5,
+      "mass": 52,
+      "drag": 0.3,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": null
+    }
+  },
+  "e-at-12-anti-tank-emplacement": {
+    "APHE 75mm": {
+      "velocity": 625,
+      "caliber": 75,
+      "mass": 6500,
+      "drag": 0.75,
+      "gravity": 1,
+      "penSlowdown": 0.25,
+      "explosion": {
+        "inner": 3,
+        "outer": 6,
+        "shockwave": 7,
+        "ap": 3,
+        "falloff": null
+      }
+    }
+  }
+}
