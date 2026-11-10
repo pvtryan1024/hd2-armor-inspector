@@ -5,7 +5,9 @@
     "leg_left_whole": "Leg (2)",
     "hip_whole": "Pelvis",
     "head_whole": "Head",
-    "torso_whole": "Chest"
+    "torso_whole": "Chest",
+    "chainsaw_left": "Arm (2)",
+    "chainsaw_right": "Arm (2)"
   },
   "hidden": [
     "torso_destroyed_upper",

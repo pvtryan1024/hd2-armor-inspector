@@ -6,7 +6,9 @@
     "chest": "Main",
     "back": "Heatsink",
     "arm_left": "Arms (2)",
-    "leg_left": "Legs (2)"
+    "leg_left": "Legs (2)",
+    "weapon_right": "Arms (2)",
+    "weapon_left": "Arms (2)"
   },
   "hidden": [
     "chest_damaged",

@@ -10,7 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { prune, dedup, textureCompress, meshopt } from '@gltf-transform/functions';
+import { prune, dedup, textureCompress, meshopt, mergeDocuments, unpartition } from '@gltf-transform/functions';
 import { MeshoptEncoder } from 'meshoptimizer';
 import sharp from 'sharp';
 
@@ -57,6 +57,50 @@ const HULK = [
   [/^back$/, 'Heatsink'],
   [/^(chest|torso)$/, 'Main'],
 ];
+
+// Gear that's a separate model in the game, merged onto the body's attachment bone.
+// name: the mesh name in the result (and in the map); part: the hitzone it gets, if any.
+const W = 'content/fac_cyborgs/equipment/';
+const GEAR = {
+  rifle: W + 'weapons/soldier_standard_rifle/soldier_standard_rifle.unit.glb',
+  machinegun: W + 'weapons/soldier_machinegun/soldier_machinegun.unit.glb',
+  shield: W + 'weapons/soldier_shield/soldier_shield.unit.glb',
+  chainsaw: W + 'weapons/soldier_chainsaw/soldier_chainsaw.unit.glb',
+  hulkCannon: W + 'weapons/lieutenant_cannon/lieutenant_cannon.unit.glb',
+  hulkLauncher: W + 'weapons/lieutenant_launcher/lieutenant_launcher.unit.glb',
+  hulkSaw: W + 'weapons/lieutenant_saw/lieutenant_saw.unit.glb',
+  hulkJetpack: W + 'backpacks/lieutenant_jetpack/lieutenant_jetpack.unit.glb',
+};
+const LOADOUT = {
+  devastator: [{ src: GEAR.rifle, bone: 'attach_r_hand', name: 'weapon_right' }],
+  'heavy-devastator': [{ src: GEAR.machinegun, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.shield, bone: 'attach_shield', name: 'shield', part: 'Shield' }],
+  berserker: [{ src: GEAR.chainsaw, bone: 'attach_l_hand', name: 'chainsaw_left', part: 'Arm (2)' }, { src: GEAR.chainsaw, bone: 'attach_r_hand', name: 'chainsaw_right', part: 'Arm (2)' }],
+  'hulk-bruiser': [{ src: GEAR.hulkCannon, bone: 'r_hand_attach', name: 'weapon_right', part: 'Arms (2)' }, { src: GEAR.hulkLauncher, bone: 'l_hand_attach', name: 'weapon_left', part: 'Arms (2)' }],
+  'hulk-scorcher': [{ src: GEAR.hulkSaw, bone: 'l_hand_attach', name: 'weapon_left', part: 'Arms (2)' }],
+};
+LOADOUT['jet-brigade-hulk-bruiser'] = [...LOADOUT['hulk-bruiser'], { src: GEAR.hulkJetpack, bone: 'attach_backpack_socket', name: 'jetpack', part: 'Jetpack' }];
+LOADOUT['jet-brigade-hulk-scorcher'] = [...LOADOUT['hulk-scorcher'], { src: GEAR.hulkJetpack, bone: 'attach_backpack_socket', name: 'jetpack', part: 'Jetpack' }];
+
+// 4×4 column-major helpers for placing gear
+function mat4Invert(m) {
+  const [a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23, a30, a31, a32, a33] = m;
+  const b00 = a00 * a11 - a01 * a10, b01 = a00 * a12 - a02 * a10, b02 = a00 * a13 - a03 * a10, b03 = a01 * a12 - a02 * a11;
+  const b04 = a01 * a13 - a03 * a11, b05 = a02 * a13 - a03 * a12, b06 = a20 * a31 - a21 * a30, b07 = a20 * a32 - a22 * a30;
+  const b08 = a20 * a33 - a23 * a30, b09 = a21 * a32 - a22 * a31, b10 = a21 * a33 - a23 * a31, b11 = a22 * a33 - a23 * a32;
+  const det = 1 / (b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06);
+  return [
+    (a11 * b11 - a12 * b10 + a13 * b09) * det, (a02 * b10 - a01 * b11 - a03 * b09) * det, (a31 * b05 - a32 * b04 + a33 * b03) * det, (a22 * b04 - a21 * b05 - a23 * b03) * det,
+    (a12 * b08 - a10 * b11 - a13 * b07) * det, (a00 * b11 - a02 * b08 + a03 * b07) * det, (a32 * b02 - a30 * b05 - a33 * b01) * det, (a20 * b05 - a22 * b02 + a23 * b01) * det,
+    (a10 * b10 - a11 * b08 + a13 * b06) * det, (a01 * b08 - a00 * b10 - a03 * b06) * det, (a30 * b04 - a31 * b02 + a33 * b00) * det, (a21 * b02 - a20 * b04 - a23 * b00) * det,
+    (a11 * b07 - a10 * b09 - a12 * b06) * det, (a00 * b09 - a01 * b07 + a02 * b06) * det, (a31 * b01 - a30 * b03 - a32 * b00) * det, (a20 * b03 - a21 * b01 + a22 * b00) * det,
+  ];
+}
+function mat4Mul(a, b) {
+  const o = new Array(16).fill(0);
+  for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) o[c * 4 + r] += a[k * 4 + r] * b[c * 4 + k];
+  return o;
+}
+const isUnder = (n, anc) => { for (let p = n.getParentNode(); p; p = p.getParentNode()) if (p === anc) return true; return false; };
 
 const SOURCES = {
   charger: { src: 'content/fac_bugs/cha_charger/cha_charger.unit.glb', rules: CHARGER },
@@ -129,12 +173,49 @@ async function prep(id) {
   const doc = await io.read(src);
   const root = doc.getRoot();
 
+  // gear: merge each attachment model in and hang its content on the body's attachment bone
+  const gearNames = [];
+  for (const a of LOADOUT[id] || []) {
+    const adoc = await io.read(path.join(EXPORTS, a.src));
+    // keep the most detailed copy: some gear only ships a lower LOD (the Berserker chainsaw has just LOD1)
+    const lodOf = (n) => +(/LOD(\d)$/i.exec(n.getName())?.[1] ?? 0);
+    const meshes = adoc.getRoot().listNodes().filter((n) => n.getMesh() && !/shadow|collision|culling/i.test(n.getName()));
+    const best = Math.min(...meshes.map(lodOf));
+    for (const n of adoc.getRoot().listNodes()) {
+      if (!n.getMesh()) continue;
+      if (!meshes.includes(n) || lodOf(n) !== best) { n.dispose(); continue; }
+      n.setName(a.name); n.getMesh().setName(a.name);
+    }
+    const aScene = adoc.getRoot().listScenes()[0];
+    // its skeleton sits under its own axis-conversion node; the bone is already in the game's axes
+    const conv = adoc.getRoot().listNodes().find((n) => /FbxAxisSystem/i.test(n.getName())) || aScene.listChildren()[0];
+    // its meshes sit outside that node (in converted axes): note where they go relative to it
+    const toConv = mat4Invert(conv.getWorldMatrix());
+    // (skinned ones too: they follow their skeleton, but must stay in the scene)
+    const loose = adoc.getRoot().listNodes().filter((n) => n.getMesh() && !isUnder(n, conv))
+      .map((n) => ({ n, local: mat4Mul(toConv, n.getWorldMatrix()) }));
+    const moved = mergeDocuments(doc, adoc);
+    const bone = root.listNodes().find((n) => n.getName() === a.bone);
+    if (!bone) { console.warn(`${id}: bone ${a.bone} not found; ${a.name} skipped`); moved.get(aScene)?.dispose(); continue; }
+    const mConv = moved.get(conv);
+    for (const child of mConv.listChildren()) { mConv.removeChild(child); bone.addChild(child); }
+    for (const { n, local } of loose) {
+      const m = moved.get(n);
+      m.getParentNode()?.removeChild(m);
+      m.setMatrix(local);
+      bone.addChild(m);
+    }
+    moved.get(aScene).dispose();
+    gearNames.push(a);
+  }
+  if (gearNames.length) doc.getRoot().listScenes().slice(1).forEach((sc) => sc.dispose());
+
   const names = [];
   for (const node of root.listNodes()) {
     const mesh = node.getMesh();
     if (!mesh) continue;
     if (DROP.test(node.getName())) { node.dispose(); continue; }
-    const n = clean(node.getName());
+    const n = gearNames.some((a) => a.name === node.getName()) ? node.getName() : clean(node.getName());
     node.setName(n);
     mesh.setName(n);
     names.push(n);
@@ -142,6 +223,7 @@ async function prep(id) {
   for (const a of root.listAnimations()) a.dispose();
 
   await doc.transform(
+    unpartition(), // merged gear brings its own buffer; a .glb holds one
     prune(),
     dedup(),
     textureCompress({ encoder: sharp, targetFormat: 'jpeg', resize: [1024, 1024], quality: 80 }),
@@ -155,11 +237,19 @@ async function prep(id) {
 
   const mapPath = path.join(ROOT, 'models', `${id}.map.json`);
   let note = 'kept existing map';
-  if (!fs.existsSync(mapPath)) {
+  if (fs.existsSync(mapPath) && gearNames.length) {
+    const map = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
+    const added = [];
+    for (const a of gearNames) if (a.part && !(a.name in map.meshes)) { map.meshes[a.name] = a.part; added.push(`${a.name} → ${a.part}`); }
+    fs.writeFileSync(mapPath, JSON.stringify(map, null, 2) + '\n');
+    note = `kept existing map${added.length ? '; added ' + added.join(', ') : ''}`;
+  } else if (!fs.existsSync(mapPath)) {
     const map = { enemy: id, meshes: {}, hidden: [] };
     for (const n of names) {
       const rule = cfg.rules.find(([re]) => re.test(n));
-      if (rule) map.meshes[n] = rule[1];
+      const gear = gearNames.find((a) => a.name === n && a.part);
+      if (gear) map.meshes[n] = gear.part;
+      else if (rule) map.meshes[n] = rule[1];
       if (HIDE.test(n)) map.hidden.push(n);
     }
     fs.writeFileSync(mapPath, JSON.stringify(map, null, 2) + '\n');

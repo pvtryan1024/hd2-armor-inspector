@@ -8,7 +8,8 @@
     "shoulder_right": "Shoulders (2)",
     "head_whole": "Head",
     "torso_whole": "Torso",
-    "leg_left_whole": "Legs (2)"
+    "leg_left_whole": "Legs (2)",
+    "shield": "Shield"
   },
   "hidden": [
     "torso_destroyed",
