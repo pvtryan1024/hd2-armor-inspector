@@ -948,7 +948,7 @@
       const l = partLeft(hit.idx); // that piece is destroyed: no hitbox (the viewer normally shoots past it)
       if (l && !l.main && (hit.k != null && l.gones ? l.gones[hit.k] : l.gone)) return;
     }
-    if (e0 && !isExposed(e0, hit.idx, state.fire ? state.sim : null, hit.k)) hit = { ...hit, covered: true };
+    if (e0 && !hit.revealed && !isExposed(e0, hit.idx, state.fire ? state.sim : null, hit.k)) hit = { ...hit, covered: true };
     state.hit = hit;
     if (hit.covered) {
       if (state.fire && state.sim && !state.sim.dead) {

@@ -91,8 +91,7 @@ function partIndexFor(entry, key) {
 function instanceFor(entry, key, i) {
   const n = lastDetail?.enemy.parts[i]?.count || 1;
   if (n < 2) return null;
-  const hidden = new Set(entry.map.hidden);
-  const same = entry.meshes.map((m) => m.key).filter((k) => !hidden.has(k) && partIndexFor(entry, k) === i).sort();
+  const same = entry.meshes.map((m) => m.key).filter((k) => partIndexFor(entry, k) === i).sort();
   const at = same.indexOf(key);
   return at < 0 ? null : at % n;
 }
@@ -143,6 +142,24 @@ function show(entry) {
   renderEditor();
   const linked = entry.meshes.filter(({ key }) => partIndexFor(entry, key) >= 0).length;
   status(`${entry.meshes.length} meshes · ${linked} linked to hitzones`);
+}
+
+/** Fire mode: once a piece breaks, hide it and show its "<name>_damaged" mesh (the flesh under a plate). */
+function swapBroken() {
+  if (!current || !lastDetail?.fire || editing) return;
+  const byKey = new Map(current.meshes.map((m) => [m.key, m.mesh]));
+  const hidden = new Set(current.map.hidden);
+  for (const { key, mesh } of current.meshes) {
+    const v = byKey.get(`${key}_damaged`);
+    if (!v || hidden.has(key)) continue;
+    const i = partIndexFor(current, key);
+    if (i < 0) continue;
+    const k = instanceFor(current, key, i);
+    const broken = !!(k != null && lastDetail.goneInst?.[i] ? lastDetail.goneInst[i][k] : lastDetail.gone[i]);
+    mesh.visible = !broken;
+    v.visible = broken;
+    v.userData.revealed = broken;
+  }
 }
 
 function applyHidden() {
@@ -230,6 +247,8 @@ function hitzoneMaterial() {
 function paint() {
   if (!current || !lastDetail) return;
   const { colors, gone, goneInst, colorMode, ap4, avs, bands } = lastDetail;
+  applyHidden();
+  swapBroken();
   const angleMode = colorMode === 'pen' && !!ap4;
   for (const { key, mesh } of current.meshes) {
     if (showTex && !editing) { mesh.material = mesh.userData.orig; continue; }
@@ -313,7 +332,7 @@ renderer.domElement.addEventListener('pointerup', (ev) => {
     const d = new THREE.Box3().setFromObject(mesh).distanceToPoint(h.point);
     if (parts[k] == null || d < parts[k]) parts[k] = d;
   }
-  HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
 });
 
 /* ---------- shot visuals: ray, impact marker, explosion radii ---------- */
