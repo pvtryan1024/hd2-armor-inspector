@@ -192,10 +192,18 @@ const SOURCES = {
     src: IL + 'cha_tripod/cha_tripod.unit.glb',
     rules: [[/^body_(left|right)(_whole)?$/, 'Carapace (2)'], [/^body_front(_whole)?$/, 'Chassis']],
   },
-  // the helmeted body-horror unit is the Crusher (the exomech isn't on the site's list)
+  // the helmeted body-horror unit is the Crusher; the melee exomech is the Veracitor
   crusher: {
     src: IL + 'cha_bodyhorror_helmetguy/cha_bodyhorror_helmetguy.unit.glb',
     rules: [[/^helmet(_whole)?$/, 'Helmet'], [/^head(_whole)?$/, 'Head'], [/^arm_(left|right)(_whole)?$/, 'Arms (2)'], [/^leg_(left|right)(_whole)?$/, 'Legs (2)'], [/^generic(_whole)?$/, 'Torso']],
+  },
+  veracitor: {
+    src: IL + 'cha_exomech_melee/cha_exomech_melee.unit.glb',
+    rules: [
+      [/^cockpit(_whole)?$/, 'Cockpit'], [/^pilot(_whole)?$/, 'Pilot'], [/^shield(_whole)?$/, 'Shield'],
+      [/^shoulder_(left|right)(_whole)?$/, 'Shoulders (2)'], [/^bicep_(left|right)(_whole)?$/, 'Upper Arms (2)'],
+      [/^arm_(left|right)(_whole)?$/, 'Lower Arms (2)'], [/^generic(_whole)?$/, 'Chassis'],
+    ],
   },
   wretch: {
     src: IL + 'cha_bodyhorror_bladed/cha_bodyhorror_bladed.unit.glb',

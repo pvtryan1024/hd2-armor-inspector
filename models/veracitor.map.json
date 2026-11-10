@@ -1,0 +1,26 @@
+{
+  "enemy": "veracitor",
+  "meshes": {
+    "cockpit_whole": "Cockpit",
+    "arm_right_whole": "Lower Arms (2)",
+    "shoulder_left_whole": "Shoulders (2)",
+    "shoulder_right_whole": "Shoulders (2)",
+    "generic_whole": "Chassis",
+    "bicep_left_whole": "Upper Arms (2)",
+    "bicep_right_whole": "Upper Arms (2)",
+    "pilot_whole": "Pilot",
+    "shield_whole": "Shield",
+    "arm_left_whole": "Lower Arms (2)"
+  },
+  "hidden": [
+    "pilot_destroyed",
+    "shoulder_right_damaged",
+    "cockpit_damaged",
+    "bicep_left_damaged",
+    "arm_right_damaged",
+    "bicep_right_damaged",
+    "shoulder_left_damaged",
+    "arm_left_damaged",
+    "pilot_damaged"
+  ]
+}
