@@ -490,3 +490,11 @@ body.editor .public-only { display: none !important; }
 #innerBtn.on { background: var(--accent); color: var(--accent-ink); }
 .brand-name, .alpha-note, .topbar-meta { white-space: nowrap; }
 @media (max-width: 1100px) { .alpha-note, .topbar-meta { display: none; } }
+
+/* one-shot kill tag */
+.one-shot {
+  display: inline-block; padding: 1px 7px; border-radius: 4px; white-space: nowrap;
+  background: var(--accent); color: var(--accent-ink);
+  font: 700 12px/1.4 var(--font-head); letter-spacing: 0.1em; text-transform: uppercase;
+}
+.kpi .v .one-shot { font-size: 20px; padding: 2px 10px; vertical-align: 4px; }

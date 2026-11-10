@@ -257,6 +257,9 @@
 
   /** Sort key: time to kill when known, otherwise shot count after every timed kill. */
   const killKey = (r) => (r.ttk != null ? r.ttk : r.killAt != null ? 1e4 + r.killAt : null);
+  const isOneShot = (r) => r.kind === 'shot' && r.killAt === 1;
+  const ONE_SHOT = '<span class="one-shot">One shot</span>';
+  const ttkHtml = (r) => (isOneShot(r) ? ONE_SHOT : fmtTime(r.ttk));
   const fmtTime = (t) => (t == null ? '—' : t < 10 ? `${t.toFixed(2)} s` : `${t.toFixed(1)} s`);
   const shotsLabel = (r) => (r.kind === 'beam' ? 'beam' : r.kind === 'dot' ? 'burn' : r.killAt != null ? `${r.killAt} shot${r.killAt > 1 ? 's' : ''}` : '');
 
@@ -524,7 +527,7 @@
     const fatalCount = e.parts.filter((p) => p.fatal === true && !isMainRow(p)).length;
     $('#summary').innerHTML = `
       <div class="kpi"><div class="k">Main health</div><div class="v">${fmt(main?.health)}</div><div class="s">${main ? avName(main.av) + ' · AV' + main.av : 'unknown'}</div></div>
-      <div class="kpi ${best ? 'good' : w ? 'bad' : ''}"><div class="k">Time to kill</div><div class="v">${best ? (best.r.ttk != null ? fmtTime(best.r.ttk) : shotsLabel(best.r)) : w ? 'None' : '—'}</div><div class="s">${best ? (best.r.ttk != null ? shotsLabel(best.r) + ' · ' : '') + (best.r.kind === 'dot' ? esc(best.r.why) : 'via ' + esc(best.part.name)) + (best.r.downs ? ' (downs)' : '') + (best.r.reload ? ' · needs reload' : '') : w ? 'Nothing in view dies to this' : 'Pick a weapon'}</div></div>
+      <div class="kpi ${best ? 'good' : w ? 'bad' : ''}"><div class="k">Time to kill</div><div class="v">${best ? (isOneShot(best.r) ? ONE_SHOT : best.r.ttk != null ? fmtTime(best.r.ttk) : shotsLabel(best.r)) : w ? 'None' : '—'}</div><div class="s">${best ? (isOneShot(best.r) ? fmt(best.r.total) + ' dmg · ' : best.r.ttk != null ? shotsLabel(best.r) + ' · ' : '') + (best.r.kind === 'dot' ? esc(best.r.why) : 'via ' + esc(best.part.name)) + (best.r.downs ? ' (downs)' : '') + (best.r.reload ? ' · needs reload' : '') : w ? 'Nothing in view dies to this' : 'Pick a weapon'}</div></div>
       <div class="kpi"><div class="k">Damageable zones</div><div class="v">${w ? `${penCount}/${vis.length}` : vis.length}</div><div class="s">${w ? 'hitzones this weapon hurts' : 'hitzones in view'}</div></div>
       <div class="kpi"><div class="k">Fatal parts</div><div class="v">${fatalCount}</div><div class="s">besides Main</div></div>
     `;
@@ -551,8 +554,8 @@
               big = r.total > 0 ? fmt(r.total) : r.mainEx > 0 ? fmt(r.mainEx) : '0';
               small = r.total > 0 ? 'dmg/shot' : r.mainEx > 0 ? 'to main' : 'no dmg';
             } else {
-              big = r.ttk != null ? fmtTime(r.ttk) : r.killAt ?? '✕';
-              small = r.ttk != null ? shotsLabel(r) + (r.reload ? ' +reload' : '') : r.killAt ? 'shots (no RPM)' : r.breakAt ? `breaks ${r.breakAt}` : 'no kill';
+              big = isOneShot(r) ? ONE_SHOT : r.ttk != null ? fmtTime(r.ttk) : r.killAt ?? '✕';
+              small = isOneShot(r) ? `${fmt(r.total)} dmg` : r.ttk != null ? shotsLabel(r) + (r.reload ? ' +reload' : '') : r.killAt ? 'shots (no RPM)' : r.breakAt ? `breaks ${r.breakAt}` : 'no kill';
             }
           }
           const left = state.fire ? partLeft(i) : null;
@@ -604,7 +607,7 @@
             <td class="num">${fmt(r.perMain)}</td>
             <td class="num">${r.breakAt ?? '—'}</td>
             <td class="num">${r.kind === 'shot' ? r.killAt ?? '—' : shotsLabel(r)}</td>
-            <td class="num"><b>${fmtTime(r.ttk)}${r.reload ? '<span class="muted" title="More shots than one magazine">*</span>' : ''}</b></td>` : ''}
+            <td class="num"><b>${ttkHtml(r)}${r.reload ? '<span class="muted" title="More shots than one magazine">*</span>' : ''}</b></td>` : ''}
         </tr>`;
       })
       .join('');
@@ -622,7 +625,11 @@
       });
       rows.push({ w, best });
     }
-    rows.sort((a, b) => (a.best ? killKey(a.best.b.r) : 1e9) - (b.best ? killKey(b.best.b.r) : 1e9) || (b.best?.b.r.total ?? 0) - (a.best?.b.r.total ?? 0));
+    const one = (x) => (x.best && isOneShot(x.best.b.r) ? 0 : 1);
+    rows.sort((a, b) => one(a) - one(b)
+      || (one(a) === 0 ? b.best.b.r.total - a.best.b.r.total : 0)
+      || (a.best ? killKey(a.best.b.r) : 1e9) - (b.best ? killKey(b.best.b.r) : 1e9)
+      || (b.best?.b.r.total ?? 0) - (a.best?.b.r.total ?? 0));
     $('#rankTable').innerHTML = `<thead><tr><th>#</th><th>Weapon</th><th>Category</th><th>Mode</th><th>Best hitzone</th><th class="num">Dmg/shot</th><th class="num">Shots</th><th class="num">Time to kill</th></tr></thead><tbody>` +
       rows
         .map(({ w, best }, i) => `<tr class="click ${w.id === state.weaponId ? 'hl' : ''}" data-w="${esc(w.id)}" data-m="${best ? best.mi : 0}">
@@ -632,7 +639,7 @@
           <td>${best ? esc(best.b.part.name) : '<span class="muted">Can’t kill</span>'}</td>
           <td class="num">${best ? fmt(best.b.r.total) : '—'}</td>
           <td class="num">${best ? shotsLabel(best.b.r) : '—'}</td>
-          <td class="num"><b style="color:${best ? ttkColor(killKey(best.b.r)) : 'var(--dim)'}">${best ? fmtTime(best.b.r.ttk) : '—'}${best?.b.r.reload ? '*' : ''}</b></td>
+          <td class="num"><b style="color:${best ? ttkColor(killKey(best.b.r)) : 'var(--dim)'}">${best ? ttkHtml(best.b.r) : '—'}${best?.b.r.reload ? '*' : ''}</b></td>
         </tr>`)
         .join('') + '</tbody>';
   }
@@ -879,6 +886,7 @@
     if (r) {
       if (pc === 'immune') verdict = 'This zone cannot be damaged.';
       else if (r.ttk != null && r.kind !== 'shot') verdict = `Kills in <b>${fmtTime(r.ttk)}</b> (${r.kind === 'beam' ? 'continuous beam' : esc(r.why)}).`;
+      else if (isOneShot(r)) verdict = `<b>One shot</b> kill (${fmt(r.total)} dmg)${r.downs ? ' — downs it' : part.fatal === true && r.breakAt === 1 ? ' by destroying this part' : ''}.`;
       else if (r.killAt) verdict = `Kills in <b>${r.killAt}</b> shot${r.killAt > 1 ? 's' : ''}${r.ttk != null ? ` (<b>${fmtTime(r.ttk)}</b>)` : ''}${r.downs ? ' (downs it)' : r.breakAt === r.killAt && part.fatal === true ? ' by destroying this part' : ' via Main health'}.`;
       else if (r.breakAt) verdict = `Breaks in <b>${r.breakAt}</b> shot${r.breakAt > 1 ? 's' : ''}, but that alone won't kill it.`;
       else if (r.total > 0) verdict = 'Deals damage but can’t kill through this zone.';
