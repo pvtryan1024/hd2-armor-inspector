@@ -333,7 +333,7 @@ function paint() {
 }
 
 /* ---------- explosions ----------
- * Blast rays leave the impact point along the 20 corners of a dodecahedron (evenly spread). Each ray ends at
+ * Blast rays leave the impact point along a dodecahedron's 20 corners, 12 face centres and 30 edge midpoints (62, evenly spread). Each ray ends at
  * the first hitzone it meets inside the outer radius; that piece takes blast damage at that distance (full
  * inside the inner radius, falling off out to the outer). A ray that meets nothing does nothing, and parts
  * shielded by others aren't reached. A piece hit by several rays counts once, at its nearest distance. */
@@ -342,6 +342,19 @@ const DODECA = [];
 for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) DODECA.push(new THREE.Vector3(x, y, z));
 for (const a of [-1, 1]) for (const b of [-1, 1]) {
   DODECA.push(new THREE.Vector3(0, a / PHI, b * PHI), new THREE.Vector3(a / PHI, b * PHI, 0), new THREE.Vector3(a * PHI, 0, b / PHI));
+}
+// tripled for smaller gaps: + the 12 face centres and the 30 edge midpoints (62 evenly spread rays)
+{
+  const corners = DODECA.slice();
+  const edge = Math.min(...corners.flatMap((p, i) => corners.slice(i + 1).map((q) => p.distanceTo(q))));
+  for (let i = 0; i < corners.length; i++) {
+    for (let j = i + 1; j < corners.length; j++) {
+      if (Math.abs(corners[i].distanceTo(corners[j]) - edge) < 1e-6) DODECA.push(corners[i].clone().add(corners[j]));
+    }
+  }
+  for (const [x, y, z] of [[0, 1, PHI], [0, -1, PHI], [0, 1, -PHI], [0, -1, -PHI], [1, PHI, 0], [-1, PHI, 0], [1, -PHI, 0], [-1, -PHI, 0], [PHI, 0, 1], [-PHI, 0, 1], [PHI, 0, -1], [-PHI, 0, -1]]) {
+    DODECA.push(new THREE.Vector3(x, y, z)); // icosahedron corners = dodecahedron face centres
+  }
 }
 DODECA.forEach((v) => v.normalize());
 const blastRay = new THREE.Raycaster();
