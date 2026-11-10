@@ -485,3 +485,9 @@ body.editor .public-only { display: none !important; }
 .weapons-panel { overflow-y: auto; }
 .weapons-panel .list { flex: none; min-height: 0; max-height: 360px; }
 .weapons-panel .list.cat-grid { max-height: none; }
+
+/* inner parts behind armor */
+.tile.covered { opacity: 0.45; background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--c) 14%, var(--panel)) 0 8px, var(--panel) 8px 16px); }
+.inner-tag { position: absolute; top: 6px; right: 44px; font: 700 10px var(--font-mono); padding: 1px 5px; border-radius: 3px; background: rgba(0,0,0,0.45); color: var(--muted); text-transform: uppercase; }
+.inner-tag.inline { position: static; margin-left: 6px; }
+#innerBtn.on { background: var(--accent); color: var(--accent-ink); }

@@ -53,6 +53,7 @@
     tab: 'parts',
     stageView: 'map', // 'map' | '3d'
     fire: false,
+    showInner: false, // treat inner parts as already exposed
     sim: null,
   };
 
@@ -267,8 +268,27 @@
     return loc.includes(view);
   }
 
+  /* Inner parts sit behind armor. They count once the "inner parts exposed" toggle is on, or in fire
+   * mode once covering armor is destroyed: armor sharing a body word ("Leg Internals" → leg armor),
+   * otherwise any armor plate. */
+  const ARMOR_RE = /armou?r|plate|carapace|shell/i;
+  function coverFor(enemy, idx) {
+    const words = enemy.parts[idx].name.toLowerCase().match(/[a-z]+/g).filter((w) => !/^(inner|internals?|exposed|flesh)$/.test(w));
+    const armor = enemy.parts.map((p, i) => i).filter((i) => ARMOR_RE.test(enemy.parts[i].name));
+    const near = armor.filter((i) => words.some((w) => enemy.parts[i].name.toLowerCase().includes(w)));
+    return near.length ? near : armor;
+  }
+  function isExposed(enemy, idx, sim = null) {
+    const p = enemy.parts[idx];
+    if (!p.hidden || state.showInner) return true;
+    if (!sim) return false;
+    return coverFor(enemy, idx).some((i) => sim.hp[i] && sim.hp[i].some((h) => h <= 0));
+  }
+
   function bestOf(results, view) {
     // "Main" is a health pool, not something you can aim at; use it only when nothing else kills
+    const reachable = results.filter((x) => !x.part.hidden || state.showInner);
+    results = reachable;
     const aimable = results.filter((x) => !isMainRow(x.part) && killKey(x.r) != null);
     let best = null;
     for (const x of aimable.length ? aimable : results) {
@@ -537,7 +557,9 @@
           }
           const left = state.fire ? partLeft(i) : null;
           const fatal = part.fatal === true ? '<span class="fatal" title="Destroying this kills">☠ fatal</span>' : part.fatal === 'downs' ? '<span class="fatal" title="Destroying this downs the enemy">☠ downs</span>' : '';
-          return `<div class="tile ${vis ? '' : 'dim'} ${left && left.frac <= 0 ? 'gone' : ''}" data-i="${i}" style="--c:${color};${size}">
+          const covered = !isExposed(e, i, state.fire ? state.sim : null);
+          return `<div class="tile ${vis ? '' : 'dim'} ${covered ? 'covered' : ''} ${left && left.frac <= 0 ? 'gone' : ''}" data-i="${i}" style="--c:${color};${size}" ${covered ? 'title="Behind armor: break the armor first"' : ''}>
+              ${part.hidden ? `<span class="inner-tag">${covered ? '🔒 ' : ''}inner</span>` : ''}
               <span class="av">AV${part.av}</span>
               <div class="name">${esc(part.name)}</div>
               <div class="row"><span>${typeof part.health === 'number' ? fmt(part.health) + ' HP' : 'Main HP'} ${fatal}</span><span><span class="big">${big}</span> ${small}</span></div>
@@ -570,7 +592,7 @@
         if (!visible(part, state.view)) return '';
         const pc = r ? penClass(r, part) : null;
         return `<tr data-i="${i}">
-          <td>${esc(part.name)}</td>
+          <td>${esc(part.name)}${part.hidden ? ` <span class="inner-tag inline">${isExposed(e, i, state.fire ? state.sim : null) ? 'inner' : '🔒 inner'}</span>` : ''}</td>
           <td class="num" title="${esc(avName(part.av))}">${part.av}</td>
           <td class="num">${typeof part.health === 'number' ? fmt(part.health) : '<span class="muted">Main</span>'}</td>
           <td class="num">${pct(part.durable)}</td>
@@ -665,6 +687,12 @@
     if (!e || !w || !state.sim || state.sim.dead) return;
     const mode = w.modes[state.mode] || w.modes[0];
     const part = e.parts[i];
+    if (!isExposed(e, i, state.sim)) {
+      state.sim.log.unshift(`${part.name} is behind armor — break the armor first (or turn on "Inner exposed")`);
+      state.sim.log.length = Math.min(state.sim.log.length, 6);
+      render();
+      return;
+    }
     const band = hit ? bandOf(hit.deg) : state.band;
     const s = shotDamage(mode, part, e, { ...opts(), band });
     const o = applyShot(state.sim, e, i, s);
@@ -745,7 +773,17 @@
   }
 
   function placeHit(hit) {
+    const e0 = enemy();
+    if (e0 && !isExposed(e0, hit.idx, state.fire ? state.sim : null)) hit = { ...hit, covered: true };
     state.hit = hit;
+    if (hit.covered) {
+      if (state.fire && state.sim && !state.sim.dead) {
+        state.sim.log.unshift(`${e0.parts[hit.idx].name} is behind armor — break the armor first`);
+        state.sim.log.length = Math.min(state.sim.log.length, 6);
+      }
+      render();
+      return;
+    }
     const res = resolveHit(hit);
     if (res && state.fire && state.sim && !state.sim.dead) {
       const e = enemy();
@@ -763,6 +801,14 @@
 
   function renderShotPanel(e) {
     const el = $('#shotPanel');
+    if (state.stageView === '3d' && state.hit?.covered) {
+      el.classList.remove('hidden');
+      el.innerHTML = `<button class="sp-close" id="shotClose" title="Clear shot">×</button>
+        <div class="sp-title">${esc(e.parts[state.hit.idx].name)}</div>
+        <div class="sp-verdict" style="--c:var(--pen-immune)">Behind armor</div>
+        <div class="sp-hint">Inner parts can only be hit once the armor over them is destroyed. Break it in Fire mode, or turn on "Inner exposed".</div>`;
+      return;
+    }
     const res = state.stageView === '3d' ? resolveHit(state.hit) : null;
     if (!res) { el.classList.add('hidden'); return; }
     el.classList.remove('hidden');
@@ -882,6 +928,7 @@
     if (state.view !== 'all') p.set('v', state.view);
     if (state.color !== 'pen') p.set('c', state.color);
     if (state.stagePinned) p.set('s', state.stageView);
+    if (state.showInner) p.set('in', '1');
     history.replaceState(null, '', '#' + p.toString());
   }
   function readHash() {
@@ -895,6 +942,7 @@
     state.dist = p.has('d') ? Math.min(200, Math.max(0, +p.get('d') || 0)) : DEFAULT_RANGE;
     if (['front', 'side', 'rear'].includes(p.get('v'))) state.view = p.get('v');
     if (p.get('c') === 'ttk') state.color = 'ttk';
+    state.showInner = p.get('in') === '1';
     if (p.has('s')) { state.stageView = p.get('s') === '3d' ? '3d' : 'map'; state.stagePinned = true; }
   }
 
@@ -918,6 +966,10 @@
     $('#partsTableWrap').classList.toggle('hidden', state.tab !== 'parts');
     $('#rankTableWrap').classList.toggle('hidden', state.tab !== 'rank');
     $$('#stageTabs button').forEach((b) => b.classList.toggle('on', b.dataset.sv === state.stageView));
+    const hasInner = enemy()?.parts.some((p) => p.hidden);
+    $('#innerBtn').classList.toggle('hidden', !hasInner);
+    $('#innerBtn').classList.toggle('on', state.showInner);
+    $('#innerBtn').textContent = state.showInner ? 'Inner exposed' : 'Inner covered';
     $('#schematic').classList.toggle('hidden', state.stageView !== 'map');
     $('#viewer3d').classList.toggle('hidden', state.stageView !== '3d');
     writeHash();
@@ -1011,6 +1063,7 @@
     clickHost('#partsTable');
 
     $('#fireBtn').addEventListener('click', () => { state.fire = !state.fire; resetSim(); render(); });
+    $('#innerBtn').addEventListener('click', () => { state.showInner = !state.showInner; render(); });
     $('.stage').addEventListener('click', (ev) => {
       if (ev.target.closest('#resetSim, #resetSim2')) { resetSim(); render(); }
       if (ev.target.closest('#shotClose')) { state.hit = null; render(); }

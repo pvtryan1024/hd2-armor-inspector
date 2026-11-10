@@ -46,7 +46,11 @@ const normPart = (p) => {
   q.count = q.count || (m ? +m[1] : 1);
   return q;
 };
-enemies.forEach((e) => { e.parts = (e.parts || []).map(normPart); });
+enemies.forEach((e) => {
+  e.parts = (e.parts || []).map(normPart);
+  // "Inner Flesh", "Internals"…: behind armor until it breaks
+  if (!/broken/i.test(e.name)) e.parts.forEach((p) => { if (/\b(inner|internals?)\b/i.test(p.name)) p.hidden = true; });
+});
 
 // Game archive IDs per enemy, from the HD2 modding community's ID sheet (Enemies & NPC IDs tab),
 // so you know which archive to open in Filediver. The CSV holds four side-by-side column groups.
