@@ -517,6 +517,7 @@
     renderLegend();
     renderPartsTable(e, results);
     if (state.tab === 'rank') renderRankTable(e);
+    if (state.tab === 'real') renderRealTable(e);
   }
 
   function renderSummary(e, w, results) {
@@ -642,6 +643,56 @@
           <td class="num"><b style="color:${best ? ttkColor(killKey(best.b.r)) : 'var(--dim)'}">${best ? ttkHtml(best.b.r) : '—'}${best?.b.r.reload ? '*' : ''}</b></td>
         </tr>`)
         .join('') + '</tbody>';
+  }
+
+  /** Fastest and slowest kill over every reachable, killing hitzone in view, and their midpoint.
+   *  Times when the weapon has them; otherwise shot counts (ranked after timed weapons). */
+  function spreadOf(results, view) {
+    const ok = results.filter((x) => visible(x.part, view) && (!x.part.hidden || state.showInner) && killKey(x.r) != null);
+    const aim = ok.filter((x) => !isMainRow(x.part));
+    const zones = aim.length ? aim : ok;
+    if (!zones.length) return null;
+    const timed = zones.every((x) => x.r.ttk != null);
+    const val = (x) => (timed ? x.r.ttk : x.r.killAt);
+    let lo = zones[0], hi = zones[0];
+    for (const x of zones) {
+      if (val(x) < val(lo) || (val(x) === val(lo) && x.r.total > lo.r.total)) lo = x;
+      if (val(x) > val(hi)) hi = x;
+    }
+    return { lo, hi, mid: (val(lo) + val(hi)) / 2, timed, n: zones.length };
+  }
+
+  function renderRealTable(e) {
+    const o = opts();
+    const rows = [];
+    for (const w of DATA.weapons) {
+      let best = null;
+      w.modes.forEach((m, mi) => {
+        const sp = spreadOf(evalEnemy(w, mi, e, o), state.view);
+        if (!sp) return;
+        const key = sp.timed ? sp.mid : 1e4 + sp.mid;
+        if (!best || key < best.key) best = { ...sp, mi, key };
+      });
+      rows.push({ w, best });
+    }
+    // ties (e.g. one-shots everywhere) go to the harder-hitting weapon
+    rows.sort((a, b) => (a.best ? a.best.key : Infinity) - (b.best ? b.best.key : Infinity) || (b.best?.hi.r.total ?? 0) - (a.best?.hi.r.total ?? 0));
+    const val = (sp, x) => (isOneShot(x.r) ? ONE_SHOT : sp.timed ? fmtTime(x.r.ttk) : shotsLabel(x.r));
+    const mid = (sp) => {
+      if (isOneShot(sp.lo.r) && isOneShot(sp.hi.r)) return ONE_SHOT;
+      return sp.timed ? fmtTime(sp.mid) : `~${Math.ceil(sp.mid)} shots`;
+    };
+    $('#realTable').innerHTML = `<thead><tr><th>#</th><th>Weapon</th><th>Category</th><th>Mode</th>
+        <th>Fastest</th><th class="num">TTK</th><th>Slowest</th><th class="num">TTK</th><th class="num">Real life</th></tr></thead><tbody>` +
+      rows.map(({ w, best: sp }, i) => `<tr class="click ${w.id === state.weaponId ? 'hl' : ''}" data-w="${esc(w.id)}" data-m="${sp ? sp.mi : 0}">
+          <td class="num muted">${sp ? i + 1 : ''}</td>
+          <td>${esc(w.name)}</td><td class="muted">${esc(w.category)}</td>
+          <td class="muted">${sp && w.modes.length > 1 ? esc(w.modes[sp.mi].name) : ''}</td>
+          ${sp ? `<td>${esc(sp.lo.part.name)}</td><td class="num">${val(sp, sp.lo)}</td>
+            <td>${esc(sp.hi.part.name)}</td><td class="num">${val(sp, sp.hi)}</td>
+            <td class="num"><b style="color:${ttkColor(sp.key)}">${mid(sp)}</b></td>`
+          : '<td colspan="5" class="muted">Can’t kill</td>'}
+        </tr>`).join('') + '</tbody>';
   }
 
   /** Which game archive holds this enemy's model (from the modding community ID sheet). */
@@ -973,6 +1024,7 @@
     $$('#bottomTabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === state.tab));
     $('#partsTableWrap').classList.toggle('hidden', state.tab !== 'parts');
     $('#rankTableWrap').classList.toggle('hidden', state.tab !== 'rank');
+    $('#realTableWrap').classList.toggle('hidden', state.tab !== 'real');
     $$('#stageTabs button').forEach((b) => b.classList.toggle('on', b.dataset.sv === state.stageView));
     const hasInner = enemy()?.parts.some((p) => p.hidden);
     $('#innerBtn').classList.toggle('hidden', !hasInner);
@@ -1044,11 +1096,14 @@
       const b = ev.target.closest('button'); if (!b) return;
       state.tab = b.dataset.tab; render();
     });
-    $('#rankTable').addEventListener('click', (ev) => {
+    const pickRow = (ev) => {
       const tr = ev.target.closest('tr[data-w]'); if (!tr) return;
-      state.weaponId = tr.dataset.w; state.mode = +tr.dataset.m; state.tab = 'parts'; render();
+      state.weaponId = tr.dataset.w; state.mode = +tr.dataset.m; state.cat = weaponById(tr.dataset.w).category;
+      state.tab = 'parts'; render();
       scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    };
+    $('#rankTable').addEventListener('click', pickRow);
+    $('#realTable').addEventListener('click', pickRow);
 
     const hoverHost = (sel) => {
       const host = $(sel);

@@ -118,12 +118,17 @@
         <div class="seg" id="bottomTabs">
           <button data-tab="parts" class="on">Hitzones</button>
           <button data-tab="rank">Best weapons vs target</button>
+          <button data-tab="real">Real life case</button>
         </div>
       </div>
       <div class="table-wrap" id="partsTableWrap"><table class="data" id="partsTable"></table></div>
       <div class="table-wrap hidden" id="rankTableWrap">
         <p class="hint">One-shot kills come first, sorted by damage (highest first); everything else is ranked by time to kill on its best hitzone in the current view. Time comes from RPM with the first shot at 0 s; reloads are not included (* = needs more than one magazine). Weapons without an RPM are ranked by shot count after timed kills.</p>
         <table class="data" id="rankTable"></table>
+      </div>
+      <div class="table-wrap hidden" id="realTableWrap">
+        <p class="hint">You won't always hit the weak spot. For each weapon this takes every reachable hitzone in the current view that can kill, then uses the midpoint between the fastest and the slowest time to kill. Weapons are ranked by that midpoint.</p>
+        <table class="data" id="realTable"></table>
       </div>
     </section>
 
