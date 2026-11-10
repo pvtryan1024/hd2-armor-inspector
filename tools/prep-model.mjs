@@ -39,7 +39,7 @@ const BT_BODY = {
   names: { '0x3f868f69': 'torso_left', '0x30fa360a': 'torso_right', torso_gibs_left: 'torso_left_gibs', torso_gibs_right: 'torso_right_gibs' },
   shells: [
     { mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail', tipBones: /^spine_lower_4$/ },
-    { mesh: 'torso', main: 'torso', rest: 'torso_{side}_plates', halves: true, sky: true }, // Torso Armor (2) is left and right
+    { mesh: 'torso', main: 'torso', rest: 'torso_{side}_plates', halves: true, softBox: [[-0.6, 6.0, -1.6], [0.6, 7.4, 2.3]] }, // Torso Armor (2) is left and right
   ],
 };
 const BILE_TITAN = [
@@ -304,9 +304,9 @@ function splitShells(doc, node, sp, likeBoxes) {
       body = keep;
     }
     if (!plates.length) continue;
-    // sky: a carapace welded on top of the soft body (Bile Titan torso): body triangles with nothing of the
-    // body above them (a ray straight up hits nothing) are the shell; the belly under it stays soft
-    if (sp.sky && !likeBoxes) {
+    // softBox: the armor is welded to the soft body (Bile Titan torso: everything but the small belly between
+    // the legs is armored, leg sockets too): only body triangles centred inside the box stay soft
+    if (sp.softBox && !likeBoxes) {
       const skin = node.getSkin(), m16 = [];
       const mats = skin.listJoints().map((j, i) => mat4Mul(j.getWorldMatrix(), skin.getInverseBindMatrices().getElement(i, m16).slice()));
       const P = prim.getAttribute('POSITION'), J = prim.getAttribute('JOINTS_0'), W = prim.getAttribute('WEIGHTS_0');
@@ -318,34 +318,12 @@ function splitShells(doc, node, sp, likeBoxes) {
         for (let k = 0; k < 4; k++) { if (!w4[k]) continue; const m = mats[j4[k]]; for (let r = 0; r < 3; r++) o[r] += w4[k] * (m[r] * v[0] + m[4 + r] * v[1] + m[8 + r] * v[2] + m[12 + r]); }
         posed.set(i, o); return o;
       };
-      const T = [];
-      for (let t = 0; t < body.length; t += 3) T.push([at(body[t]), at(body[t + 1]), at(body[t + 2])]);
-      // grid over x/z so each upward ray only tests nearby triangles
-      const G = 0.15, grid = new Map(), key = (a, b) => a + ',' + b;
-      T.forEach((tri, n) => {
-        const xs = tri.map((p) => p[0]), zs = tri.map((p) => p[2]);
-        for (let a = Math.floor(Math.min(...xs) / G); a <= Math.floor(Math.max(...xs) / G); a++)
-          for (let b = Math.floor(Math.min(...zs) / G); b <= Math.floor(Math.max(...zs) / G); b++) {
-            const k = key(a, b); if (!grid.has(k)) grid.set(k, []); grid.get(k).push(n);
-          }
-      });
-      // does the vertical line through (x, z) cross triangle tri above height y?
-      const above = (tri, x, y, z) => {
-        const [A, B, C] = tri;
-        const d = (B[0] - A[0]) * (C[2] - A[2]) - (C[0] - A[0]) * (B[2] - A[2]);
-        if (Math.abs(d) < 1e-12) return false;
-        const u = ((x - A[0]) * (C[2] - A[2]) - (C[0] - A[0]) * (z - A[2])) / d;
-        const w = ((B[0] - A[0]) * (z - A[2]) - (x - A[0]) * (B[2] - A[2])) / d;
-        if (u < 0 || w < 0 || u + w > 1) return false;
-        return A[1] + u * (B[1] - A[1]) + w * (C[1] - A[1]) > y + 0.02;
-      };
-      const keep = [];
-      T.forEach((tri, n) => {
+      const keep = [], [lo, hi] = sp.softBox;
+      for (let t = 0; t < body.length; t += 3) {
+        const tri = [at(body[t]), at(body[t + 1]), at(body[t + 2])];
         const c = [0, 1, 2].map((k) => (tri[0][k] + tri[1][k] + tri[2][k]) / 3);
-        const near = grid.get(key(Math.floor(c[0] / G), Math.floor(c[2] / G))) || [];
-        const covered = near.some((m) => m !== n && above(T[m], c[0], c[1], c[2]));
-        (covered ? keep : plates).push(body[n * 3], body[n * 3 + 1], body[n * 3 + 2]);
-      });
+        (c.every((x, k) => x >= lo[k] && x <= hi[k]) ? keep : plates).push(body[t], body[t + 1], body[t + 2]);
+      }
       body = keep;
     }
     const idx = (list) => doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(list)).setBuffer(buffer);
