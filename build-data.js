@@ -164,6 +164,11 @@ weapons.forEach((w) => {
   });
 });
 
+// Display names: drop the "A/" (sentry) and "E/" (emplacement) prefixes; ids stay the same so links keep working
+weapons.forEach((w) => {
+  if (['Sentry', 'Emplacement'].includes(w.category)) w.name = w.name.replace(/^[AE]\//, '');
+});
+
 // Which enemies have a 3D model in models/, so the site can badge them and skip pointless requests.
 const modelsDir = path.join(__dirname, 'models');
 const models = {};
