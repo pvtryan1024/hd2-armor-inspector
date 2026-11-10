@@ -26,7 +26,8 @@
   const FACTION_ORDER = ['Terminids', 'Automatons', 'Illuminate'];
   const CAT_ORDER = ['Primary', 'Secondary', 'Throwable', 'Support', 'Eagle', 'Orbital', 'Sentry', 'Emplacement'];
   // shots-to-kill ramp: 1, 2, 3–4, 5–7, 8–12, 13–20, 21+
-  const TTK_STEPS = [1, 2, 4, 7, 12, 20, Infinity];
+  // time-to-kill ramp in seconds: instant, ≤0.5, ≤1, ≤2, ≤4, ≤8, longer
+  const TTK_STEPS = [0.01, 0.5, 1, 2, 4, 8, Infinity];
   const TTK_COLORS = ['#1fae63', '#5cc25a', '#a3c94a', '#e0c43a', '#e8962f', '#e0602f', '#c8382f'];
 
   const $ = (s, el = document) => el.querySelector(s);
@@ -213,10 +214,50 @@
     return res;
   }
 
+  /* Time to kill.
+   *  shot: (shots − 1) × 60 / RPM, first shot at t = 0, reloads not included
+   *  beam: damage listed per second, applied in 0.1 s ticks
+   *  dot:  flame / gas sprays; the burn or gas cloud hits Main only and must beat Main's AV */
+  const BEAM_TICK = 0.1;
+  function fireModel(weapon, mode) {
+    if (mode.dot) return { kind: 'dot', ...mode.dot };
+    if (mode.beam) return { kind: 'beam' };
+    const rpm = mode.rpm ?? weapon.rpm;
+    return { kind: 'shot', interval: rpm ? 60 / rpm : null };
+  }
+
   function evalEnemy(weapon, modeIdx, enemy, opts) {
     const mode = weapon.modes[modeIdx] || weapon.modes[0];
-    return enemy.parts.map((p, i) => ({ part: p, r: simulate(mode, enemy, i, opts) }));
+    const fm = fireModel(weapon, mode);
+    const main = mainPart(enemy);
+    const tickMode = fm.kind === 'beam'
+      ? { ...mode, damage: mode.damage * BEAM_TICK, durable: (mode.durable ?? mode.damage) * BEAM_TICK, explosion: null }
+      : null;
+    return enemy.parts.map((p, i) => {
+      const r = simulate(mode, enemy, i, opts);
+      r.kind = fm.kind;
+      if (fm.kind === 'shot') {
+        r.ttk = r.killAt == null ? null : r.killAt === 1 ? 0 : fm.interval ? (r.killAt - 1) * fm.interval : null;
+        r.reload = !!(r.killAt && weapon.mag && r.killAt > weapon.mag);
+      } else if (fm.kind === 'beam') {
+        const t = simulate(tickMode, enemy, i, opts);
+        r.ttk = t.killAt == null ? null : t.killAt * BEAM_TICK;
+        r.killAt = null;
+        r.why = t.why;
+      } else {
+        const pen = main && typeof main.health === 'number' && p.av >= 0 && p.av < 11 ? penMult(fm.ap, main.av) : 0;
+        r.ttk = pen ? main.health / (fm.dps * pen) : null;
+        r.killAt = null;
+        r.why = pen ? `${fm.label} on Main health` : '';
+      }
+      return { part: p, r };
+    });
   }
+
+  /** Sort key: time to kill when known, otherwise shot count after every timed kill. */
+  const killKey = (r) => (r.ttk != null ? r.ttk : r.killAt != null ? 1e4 + r.killAt : null);
+  const fmtTime = (t) => (t == null ? '—' : t < 10 ? `${t.toFixed(2)} s` : `${t.toFixed(1)} s`);
+  const shotsLabel = (r) => (r.kind === 'beam' ? 'beam' : r.kind === 'dot' ? 'burn' : r.killAt != null ? `${r.killAt} shot${r.killAt > 1 ? 's' : ''}` : '');
 
 
   function visible(part, view) {
@@ -227,10 +268,14 @@
   }
 
   function bestOf(results, view) {
+    // "Main" is a health pool, not something you can aim at; use it only when nothing else kills
+    const aimable = results.filter((x) => !isMainRow(x.part) && killKey(x.r) != null);
     let best = null;
-    for (const x of results) {
-      if (!visible(x.part, view) || x.r.killAt == null) continue;
-      if (!best || x.r.killAt < best.r.killAt || (x.r.killAt === best.r.killAt && x.r.total > best.r.total)) best = x;
+    for (const x of aimable.length ? aimable : results) {
+      const k = killKey(x.r);
+      if (!visible(x.part, view) || k == null) continue;
+      const bk = best && killKey(best.r);
+      if (!best || k < bk || (k === bk && x.r.total > best.r.total)) best = x;
     }
     return best;
   }
@@ -263,6 +308,7 @@
 
   function ttkColor(n) {
     if (n == null) return PEN_HEX.immune;
+    if (n >= 1e4) return TTK_COLORS[TTK_COLORS.length - 1]; // kill known only in shots
     const i = TTK_STEPS.findIndex((s) => n <= s);
     return TTK_COLORS[i];
   }
@@ -458,7 +504,7 @@
     const fatalCount = e.parts.filter((p) => p.fatal === true && !isMainRow(p)).length;
     $('#summary').innerHTML = `
       <div class="kpi"><div class="k">Main health</div><div class="v">${fmt(main?.health)}</div><div class="s">${main ? avName(main.av) + ' · AV' + main.av : 'unknown'}</div></div>
-      <div class="kpi ${best ? 'good' : w ? 'bad' : ''}"><div class="k">Fastest kill</div><div class="v">${best ? best.r.killAt + (best.r.killAt > 1 ? ' shots' : ' shot') : w ? 'None' : '—'}</div><div class="s">${best ? 'via ' + esc(best.part.name) + (best.r.downs ? ' (downs)' : '') : w ? 'Nothing in view dies to this' : 'Pick a weapon'}</div></div>
+      <div class="kpi ${best ? 'good' : w ? 'bad' : ''}"><div class="k">Time to kill</div><div class="v">${best ? (best.r.ttk != null ? fmtTime(best.r.ttk) : shotsLabel(best.r)) : w ? 'None' : '—'}</div><div class="s">${best ? (best.r.ttk != null ? shotsLabel(best.r) + ' · ' : '') + (best.r.kind === 'dot' ? esc(best.r.why) : 'via ' + esc(best.part.name)) + (best.r.downs ? ' (downs)' : '') + (best.r.reload ? ' · needs reload' : '') : w ? 'Nothing in view dies to this' : 'Pick a weapon'}</div></div>
       <div class="kpi"><div class="k">Damageable zones</div><div class="v">${w ? `${penCount}/${vis.length}` : vis.length}</div><div class="s">${w ? 'hitzones this weapon hurts' : 'hitzones in view'}</div></div>
       <div class="kpi"><div class="k">Fatal parts</div><div class="v">${fatalCount}</div><div class="s">besides Main</div></div>
     `;
@@ -480,13 +526,13 @@
           let color = 'var(--pen-immune)';
           let big = '—', small = '';
           if (r) {
-            color = state.color === 'pen' ? PEN_VAR[penClass(r, part)] : ttkColor(r.killAt);
+            color = state.color === 'pen' ? PEN_VAR[penClass(r, part)] : ttkColor(killKey(r));
             if (state.color === 'pen') {
               big = r.total > 0 ? fmt(r.total) : r.mainEx > 0 ? fmt(r.mainEx) : '0';
               small = r.total > 0 ? 'dmg/shot' : r.mainEx > 0 ? 'to main' : 'no dmg';
             } else {
-              big = r.killAt ?? '✕';
-              small = r.killAt ? 'to kill' : r.breakAt ? `breaks ${r.breakAt}` : 'no kill';
+              big = r.ttk != null ? fmtTime(r.ttk) : r.killAt ?? '✕';
+              small = r.ttk != null ? shotsLabel(r) + (r.reload ? ' +reload' : '') : r.killAt ? 'shots (no RPM)' : r.breakAt ? `breaks ${r.breakAt}` : 'no kill';
             }
           }
           const left = state.fire ? partLeft(i) : null;
@@ -507,7 +553,8 @@
       $('#legend').innerHTML = ['full', 'half', 'none', 'immune'].map((k) => `<span><i style="background:${PEN_VAR[k]}"></i>${PEN_LABEL[k]}</span>`).join('') +
         '<span class="muted">Tile size ≈ part health · ☠ = fatal when destroyed</span>';
     } else {
-      $('#legend').innerHTML = `<span>Shots to kill: 1<span class="ramp">${TTK_COLORS.map((c) => `<b style="background:${c}"></b>`).join('')}</span>21+</span>
+      $('#legend').innerHTML = `<span>Time to kill: instant<span class="ramp">${TTK_COLORS.map((c) => `<b style="background:${c}"></b>`).join('')}</span>8 s+</span>
+        <span class="muted">From RPM; first shot at 0 s, reloads not included</span>
         <span><i style="background:var(--pen-immune)"></i>Can't kill through this zone</span>`;
     }
   }
@@ -516,7 +563,7 @@
     const w = weapon();
     const head = `<thead><tr>
       <th>Hitzone</th><th class="num">AV</th><th class="num">Health</th><th class="num">Durable</th><th class="num">To main</th><th>Fatal</th><th class="num">ExDR</th>
-      ${w ? '<th>Result</th><th class="num">Dmg/shot</th><th class="num">Main/shot</th><th class="num">Break</th><th class="num">Kill</th>' : ''}
+      ${w ? '<th>Result</th><th class="num">Dmg/shot</th><th class="num">Main/shot</th><th class="num">Break</th><th class="num">Shots</th><th class="num">TTK</th>' : ''}
     </tr></thead>`;
     const rows = results
       .map(({ part, r }, i) => {
@@ -534,7 +581,8 @@
             <td class="num">${fmt(r.total)}</td>
             <td class="num">${fmt(r.perMain)}</td>
             <td class="num">${r.breakAt ?? '—'}</td>
-            <td class="num"><b>${r.killAt ?? '—'}</b></td>` : ''}
+            <td class="num">${r.kind === 'shot' ? r.killAt ?? '—' : shotsLabel(r)}</td>
+            <td class="num"><b>${fmtTime(r.ttk)}${r.reload ? '<span class="muted" title="More shots than one magazine">*</span>' : ''}</b></td>` : ''}
         </tr>`;
       })
       .join('');
@@ -548,12 +596,12 @@
       let best = null;
       w.modes.forEach((m, mi) => {
         const b = bestOf(evalEnemy(w, mi, e, o), state.view);
-        if (b && (!best || b.r.killAt < best.b.r.killAt || (b.r.killAt === best.b.r.killAt && b.r.total > best.b.r.total))) best = { b, mi };
+        if (b && (!best || killKey(b.r) < killKey(best.b.r) || (killKey(b.r) === killKey(best.b.r) && b.r.total > best.b.r.total))) best = { b, mi };
       });
       rows.push({ w, best });
     }
-    rows.sort((a, b) => (a.best ? a.best.b.r.killAt : 1e9) - (b.best ? b.best.b.r.killAt : 1e9) || (b.best?.b.r.total ?? 0) - (a.best?.b.r.total ?? 0));
-    $('#rankTable').innerHTML = `<thead><tr><th>#</th><th>Weapon</th><th>Category</th><th>Mode</th><th>Best hitzone</th><th class="num">Dmg/shot</th><th class="num">Shots to kill</th></tr></thead><tbody>` +
+    rows.sort((a, b) => (a.best ? killKey(a.best.b.r) : 1e9) - (b.best ? killKey(b.best.b.r) : 1e9) || (b.best?.b.r.total ?? 0) - (a.best?.b.r.total ?? 0));
+    $('#rankTable').innerHTML = `<thead><tr><th>#</th><th>Weapon</th><th>Category</th><th>Mode</th><th>Best hitzone</th><th class="num">Dmg/shot</th><th class="num">Shots</th><th class="num">Time to kill</th></tr></thead><tbody>` +
       rows
         .map(({ w, best }, i) => `<tr class="click ${w.id === state.weaponId ? 'hl' : ''}" data-w="${esc(w.id)}" data-m="${best ? best.mi : 0}">
           <td class="num muted">${best ? i + 1 : ''}</td>
@@ -561,7 +609,8 @@
           <td class="muted">${best && w.modes.length > 1 ? esc(w.modes[best.mi].name) : ''}</td>
           <td>${best ? esc(best.b.part.name) : '<span class="muted">Can’t kill</span>'}</td>
           <td class="num">${best ? fmt(best.b.r.total) : '—'}</td>
-          <td class="num"><b style="color:${best ? ttkColor(best.b.r.killAt) : 'var(--dim)'}">${best ? best.b.r.killAt : '—'}</b></td>
+          <td class="num">${best ? shotsLabel(best.b.r) : '—'}</td>
+          <td class="num"><b style="color:${best ? ttkColor(killKey(best.b.r)) : 'var(--dim)'}">${best ? fmtTime(best.b.r.ttk) : '—'}${best?.b.r.reload ? '*' : ''}</b></td>
         </tr>`)
         .join('') + '</tbody>';
   }
@@ -624,6 +673,14 @@
     render();
   }
 
+  /** Elapsed time for the shots fired so far, from the weapon's RPM. */
+  function fireElapsed(shots) {
+    const w = weapon();
+    const fm = w ? fireModel(w, w.modes[state.mode] || w.modes[0]) : null;
+    if (!fm || fm.kind !== 'shot' || !fm.interval || shots < 2) return '';
+    return `<span class="hud-k">Elapsed</span><span class="hud-v">${fmtTime((shots - 1) * fm.interval)}</span>`;
+  }
+
   function renderFireHud(e) {
     const hud = $('#fireHud');
     const banner = $('#killBanner');
@@ -634,7 +691,7 @@
     const pools = e.parts.map((p, i) => ({ p, i })).filter(({ i }) => sim.pool[i] != null);
     hud.innerHTML = `
       <div class="hud-row">
-        <span class="hud-k">Shots fired</span><span class="hud-v">${sim.shots}</span>
+        <span class="hud-k">Shots fired</span><span class="hud-v">${sim.shots}</span>${fireElapsed(sim.shots)}
         ${pools.map(({ p, i }) => `<span class="hud-k">${esc(p.name)}</span>
           <span class="hpbar wide"><b style="width:${Math.max(0, (sim.pool[i] / p.health) * 100)}%"></b></span>
           <span class="hud-v">${fmt(Math.max(0, sim.pool[i]))}</span>`).join('')}
@@ -770,12 +827,13 @@
     if (!part) return;
     const band = hit ? bandOf(hit.deg) : state.band;
     const mode = w ? w.modes[state.mode] || w.modes[0] : null;
-    const r = w ? simulate(mode, e, i, { ...opts(), band }) : null;
+    const r = w ? evalEnemy(w, state.mode, e, { ...opts(), band })[i].r : null;
     const pc = r ? penClass(r, part) : null;
     let verdict = '';
     if (r) {
       if (pc === 'immune') verdict = 'This zone cannot be damaged.';
-      else if (r.killAt) verdict = `Kills in <b>${r.killAt}</b> shot${r.killAt > 1 ? 's' : ''}${r.downs ? ' (downs it)' : r.breakAt === r.killAt && part.fatal === true ? ' by destroying this part' : ' via Main health'}.`;
+      else if (r.ttk != null && r.kind !== 'shot') verdict = `Kills in <b>${fmtTime(r.ttk)}</b> (${r.kind === 'beam' ? 'continuous beam' : esc(r.why)}).`;
+      else if (r.killAt) verdict = `Kills in <b>${r.killAt}</b> shot${r.killAt > 1 ? 's' : ''}${r.ttk != null ? ` (<b>${fmtTime(r.ttk)}</b>)` : ''}${r.downs ? ' (downs it)' : r.breakAt === r.killAt && part.fatal === true ? ' by destroying this part' : ' via Main health'}.`;
       else if (r.breakAt) verdict = `Breaks in <b>${r.breakAt}</b> shot${r.breakAt > 1 ? 's' : ''}, but that alone won't kill it.`;
       else if (r.total > 0) verdict = 'Deals damage but can’t kill through this zone.';
       else verdict = 'Ricochets — no damage.';

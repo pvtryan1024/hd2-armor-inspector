@@ -135,6 +135,31 @@ weapons.forEach((w) => {
   });
 });
 
+// How each mode deals damage over time, for time-to-kill:
+//   beam: damage is listed per second (continuous lasers)
+//   dot:  flame and gas sprays/grenades; their burn or gas damage per second hits Main only
+// DPS values come from the wiki notes recorded with each weapon.
+const DOT = [
+  { id: /^flam-40-flamethrower$/, mode: 'Spray', label: 'Burning', dps: 100, ap: 4 },
+  { id: /^flam-66-torcher$/, label: 'Burning', dps: 150, ap: 4 },
+  { id: /^p-72-crisper$/, label: 'Burning', dps: 150, ap: 4 },
+  { id: /^b-flam-80-cremator$/, mode: 'Spray', label: 'Flames', dps: 225, ap: 4 },
+  { id: /stoker$/, mode: 'Flamethrower', label: 'Burning', dps: 150, ap: 4 },
+  { id: /^g-10-incendiary$/, label: 'Burning', dps: 100, ap: 4 },
+  { id: /^g-13-incendiary-impact$/, label: 'Burning', dps: 100, ap: 4 },
+  { id: /^tx-41-sterilizer$/, mode: 'Spray', label: 'Gas', dps: 30, ap: null },
+  { id: /^g-4-gas$/, label: 'Gas', dps: 25, ap: 6 },
+];
+let beamModes = 0, dotModes = 0;
+weapons.forEach((w) => {
+  (w.modes || []).forEach((m) => {
+    const note = `${m.note || ''} ${w.note || ''}`;
+    if (!w.rpm && !m.rpm && /damage per second/i.test(note)) { m.beam = true; beamModes++; }
+    const d = DOT.find((x) => x.id.test(w.id) && (!x.mode || x.mode === m.name));
+    if (d) { m.dot = { label: d.label, dps: d.dps, ap: d.ap ?? m.apAngles?.[0] ?? m.ap }; dotModes++; }
+  });
+});
+
 // Which enemies have a 3D model in models/, so the site can badge them and skip pointless requests.
 const modelsDir = path.join(__dirname, 'models');
 const models = {};
@@ -169,4 +194,4 @@ const out = {
   weapons: uniq(weapons).filter((w) => Array.isArray(w.modes) && w.modes.length),
 };
 fs.writeFileSync(path.join(dir, 'data.js'), 'window.HD2_DATA = ' + JSON.stringify(out) + ';\n');
-console.log(`enemies: ${out.enemies.length}, weapons: ${out.weapons.length}, modes with angle AP: ${angleModes}, ballistics: ${ballisticModes}, blast radii: ${radiusModes}`);
+console.log(`enemies: ${out.enemies.length}, weapons: ${out.weapons.length}, modes with angle AP: ${angleModes}, ballistics: ${ballisticModes}, blast radii: ${radiusModes}, beam: ${beamModes}, dot: ${dotModes}`);

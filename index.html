@@ -54,7 +54,7 @@
           </div>
           <div class="seg" id="colorTabs" title="How hitzones are coloured">
             <button data-color="pen" class="on">Penetration</button>
-            <button data-color="ttk">Shots to kill</button>
+            <button data-color="ttk">Time to kill</button>
           </div>
         </div>
       </div>
@@ -109,7 +109,7 @@
       </div>
       <div class="table-wrap" id="partsTableWrap"><table class="data" id="partsTable"></table></div>
       <div class="table-wrap hidden" id="rankTableWrap">
-        <p class="hint">Every weapon ranked by fewest shots to kill, using its best hitzone in the current view. Ties broken by damage per shot.</p>
+        <p class="hint">Every weapon ranked by time to kill on its best hitzone in the current view. Time comes from RPM with the first shot at 0 s; reloads are not included (* = needs more than one magazine). Weapons without an RPM are ranked by shot count after timed kills.</p>
         <table class="data" id="rankTable"></table>
       </div>
     </section>
