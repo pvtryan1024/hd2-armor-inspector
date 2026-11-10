@@ -254,8 +254,43 @@ function splitShells(doc, node, sp, likeBoxes) {
     const sh = shellsOf(prim);
     const total = sh.reduce((a, x) => a + x.n, 0);
     const isPlate = (x, i) => (likeBoxes ? likeBoxes.some((b) => sameBox(b, x.box)) : i > 0 && x.n >= total * 0.02);
-    const body = sh.filter((x, i) => !isPlate(x, i)).flatMap((x) => x.tris);
+    let body = sh.filter((x, i) => !isPlate(x, i)).flatMap((x) => x.tris);
     const plates = sh.filter(isPlate).flatMap((x) => x.tris);
+    // tipBones: the tail tip is welded to the body; its upper half is armored, its underside soft.
+    // Tip triangles (by bone) above the tip's mid-height, per slice along the body, go to the plates.
+    if (sp.tipBones && !likeBoxes) {
+      const skin = node.getSkin(), joints = skin.listJoints(), ibm = skin.getInverseBindMatrices(), m16 = [];
+      const mats = joints.map((j, i) => mat4Mul(j.getWorldMatrix(), ibm.getElement(i, m16).slice()));
+      const P = prim.getAttribute('POSITION'), J = prim.getAttribute('JOINTS_0'), W = prim.getAttribute('WEIGHTS_0');
+      const v = [0, 0, 0], j4 = [], w4 = [];
+      const info = (i) => {
+        P.getElement(i, v); J.getElement(i, j4); W.getElement(i, w4);
+        let b = 0; const o = [0, 0, 0];
+        for (let k = 0; k < 4; k++) {
+          if (w4[k] > w4[b]) b = k;
+          if (!w4[k]) continue;
+          const m = mats[j4[k]];
+          for (let r = 0; r < 3; r++) o[r] += w4[k] * (m[r] * v[0] + m[4 + r] * v[1] + m[8 + r] * v[2] + m[12 + r]);
+        }
+        return { p: o, tip: sp.tipBones.test(joints[j4[b]].getName()) };
+      };
+      const V = new Map(); const at = (i) => { if (!V.has(i)) V.set(i, info(i)); return V.get(i); };
+      const tris = [];
+      for (let t = 0; t < body.length; t += 3) {
+        const tri = body.slice(t, t + 3).map(at);
+        tris.push({ idx: body.slice(t, t + 3), tip: tri.filter((x) => x.tip).length >= 2, c: [0, 1, 2].map((k) => (tri[0].p[k] + tri[1].p[k] + tri[2].p[k]) / 3) });
+      }
+      // height range of the tip in slices along z (the body's long axis)
+      const slice = (z) => Math.round(z / 0.1), lo = new Map(), hi = new Map();
+      for (const t of tris) if (t.tip) { const k = slice(t.c[2]); lo.set(k, Math.min(lo.get(k) ?? Infinity, t.c[1])); hi.set(k, Math.max(hi.get(k) ?? -Infinity, t.c[1])); }
+      const keep = [];
+      for (const t of tris) {
+        const k = slice(t.c[2]);
+        const upper = t.tip && t.c[1] > lo.get(k) + (sp.tipSplit ?? 0.5) * (hi.get(k) - lo.get(k));
+        (upper ? plates : keep).push(...t.idx);
+      }
+      body = keep;
+    }
     if (!plates.length) continue;
     const idx = (list) => doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(list)).setBuffer(buffer);
     if (!likeBoxes) { const p = prim.clone(); p.setIndices(idx(plates)); restPrims.push(p); }
@@ -363,17 +398,17 @@ const MAIN_ONLY = [[/./, 'Main']];
 
 const SOURCES = {
   // charger butts: the armor plates on top and the soft butt below are pieces of one mesh
-  charger: { src: 'content/fac_bugs/cha_charger/cha_charger.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates' }], rules: CHARGER },
-  'charger-behemoth': { src: 'content/fac_bugs/cha_charger_bull/cha_charger_bull.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates' }], rules: CHARGER },
+  charger: { src: 'content/fac_bugs/cha_charger/cha_charger.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', tipBones: /^spine4$/ }], rules: CHARGER },
+  'charger-behemoth': { src: 'content/fac_bugs/cha_charger_bull/cha_charger_bull.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', tipBones: /^spine4$/ }], rules: CHARGER },
   // the Rupture's front legs are its digging plates (Frontal Tarsal Plate Armor, AV5)
-  'rupture-charger': { src: 'content/fac_bugs/cha_charger_burrower/cha_charger_burrower.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates' }], rules: [[/^(left|right)_front_leg$/, 'Frontal Tarsal Plate Armor (2)'], ...CHARGER] },
-  'caustic-charger': { src: 'content/fac_bugs/cha_charger_acid/cha_charger_acid.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', prim: /cha_charger/ }], rules: [[/_blob$/, 'Spore Flesh (6)'], ...CHARGER] },
+  'rupture-charger': { src: 'content/fac_bugs/cha_charger_burrower/cha_charger_burrower.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', tipBones: /^spine4$/ }], rules: [[/^(left|right)_front_leg$/, 'Frontal Tarsal Plate Armor (2)'], ...CHARGER] },
+  'caustic-charger': { src: 'content/fac_bugs/cha_charger_acid/cha_charger_acid.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', prim: /cha_charger/, tipBones: /^spine4$/ }], rules: [[/_blob$/, 'Spore Flesh (6)'], ...CHARGER] },
   // the abdomen: armor plates ("tail", Butt Armor) over the soft sac; 0xf4fb223e is the burst sac
-  'bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider.unit.glb', shells: [{ mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail' }], rules: BILE_TITAN },
-  'spore-burst-bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider_gloom.unit.glb', shells: [{ mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail' }], rules: BILE_TITAN },
+  'bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider.unit.glb', shells: [{ mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail', tipBones: /^spine_lower_4$/ }], rules: BILE_TITAN },
+  'spore-burst-bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider_gloom.unit.glb', shells: [{ mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail', tipBones: /^spine_lower_4$/ }], rules: BILE_TITAN },
   impaler: {
     src: 'content/fac_bugs/cha_impaler/cha_impaler.unit.glb',
-    shells: [{ mesh: 'tail', main: 'tail', rest: 'tail_plates' }],
+    shells: [{ mesh: 'tail', main: 'tail', rest: 'tail_plates', tipBones: /^spine[56]$/ }],
     rules: [
       [/^head$/, 'Head'],
       [/^head_shield$/, 'Crest Armor'],
