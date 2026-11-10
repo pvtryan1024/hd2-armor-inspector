@@ -150,7 +150,7 @@
     };
   }
 
-  function applyShot(sim, enemy, idx, s, extra) {
+  function applyShot(sim, enemy, idx, s, extra, want) {
     const part = enemy.parts[idx];
     const out = { progress: false, toMain: 0, broke: false, dealt: s.total };
     if (sim.dead || part.av < 0 || part.av >= 11) return out;
@@ -164,7 +164,7 @@
       out.toMain = s.total * toMain + s.mainEx;
     } else {
       const inst = sim.hp[idx];
-      const k = inst.findIndex((h) => h > 0);
+      const k = want != null ? (inst[want] > 0 ? want : -1) : inst.findIndex((h) => h > 0);
       if (k >= 0) {
         const capped = part.overflow ? s.total : Math.min(s.total, inst[k]);
         out.toMain = capped * toMain + s.mainEx;
@@ -182,7 +182,7 @@
           }
         }
       } else {
-        // every instance gone: only overflow parts keep feeding Main
+        // this one (or every one) is gone: only overflow parts keep feeding Main
         out.toMain = (part.overflow ? s.total * toMain : 0) + s.mainEx;
       }
     }
@@ -307,14 +307,17 @@
   const coverTag = (p, open) => (open ? 'armor off' : `🛡 ${esc(p.coveredBy.replace(/\s*\(\d+\)$/, ''))}`);
   const hiddenTag = (p, open) => (p.hidden === 'angle' ? 'hard to reach' : open ? 'exposed' : '🔒 covered');
 
-  function isExposed(enemy, idx, sim = null) {
+  function isExposed(enemy, idx, sim = null, k = null) {
     const p = enemy.parts[idx];
     if ((!p.hidden && !p.coveredBy) || state.showInner) return true;
     if (p.hidden === 'angle') return !!sim; // a shot you actually placed reached it
     if (p.coveredBy && !p.hidden) {
       if (!sim) return true; // time to kill already includes stripping the plate
       const ci = enemy.parts.findIndex((q) => q.name === p.coveredBy);
-      return ci < 0 || !sim.hp[ci] || sim.hp[ci].some((h) => h <= 0);
+      const hp = sim.hp[ci];
+      if (ci < 0 || !hp) return true;
+      if (k != null && hp.length === (p.count || 1)) return hp[k] <= 0;
+      return hp.some((h) => h <= 0);
     }
     if (!sim) return false;
     return coverFor(enemy, idx).some((i) => sim.hp[i] && sim.hp[i].some((h) => h <= 0));
@@ -568,13 +571,17 @@
 
   function renderSchematic(e, results) {
     const zones = { head: [], arms: [], body: [], rear: [], legs: [] };
-    results.forEach((x, i) => zones[region(x.part.name)].push({ ...x, i }));
+    results.forEach((x, i) => {
+      const n = x.part.count || 1;
+      if (n >= 2 && n <= 4) for (let k = 0; k < n; k++) zones[region(x.part.name)].push({ ...x, i, k, n });
+      else zones[region(x.part.name)].push({ ...x, i });
+    });
     const maxHP = Math.max(1, ...e.parts.map((p) => (typeof p.health === 'number' ? p.health : 0)));
     for (const [z, items] of Object.entries(zones)) {
       const zoneEl = $(`.z-${z}`);
       zoneEl.classList.toggle('empty', items.length === 0);
       $('.tiles', zoneEl).innerHTML = items
-        .map(({ part, r, i }) => {
+        .map(({ part, r, i, k: inst, n }) => {
           const hp = typeof part.health === 'number' ? part.health : maxHP * 0.4;
           const k = Math.sqrt(hp / maxHP);
           const size = `--w:${Math.round(100 + 120 * k)}px;--h:${Math.round(56 + 40 * k)}px;`;
@@ -591,13 +598,14 @@
               small = isOneShot(r) ? `${fmt(r.total)} dmg` : r.ttk != null ? shotsLabel(r) + (r.reload ? ' +reload' : '') : r.killAt ? 'shots (no RPM)' : r.breakAt ? `breaks ${r.breakAt}` : 'no kill';
             }
           }
-          const left = state.fire ? partLeft(i) : null;
+          let left = state.fire ? partLeft(i) : null;
+          if (left && inst != null && left.segs) left = { ...left, frac: left.segs[inst], segs: [left.segs[inst]], label: left.segs[inst] > 0 ? (part.indestructible ? 'Indestructible' : `${fmt(left.segs[inst] * part.health)} HP left`) : 'Destroyed' };
           const fatal = part.fatal === true ? '<span class="fatal" title="Destroying this kills">☠ fatal</span>' : part.fatal === 'downs' ? '<span class="fatal" title="Destroying this downs the enemy">☠ downs</span>' : '';
-          const covered = !isExposed(e, i, state.fire ? state.sim : null);
-          return `<div class="tile ${vis ? '' : 'dim'} ${covered ? 'covered' : ''} ${left && left.frac <= 0 ? 'gone' : ''}" data-i="${i}" style="--c:${color};${size}" ${covered ? 'title="Behind armor: break the armor first"' : ''}>
-              ${part.hidden ? `<span class="inner-tag">${hiddenTag(part, !covered)}</span>` : part.coveredBy ? `<span class="inner-tag">${coverTag(part, state.fire && isExposed(e, i, state.sim))}</span>` : ''}
+          const covered = !isExposed(e, i, state.fire ? state.sim : null, inst);
+          return `<div class="tile ${vis ? '' : 'dim'} ${covered ? 'covered' : ''} ${left && left.frac <= 0 ? 'gone' : ''}" data-i="${i}"${inst != null ? ` data-k="${inst}"` : ''} style="--c:${color};${size}" ${covered ? 'title="Behind armor: break the armor first"' : ''}>
+              ${part.hidden ? `<span class="inner-tag">${hiddenTag(part, !covered)}</span>` : part.coveredBy ? `<span class="inner-tag">${coverTag(part, state.fire && isExposed(e, i, state.sim, inst))}</span>` : ''}
               <span class="av">AV${part.av}</span>
-              <div class="name">${esc(part.name)}</div>
+              <div class="name">${inst != null ? `${esc(part.name.replace(/\s*\(\d+\)$/, ''))} <span class="muted">${inst + 1}/${n}</span>` : esc(part.name)}</div>
               <div class="row"><span>${part.indestructible ? 'Indestructible' : typeof part.health === 'number' ? fmt(part.health) + ' HP' : 'Main HP'} ${fatal}</span><span><span class="big">${big}</span> ${small}</span></div>
               ${left ? `<div class="hpbars" title="${esc(left.label)}">${(left.segs || [left.frac]).map((f) => `<div class="hpbar"><b style="width:${Math.max(0, f * 100)}%"></b></div>`).join('')}</div>` : ''}
             </div>`;
@@ -773,12 +781,12 @@
   }
 
   /** hit = { deg } when fired from the 3D view, so the real impact angle picks the AP. */
-  function fireAt(i, hit) {
+  function fireAt(i, hit, k) {
     const e = enemy(), w = weapon();
     if (!e || !w || !state.sim || state.sim.dead) return;
     const mode = w.modes[state.mode] || w.modes[0];
     const part = e.parts[i];
-    if (!isExposed(e, i, state.sim)) {
+    if (!isExposed(e, i, state.sim, k)) {
       state.sim.log.unshift(part.coveredBy && !part.hidden
         ? `${part.name} is under ${part.coveredBy} — break it first`
         : `${part.name} is behind armor — break the armor first (or turn on "Covered parts: exposed")`);
@@ -788,8 +796,9 @@
     }
     const band = hit ? bandOf(hit.deg) : state.band;
     const s = shotDamage(mode, part, e, { ...opts(), band });
-    const o = applyShot(state.sim, e, i, s);
-    state.sim.log.unshift(`#${state.sim.shots} ${part.name}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}`);
+    const o = applyShot(state.sim, e, i, s, false, k);
+    const label = k != null && (part.count || 1) > 1 ? `${part.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${part.count}` : part.name;
+    state.sim.log.unshift(`#${state.sim.shots} ${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}`);
     state.sim.log.length = Math.min(state.sim.log.length, 6);
     render();
   }
@@ -953,8 +962,8 @@
     } }));
   }
 
-  function partClick(i, hit) {
-    if (state.fire) fireAt(i, hit);
+  function partClick(i, hit, k) {
+    if (state.fire) fireAt(i, hit, k);
   }
 
   /* ---------------- tooltip ---------------- */
@@ -1158,7 +1167,7 @@
 
     const clickHost = (sel) => $(sel).addEventListener('click', (ev) => {
       const n = ev.target.closest('[data-i]');
-      if (n) partClick(+n.dataset.i);
+      if (n) partClick(+n.dataset.i, null, n.dataset.k != null ? +n.dataset.k : undefined);
     });
     clickHost('#schematic');
     clickHost('#partsTable');
