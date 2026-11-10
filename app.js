@@ -159,7 +159,9 @@
     const proj = m == null || mode.explosionOnly || opts.noProj ? 0 : Math.floor(raw * m) * pellets;
 
     let partEx = 0, mainEx = 0, exMult = null;
-    const ex = opts.explosion ? mode.explosion : null;
+    // an explosive round that ricochets doesn't go off (explosion-only weapons always do)
+    const ricochet = !mode.explosionOnly && !opts.noProj && (mode.damage || 0) > 0 && !m;
+    const ex = opts.explosion && !ricochet ? mode.explosion : null;
     if (ex && (ex.damage || ex.durable)) {
       const blast = blastAt(ex, opts.exDist || 0);
       const e = (ex.durable ?? ex.damage) * blast.mult;
@@ -170,7 +172,7 @@
       const main = mainPart(enemy);
       if (!isMainRow(part) && (!main || blast.ap >= main.av)) mainEx = Math.floor(e * exdr);
     }
-    return { proj, partEx, mainEx, pen: opts.noProj ? null : m, exPen: exMult, total: proj + partEx, ap, range: rangeMult(mode, opts.dist) };
+    return { proj, partEx, mainEx, pen: opts.noProj ? null : m, exPen: exMult, total: proj + partEx, ap, range: rangeMult(mode, opts.dist), ricochet };
   }
 
   /* Stateful simulation: shared by the shots-to-kill numbers and fire mode.
@@ -962,7 +964,7 @@
     const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0 }) }];
     // 3D shots: only an inner hitbox the ray actually passes through counts (hit.thru from the viewer)
     const thru = overpen(mode, e, hit.idx, rows[0].s, o, 'thru' in hit ? hit.thru?.idx ?? null : undefined);
-    const radii = blastRadii(mode);
+    const radii = rows[0].s.ricochet ? null : blastRadii(mode); // a ricochet means no blast at all
     if (radii) {
       // pieces reached by the blast rays (3D view); the struck piece already took the full blast
       const reached = hit.blastHits || Object.entries(hit.parts || {}).map(([k, d]) => ({ idx: +k, k: null, d }));
@@ -1001,6 +1003,7 @@
       return `Blocked: ${e0.parts[hit.idx].name} is behind armor`;
     }
     const res = resolveHit(hit);
+    if (res) state.hit = { ...state.hit, ricochet: !!res.rows[0].s.ricochet };
     if (res && state.fire && state.sim && !state.sim.dead) {
       const e = enemy();
       const notes = [];
@@ -1055,6 +1058,7 @@
         <dt>Total to part</dt><dd><b>${fmt(d.s.total)}</b></dd>
         <dt>To Main</dt><dd>${fmt(main)}</dd>
       </dl>
+      ${d.s.ricochet && res.mode.explosion && state.explosion ? '<div class="muted">Ricocheted: the round did not explode</div>' : ''}
       ${res.radii ? `<div class="sp-blast"><b>Blast</b> ${res.radii.inner}m inner / ${res.radii.outer}m outer
         ${blastRows.length ? '<ul>' + blastRows.map((r) => `<li><span>${esc(pieceName(e.parts[r.idx], r.k))} <i>${r.dist.toFixed(1)}m</i></span><span>${r.s.partEx > 0 ? fmt(r.s.partEx) : '<span class="muted" title="The blast AP does not beat this armor">0 · armor holds</span>'}</span></li>`).join('') + '</ul>' : '<div class="muted">No other hitzone reached by the blast</div>'}
         ${mainOnce ? `<div class="muted">+${fmt(mainOnce)} redirected to Main (once per blast)</div>` : ''}</div>` : ''}
@@ -1102,7 +1106,7 @@
     window.dispatchEvent(new CustomEvent('hd2:update', { detail: {
       enemy: e, colors, gone, goneInst, hitHp, fire: state.fire, stageView: state.stageView,
       colorMode: state.color, ap4, avs: e.parts.map((p) => p.av), bands: ANGLE_BANDS,
-      hit: state.hit, blast: blastRadii(m),
+      hit: state.hit, blast: state.hit?.ricochet ? null : blastRadii(m),
     } }));
   }
 
