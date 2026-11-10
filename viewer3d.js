@@ -311,8 +311,23 @@ function pick(ev) {
   return { mesh: hit.object, deg, point: hit.point.clone(), normal: n, origin: ray.ray.origin.clone() };
 }
 
-let downAt = null;
-renderer.domElement.addEventListener('pointerdown', (ev) => { downAt = [ev.clientX, ev.clientY, performance.now()]; });
+// Press on the model = aim a shot there (the camera holds still); press on empty space = rotate the camera.
+// Runs in the capture phase so it can switch OrbitControls off before they see the press.
+let press = null;
+renderer.domElement.parentElement.addEventListener('pointerdown', (ev) => {
+  if (ev.button !== 0 || ev.target !== renderer.domElement) return;
+  const h = pick(ev);
+  press = h ? { x: ev.clientX, y: ev.clientY, h } : null;
+  controls.enabled = !press;
+}, true);
+window.addEventListener('pointerup', (ev) => {
+  if (!press) return;
+  const p = press;
+  press = null;
+  controls.enabled = true;
+  if (Math.hypot(ev.clientX - p.x, ev.clientY - p.y) > 40) return; // dragged well away: cancel the shot
+  shoot(p.h);
+});
 let hoverEv = null;
 renderer.domElement.addEventListener('pointermove', (ev) => {
   if (ev.buttons) { HD2.hideTip(); return; }
@@ -328,14 +343,7 @@ function hover(ev) {
   if (i >= 0) HD2.tip(i, ev.clientX, ev.clientY, { deg: h.deg });
 }
 renderer.domElement.addEventListener('pointerleave', () => HD2.hideTip());
-renderer.domElement.addEventListener('pointerup', (ev) => {
-  if (!downAt) return;
-  const moved = Math.hypot(ev.clientX - downAt[0], ev.clientY - downAt[1]);
-  const held = performance.now() - downAt[2];
-  downAt = null;
-  if (moved > 12 || (moved > 4 && held > 350)) return; // it was a drag to rotate the camera
-  const h = pick(ev);
-  if (!h) return;
+function shoot(h) {
   if (editing) {
     selectedKey = h.mesh.userData.key; renderEditor(); paint();
     if (lastDetail?.fire) status(`Editing hitzones: click selects "${selectedKey}". Turn off "Edit hitzones" to fire.`);
@@ -353,7 +361,7 @@ renderer.domElement.addEventListener('pointerup', (ev) => {
     if (parts[k] == null || d < parts[k]) parts[k] = d;
   }
   HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
-});
+}
 
 /* ---------- shot visuals: ray, impact marker, explosion radii ---------- */
 const shotGroup = new THREE.Group();

@@ -302,7 +302,8 @@ table.data tr.click { cursor: pointer; }
 .hud-row .btn { margin-left: auto; }
 .hud-k { color: var(--muted); font: 600 11px var(--font-head); letter-spacing: 0.12em; text-transform: uppercase; }
 .hud-v { font: 700 16px var(--font-mono); }
-.hud-log { color: var(--muted); font: 12px/1.5 var(--font-mono); }
+/* fixed height (5 lines, scrolls): the stage below must not move between shots, or the next click lands off target */
+.hud-log { color: var(--muted); font: 12px/1.5 var(--font-mono); height: 7.5em; overflow-y: auto; }
 .hpbars { display: flex; gap: 3px; }
 .force-tag { display: inline-block; margin: 0 2px; padding: 0 5px; border-radius: 3px; background: var(--accent); color: #111; font-weight: 700; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.03em; }
 .hpbars .hpbar { flex: 1; }
