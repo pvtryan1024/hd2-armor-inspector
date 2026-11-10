@@ -324,8 +324,45 @@ if (fs.existsSync(wthumbsDir)) for (const f of fs.readdirSync(wthumbsDir)) { con
 
 console.log(`stagger: ${enemies.filter((e) => e.stagger != null).length} enemies with a threshold, ${forceModes} weapon modes with forces`);
 
+// Translations: translations/<lang>.csv (type, english, <lang>, where), filled in by hand; empty cells stay English
+function parseCsv(text) {
+  const rows = [];
+  let row = [], cell = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) {
+      if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+      else if (c === '"') q = false;
+      else cell += c;
+    } else if (c === '"') q = true;
+    else if (c === ',') { row.push(cell); cell = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && text[i + 1] === '\n') i++;
+      row.push(cell); rows.push(row); row = []; cell = '';
+    } else cell += c;
+  }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}
+const i18n = {};
+const trDir = path.join(__dirname, 'translations');
+if (fs.existsSync(trDir)) {
+  for (const f of fs.readdirSync(trDir)) {
+    const m = /^([a-z]{2}(?:-[a-z]{2})?)\.csv$/i.exec(f);
+    if (!m) continue;
+    const rows = parseCsv(fs.readFileSync(path.join(trDir, f), 'utf8').replace(/^\ufeff/, ''));
+    const head = rows.shift().map((h) => h.trim().toLowerCase());
+    const en = head.indexOf('english'), tr = head.findIndex((h, i) => i !== en && !['type', 'where'].includes(h));
+    const dict = {};
+    for (const r of rows) if (r[en]?.trim() && r[tr]?.trim()) dict[r[en].trim()] = r[tr].trim();
+    i18n[m[1].toLowerCase()] = dict;
+    console.log(`translations: ${f} — ${Object.keys(dict).length} of ${rows.length} filled in`);
+  }
+}
+
 const out = {
   built: new Date().toISOString().slice(0, 10),
+  i18n,
   models,
   thumbs,
   wthumbs,

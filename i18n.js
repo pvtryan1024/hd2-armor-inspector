@@ -1,0 +1,127 @@
+/* Page translation. Translations live in translations/<lang>.csv (english → translated, filled in by hand)
+ * and are built into data.js as HD2_DATA.i18n[lang]. With a language picked, every text node and
+ * title/placeholder whose text matches an English entry is swapped one-to-one; entries with {n} match
+ * any number in that spot. Text without a translation stays in English. The flags (bottom left) switch
+ * language; the choice is remembered and links can carry it (#…&lang=ko). */
+(() => {
+  'use strict';
+
+  const DICTS = window.HD2_DATA?.i18n || {};
+  const LANGS = [
+    { id: 'en', label: 'English (US)', flag: flagUS() },
+    { id: 'ko', label: '한국어', flag: flagKR() },
+  ];
+  const fromHash = new URLSearchParams(location.hash.slice(1)).get('lang');
+  let saved = null;
+  try { saved = localStorage.getItem('hd2-lang'); } catch { /* storage blocked */ }
+  const lang = LANGS.some((l) => l.id === fromHash) ? fromHash : LANGS.some((l) => l.id === saved) ? saved : 'en';
+  document.documentElement.lang = lang;
+
+  // ---- language switch (bottom left)
+  const bar = document.createElement('div');
+  bar.className = 'lang-switch';
+  bar.innerHTML = LANGS.map((l) => `<button type="button" data-lang="${l.id}" class="${l.id === lang ? 'on' : ''}" title="${l.label}" aria-label="${l.label}">${l.flag}</button>`).join('');
+  bar.addEventListener('click', (ev) => {
+    const b = ev.target.closest('button[data-lang]');
+    if (!b || b.dataset.lang === lang) return;
+    try { localStorage.setItem('hd2-lang', b.dataset.lang); } catch { /* storage blocked */ }
+    const p = new URLSearchParams(location.hash.slice(1));
+    p.delete('lang');
+    location.hash = p.toString();
+    location.reload(); // the page is rebuilt in English and translated again from scratch
+  });
+  document.body.appendChild(bar);
+
+  const dict = lang === 'en' ? null : DICTS[lang];
+  if (!dict) return;
+
+  // exact entries, and {n} patterns compiled to regexes (longest first so specific ones win)
+  const exact = new Map();
+  const patterns = [];
+  const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  for (const [en, tr] of Object.entries(dict)) {
+    if (!tr) continue;
+    if (en.includes('{n}')) {
+      const re = new RegExp('^' + en.split('{n}').map(esc).join('(\\d[\\d,.]*)') + '$');
+      patterns.push({ re, tr, len: en.length });
+    } else exact.set(en, tr);
+  }
+  patterns.sort((a, b) => b.len - a.len);
+
+  function translate(text) {
+    const core = text.replace(/\s+/g, ' ').trim();
+    if (!core || !/[A-Za-z]/.test(core)) return null;
+    let out = exact.get(core);
+    if (out == null) {
+      for (const p of patterns) {
+        const m = p.re.exec(core);
+        if (m) { let i = 1; out = p.tr.replace(/\{n\}/g, () => m[i++] ?? ''); break; }
+      }
+    }
+    if (out == null) return null;
+    const lead = text.match(/^\s*/)[0], trail = text.match(/\s*$/)[0];
+    return lead + out + trail;
+  }
+
+  const ATTRS = ['title', 'placeholder', 'aria-label'];
+  function walk(root) {
+    if (root.nodeType === Node.TEXT_NODE) { fixText(root); return; }
+    if (root.nodeType !== Node.ELEMENT_NODE || /^(SCRIPT|STYLE|CANVAS|SVG)$/i.test(root.tagName)) return;
+    fixAttrs(root);
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+    let n;
+    while ((n = w.nextNode())) {
+      if (n.nodeType === Node.TEXT_NODE) fixText(n);
+      else fixAttrs(n);
+    }
+  }
+  function fixText(n) {
+    const p = n.parentElement;
+    if (!p || /^(SCRIPT|STYLE)$/.test(p.tagName)) return;
+    const t = translate(n.nodeValue);
+    if (t != null && t !== n.nodeValue) n.nodeValue = t;
+  }
+  function fixAttrs(el) {
+    for (const a of ATTRS) {
+      const v = el.getAttribute?.(a);
+      if (!v) continue;
+      const t = translate(v);
+      if (t != null && t !== v) el.setAttribute(a, t);
+    }
+  }
+
+  // the app re-renders often: translate whatever it puts on the page
+  let busy = false;
+  const mo = new MutationObserver((list) => {
+    if (busy) return;
+    busy = true;
+    for (const m of list) {
+      if (m.type === 'characterData') fixText(m.target);
+      else if (m.type === 'attributes') fixAttrs(m.target);
+      else m.addedNodes.forEach(walk);
+    }
+    mo.takeRecords(); // our own edits
+    busy = false;
+  });
+  walk(document.body);
+  document.title = translate(document.title) || document.title;
+  mo.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRS });
+
+  // ---- flags (inline SVG, simplified)
+  function flagUS() {
+    const stripes = Array.from({ length: 13 }, (_, i) => (i % 2 ? '' : `<rect y="${i * 10}" width="190" height="10" fill="#b22234"/>`)).join('');
+    return `<svg viewBox="0 0 190 130" width="26" height="18" aria-hidden="true"><rect width="190" height="130" fill="#fff"/>${stripes}<rect width="76" height="70" fill="#3c3b6e"/>`
+      + Array.from({ length: 20 }, (_, i) => `<circle cx="${8 + (i % 5) * 15}" cy="${8 + Math.floor(i / 5) * 17}" r="2.6" fill="#fff"/>`).join('') + '</svg>';
+  }
+  function flagKR() {
+    // trigram bars (gun, gon, gam, ri): solid = full bar, broken = two halves
+    const tri = (cx, cy, rot, bars) => `<g transform="translate(${cx} ${cy}) rotate(${rot})">${bars.map((solid, i) => {
+      const y = -10 + i * 8;
+      return solid ? `<rect x="-12" y="${y}" width="24" height="5" fill="#000"/>` : `<rect x="-12" y="${y}" width="10.5" height="5" fill="#000"/><rect x="1.5" y="${y}" width="10.5" height="5" fill="#000"/>`;
+    }).join('')}</g>`;
+    return `<svg viewBox="0 0 180 120" width="26" height="18" aria-hidden="true"><rect width="180" height="120" fill="#fff"/>`
+      + `<g transform="translate(90 60) rotate(33.7)"><circle r="30" fill="#0047a0"/><path d="M-30 0a30 30 0 0 1 60 0a15 15 0 0 1-30 0a15 15 0 0 0-30 0" fill="#cd2e3a"/></g>`
+      + tri(40, 27, -56.3, [1, 1, 1]) + tri(140, 93, -56.3, [0, 0, 0]) + tri(140, 27, 56.3, [0, 1, 0]) + tri(40, 93, 56.3, [1, 0, 1])
+      + '</svg>';
+  }
+})();

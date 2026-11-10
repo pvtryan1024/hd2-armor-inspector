@@ -519,3 +519,13 @@ body.editor .public-only { display: none !important; }
   font: 700 12px/1.4 var(--font-head); letter-spacing: 0.1em; text-transform: uppercase;
 }
 .kpi .v .one-shot { font-size: 20px; padding: 2px 10px; vertical-align: 4px; }
+
+/* language switch: flags, bottom left */
+.lang-switch {
+  position: fixed; left: 12px; bottom: 12px; z-index: 60; display: flex; gap: 4px; padding: 4px;
+  background: rgba(12, 15, 19, 0.85); border: 1px solid var(--line-2); border-radius: 8px; backdrop-filter: blur(4px);
+}
+.lang-switch button { display: grid; place-items: center; width: 34px; height: 24px; padding: 0; border: 2px solid transparent; border-radius: 4px; background: none; cursor: pointer; opacity: 0.55; }
+.lang-switch button svg { width: 28px; height: 18px; display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4); }
+.lang-switch button:hover { opacity: 0.85; }
+.lang-switch button.on { opacity: 1; border-color: var(--accent); }

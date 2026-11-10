@@ -1,0 +1,772 @@
+﻿type,english,korean,where
+ui,HD{n},,start page
+ui,Armor Inspector,,start page
+ui,Alpha,,start page
+ui,Alpha version · numbers and features may change,,start page
+ui,{n} enemies · {n} weapons · data {n}-{n}-{n},,start page
+ui,Copy link,,start page
+ui,Target,,start page
+ui,Bugs · {n} enemies,,start page
+ui,Bots · {n} enemies,,start page
+ui,Squids · {n} enemies,,start page
+ui,wiki ↗,,start page
+ui,{n}D model,,start page
+ui,Body map,,start page
+ui,Fire mode,,start page
+ui,Covered parts: hidden,,start page
+ui,All,,start page
+ui,Front,,start page
+ui,Side,,start page
+ui,Rear,,start page
+ui,Penetration,,start page
+ui,Time to kill,,start page
+ui,Main health,,start page
+ui,Heavy · AV{n},,start page
+ui,{n} s,,start page
+ui,{n} shots · via Butt (downs),,start page
+ui,Damageable zones,,start page
+ui,hitzones this weapon hurts,,start page
+ui,Fatal parts,,start page
+ui,besides Main,,start page
+ui,Shots fired,,start page
+ui,Reset,,start page
+ui,Click a hitzone to fire one shot of the selected weapon.,,start page
+ui,Load .glb,,start page
+ui,Edit hitzones,,start page
+ui,Save mapping,,start page
+ui,Reset camera,,start page
+ui,Original materials,,start page
+ui,{n} meshes · {n} linked to hitzones,,start page
+ui,Colours follow the impact angle from your camera,,start page
+ui,Direct {n}–{n}°:,,start page
+ui,AP {n},,start page
+ui,· Slight {n}–{n}°:,,start page
+ui,· Large {n}–{n}°:,,start page
+ui,· Extreme {n}–{n}°:,,start page
+ui,No {n}D model for this enemy yet,,start page
+ui,Use the,,start page
+ui,view instead. Enemies with a,,start page
+ui,{n}D,,start page
+ui,tag in the list have a model.,,start page
+ui,Drop a,,start page
+ui,.glb,,start page
+ui,models/,,start page
+ui,named after the enemy id (,,start page
+ui,".glb), or load one with the button above.",,start page
+ui,"In Filediver, look in archive:",,start page
+ui,Then use,,start page
+ui,to click each mesh and pick which wiki part it is.,,start page
+ui,AV{n},,start page
+ui,{n} HP,,start page
+ui,☠ fatal,,start page
+ui,no dmg,,start page
+ui,Arms & weapons,,start page
+ui,Rear & weak spots,,start page
+ui,🛡 Torso Armor,,start page
+ui,Main HP,,start page
+ui,dmg/shot,,start page
+ui,hard to reach,,start page
+ui,☠ downs,,start page
+ui,🛡 Front Leg Armor,,start page
+ui,Penetrates · {n}%,,start page
+ui,Reduced · {n}%,,start page
+ui,Ricochet · {n},,start page
+ui,Immune,,start page
+ui,Tile size ≈ part health · ☠ = fatal when destroyed,,start page
+ui,Hitzones,,start page
+ui,Best weapons vs target,,start page
+ui,Real life case,,start page
+ui,Hitzone,,start page
+ui,Health,,start page
+ui,Durable,,start page
+ui,To main,,start page
+ui,Fatal,,start page
+ui,ExDR,,start page
+ui,Result,,start page
+ui,Dmg/shot,,start page
+ui,Main/shot,,start page
+ui,Break,,start page
+ui,Shots,,start page
+ui,TTK,,start page
+ui,Yes,,start page
+ui,+of,,start page
+ui,No,,start page
+ui,Downs,,start page
+ui,"One-shot kills come first, sorted by damage (highest first); everything else is ranked by time to kill on its best hitzone in the current view. Time comes from RPM with the first shot at {n} s; reloads are not included (* = needs more than one magazine). Weapons without an RPM are ranked by shot count after timed kills.",,start page
+ui,"You won't always hit the weak spot. For each weapon this takes every reachable hitzone in the current view that can kill, then uses the midpoint between the fastest and the slowest time to kill. Weapons are ranked by that midpoint.",,start page
+ui,Weapon,,start page
+ui,Primary · Assault Rifle,,start page
+ui,Damage,,start page
+ui,RPM,,start page
+ui,Mag,,start page
+ui,AP by impact angle,,start page
+ui,Direct,,start page
+ui,Slight,,start page
+ui,Large,,start page
+ui,Extreme,,start page
+ui,"Armor this shot defeats at direct (green = full, yellow-green = {n}%, red = ricochet). Body map and tables use this angle; the {n}D view uses the real angle from your camera.",,start page
+ui,Range,,start page
+ui,{n} m,,start page
+ui,Projectile damage at {n} m:,,start page
+ui,(drag falloff),,start page
+ui,Enemy and weapon data from the,,start page
+ui,Helldivers {n} Wiki,,start page
+ui,"and its contributors, used under",,start page
+ui,CC BY-NC-SA {n},,start page
+ui,"; values were reformatted for this calculator, and enemy icons were downscaled to thumbnails. Faction emblems traced by Dogo{n} Game archive IDs from the HD{n} modding community's ID sheet.",,start page
+ui,"Simplified damage model (AP vs AV, durable mix, % to main, explosions); expect a few percent error. Fan project, non-commercial, not affiliated with Arrowhead Game Studios or Sony Interactive Entertainment. Helldivers is a trademark of Sony Interactive Entertainment.",,start page
+ui,Back to the start page,,start page (title)
+ui,Early version: data and features may change,,start page (title)
+ui,Copy a link to this exact setup,,start page (title)
+ui,Search all enemies…,,start page (placeholder)
+ui,Switch between the {n}D model and the flat body map,,start page (title)
+ui,Click hitzones to shoot them one at a time,,start page (title)
+ui,"Inner and flesh parts (Inner Flesh, Leg Flesh, Internals) sit behind armor, and undersides are hard to reach. They're left out of time to kill and the rankings; toggle to include them.",,start page (title)
+ui,Filter hitzones by the view they're visible from,,start page (title)
+ui,How hitzones are coloured,,start page (title)
+ui,Load a .glb model for this enemy,,start page (title)
+ui,Click meshes and assign them to wiki hitzones,,start page (title)
+ui,Show the model's own materials instead of hitzone colours,,start page (title)
+ui,Destroying this kills,,start page (title)
+ui,{n}/{n} intact · {n} HP left,,start page (title)
+ui,{n} HP left,,start page (title)
+ui,Behind armor: break the armor first,,start page (title)
+ui,uses Main health,,start page (title)
+ui,Destroying this downs the enemy,,start page (title)
+ui,Heavy,,start page (title)
+ui,Excess damage overflows to Main,,start page (title)
+ui,Very Light,,start page (title)
+ui,Light,,start page (title)
+ui,More shots than one magazine,,start page (title)
+ui,Unarmored,,start page (title)
+ui,Search all weapons…,,start page (placeholder)
+ui,Direct ({n}–{n}°),,start page (title)
+ui,Slight angle ({n}–{n}°),,start page (title)
+ui,Large angle ({n}–{n}°),,start page (title)
+ui,Extreme angle ({n}–{n}°),,start page (title)
+ui,AV{n} Unarmored: {n}%,,start page (title)
+ui,AV{n} Very Light: {n}%,,start page (title)
+ui,AV{n} Light: {n}%,,start page (title)
+ui,AV{n} Medium: ricochet,,start page (title)
+ui,AV{n} Heavy: ricochet,,start page (title)
+ui,AV{n} Tank I: ricochet,,start page (title)
+ui,AV{n} Tank II: ricochet,,start page (title)
+ui,AV{n} Tank III: ricochet,,start page (title)
+ui,AV{n} Tank IV: ricochet,,start page (title)
+ui,AV{n} Tank V: ricochet,,start page (title)
+ui,AV{n} Tank VI: ricochet,,start page (title)
+ui,Loading model…,,start page (fire off)
+ui,← Factions,,enemy page
+ui,← Categories,,enemy page
+ui,AP{n},,enemy page
+ui,AP{n}/{n},,enemy page
+ui,AP{n}/{n}/{n},,enemy page
+ui,Back to factions,,enemy page (title)
+ui,{n}D model available,,enemy page (title)
+ui,Back to categories,,enemy page (title)
+ui,Light · AV{n},,enemy page
+ui,{n} shots · via Head,,enemy page
+ui,"In Filediver, look in archives:",,enemy page
+ui,Missle Variant,,enemy page
+ui,Medium,,enemy page (title)
+ui,Language,,enemy page (aria-label)
+ui,English,,enemy page (title)
+ui,Unarmored · AV{n},,enemy page
+ui,{n} shots · via Right Arm,,enemy page
+ui,Armored Overseer + Staff,,enemy page
+ui,Overseer Only,,enemy page
+ui,🛡 Limb Armor,,enemy page
+ui,🛡 Chest Armor,,enemy page
+ui,({n} armor),,enemy page
+ui,Includes shots to destroy Chest Armor,,enemy page (title)
+ui,Includes shots to destroy Limb Armor ({n}),,enemy page (title)
+ui,{n} shots · via Heatsink (downs),,enemy page
+ui,"In Filediver, look in archives for the",,enemy page
+ui,Hulk,,enemy page
+ui,family:,,enemy page
+ui,None,,enemy page
+ui,Nothing in view dies to this,,enemy page
+ui,🛡 Front Armor,,enemy page
+ui,🛡 Side Armor,,enemy page
+ui,🛡 Rear Armor,,enemy page
+ui,Tank I,,enemy page (title)
+ui,Primary · Explosive,,explosive weapon
+ui,Radius,,explosive weapon
+ui,{n}/{n}m,,explosive weapon
+ui,Expl. dmg,,explosive weapon
+ui,Expl. AP,,explosive weapon
+ui,No drag: no falloff over range,,explosive weapon
+ui,Include explosion (direct hit),,explosive weapon
+ui,All {n} shrapnel hit the part,,explosive weapon
+ui,Also {n} shrapnel x{n} (AP/durable not listed; omitted),,explosive weapon
+ui,Includes shots to destroy Torso Armor ({n}),,explosive weapon (title)
+ui,Includes shots to destroy Front Leg Armor ({n}),,explosive weapon (title)
+ui,AV{n} Medium: {n}%,,explosive weapon (title)
+ui,AV{n} Heavy: {n}%,,explosive weapon (title)
+ui,Body map and time to kill: count every fragment on the struck part (an upper bound). The {n}D view traces each fragment instead.,,explosive weapon (title)
+ui,Support · Autocannon,,flak
+ui,Ammo / mode,,flak
+ui,burn · Burning on Main health,,flamethrower
+ui,Support · Flame,,flamethrower
+ui,No ballistics data: range has no effect,,flamethrower
+ui,Damage per flame particle tick as listed; ignites targets: burn {n} Fire/s (AP{n}) for {n}s.,,flamethrower
+ui,Category,,tab rank
+ui,Mode,,tab rank
+ui,Best hitzone,,tab rank
+ui,{n} shot,,tab rank
+ui,One shot,,tab rank
+ui,{n} shots,,tab rank
+ui,{n} s*,,tab rank
+ui,Fastest,,tab real
+ui,Slowest,,tab real
+ui,Real life,,tab real
+ui,~{n} shots,,tab real
+ui,no kill,,time-to-kill colours
+ui,{n} shots +reload,,time-to-kill colours
+ui,Time to kill: instant,,time-to-kill colours
+ui,{n} s+,,time-to-kill colours
+ui,"From RPM; first shot at {n} s, reloads not included",,time-to-kill colours
+ui,Can't kill through this zone,,time-to-kill colours
+ui,Elapsed,,body map fire
+ui,"#{n} Butt: {n} dmg, {n} to Main — destroyed",,body map fire
+ui,"#{n} Butt: {n} dmg, {n} to Main · no stagger ({n} < {n})",,body map fire
+ui,Downed,,body map fire
+ui,Butt destroyed · {n} shots,,body map fire
+ui,Fire again,,body map fire
+ui,Covered parts: exposed,,covered parts
+ui,Very Light · AV{n},,covered parts
+ui,Torso is under Torso Armor — break it first,,covered parts
+ui,No archive ID known for this enemy yet. Search for it in Filediver by name.,,covered parts
+ui,armor off,,covered parts
+ui,{n} dmg · via Head,,no model
+ui,New Variant?,,no model
+faction,Terminids,,faction picker
+faction,Automatons,,faction picker
+faction,Illuminate,,faction picker
+category,Primary,,weapon categories
+category,Secondary,,weapon categories
+category,Throwable,,weapon categories
+category,Support,,weapon categories
+category,Eagle,,weapon categories
+category,Orbital,,weapon categories
+category,Sentry,,weapon categories
+category,Emplacement,,weapon categories
+weapon type,Assault Rifle,,weapon card
+weapon type,Marksman Rifle,,weapon card
+weapon type,Sniper Rifle,,weapon card
+weapon type,Energy-Based,,weapon card
+weapon type,Submachine Gun,,weapon card
+weapon type,Shotgun,,weapon card
+weapon type,Explosive,,weapon card
+weapon type,Special,,weapon card
+weapon type,Pistol,,weapon card
+weapon type,Melee,,weapon card
+weapon type,Standard,,weapon card
+weapon type,Machine Gun,,weapon card
+weapon type,Rifle,,weapon card
+weapon type,Launcher,,weapon card
+weapon type,Energy,,weapon card
+weapon type,Autocannon,,weapon card
+weapon type,Flame,,weapon card
+enemy,Scavenger,,enemy list
+enemy,Pouncer,,enemy list
+enemy,Caustic Spitter,,enemy list
+enemy,Spore Burst Scavenger,,enemy list
+enemy,Noxious Scavenger,,enemy list
+enemy,Shrieker,,enemy list
+enemy,Hunter,,enemy list
+enemy,Predator Hunter,,enemy list
+enemy,Spore Burst Hunter,,enemy list
+enemy,Warrior,,enemy list
+enemy,Alpha Warrior,,enemy list
+enemy,Spore Burst Warrior,,enemy list
+enemy,Rupture Warrior,,enemy list
+enemy,Caustic Warrior,,enemy list
+enemy,Hive Guard,,enemy list
+enemy,Brood Commander,,enemy list
+enemy,Alpha Commander,,enemy list
+enemy,Stalker,,enemy list
+enemy,Predator Stalker,,enemy list
+enemy,Nursing Spewer,,enemy list
+enemy,Noxious Spewer,,enemy list
+enemy,Caustic Spewer,,enemy list
+enemy,Rupture Spewer,,enemy list
+enemy,Charger,,enemy list
+enemy,Charger Behemoth,,enemy list
+enemy,Rupture Charger,,enemy list
+enemy,Caustic Charger,,enemy list
+enemy,Impaler,,enemy list
+enemy,Bile Titan,,enemy list
+enemy,Spore Burst Bile Titan,,enemy list
+enemy,Dragonroach,,enemy list
+enemy,Hive Lord,,enemy list
+enemy,Trooper,,enemy list
+enemy,Commissar,,enemy list
+enemy,Marauder,,enemy list
+enemy,Brawler,,enemy list
+enemy,MG Raider,,enemy list
+enemy,Rocket Raider,,enemy list
+enemy,Assault Raider,,enemy list
+enemy,Jet Brigade Commissar,,enemy list
+enemy,Jet Brigade MG Raider,,enemy list
+enemy,Jet Brigade Trooper,,enemy list
+enemy,Incendiary Rocket Raider,,enemy list
+enemy,Pyro Trooper,,enemy list
+enemy,Devastator,,enemy list
+enemy,Heavy Devastator,,enemy list
+enemy,Rocket Devastator,,enemy list
+enemy,Jet Brigade Devastator,,enemy list
+enemy,Conflagration Devastator,,enemy list
+enemy,Incendiary MG Devastator,,enemy list
+enemy,Berserker,,enemy list
+enemy,Hulk Bruiser,,enemy list
+enemy,Hulk Scorcher,,enemy list
+enemy,Hulk Obliterator,,enemy list
+enemy,Hulk Firebomber,,enemy list
+enemy,Jet Brigade Hulk Bruiser,,enemy list
+enemy,Jet Brigade Hulk Scorcher,,enemy list
+enemy,Scout Strider,,enemy list
+enemy,Scout Strider Pilot,,enemy list
+enemy,Reinforced Scout Strider,,enemy list
+enemy,Annihilator Tank,,enemy list
+enemy,Shredder Tank,,enemy list
+enemy,Barrager Tank,,enemy list
+enemy,Cannon Turret,,enemy list
+enemy,Bunker Turret,,enemy list
+enemy,Mortar Emplacement,,enemy list
+enemy,Anti-Air Emplacement,,enemy list
+enemy,MG Emplacement (Light Fusion Cycler),,enemy list
+enemy,MG Emplacement (Heavy Fusion Repeater),,enemy list
+enemy,Automaton Fabricator,,enemy list
+enemy,Gunship,,enemy list
+enemy,Dropship,,enemy list
+enemy,War Strider,,enemy list
+enemy,Factory Strider,,enemy list
+enemy,Agitator,,enemy list
+enemy,Radical,,enemy list
+enemy,Vox Engine,,enemy list
+enemy,Light Voteless,,enemy list
+enemy,Medium Voteless,,enemy list
+enemy,Heavy Voteless,,enemy list
+enemy,Overseer,,enemy list
+enemy,Elevated Overseer,,enemy list
+enemy,Crescent Overseer,,enemy list
+enemy,Watcher,,enemy list
+enemy,Fleshmob,,enemy list
+enemy,Harvester,,enemy list
+enemy,Harvester (Armor Broken),,enemy list
+enemy,Stingray,,enemy list
+enemy,Leviathan,,enemy list
+enemy,Leviathan (Broken),,enemy list
+enemy,Gatekeeper,,enemy list
+enemy,Gatekeeper (Broken),,enemy list
+enemy,Obtruder,,enemy list
+enemy,Veracitor,,enemy list
+enemy,Crusher,,enemy list
+enemy,Wretch,,enemy list
+enemy,Warp Ship,,enemy list
+enemy,Illuminate Overship,,enemy list
+enemy,Gazer,,enemy list
+enemy,Gazer Spire,,enemy list
+enemy,Lightning Spire,,enemy list
+enemy,Warp Gateway,,enemy list
+enemy,Cognitive Disruptor,,enemy list
+part,Main,,hitzones
+part,Head,,hitzones
+part,Limbs,,hitzones
+part,Wings,,hitzones
+part,Claws,,hitzones
+part,Legs,,hitzones
+part,Frontal Tarsal Plate Armor,,hitzones
+part,Front Legs,,hitzones
+part,Rear Legs,,hitzones
+part,Body Armor,,hitzones
+part,Underbelly,,hitzones
+part,Left Legs,,hitzones
+part,Right Legs,,hitzones
+part,Mouth,,hitzones
+part,Spinal Plates,,hitzones
+part,Butt,,hitzones
+part,Torso Armor,,hitzones
+part,Inner Flesh,,hitzones
+part,Underside,,hitzones
+part,Rear Armor Plates,,hitzones
+part,Front Leg Armor,,hitzones
+part,Rear Leg Armor,,hitzones
+part,Leg Flesh,,hitzones
+part,Spore Flesh,,hitzones
+part,Tentacle Armor,,hitzones
+part,Tentacle Flesh,,hitzones
+part,Crest Armor,,hitzones
+part,Leg Armor,,hitzones
+part,Butt Armor,,hitzones
+part,Upper Sac,,hitzones
+part,Lower Sac,,hitzones
+part,Front Left Leg Flesh,,hitzones
+part,Carapace,,hitzones
+part,Thorax Sac,,hitzones
+part,Abdomen Sac,,hitzones
+part,Thorax Innards,,hitzones
+part,Abdomen Innards,,hitzones
+part,Abdomen Armor,,hitzones
+part,Crown,,hitzones
+part,Jaws,,hitzones
+part,Mandibles,,hitzones
+part,Dorsal Plate Armor,,hitzones
+part,Sterna Plate Armor,,hitzones
+part,Lower Sterna Plate Armor,,hitzones
+part,Fins,,hitzones
+part,Torso,,hitzones
+part,Arms,,hitzones
+part,Left Arm,,hitzones
+part,Right Arm,,hitzones
+part,Leg,,hitzones
+part,Backpack Main,,hitzones
+part,Backpack,,hitzones
+part,Jetpack,,hitzones
+part,Fuel Tanks Main,,hitzones
+part,Fuel Tanks,,hitzones
+part,Shoulders,,hitzones
+part,Stomach,,hitzones
+part,Pelvis,,hitzones
+part,Shield,,hitzones
+part,Rockets,,hitzones
+part,Rocket Pods,,hitzones
+part,Chest,,hitzones
+part,Shoulder,,hitzones
+part,Arm,,hitzones
+part,Heatsink,,hitzones
+part,Pilot,,hitzones
+part,Front Plate,,hitzones
+part,HMG,,hitzones
+part,Turret System,,hitzones
+part,Waist,,hitzones
+part,Faceplate,,hitzones
+part,Rocket Rails,,hitzones
+part,Turret Main,,hitzones
+part,Turret Front,,hitzones
+part,Turret Heatsink,,hitzones
+part,Hull Main,,hitzones
+part,Hull Front,,hitzones
+part,Hull Sides,,hitzones
+part,Engine Bay,,hitzones
+part,Tracks,,hitzones
+part,Turret Front and Sides,,hitzones
+part,Hull Side,,hitzones
+part,Launch Tubes,,hitzones
+part,Fuselage,,hitzones
+part,Front Thrusters,,hitzones
+part,Rear Thrusters,,hitzones
+part,Thruster,,hitzones
+part,Eyes,,hitzones
+part,Fusion Cannons,,hitzones
+part,Grenade Launchers,,hitzones
+part,Crotch,,hitzones
+part,Hip Joints,,hitzones
+part,Greaves,,hitzones
+part,Stratagem Scrambler,,hitzones
+part,Fusion Gatling Guns,,hitzones
+part,Head Armor,,hitzones
+part,Head Body,,hitzones
+part,Neck Armor,,hitzones
+part,Neck,,hitzones
+part,Front Top Armor,,hitzones
+part,Front Engine Weakspot,,hitzones
+part,Front Armor,,hitzones
+part,Side Armor,,hitzones
+part,Rear Engine Armor,,hitzones
+part,Rear Engine Weakspot,,hitzones
+part,Rear Armor,,hitzones
+part,Knee Armor,,hitzones
+part,Leg Assembly,,hitzones
+part,Belly Panels,,hitzones
+part,Circuits Front,,hitzones
+part,Side Circuits,,hitzones
+part,Rear Circuits,,hitzones
+part,Helmet,,hitzones
+part,Pauldrons,,hitzones
+part,Upper Arms,,hitzones
+part,Forearms,,hitzones
+part,Pelvis and Left Leg,,hitzones
+part,Right Leg,,hitzones
+part,Torso Circuits,,hitzones
+part,Pauldron,,hitzones
+part,Sarcophagus,,hitzones
+part,Cannons,,hitzones
+part,Missile Launchers,,hitzones
+part,Miniguns,,hitzones
+part,Speakers,,hitzones
+part,Fog Lights,,hitzones
+part,Torso Flaps,,hitzones
+part,Vents,,hitzones
+part,Hatches,,hitzones
+part,Undercarriage,,hitzones
+part,Trackpod Latches,,hitzones
+part,Chest Armor,,hitzones
+part,Crotch Armor,,hitzones
+part,Limb Armor,,hitzones
+part,Body,,hitzones
+part,Eye,,hitzones
+part,Upper Fin,,hitzones
+part,Lower Fin,,hitzones
+part,Side Fins,,hitzones
+part,Head Chunks,,hitzones
+part,Stomach Chunks,,hitzones
+part,Shield Generators,,hitzones
+part,Chassis,,hitzones
+part,Carapace Weakspots,,hitzones
+part,Left Hip Joint,,hitzones
+part,Right & Middle Hip Joints,,hitzones
+part,Left Upper Thigh Armor,,hitzones
+part,Right & Middle Upper Thigh Armor,,hitzones
+part,Lower Thigh Armor,,hitzones
+part,Shin Armor,,hitzones
+part,Left Foot Armor,,hitzones
+part,Right & Middle Foot Armor,,hitzones
+part,Exposed Leg Internals,,hitzones
+part,Damaged Chassis,,hitzones
+part,Internals,,hitzones
+part,Right & Left Upper Leg Internals,,hitzones
+part,Middle Upper Leg Internals,,hitzones
+part,Lower Leg Internals,,hitzones
+part,Gun Ports,,hitzones
+part,Turrets,,hitzones
+part,Front Vertebra,,hitzones
+part,Front Fins,,hitzones
+part,Warp Disc,,hitzones
+part,Forward-Middle Vertebra,,hitzones
+part,Forward-Middle Fins,,hitzones
+part,Rearward-Middle Vertebra,,hitzones
+part,Rearward-Middle Fins,,hitzones
+part,Rear Vertebra,,hitzones
+part,Rear Fins,,hitzones
+part,Tail,,hitzones
+part,Damaged Rearward-Middle Vertebra,,hitzones
+part,Shield Generator,,hitzones
+part,Rear Weakspot,,hitzones
+part,Cockpit,,hitzones
+part,Cockpit Weakspot,,hitzones
+part,Shoulder Armor,,hitzones
+part,Arm Armor,,hitzones
+part,Guns,,hitzones
+part,Gun Weakspots,,hitzones
+part,Hips,,hitzones
+part,Arms (Broken Armor),,hitzones
+part,Legs (Broken Armor),,hitzones
+part,Vertical Fins,,hitzones
+part,Lateral Fins,,hitzones
+part,Lower Arms,,hitzones
+part,Arm Weakspots,,hitzones
+part,Rear Hip,,hitzones
+part,Upper Legs,,hitzones
+part,Lower Legs,,hitzones
+part,Rear Leg,,hitzones
+part,Beamer,,hitzones
+part,Frontal Fuselage,,hitzones
+part,Rear Fuselage,,hitzones
+part,Engine,,hitzones
+part,Stern,,hitzones
+part,Bow,,hitzones
+part,Port,,hitzones
+part,Sphere,,hitzones
+part,Base,,hitzones
+weapon,AR-23 Liberator,,weapon list
+weapon,AR-23P Liberator Penetrator,,weapon list
+weapon,AR-23C Liberator Concussive,,weapon list
+weapon,AR-23A Liberator Carbine,,weapon list
+weapon,AR-23L Liberator Legacy,,weapon list
+weapon,StA-52 Assault Rifle,,weapon list
+weapon,AR-32 Pacifier,,weapon list
+weapon,MA5C Assault Rifle,,weapon list
+weapon,AR-2 Coyote,,weapon list
+weapon,AR-59 Suppressor,,weapon list
+weapon,AR-61 Tenderizer,,weapon list
+weapon,BR-14 Adjudicator,,weapon list
+weapon,AR/GL-21 One-Two,,weapon list
+weapon,AR-11 Arbitrator,,weapon list
+weapon,R-63 Diligence,,weapon list
+weapon,R-63CS Diligence Counter Sniper,,weapon list
+weapon,R-2124 Constitution,,weapon list
+weapon,R-6 Deadeye,,weapon list
+weapon,R-2 Amendment,,weapon list
+weapon,R-72 Censor,,weapon list
+weapon,R-4 Hyena,,weapon list
+weapon,R-40 Sightliner,,weapon list
+weapon,R/40-K Hot-Shot Marksman Rifle,,weapon list
+weapon,MP-98 Knight,,weapon list
+weapon,SMG-37 Defender,,weapon list
+weapon,SMG-72 Pummeler,,weapon list
+weapon,SMG-32 Reprimand,,weapon list
+weapon,StA-11 SMG,,weapon list
+weapon,M7S SMG,,weapon list
+weapon,SMG/FLAM-34 Stoker,,weapon list
+weapon,SMG-203 Gallant,,weapon list
+weapon,SG-8 Punisher,,weapon list
+weapon,SG-225 Breaker,,weapon list
+weapon,SG-8S Slugger,,weapon list
+weapon,SG-225SP Breaker Spray&Pray,,weapon list
+weapon,SG-225IE Breaker Incendiary,,weapon list
+weapon,SG-451 Cookout,,weapon list
+weapon,SG-20 Halt,,weapon list
+weapon,DBS-2 Double Freedom,,weapon list
+weapon,M90A Shotgun,,weapon list
+weapon,SG-97 Sweeper,,weapon list
+weapon,R-36 Eruptor,,weapon list
+weapon,CB-9 Exploding Crossbow,,weapon list
+weapon,GL-15 Evictor,,weapon list
+weapon,LAS-5 Scythe,,weapon list
+weapon,PLAS-1 Scorcher,,weapon list
+weapon,LAS-16 Sickle,,weapon list
+weapon,SG-8P Punisher Plasma,,weapon list
+weapon,ARC-12 Blitzer,,weapon list
+weapon,PLAS-101 Purifier,,weapon list
+weapon,PLAS-39 Accelerator Rifle,,weapon list
+weapon,LAS-17 Double-Edge Sickle,,weapon list
+weapon,LAS-13 Trident,,weapon list
+weapon,LAS-12 Sai,,weapon list
+weapon,JAR-5 Dominator,,weapon list
+weapon,FLAM-66 Torcher,,weapon list
+weapon,VG-70 Variable,,weapon list
+weapon,P-2 Peacemaker,,weapon list
+weapon,P-19 Redeemer,,weapon list
+weapon,P-4 Senator,,weapon list
+weapon,P-113 Verdict,,weapon list
+weapon,P-92 Warrant,,weapon list
+weapon,M6C/SOCOM Pistol,,weapon list
+weapon,P-69 Veto,,weapon list
+weapon,P-44 Mist,,weapon list
+weapon,CQC-19 Stun Lance,,weapon list
+weapon,CQC-30 Stun Baton,,weapon list
+weapon,CQC-5 Combat Hatchet,,weapon list
+weapon,CQC-2 Saber,,weapon list
+weapon,CQC-42 Machete,,weapon list
+weapon,CQC-73 Entrenchment Tool,,weapon list
+weapon,LAS-7 Dagger,,weapon list
+weapon,GP-31 Grenade Pistol,,weapon list
+weapon,SG-22 Bushwhacker,,weapon list
+weapon,P-72 Crisper,,weapon list
+weapon,PLAS-15 Loyalist,,weapon list
+weapon,GP-20 Ultimatum,,weapon list
+weapon,LAS-58 Talon,,weapon list
+weapon,P-35 Re-Educator,,weapon list
+weapon,P-33 Missile Pistol,,weapon list
+weapon,P/40-K Bolt Pistol,,weapon list
+weapon,P-34 Breacher,,weapon list
+weapon,G-12 High Explosive,,weapon list
+weapon,G-6 Frag,,weapon list
+weapon,G-10 Incendiary,,weapon list
+weapon,G-7 Pineapple,,weapon list
+weapon,TED-63 Dynamite,,weapon list
+weapon,G-16 Impact,,weapon list
+weapon,G-123 Thermite,,weapon list
+weapon,G-13 Incendiary Impact,,weapon list
+weapon,K-2 Throwing Knife,,weapon list
+weapon,G-4 Gas,,weapon list
+weapon,G-50 Seeker,,weapon list
+weapon,G-142 Pyrotech,,weapon list
+weapon,G-31 Arc,,weapon list
+weapon,TM-1 Lure Mine,,weapon list
+weapon,G-48 Giga Grenade,,weapon list
+weapon,G/40-K Melta Mine,,weapon list
+weapon,G-8 Immolation,,weapon list
+weapon,G-60 Anti-Tank Seeker,,weapon list
+weapon,G-11 Caltrops,,weapon list
+weapon,MG-43 Machine Gun,,weapon list
+weapon,M-105 Stalwart,,weapon list
+weapon,MG-206 Heavy Machine Gun,,weapon list
+weapon,M-1000 Maxigun,,weapon list
+weapon,MGX-42 Bullet Storm,,weapon list
+weapon,APW-1 Anti-Materiel Rifle,,weapon list
+weapon,AMW-20 Apex,,weapon list
+weapon,RS-422 Railgun,,weapon list
+weapon,GR-8 Recoilless Rifle,,weapon list
+weapon,EAT-17 Expendable Anti-Tank,,weapon list
+weapon,EAT-700 Expendable Napalm,,weapon list
+weapon,EAT-411 Leveller,,weapon list
+weapon,LAS-99 Quasar Cannon,,weapon list
+weapon,FAF-14 Spear,,weapon list
+weapon,MLS-4X Commando,,weapon list
+weapon,RL-77 Airburst Rocket Launcher,,weapon list
+weapon,StA-X3 W.A.S.P. Launcher,,weapon list
+weapon,AC-8 Autocannon,,weapon list
+weapon,GL-21 Grenade Launcher,,weapon list
+weapon,GL-28 Belt-Fed Grenade Launcher,,weapon list
+weapon,GL-52 De-Escalator,,weapon list
+weapon,PLAS-45 Epoch,,weapon list
+weapon,S-11 Speargun,,weapon list
+weapon,SG-88 Break-Action Shotgun,,weapon list
+weapon,LAS-98 Laser Cannon,,weapon list
+weapon,LAS-44 Nova,,weapon list
+weapon,40-K Meltagun,,weapon list
+weapon,ARC-3 Arc Thrower,,weapon list
+weapon,FLAM-40 Flamethrower,,weapon list
+weapon,B/FLAM-80 Cremator,,weapon list
+weapon,TX-41 Sterilizer,,weapon list
+weapon,MS-11 Solo Silo,,weapon list
+weapon,B/MD C4 Pack,,weapon list
+weapon,Eagle 500kg Bomb,,weapon list
+weapon,Eagle Airstrike,,weapon list
+weapon,Eagle Cluster Bomb,,weapon list
+weapon,Eagle Strafing Run,,weapon list
+weapon,Eagle 110mm Rocket Pods,,weapon list
+weapon,Orbital Railcannon Strike,,weapon list
+weapon,Orbital Precision Strike,,weapon list
+weapon,Orbital 380mm HE Barrage,,weapon list
+weapon,Orbital Walking Barrage,,weapon list
+weapon,Orbital 120mm HE Barrage,,weapon list
+weapon,Orbital Gatling Barrage,,weapon list
+weapon,Orbital Airburst Strike,,weapon list
+weapon,Orbital Laser,,weapon list
+weapon,MG-43 Machine Gun Sentry,,weapon list
+weapon,G-16 Gatling Sentry,,weapon list
+weapon,AC-8 Autocannon Sentry,,weapon list
+weapon,MLS-4X Rocket Sentry,,weapon list
+weapon,M-12 Mortar Sentry,,weapon list
+weapon,LAS-98 Laser Sentry,,weapon list
+weapon,MG-101 HMG Emplacement,,weapon list
+weapon,AT-12 Anti-Tank Emplacement,,weapon list
+mode,8mm Rifle,,firing mode
+mode,40mm Grenade,,firing mode
+mode,4mm Rifle,,firing mode
+mode,10g Underbarrel Shotgun,,firing mode
+mode,12mm,,firing mode
+mode,Flamethrower,,firing mode
+mode,Flechette,,firing mode
+mode,Stun,,firing mode
+mode,Charged,,firing mode
+mode,Uncharged,,firing mode
+mode,LAS-16_P,,firing mode
+mode,LAS-17_P,,firing mode
+mode,LAS-17_P1,,firing mode
+mode,LAS-17_P2,,firing mode
+mode,Grenade,,firing mode
+mode,Bomblets,,firing mode
+mode,Explosion,,firing mode
+mode,Shrapnel,,firing mode
+mode,Minimum charge (0.45s),,firing mode
+mode,"Max charge (Unsafe, 3.0s)",,firing mode
+mode,HEAT,,firing mode
+mode,HE,,firing mode
+mode,Rocket,,firing mode
+mode,Napalm bomblet,,firing mode
+mode,Rocket (direct),,firing mode
+mode,Bomblet,,firing mode
+mode,Burst,,firing mode
+mode,Artillery (carrier),,firing mode
+mode,APHET,,firing mode
+mode,Flak,,firing mode
+mode,Grenade impact,,firing mode
+mode,Arc discharge,,firing mode
+mode,Full charge (2.6s),,firing mode
+mode,Beam,,firing mode
+mode,Spray,,firing mode
+mode,Impact explosion,,firing mode
+mode,Main explosion,,firing mode
+mode,Detonation,,firing mode
+mode,Bomb,,firing mode
+mode,Bomb (x6),,firing mode
+mode,Bomb casing,,firing mode
+mode,Cannon round,,firing mode
+mode,Shell,,firing mode
+mode,Round,,firing mode
+mode,APHE 75mm,,firing mode
