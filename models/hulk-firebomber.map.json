@@ -1,0 +1,22 @@
+{
+  "enemy": "hulk-firebomber",
+  "meshes": {
+    "arm_right": "Arms (2)",
+    "leg_right": "Legs (2)",
+    "chest": "Main",
+    "back": "Heatsink",
+    "arm_left": "Arms (2)",
+    "leg_left": "Legs (2)"
+  },
+  "hidden": [
+    "chest_damaged",
+    "shoulder_left_damaged",
+    "back_damaged",
+    "arm_right_damaged",
+    "arm_left_damaged",
+    "leg_right_damaged",
+    "leg_left_damaged",
+    "shoulder_right_damaged",
+    "torso_damaged"
+  ]
+}

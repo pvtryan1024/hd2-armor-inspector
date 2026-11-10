@@ -50,6 +50,14 @@ const DEVASTATOR = [
   [/^shoulder_(left|right)$/, 'Shoulders (2)'],
 ];
 
+// Hulk body (internally "lieutenant"); the eye (Head) has no mesh of its own, assign it in the editor
+const HULK = [
+  [/^arm_(left|right)$/, 'Arms (2)'],
+  [/^leg_(left|right)$/, 'Legs (2)'],
+  [/^back$/, 'Heatsink'],
+  [/^(chest|torso)$/, 'Main'],
+];
+
 const SOURCES = {
   charger: { src: 'content/fac_bugs/cha_charger/cha_charger.unit.glb', rules: CHARGER },
   'charger-behemoth': { src: 'content/fac_bugs/cha_charger_bull/cha_charger_bull.unit.glb', rules: CHARGER },
@@ -88,10 +96,14 @@ const SOURCES = {
     src: 'content/fac_cyborgs/cha_berserker/cha_berserker.unit.glb',
     rules: [[/^head(_whole)?$/, 'Head'], [/^torso(_whole)?$/, 'Chest'], [/^hip(_whole)?$/, 'Pelvis'], [/^leg_(left|right)(_whole)?$/, 'Leg (2)']],
   },
-  commissar: {
-    src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb',
-    rules: [[/^arm_(left|right)$/, 'Arms (2)'], [/^leg_(left|right)$/, 'Legs (2)'], [/^(chest|torso|back)$/, 'Torso']],
-  },
+  // 'lieutenant' is the game's internal name for the Hulk; the Commissar is the conscript commander
+  commissar: { src: 'content/fac_cyborgs/cha_conscript_commander/cha_conscript_commander.unit.glb', rules: [[/^head$/, 'Head'], [/^body$/, 'Torso']] },
+  'hulk-bruiser': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
+  'hulk-obliterator': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
+  'hulk-firebomber': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
+  'hulk-scorcher': { src: 'content/fac_cyborgs/cha_lieutenant_assault/cha_lieutenant_assault.unit.glb', rules: HULK },
+  'jet-brigade-hulk-bruiser': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
+  'jet-brigade-hulk-scorcher': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
   agitator: {
     src: 'content/fac_cyborgs/cha_cyborg_elite/cha_cyborg_elite_rusher.unit.glb',
     rules: [
