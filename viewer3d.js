@@ -298,8 +298,16 @@ function swapBroken() {
     const dead = !!(lastDetail?.fire && pi >= 0 && lastDetail.gone[pi]);
     const live = current.meshes.filter((m) => (rule.replaces || []).includes(primOf(m.key)) && m.mesh.visible && !m.mesh.userData.remains);
     const on = dead && live.length > 0;
-    // shown as remains of the dead part (grey, no hitbox), like torso_gibs for the Upper Sac
-    for (const m of current.meshes) if (primOf(m.key.replace(/#\d+$/, '')) === key) { m.mesh.visible = on; m.mesh.userData.remains = on; }
+    // mapped to another live hitzone it is that hitzone, revealed (the burst Lower Sac is the Underside, which
+    // feeds Main); otherwise it shows as remains of the dead part (grey, no hitbox)
+    for (const m of current.meshes) {
+      if (primOf(m.key.replace(/#\d+$/, '')) !== key) continue;
+      const mi = partIndexFor(current, m.key);
+      const live = mi >= 0 && mi !== pi && !lastDetail.gone[mi];
+      m.mesh.visible = on;
+      m.mesh.userData.remains = on && !live;
+      m.mesh.userData.revealed = on && live;
+    }
     if (on) live.forEach((m) => { m.mesh.visible = false; });
   }
 }
