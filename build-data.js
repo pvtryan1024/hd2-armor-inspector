@@ -66,6 +66,17 @@ enemies.forEach((e) => {
       if (cover) p.coveredBy = cover;
     }
   }
+  // Everyone else: "Leg Flesh" sits under "Leg Armor", "Tentacle Flesh" under "Tentacle Armor";
+  // Inner Flesh / Internals sit under the torso, back or carapace plate
+  if (!/broken/i.test(e.name)) for (const p of e.parts) {
+    if (p.coveredBy || !/\b(inner|internals?|flesh)\b/i.test(p.name)) continue;
+    const armor = e.parts.filter((q) => /\barmou?r\b|\bplates?\b|carapace/i.test(q.name) && !/weak ?spot/i.test(q.name));
+    const words = p.name.toLowerCase().match(/[a-z]+/g).filter((w) => !/^(inner|internals?|exposed|flesh|front|rear|left|right)$/.test(w));
+    let cover = words.length ? armor.find((q) => words.every((w) => q.name.toLowerCase().includes(w))) : null;
+    if (!cover && /\b(inner|internals?)\b/i.test(p.name) && !words.length)
+      cover = ['torso', 'dorsal', 'carapace'].map((k) => armor.find((q) => q.name.toLowerCase().includes(k))).find(Boolean);
+    if (cover) p.coveredBy = cover.name;
+  }
   // "Inner Flesh", "Internals", "Leg Flesh"…: behind armor until it breaks
   if (!/broken/i.test(e.name)) e.parts.forEach((p) => { if (p.coveredBy) return; // its plate gets stripped first instead
     if (/\b(inner|internals?|flesh)\b/i.test(p.name)) p.hidden = true;
