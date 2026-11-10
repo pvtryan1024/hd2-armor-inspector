@@ -45,6 +45,7 @@
     mode: 0,
     explosion: true,
     allPellets: true,
+    allShrap: false, // body map: shrapnel fragments all on the struck part (off: the 3D view traces them)
     dist: DEFAULT_RANGE, // range to target in metres (drag falloff)
     hit: null, // last shot placed on the 3D model: { idx, deg, parts: { partIdx: distance from impact } }
     band: 0, // impact angle band for the body map / tables (3D uses the real angle)
@@ -160,7 +161,7 @@
 
     let partEx = 0, mainEx = 0, exMult = null;
     // an explosive round that ricochets doesn't go off (explosion-only weapons always do)
-    const ricochet = !mode.explosionOnly && !opts.noProj && (mode.damage || 0) > 0 && !m;
+    const ricochet = !mode.explosionOnly && !mode.proximity && !opts.noProj && (mode.damage || 0) > 0 && !m;
     const ex = opts.explosion && !ricochet ? mode.explosion : null;
     if (ex && (ex.damage || ex.durable)) {
       const blast = blastAt(ex, opts.exDist || 0);
@@ -172,8 +173,17 @@
       const main = mainPart(enemy);
       if (!isMainRow(part) && (!main || blast.ap >= main.av)) mainEx = Math.floor(e * exdr);
     }
-    return { proj, partEx, mainEx, pen: opts.noProj ? null : m, exPen: exMult, total: proj + partEx, ap, range: rangeMult(mode, opts.dist), ricochet };
+    let shrap = 0;
+    if (mode.shrapnel && opts.allShrap && !opts.noProj && !opts.noShrap && !ricochet && opts.explosion !== false) {
+      const f = shotDamage(shrapnelMode(mode), part, enemy, { ...opts, noShrap: true, explosion: false });
+      shrap = f.proj * mode.shrapnel.count;
+    }
+    return { proj: proj + shrap, partEx, mainEx, pen: opts.noProj ? null : m, exPen: exMult, total: proj + shrap + partEx, ap, range: rangeMult(mode, opts.dist), ricochet, shrap };
   }
+
+  /** One shrapnel fragment of a mode, as a projectile of its own. */
+  const shrapnelMode = (mode) => ({ name: 'shrapnel', damage: mode.shrapnel.damage, durable: mode.shrapnel.durable, ap: mode.shrapnel.apAngles[0],
+    apAngles: mode.shrapnel.apAngles, pellets: 1, explosion: null, ballistics: mode.shrapnel.ballistics });
 
   /* Stateful simulation: shared by the shots-to-kill numbers and fire mode.
    * Parts with a count, e.g. "Claws (2)", track each instance; shots hit the first one still standing. */
@@ -430,7 +440,7 @@
   const weaponById = (id) => DATA.weapons.find((w) => w.id === id);
   const enemy = () => enemyById(state.enemyId);
   const weapon = () => weaponById(state.weaponId);
-  const opts = () => ({ explosion: state.explosion, allPellets: state.allPellets, band: state.band, dist: state.dist, exposeAll: state.showInner });
+  const opts = () => ({ explosion: state.explosion, allPellets: state.allPellets, allShrap: state.allShrap, band: state.band, dist: state.dist, exposeAll: state.showInner });
 
   /* ---------------- rendering: lists ---------------- */
 
@@ -577,6 +587,7 @@
           <select id="modeSel">${w.modes.map((mm, i) => `<option value="${i}" ${i === state.mode ? 'selected' : ''}>${esc(mm.name || 'Mode ' + (i + 1))}</option>`).join('')}</select></label>` : ''}
         ${ex ? `<label class="opt">Include explosion (direct hit) <input type="checkbox" id="exChk" ${state.explosion ? 'checked' : ''}></label>` : ''}
         ${pellets > 1 ? `<label class="opt">All ${pellets} pellets hit <input type="checkbox" id="pelChk" ${state.allPellets ? 'checked' : ''}></label>` : ''}
+        ${m.shrapnel ? `<label class="opt" title="Body map and time to kill: count every fragment on the struck part (an upper bound). The 3D view traces each fragment instead.">All ${m.shrapnel.count} shrapnel hit the part <input type="checkbox" id="shrapChk" ${state.allShrap ? 'checked' : ''}></label>` : ''}
       </div>
       ${m.note || w.note ? `<p class="note">${esc(m.note || w.note)}</p>` : ''}
     `;
@@ -961,7 +972,7 @@
     const mode = w.modes[state.mode] || w.modes[0];
     const band = bandOf(hit.deg);
     const o = { ...opts(), band };
-    const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0 }) }];
+    const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0, noShrap: true }) }];
     // 3D shots: only an inner hitbox the ray actually passes through counts (hit.thru from the viewer)
     const thru = overpen(mode, e, hit.idx, rows[0].s, o, 'thru' in hit ? hit.thru?.idx ?? null : undefined);
     const radii = rows[0].s.ricochet ? null : blastRadii(mode); // a ricochet means no blast at all
@@ -980,7 +991,20 @@
         else r.s = { ...r.s, mainEx: 0 };
       });
     }
-    return { mode, band, rows, radii, thru };
+    // shrapnel: each fragment ray hits one piece at its own angle; fragments on the same piece add up
+    let shrap = null;
+    if (mode.shrapnel && state.explosion && !rows[0].s.ricochet && hit.shrapHits) {
+      const fm = shrapnelMode(mode), by = new Map();
+      for (const f of hit.shrapHits) {
+        const sf = shotDamage(fm, e.parts[f.idx], e, { ...o, band: bandOf(f.deg), dist: f.d, explosion: false, noShrap: true });
+        const id = `${f.idx}:${f.k}`;
+        const acc = by.get(id) || { idx: f.idx, k: f.k, n: 0, s: { proj: 0, partEx: 0, mainEx: 0, total: 0 } };
+        acc.n++; acc.s.proj += sf.proj; acc.s.total += sf.total;
+        by.set(id, acc);
+      }
+      shrap = { count: mode.shrapnel.count, hit: hit.shrapHits.length, rows: [...by.values()] };
+    }
+    return { mode, band, rows, radii, thru, shrap };
   }
 
   /** "Torso Armor 2/2" for one piece of a counted part, the plain name otherwise. */
@@ -1012,6 +1036,14 @@
         const piece = k === 0 ? hit.k : r.k;
         const o = applyShot(state.sim, e, r.idx, r.s, k > 0, piece ?? undefined);
         if (o.broke) notes.push(`${pieceName(e.parts[r.idx], piece)} destroyed`);
+        if (k === 0 && res.shrap && !state.sim.dead) { // shrapnel fragments, each piece once with its total
+          for (const f of res.shrap.rows) {
+            if (state.sim.dead || !(f.s.total > 0)) continue;
+            const of = applyShot(state.sim, e, f.idx, f.s, true, f.k ?? undefined);
+            if (of.broke) notes.push(`${pieceName(e.parts[f.idx], f.k)} destroyed by shrapnel`);
+          }
+          notes.push(`shrapnel ${res.shrap.hit}/${res.shrap.count} hit`);
+        }
         if (k === 0 && res.thru && !state.sim.dead) { // over-penetration into the part behind
           const o2 = applyShot(state.sim, e, res.thru.idx, res.thru.s, true);
           notes.push(`through into ${e.parts[res.thru.idx].name} (AP ${res.thru.ap}): ${fmt(res.thru.s.total)} dmg${o2.broke ? ', destroyed' : ''}`);
@@ -1059,6 +1091,7 @@
         <dt>To Main</dt><dd>${fmt(main)}</dd>
       </dl>
       ${d.s.ricochet && res.mode.explosion && state.explosion ? '<div class="muted">Ricocheted: the round did not explode</div>' : ''}
+      ${res.shrap ? `<div class="sp-blast"><b>Shrapnel</b> ${res.shrap.hit} of ${res.shrap.count} fragments hit${res.shrap.rows.length ? '<ul>' + res.shrap.rows.map((r) => `<li><span>${esc(pieceName(e.parts[r.idx], r.k))} <i>×${r.n}</i></span><span>${r.s.total > 0 ? fmt(r.s.total) : '<span class="muted">0 · armor holds</span>'}</span></li>`).join('') + '</ul>' : ''}</div>` : ''}
       ${res.radii ? `<div class="sp-blast"><b>Blast</b> ${res.radii.inner}m inner / ${res.radii.outer}m outer
         ${blastRows.length ? '<ul>' + blastRows.map((r) => `<li><span>${esc(pieceName(e.parts[r.idx], r.k))} <i>${r.dist.toFixed(1)}m</i></span><span>${r.s.partEx > 0 ? fmt(r.s.partEx) : '<span class="muted" title="The blast AP does not beat this armor">0 · armor holds</span>'}</span></li>`).join('') + '</ul>' : '<div class="muted">No other hitzone reached by the blast</div>'}
         ${mainOnce ? `<div class="muted">+${fmt(mainOnce)} redirected to Main (once per blast)</div>` : ''}</div>` : ''}
@@ -1104,6 +1137,7 @@
     const exAp = state.explosion && m?.explosion ? m.explosion.ap ?? -1 : -1;
     const ap4 = m ? ANGLE_BANDS.map((_, b) => Math.max(m.explosionOnly ? -1 : apFor(m, b), exAp)) : null;
     window.dispatchEvent(new CustomEvent('hd2:update', { detail: {
+      shrapnel: m?.shrapnel && state.explosion ? { count: m.shrapnel.count, spread: m.shrapnel.spread, range: blastRadii(m)?.outer || 7 } : null,
       enemy: e, colors, gone, goneInst, hitHp, fire: state.fire, stageView: state.stageView,
       colorMode: state.color, ap4, avs: e.parts.map((p) => p.av), bands: ANGLE_BANDS,
       hit: state.hit, blast: state.hit?.ricochet ? null : blastRadii(m),
@@ -1278,6 +1312,7 @@
       if (t.id === 'modeSel') state.mode = +t.value;
       if (t.id === 'exChk') state.explosion = t.checked;
       if (t.id === 'pelChk') state.allPellets = t.checked;
+      if (t.id === 'shrapChk') state.allShrap = t.checked;
       swapWeapon();
       render();
     });

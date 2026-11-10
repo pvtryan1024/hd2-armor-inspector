@@ -482,6 +482,44 @@ DODECA.forEach((v) => v.normalize());
 const blastRay = new THREE.Raycaster();
 blastRay.firstHitOnly = true;
 
+/** Evenly spread directions (Fibonacci sphere). */
+function fibDirs(n) {
+  const out = [], ga = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < n; i++) {
+    const y = 1 - (2 * (i + 0.5)) / n, r = Math.sqrt(1 - y * y);
+    out.push(new THREE.Vector3(Math.cos(i * ga) * r, y, Math.sin(i * ga) * r));
+  }
+  return out;
+}
+/** Shrapnel: one ray per fragment from the burst, each hitting the first piece in its way at its own angle.
+ *  "surface" spread (Eruptor): a half sphere pointing into the surface that was hit; "sphere" (flak): all round. */
+function shrapnelHits(h, spec) {
+  if (!spec?.count) return null;
+  const into = h.normal.clone().negate();
+  let dirs;
+  if (spec.spread === 'surface') {
+    dirs = fibDirs(spec.count * 2).filter((d) => d.dot(into) > 0).slice(0, spec.count);
+  } else dirs = fibDirs(spec.count);
+  const targets = current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains);
+  const origin = h.point.clone().addScaledVector(h.normal, 0.02);
+  const out = [];
+  blastRay.far = spec.range || 7;
+  for (const dir of dirs) {
+    blastRay.set(origin, dir);
+    const first = blastRay.intersectObjects(targets, false)[0];
+    if (!first) continue;
+    const idx = partIndexFor(current, first.object.userData.key);
+    if (idx < 0) continue;
+    let deg = 0;
+    if (first.face) {
+      const fnrm = first.face.normal.clone().applyMatrix3(nm.getNormalMatrix(first.object.matrixWorld)).normalize();
+      deg = THREE.MathUtils.radToDeg(Math.acos(Math.min(1, Math.abs(fnrm.dot(dir)))));
+    }
+    out.push({ idx, k: instanceFor(current, first.object.userData.key, idx), d: first.distance, deg });
+  }
+  return out;
+}
+
 function blastHits(h, outer) {
   const out = new Map(); // "part:piece" -> { idx, k, d }
   if (!(outer > 0)) return [];
@@ -576,7 +614,7 @@ function shoot(h) {
   const blast = blastHits(h, lastDetail?.blast?.outer);
   const parts = {};
   for (const b of blast) if (parts[b.idx] == null || b.d < parts[b.idx]) parts[b.idx] = b.d;
-  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, thru: innerAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), thru: innerAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
   if (said) status(said);
 }
 

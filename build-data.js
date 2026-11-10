@@ -277,6 +277,21 @@ if (fs.existsSync(forcesPath)) {
   });
 }
 
+// Shrapnel (wiki: AC-8 P2, shared by the Autocannon's flak shell and the Eruptor's explosion): 30 fragments
+// of 110 / 35 durable, AP 3/3/2/0 by angle. The flak shell itself is 150/150 AP2 with a proximity fuse
+// (it bursts even when the shell would glance off); the Eruptor's fragments fly "in a 180-ish arc in the
+// direction of the surface hit" (patch 1.002.201), the flak's in every direction.
+const AC8_P2 = { count: 30, damage: 110, durable: 35, apAngles: [3, 3, 2, 0], ballistics: { velocity: 30, caliber: 10, mass: 100, drag: 0.4, penSlowdown: 0.25 } };
+const SHRAPNEL = [
+  { id: 'ac-8-autocannon', mode: 'Flak', set: { damage: 150, durable: 150, ap: 2, apAngles: [2, 2, 2, 0], pellets: 1, proximity: true }, shrapnel: { ...AC8_P2, spread: 'sphere' } },
+  { id: 'r-36-eruptor', mode: 'Standard', shrapnel: { ...AC8_P2, spread: 'surface' } },
+];
+for (const r of SHRAPNEL) {
+  const m = weapons.find((w) => w.id === r.id)?.modes.find((x) => x.name === r.mode);
+  if (!m) { console.warn(`shrapnel: ${r.id} / ${r.mode} not found`); continue; }
+  Object.assign(m, r.set || {}, { shrapnel: r.shrapnel });
+}
+
 // Display names: drop the "A/" (sentry) and "E/" (emplacement) prefixes; ids stay the same so links keep working
 weapons.forEach((w) => {
   if (['Sentry', 'Emplacement'].includes(w.category)) w.name = w.name.replace(/^[AE]\//, '');
