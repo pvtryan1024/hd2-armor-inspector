@@ -171,7 +171,7 @@ const SOURCES = {
   'jet-brigade-hulk-scorcher': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
   'light-voteless': { src: IL + 'cha_corrupted/cha_corrupted.unit.glb', rules: VOTELESS },
   'medium-voteless': { src: IL + 'cha_corrupted/cha_corrupted_v2.unit.glb', rules: VOTELESS },
-  'heavy-voteless': { src: IL + 'cha_bodyhorror_helmetguy/cha_bodyhorror_helmetguy.unit.glb', rules: [[/^helmet(_whole)?$/, 'Head'], [/^generic(_whole)?$/, 'Main'], ...VOTELESS] },
+  'heavy-voteless': { src: IL + 'cha_corrupted/cha_corrupted_v3.unit.glb', rules: VOTELESS },
   overseer: { src: IL + 'cha_illuminate_guy_staff/cha_illuminate_guy_staff.unit.glb', rules: OVERSEER },
   'elevated-overseer': { src: IL + 'cha_jet_champion/cha_jet_champion.unit.glb', rules: OVERSEER_1 },
   'crescent-overseer': { src: IL + 'cha_beamer_champion/cha_beamer_champion.unit.glb', rules: [[/^beamer_champion_pack/, 'Backpack'], ...OVERSEER_1] },
@@ -192,9 +192,10 @@ const SOURCES = {
     src: IL + 'cha_tripod/cha_tripod.unit.glb',
     rules: [[/^body_(left|right)(_whole)?$/, 'Carapace (2)'], [/^body_front(_whole)?$/, 'Chassis']],
   },
+  // the helmeted body-horror unit is the Crusher (the exomech isn't on the site's list)
   crusher: {
-    src: IL + 'cha_exomech_melee/cha_exomech_melee.unit.glb',
-    rules: [[/^cockpit(_whole)?$/, 'Helmet'], [/^pilot(_whole)?$/, 'Head'], [/^arm_(left|right)(_whole)?$/, 'Arms (2)'], [/^generic(_whole)?$/, 'Torso']],
+    src: IL + 'cha_bodyhorror_helmetguy/cha_bodyhorror_helmetguy.unit.glb',
+    rules: [[/^helmet(_whole)?$/, 'Helmet'], [/^head(_whole)?$/, 'Head'], [/^arm_(left|right)(_whole)?$/, 'Arms (2)'], [/^leg_(left|right)(_whole)?$/, 'Legs (2)'], [/^generic(_whole)?$/, 'Torso']],
   },
   wretch: {
     src: IL + 'cha_bodyhorror_bladed/cha_bodyhorror_bladed.unit.glb',
@@ -224,7 +225,8 @@ const SOURCES = {
 
 const DROP = /shadow|collision|culling|_lod[1-9]\b|LOD[1-9]$/i;          // not needed on the web
 const HIDE = /_(damaged|gibs?|destroyed|hurt|split|stump|damage|gore\w*)($|_)/i;  // alternate states of a piece ("torso_destroyed_lower" too)
-const clean = (name) => (name || '').replace(/^g_\S*\s+/, '').trim() || name;
+// "g_champion_LOD1 head" → "head", "corrupted_v3 arm_right_whole" → "arm_right_whole"
+const clean = (name) => (name || '').replace(/^(g_\S*|\S+_v\d+)\s+/, '').trim() || name;
 
 async function prep(id) {
   const cfg = SOURCES[id];
