@@ -950,7 +950,7 @@
     const e0 = enemy();
     if (state.fire && state.sim && e0) {
       const l = partLeft(hit.idx); // that piece is destroyed: no hitbox (the viewer normally shoots past it)
-      if (l && !l.main && (hit.k != null && l.gones ? l.gones[hit.k] : l.gone)) return;
+      if (l && !l.main && (hit.k != null && l.gones ? l.gones[hit.k] : l.gone)) return `Ignored: ${pieceName(e0.parts[hit.idx], hit.k)} is already destroyed`;
     }
     if (e0 && !hit.revealed && !isExposed(e0, hit.idx, state.fire ? state.sim : null, hit.k)) hit = { ...hit, covered: true };
     state.hit = hit;
@@ -960,7 +960,7 @@
         state.sim.log.length = Math.min(state.sim.log.length, 8);
       }
       render();
-      return;
+      return `Blocked: ${e0.parts[hit.idx].name} is behind armor`;
     }
     const res = resolveHit(hit);
     if (res && state.fire && state.sim && !state.sim.dead) {
@@ -974,8 +974,12 @@
       const d = res.rows[0];
       state.sim.log.unshift(`#${state.sim.shots} ${tag}${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : 'ricochet'}${res.rows.length > 1 ? ` + blast on ${res.rows.length - 1} part${res.rows.length > 2 ? 's' : ''}` : ''}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}`);
       state.sim.log.length = Math.min(state.sim.log.length, 8);
+      render();
+      return `Fired #${state.sim.shots}: ${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°`;
     }
     render();
+    if (state.fire && state.sim?.dead) return 'Enemy is already down. Press Reset or "Fire again" to keep shooting.';
+    return state.fire ? '' : 'Shot inspected. Turn on Fire mode to deal damage.';
   }
 
   function renderShotPanel(e) {

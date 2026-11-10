@@ -296,6 +296,9 @@ function pick(ev) {
   if (!current) return null;
   const r = renderer.domElement.getBoundingClientRect();
   ptr.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
+  // use where things are now, not where they were last drawn (the camera keeps gliding after a drag)
+  camera.updateMatrixWorld();
+  current.root.updateMatrixWorld();
   ray.setFromCamera(ptr, camera);
   const hits = ray.intersectObjects(current.meshes.map((m) => m.mesh).filter((m) => m.visible), false);
   // destroyed parts have no hitbox: the shot goes through to whatever is behind them
@@ -314,13 +317,17 @@ function pick(ev) {
 // Press on the model = aim a shot there (the camera holds still); press on empty space = rotate the camera.
 // Runs in the capture phase so it can switch OrbitControls off before they see the press.
 let press = null;
+let missAt = null;
 renderer.domElement.parentElement.addEventListener('pointerdown', (ev) => {
   if (ev.button !== 0 || ev.target !== renderer.domElement) return;
   const h = pick(ev);
   press = h ? { x: ev.clientX, y: ev.clientY, h } : null;
+  missAt = h ? null : [ev.clientX, ev.clientY];
   controls.enabled = !press;
 }, true);
 window.addEventListener('pointerup', (ev) => {
+  if (missAt && Math.hypot(ev.clientX - missAt[0], ev.clientY - missAt[1]) < 4 && lastDetail?.fire) status('Missed: no part of the model under the cursor');
+  missAt = null;
   if (!press) return;
   const p = press;
   press = null;
@@ -352,6 +359,7 @@ function shoot(h) {
   const i = partIndexFor(current, h.mesh.userData.key);
   if (i < 0) { status(`"${h.mesh.userData.key}" isn't linked to a hitzone yet (grey). Assign it in "Edit hitzones".`); return; }
   // distance from the impact to every hitzone, for blast damage (nearest point of each mesh's bounds)
+  // (the result of every press is shown in the status line, so a "lost" click always says why)
   const parts = {};
   for (const { key, mesh } of current.meshes) {
     if (!mesh.visible) continue;
@@ -360,7 +368,8 @@ function shoot(h) {
     const d = new THREE.Box3().setFromObject(mesh).distanceToPoint(h.point);
     if (parts[k] == null || d < parts[k]) parts[k] = d;
   }
-  HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  if (said) status(said);
 }
 
 /* ---------- shot visuals: ray, impact marker, explosion radii ---------- */
