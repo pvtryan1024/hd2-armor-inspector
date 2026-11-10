@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- HD2 Armor Inspector icon: yellow shield with a simplified skull (original design) -->
+  <path d="M256 22 L462 86 V244 C462 370 374 452 256 494 C138 452 50 370 50 244 V86 Z"
+        fill="#ffe710" stroke="#141414" stroke-width="22" stroke-linejoin="round"/>
+  <g fill="#141414">
+    <!-- cranium -->
+    <path d="M256 126 C334 126 380 180 380 248 C380 290 360 318 334 332 V362 H178 V332 C152 318 132 290 132 248 C132 180 178 126 256 126 Z"/>
+    <!-- jaw -->
+    <rect x="190" y="372" width="132" height="50" rx="10"/>
+  </g>
+  <g fill="#ffe710">
+    <!-- eyes and nose cut out in shield yellow -->
+    <path d="M176 246 C176 220 196 206 220 210 C242 214 250 234 246 254 C242 276 222 288 202 282 C186 277 176 264 176 246 Z"/>
+    <path d="M336 246 C336 220 316 206 292 210 C270 214 262 234 266 254 C270 276 290 288 310 282 C326 277 336 264 336 246 Z"/>
+    <path d="M256 290 L238 324 H274 Z"/>
+    <!-- teeth gaps -->
+    <rect x="222" y="372" width="10" height="50"/>
+    <rect x="251" y="372" width="10" height="50"/>
+    <rect x="280" y="372" width="10" height="50"/>
+  </g>
+</svg>

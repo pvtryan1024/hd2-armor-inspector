@@ -49,10 +49,7 @@ button { font: inherit; color: inherit; }
   backdrop-filter: blur(6px);
 }
 .brand { display: flex; align-items: center; gap: 10px; }
-.brand-mark {
-  width: 22px; height: 22px; background: var(--accent);
-  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
-}
+.brand-mark { width: 28px; height: 28px; }
 .brand-name { font: 600 20px/1 var(--font-head); letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
 .brand-name b { color: var(--text); font-weight: 700; }
 .topbar-meta { margin-left: auto; color: var(--dim); font: 12px var(--font-mono); }
@@ -491,3 +488,5 @@ body.editor .public-only { display: none !important; }
 .inner-tag { position: absolute; top: 6px; right: 44px; font: 700 10px var(--font-mono); padding: 1px 5px; border-radius: 3px; background: rgba(0,0,0,0.45); color: var(--muted); text-transform: uppercase; }
 .inner-tag.inline { position: static; margin-left: 6px; }
 #innerBtn.on { background: var(--accent); color: var(--accent-ink); }
+.brand-name, .alpha-note, .topbar-meta { white-space: nowrap; }
+@media (max-width: 1100px) { .alpha-note, .topbar-meta { display: none; } }
