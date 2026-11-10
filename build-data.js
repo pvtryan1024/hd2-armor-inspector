@@ -14,6 +14,17 @@ const enemies = [
   ...read('automatons.json'),
   ...read('illuminate.json'),
 ];
+// "Factory Strider (Armor Broken)" is the same strider with its plates off: fold the parts it adds
+// (the circuits under the front, side and rear armor) into the Factory Strider and drop the separate entry.
+for (const [into, from] of [['Factory Strider', 'Factory Strider (Armor Broken)']]) {
+  const a = enemies.find((e) => e.name === into), bi = enemies.findIndex((e) => e.name === from);
+  if (!a || bi < 0) continue;
+  for (const p of enemies[bi].parts) {
+    const name = p.name.replace(/\s*\(broken [^)]*\)$/i, '');
+    if (!a.parts.some((q) => q.name === name)) a.parts.push({ ...p, name });
+  }
+  enemies.splice(bi, 1);
+}
 const weapons = [
   ...read('weapons-primary-secondary.json'),
   ...read('weapons-support.json'),
@@ -54,6 +65,8 @@ const LIMB = ['Limb Armor (8)', 'Limb Armor'];
 const COVERS = [
   { enemy: /overseer/i, parts: { 'Torso': ['Chest Armor'], 'Right Arm': LIMB, 'Left Arm': LIMB, 'Legs (2)': LIMB } },
   { enemy: /^agitator$/i, parts: { 'Head': ['Helmet'], 'Torso': ['Torso Armor'], 'Upper Arms (2)': ['Pauldrons (2)'] } },
+  { enemy: /^factory strider$/i, parts: { 'Head Body': ['Head Armor'], 'Neck': ['Neck Armor'], 'Leg Assembly (4)': ['Leg Armor (8)'],
+    'Circuits Front': ['Front Armor'], 'Side Circuits (2)': ['Side Armor (2)'], 'Rear Circuits': ['Rear Armor'] } },
   // bugs: a broken torso plate opens the Inner Flesh, a broken leg plate the Leg Flesh
   { enemy: /charger/i, parts: { 'Inner Flesh': ['Torso Armor (2)'], 'Leg Flesh (4)': ['Front Leg Armor (2)'] } },
   { enemy: /^impaler$/i, parts: { 'Inner Flesh': ['Torso Armor (2)'], 'Leg Flesh (4)': ['Leg Armor (4)'] } },

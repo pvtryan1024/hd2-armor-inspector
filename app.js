@@ -321,7 +321,8 @@
       const ci = enemy.parts.findIndex((q) => q.name === p.coveredBy);
       const hp = sim.hp[ci];
       if (ci < 0 || !hp) return true;
-      if (k != null && hp.length === (p.count || 1)) return hp[k] <= 0;
+      const n = p.count || 1; // each piece has its own plates: 2 plates per piece when there are twice as many
+      if (k != null && hp.length % n === 0) { const r = hp.length / n; return hp.slice(k * r, (k + 1) * r).some((h) => h <= 0); }
       return hp.some((h) => h <= 0);
     }
     if (!sim) return false;
