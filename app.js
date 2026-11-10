@@ -939,9 +939,16 @@
     return { mode, band, rows, radii };
   }
 
+  /** "Torso Armor 2/2" for one piece of a counted part, the plain name otherwise. */
+  const pieceName = (p, k) => (k != null && (p.count || 1) > 1 ? `${p.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${p.count}` : p.name);
+
   function placeHit(hit) {
     const e0 = enemy();
-    if (e0 && !isExposed(e0, hit.idx, state.fire ? state.sim : null)) hit = { ...hit, covered: true };
+    if (state.fire && state.sim && e0) {
+      const l = partLeft(hit.idx); // that piece is destroyed: no hitbox (the viewer normally shoots past it)
+      if (l && !l.main && (hit.k != null && l.gones ? l.gones[hit.k] : l.gone)) return;
+    }
+    if (e0 && !isExposed(e0, hit.idx, state.fire ? state.sim : null, hit.k)) hit = { ...hit, covered: true };
     state.hit = hit;
     if (hit.covered) {
       if (state.fire && state.sim && !state.sim.dead) {
@@ -957,11 +964,11 @@
       const notes = [];
       const tag = shotClock();
       res.rows.forEach((r, k) => {
-        const o = applyShot(state.sim, e, r.idx, r.s, k > 0);
-        if (o.broke) notes.push(`${e.parts[r.idx].name} destroyed`);
+        const o = applyShot(state.sim, e, r.idx, r.s, k > 0, k === 0 ? hit.k : undefined);
+        if (o.broke) notes.push(`${pieceName(e.parts[r.idx], k === 0 ? hit.k : null)} destroyed`);
       });
       const d = res.rows[0];
-      state.sim.log.unshift(`#${state.sim.shots} ${tag}${e.parts[d.idx].name} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : 'ricochet'}${res.rows.length > 1 ? ` + blast on ${res.rows.length - 1} part${res.rows.length > 2 ? 's' : ''}` : ''}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}`);
+      state.sim.log.unshift(`#${state.sim.shots} ${tag}${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : 'ricochet'}${res.rows.length > 1 ? ` + blast on ${res.rows.length - 1} part${res.rows.length > 2 ? 's' : ''}` : ''}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}`);
       state.sim.log.length = Math.min(state.sim.log.length, 8);
     }
     render();
@@ -1015,6 +1022,7 @@
       const l = partLeft(i);
       return !!(l && !l.main && (l.gone ?? l.frac <= 0));
     });
+    const goneInst = e.parts.map((_, i) => (state.fire ? partLeft(i)?.gones || null : null));
     const w = weapon();
     const m = w ? w.modes[state.mode] || w.modes[0] : null;
     // projectile AP per angle band; the 3D shader colours each pixel by its own impact angle
@@ -1022,7 +1030,7 @@
     const exAp = state.explosion && m?.explosion ? m.explosion.ap ?? -1 : -1;
     const ap4 = m ? ANGLE_BANDS.map((_, b) => Math.max(m.explosionOnly ? -1 : apFor(m, b), exAp)) : null;
     window.dispatchEvent(new CustomEvent('hd2:update', { detail: {
-      enemy: e, colors, gone, fire: state.fire, stageView: state.stageView,
+      enemy: e, colors, gone, goneInst, fire: state.fire, stageView: state.stageView,
       colorMode: state.color, ap4, avs: e.parts.map((p) => p.av), bands: ANGLE_BANDS,
       hit: state.hit, blast: blastRadii(m),
     } }));

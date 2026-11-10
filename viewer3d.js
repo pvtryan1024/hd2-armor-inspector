@@ -88,6 +88,15 @@ function partIndexFor(entry, key) {
   return n ? parts.findIndex((p) => norm(p.name) === n) : -1;
 }
 
+function instanceFor(entry, key, i) {
+  const n = lastDetail?.enemy.parts[i]?.count || 1;
+  if (n < 2) return null;
+  const hidden = new Set(entry.map.hidden);
+  const same = entry.meshes.map((m) => m.key).filter((k) => !hidden.has(k) && partIndexFor(entry, k) === i).sort();
+  const at = same.indexOf(key);
+  return at < 0 ? null : at % n;
+}
+
 function prepare(root) {
   const meshes = [];
   const seen = new Map();
@@ -220,7 +229,7 @@ function hitzoneMaterial() {
 
 function paint() {
   if (!current || !lastDetail) return;
-  const { colors, gone, colorMode, ap4, avs, bands } = lastDetail;
+  const { colors, gone, goneInst, colorMode, ap4, avs, bands } = lastDetail;
   const angleMode = colorMode === 'pen' && !!ap4;
   for (const { key, mesh } of current.meshes) {
     if (showTex && !editing) { mesh.material = mesh.userData.orig; continue; }
@@ -233,7 +242,8 @@ function paint() {
       u.uFlat.value.set(colors[i]);
       if (ap4) u.uAP.value.set(...ap4);
       u.uAV.value = avs[i];
-      mat.opacity = gone[i] ? 0.15 : 1;
+      const k = goneInst?.[i] ? instanceFor(current, key, i) : null;
+      mat.opacity = (k != null ? goneInst[i][k] : gone[i]) ? 0.15 : 1;
     } else {
       u.uAngle.value = 0;
       u.uFlat.value.copy(UNMAPPED);
@@ -303,7 +313,7 @@ renderer.domElement.addEventListener('pointerup', (ev) => {
     const d = new THREE.Box3().setFromObject(mesh).distanceToPoint(h.point);
     if (parts[k] == null || d < parts[k]) parts[k] = d;
   }
-  HD2.hit({ idx: i, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
 });
 
 /* ---------- shot visuals: ray, impact marker, explosion radii ---------- */

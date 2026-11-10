@@ -23,7 +23,19 @@
     "left_back_leg": "Rear Leg Armor (2)",
     "right_back_leg_blob": "Spore Flesh (6)",
     "head": "Head",
-    "head_damaged": "Head"
+    "head_damaged": "Head",
+    "right_front_leg_1": "Front Leg Armor (2)",
+    "right_front_leg_2": "Front Leg Armor (2)",
+    "butt_1": "Spore Flesh (6)",
+    "side_left_1": "Spore Flesh (6)",
+    "side_left_2": "Torso Armor (2)",
+    "body_1": "Spore Flesh (6)",
+    "body_2": "Main",
+    "side_right_1": "Spore Flesh (6)",
+    "side_right_2": "Torso Armor (2)",
+    "left_front_leg_gib_1": "Main",
+    "left_front_leg_gib_2": "Main",
+    "head_1": "Spore Flesh (6)"
   },
   "hidden": [
     "butt_hurt",
