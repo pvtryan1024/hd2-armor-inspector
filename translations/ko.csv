@@ -5,7 +5,7 @@ ui,Alpha,,start page
 ui,Alpha version · numbers and features may change,알파 버전 · 수치와 기능은 추후 변경 예정,start page
 ui,{n} enemies · {n} weapons · data {n}-{n}-{n},{n} 구현된 적 · {n} 구현된 무기 · 마지막 빌드 날짜 {n}-{n}-{n},start page
 ui,Copy link,,start page
-ui,Target,목표,start page
+ui,Target,적,start page
 ui,Bugs · {n} enemies,,start page
 ui,Bots · {n} enemies,,start page
 ui,Squids · {n} enemies,,start page
@@ -90,7 +90,7 @@ ui,Shots,발수,start page
 ui,TTK,,start page
 ui,Yes,예,start page
 ui,#NAME?,,start page
-ui,No,,start page
+ui,No,아니오,start page
 ui,Downs,,start page
 ui,"One-shot kills come first, sorted by damage (highest first); everything else is ranked by time to kill on its best hitzone in the current view. Time comes from RPM with the first shot at {n} s; reloads are not included (* = needs more than one magazine). Weapons without an RPM are ranked by shot count after timed kills.",,start page
 ui,"You won't always hit the weak spot. For each weapon this takes every reachable hitzone in the current view that can kill, then uses the midpoint between the fastest and the slowest time to kill. Weapons are ranked by that midpoint.",,start page
@@ -118,7 +118,7 @@ ui,"Simplified damage model (AP vs AV, durable mix, % to main, explosions); expe
 ui,Back to the start page,,start page (title)
 ui,Early version: data and features may change,,start page (title)
 ui,Copy a link to this exact setup,,start page (title)
-ui,Search all enemies…,,start page (placeholder)
+ui,Search all enemies…,적 이름으로 검색,start page (placeholder)
 ui,Switch between the {n}D model and the flat body map,,start page (title)
 ui,Click hitzones to shoot them one at a time,,start page (title)
 ui,"Inner and flesh parts (Inner Flesh, Leg Flesh, Internals) sit behind armor, and undersides are hard to reach. They're left out of time to kill and the rankings; toggle to include them.",,start page (title)
@@ -139,15 +139,15 @@ ui,Very Light,,start page (title)
 ui,Light,,start page (title)
 ui,More shots than one magazine,탄창 하나 이상 사용,start page (title)
 ui,Unarmored,장갑 없음,start page (title)
-ui,Search all weapons…,,start page (placeholder)
-ui,Direct ({n}–{n}°),,start page (title)
-ui,Slight angle ({n}–{n}°),,start page (title)
-ui,Large angle ({n}–{n}°),,start page (title)
-ui,Extreme angle ({n}–{n}°),,start page (title)
-ui,AV{n} Unarmored: {n}%,,start page (title)
-ui,AV{n} Very Light: {n}%,,start page (title)
-ui,AV{n} Light: {n}%,,start page (title)
-ui,AV{n} Medium: ricochet,,start page (title)
+ui,Search all weapons…,무기 이름으로 검색,start page (placeholder)
+ui,Direct ({n}–{n}°),직격 ({n}–{n}°),start page (title)
+ui,Slight angle ({n}–{n}°),약간의 입사각 ({n}–{n}°),start page (title)
+ui,Large angle ({n}–{n}°),큰 입사각 ({n}–{n}°),start page (title)
+ui,Extreme angle ({n}–{n}°),매우 큰 입사각 ({n}–{n}°),start page (title)
+ui,AV{n} Unarmored: {n}%,AV{n} 장갑 없음: {n}%,start page (title)
+ui,AV{n} Very Light: {n}%,AV{n} 매우 경장갑: {n}%,start page (title)
+ui,AV{n} Light: {n}%,AV{n} 경장갑: {n}%,start page (title)
+ui,AV{n} Medium: ricochet,AV{n} 일반장갑: 도탄,start page (title)
 ui,AV{n} Heavy: ricochet,,start page (title)
 ui,AV{n} Tank I: ricochet,,start page (title)
 ui,AV{n} Tank II: ricochet,,start page (title)
@@ -156,8 +156,8 @@ ui,AV{n} Tank IV: ricochet,,start page (title)
 ui,AV{n} Tank V: ricochet,,start page (title)
 ui,AV{n} Tank VI: ricochet,,start page (title)
 ui,Loading model…,모델 로딩중…,start page (fire off)
-ui,← Factions,,enemy page
-ui,← Categories,,enemy page
+ui,← Factions,← 팩션,enemy page
+ui,← Categories,← 카테고리,enemy page
 ui,AP{n},,enemy page
 ui,AP{n}/{n},,enemy page
 ui,AP{n}/{n}/{n},,enemy page
@@ -371,15 +371,15 @@ enemy,Gazer Spire,,enemy list
 enemy,Lightning Spire,,enemy list
 enemy,Warp Gateway,,enemy list
 enemy,Cognitive Disruptor,,enemy list
-part,Main,,hitzones
-part,Head,,hitzones
-part,Limbs,,hitzones
-part,Wings,,hitzones
-part,Claws,,hitzones
-part,Legs,,hitzones
+part,Main,전체 체력,hitzones
+part,Head,머리,hitzones
+part,Limbs,사지,hitzones
+part,Wings,날개,hitzones
+part,Claws,발톱,hitzones
+part,Legs,다리,hitzones
 part,Frontal Tarsal Plate Armor,,hitzones
-part,Front Legs,,hitzones
-part,Rear Legs,,hitzones
+part,Front Legs,앞다리,hitzones
+part,Rear Legs,뒷다리,hitzones
 part,Body Armor,,hitzones
 part,Underbelly,,hitzones
 part,Left Legs,,hitzones
@@ -731,18 +731,18 @@ mode,4mm Rifle,,firing mode
 mode,10g Underbarrel Shotgun,,firing mode
 mode,12mm,,firing mode
 mode,Flamethrower,,firing mode
-mode,Flechette,,firing mode
-mode,Stun,,firing mode
+mode,Flechette,플래셰트,firing mode
+mode,Stun,기절탄,firing mode
 mode,Charged,,firing mode
 mode,Uncharged,,firing mode
 mode,LAS-16_P,,firing mode
 mode,LAS-17_P,,firing mode
 mode,LAS-17_P1,,firing mode
 mode,LAS-17_P2,,firing mode
-mode,Grenade,,firing mode
+mode,Grenade,수류탄,firing mode
 mode,Bomblets,,firing mode
-mode,Explosion,,firing mode
-mode,Shrapnel,,firing mode
+mode,Explosion,폭발,firing mode
+mode,Shrapnel,파편,firing mode
 mode,Minimum charge (0.45s),,firing mode
 mode,"Max charge (Unsafe, 3.0s)",,firing mode
 mode,HEAT,,firing mode

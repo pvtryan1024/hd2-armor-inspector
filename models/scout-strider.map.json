@@ -3,7 +3,7 @@
   "meshes": {
     "r_hip": "Waist",
     "l_hip": "Waist",
-    "body": "Main",
+    "body": "Waist",
     "legs": "Legs (2)",
     "hull": "Front Plate",
     "hmg": "HMG"

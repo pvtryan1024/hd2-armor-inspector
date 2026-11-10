@@ -1,0 +1,45 @@
+folder,site enemies (best guess),sure?,note
+content/fac_bugs/cha_scavenger,"Scavenger, Spore Burst Scavenger",likely,
+content/fac_bugs/cha_scavenger_defiler,Noxious Scavenger,guess,"""defiler"" looks like the Noxious line"
+content/fac_bugs/cha_scavenger_spitter,Caustic Spitter,likely,
+content/fac_bugs/cha_hunter,"Hunter, Predator Hunter, Spore Burst Hunter, Pouncer",likely,body was missing from the first export
+content/fac_bugs/cha_shrieker,Shrieker,yes,
+content/fac_bugs/cha_warrior,"Warrior, Alpha Warrior, Spore Burst Warrior, Rupture Warrior",likely,
+content/fac_bugs/cha_warrior_acid,Caustic Warrior,likely,
+content/fac_bugs/cha_warrior_big,"Hive Guard, Brood Commander, Alpha Commander",guess,body was missing from the first export
+content/fac_bugs/cha_boomer,"Caustic Spewer (or plain Bile Spewer)",guess,
+content/fac_bugs/cha_boomer_burrower,Rupture Spewer,likely,"""burrower"" = Rupture"
+content/fac_bugs/cha_boomer_defiler,Noxious Spewer,guess,
+content/fac_bugs/cha_boomer_nurser,Nursing Spewer,yes,
+content/fac_bugs/cha_charger,Charger,yes,
+content/fac_bugs/cha_charger_bull,Charger Behemoth,likely,
+content/fac_bugs/cha_charger_burrower,Rupture Charger,likely,
+content/fac_bugs/cha_charger_acid,Caustic Charger,likely,
+content/fac_bugs/cha_stalker,"Stalker, Predator Stalker",yes,only the tongue came through last time
+content/fac_bugs/cha_impaler,Impaler,yes,only a tentacle came through last time
+content/fac_bugs/cha_strider,"Bile Titan, Spore Burst Bile Titan",yes,body was missing from the first export
+content/fac_bugs/cha_dragon,Dragonroach,likely,
+content/fac_bugs/cha_hive_lord,Hive Lord,yes,only loose pieces came through last time
+content/fac_cyborgs/cha_conscript,"Trooper, Jet Brigade Trooper, Pyro Trooper, MG/Assault/Rocket Raiders",likely,raiders look like conscript variants
+content/fac_cyborgs/cha_lieutenant,"Commissar, Jet Brigade Commissar",likely,
+content/fac_cyborgs/cha_lieutenant_assault,"Agitator or Radical",guess,
+content/fac_cyborgs/cha_soldier,"All Devastators (Devastator, Heavy, Rocket, Conflagration, Incendiary MG, Jet Brigade)",likely,only one variant came through last time
+content/fac_cyborgs/cha_berserker,"Berserker (Brawler?)",yes,
+content/fac_cyborgs/cha_cyborg_elite,"All Hulks (Bruiser, Scorcher, Obliterator, Firebomber, Jet Brigade)",likely,only one variant came through last time
+content/fac_cyborgs/equipment,"shields, guns, chainsaws, jetpacks, backpacks",yes,attachments that are hitzones on the site
+content/fac_cyborgs/vehicles,"Tanks, Scout/War/Factory Striders, Gunship, Dropship, Vox Engine",likely,
+content/fac_cyborgs/turrets,"Cannon Turret, Bunker Turret",likely,
+content/fac_cyborgs/emplacements,"MG / Mortar / AA Emplacements",likely,
+content/fac_illuminate/cha_corrupted,"Light, Medium, Heavy Voteless",likely,
+content/fac_illuminate/cha_bodyhorror_helmetguy,"Heavy Voteless?",guess,
+content/fac_illuminate/cha_bodyhorror_bladed,"Wretch?",guess,
+content/fac_illuminate/cha_meatglue,Fleshmob,likely,
+content/fac_illuminate/cha_illuminate_guy_staff,Overseer,likely,missing from the first export
+content/fac_illuminate/cha_jet_champion,Elevated Overseer,likely,
+content/fac_illuminate/cha_beamer_champion,Crescent Overseer?,guess,
+content/fac_illuminate/cha_observer,Watcher,likely,
+content/fac_illuminate/cha_tripod,Harvester,likely,
+content/fac_illuminate/cha_exomech_melee,"Crusher?",guess,
+content/fac_illuminate/cha_exomech_ranged,"Obtruder?",guess,
+content/fac_illuminate/equipment,"shields, staffs, weapons",yes,attachments
+content/fac_illuminate/vehicles,"Gatekeeper, Leviathan, Stingray, Warp Ship, Overship, turrets",likely,

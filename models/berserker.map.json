@@ -7,7 +7,9 @@
     "head_whole": "Head",
     "torso_whole": "Chest",
     "chainsaw_left": "Arm (2)",
-    "chainsaw_right": "Arm (2)"
+    "chainsaw_right": "Arm (2)",
+    "0x0fb1fef6": "Shoulder (2)",
+    "0x09be09cf": "Shoulder (2)"
   },
   "hidden": [
     "torso_destroyed_upper",
