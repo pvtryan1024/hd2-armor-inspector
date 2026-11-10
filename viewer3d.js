@@ -18,6 +18,7 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const SERVED = location.protocol.startsWith('http');
 const UNMAPPED = new THREE.Color('#39414b');
+const OTHER_PART = new THREE.Color('#8b949e'); // editing: meshes of the parts that aren't selected
 
 const host = $('#v3Canvas');
 const status = (t) => { $('#v3Status').textContent = t; };
@@ -390,6 +391,8 @@ function paint() {
   applyHidden();
   swapBroken();
   const angleMode = colorMode === 'pen' && !!ap4;
+  // editing: only the selected mesh's part keeps its colour; the other parts go plain grey
+  const selPart = editing && selectedKey ? partIndexFor(current, selectedKey) : -1;
   for (const { key, mesh } of current.meshes) {
     if (showTex && !editing) { mesh.material = mesh.userData.orig; continue; }
     const i = partIndexFor(current, key);
@@ -400,6 +403,10 @@ function paint() {
       u.uAngle.value = 0;
       u.uFlat.value.copy(UNMAPPED);
       mat.opacity = 0.4;
+    } else if (i >= 0 && editing && i !== selPart) {
+      u.uAngle.value = 0;
+      u.uFlat.value.copy(OTHER_PART);
+      mat.opacity = 1;
     } else if (i >= 0) {
       u.uAngle.value = angleMode ? 1 : 0;
       u.uFlat.value.set(colors[i]);
