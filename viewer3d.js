@@ -298,7 +298,8 @@ function swapBroken() {
     const dead = !!(lastDetail?.fire && pi >= 0 && lastDetail.gone[pi]);
     const live = current.meshes.filter((m) => (rule.replaces || []).includes(primOf(m.key)) && m.mesh.visible && !m.mesh.userData.remains);
     const on = dead && live.length > 0;
-    for (const m of current.meshes) if (primOf(m.key.replace(/#\d+$/, '')) === key) m.mesh.visible = on;
+    // shown as remains of the dead part (grey, no hitbox), like torso_gibs for the Upper Sac
+    for (const m of current.meshes) if (primOf(m.key.replace(/#\d+$/, '')) === key) { m.mesh.visible = on; m.mesh.userData.remains = on; }
     if (on) live.forEach((m) => { m.mesh.visible = false; });
   }
 }
