@@ -25,7 +25,9 @@
     "torso_right": "Torso Armor (2)",
     "torso_left_plates": "Torso Armor (2)",
     "torso_right_plates": "Torso Armor (2)",
-    "torso_burst": "Underside"
+    "torso_burst": "Underside",
+    "torso_left_damaged": "Inner Flesh",
+    "torso_right_damaged": "Inner Flesh"
   },
   "hidden": [
     "leg_right_back_inner_gibs",
@@ -36,11 +38,11 @@
     "tail_destroyed",
     "leg_right_back_outer_bottom_gibs",
     "claw_right_gibs",
-    "torso_left_gibs",
+    "torso_left_damaged",
     "torso_burst",
     "leg_left_back_inner_gibs",
     "leg_right_front_inner_gibs",
-    "torso_right_gibs",
+    "torso_right_damaged",
     "leg_left_back_outer_bottom_gibs",
     "leg_right_back_outer_top_gibs",
     "leg_right_front_outer_bottom_gibs",
