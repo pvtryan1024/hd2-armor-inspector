@@ -179,15 +179,13 @@
       const k = want != null ? (instGone(part, inst[want]) ? -1 : want) : inst.findIndex((h) => !instGone(part, h));
       if (k >= 0) {
         const wasUp = inst[k] > 0;
-        // capped parts pass at most what's left: health first, then (once broken) constitution
-        const capped = part.overflow ? s.total : Math.min(s.total, wasUp ? inst[k] : inst[k] + cons);
+        const capped = part.overflow ? s.total : Math.min(s.total, inst[k] + cons);
         out.toMain = capped * toMain + s.mainEx;
         if (part.indestructible) {
           if (out.toMain > 0) out.progress = true;
           return feedMain();
         }
         inst[k] -= s.total;
-        if (wasUp && cons && inst[k] < 0) inst[k] = 0; // the breaking shot doesn't spill into constitution; it starts counting after
         if (s.total > 0) out.progress = true;
         if (wasUp && inst[k] <= 0) out.broke = true;
         // fatal parts: with a bleed rate the enemy is done once the part breaks (it bleeds out);
