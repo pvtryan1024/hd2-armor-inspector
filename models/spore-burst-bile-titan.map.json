@@ -18,7 +18,8 @@
     "torso": "Torso Armor (2)",
     "leg_left_front_inner": "Leg Armor (12)",
     "leg_right_back_outer_bottom": "Leg Armor (12)",
-    "head": "Head"
+    "head": "Head",
+    "0xf4fb223e": "Butt Armor"
   },
   "hidden": [
     "leg_right_back_inner_gibs",
@@ -39,6 +40,15 @@
     "leg_right_front_outer_bottom_gibs",
     "leg_left_back_outer_top_gibs",
     "leg_left_front_inner_gibs",
-    "claw_left_gibs"
-  ]
+    "claw_left_gibs",
+    "0xf4fb223e"
+  ],
+  "after": {
+    "0xf4fb223e": {
+      "part": "Lower Sac",
+      "replaces": [
+        "tail"
+      ]
+    }
+  }
 }

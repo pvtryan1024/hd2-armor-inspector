@@ -665,7 +665,7 @@ async function prep(id) {
   await doc.transform(
     unpartition(), // merged gear brings its own buffer; a .glb holds one
     prune(),
-    dedup(),
+    dedup({ keepUniqueNames: true }), // two copies of one gear model keep their own names (left / right guns)
     textureCompress({ encoder: sharp, targetFormat: 'jpeg', resize: [1024, 1024], quality: 80 }),
     meshopt({ encoder: MeshoptEncoder, level: 'medium' }),
   );

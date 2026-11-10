@@ -283,6 +283,17 @@ function swapBroken() {
     for (const m of dmg) { m.mesh.visible = stage === 1 || remains === dmg; m.mesh.userData.revealed = stage === 1; m.mesh.userData.remains = remains === dmg; }
     for (const m of gib) { m.mesh.visible = remains === gib; m.mesh.userData.remains = remains === gib; m.mesh.userData.revealed = false; }
   }
+  // map "after": { mesh: { part, replaces: [mesh…] } }: a mesh that takes over from others once a part dies
+  // (Bile Titan: the burst-sac butt replaces the butt when the Lower Sac pops), while those still show intact
+  const parts = lastDetail?.enemy.parts || [];
+  for (const [key, rule] of Object.entries(current.map.after || {})) {
+    const pi = parts.findIndex((p) => p.name === rule.part);
+    const dead = !!(lastDetail?.fire && pi >= 0 && lastDetail.gone[pi]);
+    const live = current.meshes.filter((m) => (rule.replaces || []).includes(primOf(m.key)) && m.mesh.visible && !m.mesh.userData.remains);
+    const on = dead && live.length > 0;
+    for (const m of current.meshes) if (primOf(m.key.replace(/#\d+$/, '')) === key) m.mesh.visible = on;
+    if (on) live.forEach((m) => { m.mesh.visible = false; });
+  }
 }
 
 function applyHidden() {
@@ -740,7 +751,7 @@ $('#v3Save').addEventListener('click', async () => {
   if (!current) return;
   // inner hitboxes are saved too (the auto-placed ones become fixed once saved)
   const colliders = (current.colliders || []).map(({ def }) => ({ part: def.part, from: def.from.map((v) => +(+v).toFixed(4)), to: def.to.map((v) => +(+v).toFixed(4)), radius: def.radius }));
-  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(colliders.length ? { colliders } : {}) }, null, 2);
+  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(colliders.length ? { colliders } : {}) }, null, 2);
   if (SERVED) {
     try {
       const r = await fetch(`api/map/${encodeURIComponent(currentId)}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
