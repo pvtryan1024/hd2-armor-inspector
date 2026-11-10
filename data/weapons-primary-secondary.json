@@ -1,0 +1,2264 @@
+[
+  {
+    "id": "ar-23-liberator",
+    "name": "AR-23 Liberator",
+    "category": "Primary",
+    "type": "Assault Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/AR-23_Liberator",
+    "rpm": 640,
+    "mag": 45,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 90,
+        "durable": 22,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "ar-23p-liberator-penetrator",
+    "name": "AR-23P Liberator Penetrator",
+    "category": "Primary",
+    "type": "Assault Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/AR-23P_Liberator_Penetrator",
+    "rpm": 640,
+    "mag": 45,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 65,
+        "durable": 15,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "ar-23c-liberator-concussive",
+    "name": "AR-23C Liberator Concussive",
+    "category": "Primary",
+    "type": "Assault Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/AR-23C_Liberator_Concussive",
+    "rpm": 400,
+    "mag": 60,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 75,
+        "durable": 35,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "ar-23a-liberator-carbine",
+    "name": "AR-23A Liberator Carbine",
+    "category": "Primary",
+    "type": "Assault Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/AR-23A_Liberator_Carbine",
+    "rpm": 920,
+    "mag": 45,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 90,
+        "durable": 22,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "ar-23l-liberator-legacy",
+    "name": "AR-23L Liberator Legacy",
+    "category": "Primary",
+    "type": "Assault Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/AR-23L_Liberator_Legacy",
+    "rpm": 660,
+    "mag": 45,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 90,
+        "durable": 22,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "sta-52-assault-rifle",
+    "name": "StA-52 Assault Rifle",
+    "category": "Primary",
+    "type": "Assault Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/StA-52_Assault_Rifle",
+    "rpm": 790,
+    "mag": 56,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 90,
+        "durable": 22,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "ar-32-pacifier",
+    "name": "AR-32 Pacifier",
+    "category": "Primary",
+    "type": "Assault Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/AR-32_Pacifier",
+    "rpm": 700,
+    "mag": 40,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 55,
+        "durable": 10,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "ma5c-assault-rifle",
+    "name": "MA5C Assault Rifle",
+    "category": "Primary",
+    "type": "Assault Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/MA5C_Assault_Rifle",
+    "rpm": 640,
+    "mag": 32,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 90,
+        "durable": 20,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "ar-2-coyote",
+    "name": "AR-2 Coyote",
+    "category": "Primary",
+    "type": "Assault Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/AR-2_Coyote",
+    "rpm": 600,
+    "mag": 45,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 75,
+        "durable": 10,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Incendiary rounds (fire status)"
+      }
+    ]
+  },
+  {
+    "id": "ar-59-suppressor",
+    "name": "AR-59 Suppressor",
+    "category": "Primary",
+    "type": "Assault Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/AR-59_Suppressor",
+    "rpm": 850,
+    "mag": 45,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 80,
+        "durable": 20,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "ar-61-tenderizer",
+    "name": "AR-61 Tenderizer",
+    "category": "Primary",
+    "type": "Assault Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/AR-61_Tenderizer",
+    "rpm": 600,
+    "mag": 35,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 105,
+        "durable": 30,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ],
+    "note": "Wiki lists two fire rates: 600 and 850 rpm"
+  },
+  {
+    "id": "br-14-adjudicator",
+    "name": "BR-14 Adjudicator",
+    "category": "Primary",
+    "type": "Assault Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/BR-14_Adjudicator",
+    "rpm": 550,
+    "mag": 30,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 95,
+        "durable": 23,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "ar-gl-21-one-two",
+    "name": "AR/GL-21 One-Two",
+    "category": "Primary",
+    "type": "Assault Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/AR/GL-21_One-Two",
+    "rpm": 650,
+    "mag": 40,
+    "modes": [
+      {
+        "name": "8mm Rifle",
+        "damage": 95,
+        "durable": 24,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      },
+      {
+        "name": "40mm Grenade",
+        "damage": 250,
+        "durable": 250,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 400,
+          "durable": 400,
+          "ap": 3,
+          "innerRadius": 2.25,
+          "outerRadius": 6.5
+        },
+        "note": "Grenade: 1 loaded. Explosion outer-radius AP is Light; damage falls off 399-0 across outer radius"
+      }
+    ]
+  },
+  {
+    "id": "ar-11-arbitrator",
+    "name": "AR-11 Arbitrator",
+    "category": "Primary",
+    "type": "Assault Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/AR-11_Arbitrator",
+    "rpm": 1200,
+    "mag": 45,
+    "modes": [
+      {
+        "name": "4mm Rifle",
+        "damage": 70,
+        "durable": 20,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      },
+      {
+        "name": "10g Underbarrel Shotgun",
+        "damage": 50,
+        "durable": 12,
+        "ap": 3,
+        "pellets": 9,
+        "explosion": null,
+        "note": "Underbarrel capacity 4"
+      }
+    ]
+  },
+  {
+    "id": "r-63-diligence",
+    "name": "R-63 Diligence",
+    "category": "Primary",
+    "type": "Marksman Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/R-63_Diligence",
+    "rpm": 350,
+    "mag": 25,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 165,
+        "durable": 45,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "r-63cs-diligence-counter-sniper",
+    "name": "R-63CS Diligence Counter Sniper",
+    "category": "Primary",
+    "type": "Marksman Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/R-63CS_Diligence_Counter_Sniper",
+    "rpm": 350,
+    "mag": 15,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 200,
+        "durable": 50,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "r-2124-constitution",
+    "name": "R-2124 Constitution",
+    "category": "Primary",
+    "type": "Marksman Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/R-2124_Constitution",
+    "rpm": 60,
+    "mag": 5,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 180,
+        "durable": 50,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "r-6-deadeye",
+    "name": "R-6 Deadeye",
+    "category": "Primary",
+    "type": "Marksman Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/R-6_Deadeye",
+    "rpm": 100,
+    "mag": 8,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 300,
+        "durable": 100,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "r-2-amendment",
+    "name": "R-2 Amendment",
+    "category": "Primary",
+    "type": "Marksman Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/R-2_Amendment",
+    "rpm": 480,
+    "mag": 20,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 200,
+        "durable": 50,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "r-72-censor",
+    "name": "R-72 Censor",
+    "category": "Primary",
+    "type": "Marksman Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/R-72_Censor",
+    "rpm": 400,
+    "mag": 20,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 165,
+        "durable": 45,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "r-4-hyena",
+    "name": "R-4 Hyena",
+    "category": "Primary",
+    "type": "Marksman Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/R-4_Hyena",
+    "rpm": 190,
+    "mag": 15,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 220,
+        "durable": 45,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Also applies fire (100 DPS per wiki)"
+      }
+    ]
+  },
+  {
+    "id": "r-40-sightliner",
+    "name": "R-40 Sightliner",
+    "category": "Primary",
+    "type": "Sniper Rifle",
+    "url": "https://helldivers.wiki.gg/wiki/R-40_Sightliner",
+    "rpm": 40,
+    "mag": 10,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 350,
+        "durable": 205,
+        "ap": 4,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "r-40-k-hot-shot-marksman-rifle",
+    "name": "R/40-K Hot-Shot Marksman Rifle",
+    "category": "Primary",
+    "type": "Energy-Based",
+    "url": "https://helldivers.wiki.gg/wiki/R/40-K_Hot-Shot_Marksman_Rifle",
+    "rpm": 210,
+    "mag": 12,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 275,
+        "durable": 40,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "mp-98-knight",
+    "name": "MP-98 Knight",
+    "category": "Primary",
+    "type": "Submachine Gun",
+    "url": "https://helldivers.wiki.gg/wiki/MP-98_Knight",
+    "rpm": 1380,
+    "mag": 50,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 90,
+        "durable": 18,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "smg-37-defender",
+    "name": "SMG-37 Defender",
+    "category": "Primary",
+    "type": "Submachine Gun",
+    "url": "https://helldivers.wiki.gg/wiki/SMG-37_Defender",
+    "rpm": 520,
+    "mag": 45,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 110,
+        "durable": 22,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "smg-72-pummeler",
+    "name": "SMG-72 Pummeler",
+    "category": "Primary",
+    "type": "Submachine Gun",
+    "url": "https://helldivers.wiki.gg/wiki/SMG-72_Pummeler",
+    "rpm": 475,
+    "mag": 45,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 85,
+        "durable": 17,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "smg-32-reprimand",
+    "name": "SMG-32 Reprimand",
+    "category": "Primary",
+    "type": "Submachine Gun",
+    "url": "https://helldivers.wiki.gg/wiki/SMG-32_Reprimand",
+    "rpm": 490,
+    "mag": 25,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 140,
+        "durable": 32,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "sta-11-smg",
+    "name": "StA-11 SMG",
+    "category": "Primary",
+    "type": "Submachine Gun",
+    "url": "https://helldivers.wiki.gg/wiki/StA-11_SMG",
+    "rpm": 1050,
+    "mag": 48,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 100,
+        "durable": 20,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "m7s-smg",
+    "name": "M7S SMG",
+    "category": "Primary",
+    "type": "Submachine Gun",
+    "url": "https://helldivers.wiki.gg/wiki/M7S_SMG",
+    "rpm": 872,
+    "mag": 48,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 90,
+        "durable": 18,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "smg-flam-34-stoker",
+    "name": "SMG/FLAM-34 Stoker",
+    "category": "Primary",
+    "type": "Submachine Gun",
+    "url": "https://helldivers.wiki.gg/wiki/SMG/FLAM-34_Stoker",
+    "rpm": 420,
+    "mag": 45,
+    "modes": [
+      {
+        "name": "12mm",
+        "damage": 130,
+        "durable": 30,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      },
+      {
+        "name": "Flamethrower",
+        "damage": 150,
+        "durable": null,
+        "ap": 4,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Fire DPS as listed by wiki; durable not listed"
+      }
+    ]
+  },
+  {
+    "id": "smg-203-gallant",
+    "name": "SMG-203 Gallant",
+    "category": "Primary",
+    "type": "Submachine Gun",
+    "url": "https://helldivers.wiki.gg/wiki/SMG-203_Gallant",
+    "rpm": 1380,
+    "mag": 50,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 65,
+        "durable": 13,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "sg-8-punisher",
+    "name": "SG-8 Punisher",
+    "category": "Primary",
+    "type": "Shotgun",
+    "url": "https://helldivers.wiki.gg/wiki/SG-8_Punisher",
+    "rpm": 80,
+    "mag": 16,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 54,
+        "durable": 15,
+        "ap": 2,
+        "pellets": 9,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "sg-225-breaker",
+    "name": "SG-225 Breaker",
+    "category": "Primary",
+    "type": "Shotgun",
+    "url": "https://helldivers.wiki.gg/wiki/SG-225_Breaker",
+    "rpm": 300,
+    "mag": 16,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 36,
+        "durable": 8,
+        "ap": 2,
+        "pellets": 11,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "sg-8s-slugger",
+    "name": "SG-8S Slugger",
+    "category": "Primary",
+    "type": "Shotgun",
+    "url": "https://helldivers.wiki.gg/wiki/SG-8S_Slugger",
+    "rpm": 80,
+    "mag": 16,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 330,
+        "durable": 90,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "sg-225sp-breaker-sprayandpray",
+    "name": "SG-225SP Breaker Spray&Pray",
+    "category": "Primary",
+    "type": "Shotgun",
+    "url": "https://helldivers.wiki.gg/wiki/SG-225SP_Breaker_Spray%26Pray",
+    "rpm": 330,
+    "mag": 26,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 18,
+        "durable": 5,
+        "ap": 2,
+        "pellets": 16,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "sg-225ie-breaker-incendiary",
+    "name": "SG-225IE Breaker Incendiary",
+    "category": "Primary",
+    "type": "Shotgun",
+    "url": "https://helldivers.wiki.gg/wiki/SG-225IE_Breaker_Incendiary",
+    "rpm": 300,
+    "mag": 26,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 20,
+        "durable": 10,
+        "ap": 2,
+        "pellets": 12,
+        "explosion": null,
+        "note": "Incendiary pellets (fire 100 DPS per wiki)"
+      }
+    ]
+  },
+  {
+    "id": "sg-451-cookout",
+    "name": "SG-451 Cookout",
+    "category": "Primary",
+    "type": "Shotgun",
+    "url": "https://helldivers.wiki.gg/wiki/SG-451_Cookout",
+    "rpm": 80,
+    "mag": 16,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 16,
+        "durable": 3,
+        "ap": 2,
+        "pellets": 20,
+        "explosion": null,
+        "note": "Incendiary pellets"
+      }
+    ]
+  },
+  {
+    "id": "sg-20-halt",
+    "name": "SG-20 Halt",
+    "category": "Primary",
+    "type": "Shotgun",
+    "url": "https://helldivers.wiki.gg/wiki/SG-20_Halt",
+    "rpm": 80,
+    "mag": 8,
+    "modes": [
+      {
+        "name": "Flechette",
+        "damage": 35,
+        "durable": 10,
+        "ap": 3,
+        "pellets": 11,
+        "explosion": null
+      },
+      {
+        "name": "Stun",
+        "damage": 6,
+        "durable": 2,
+        "ap": 2,
+        "pellets": 20,
+        "explosion": null,
+        "note": "Stun Large status"
+      }
+    ],
+    "note": "Two ammo types, 8 rounds each"
+  },
+  {
+    "id": "dbs-2-double-freedom",
+    "name": "DBS-2 Double Freedom",
+    "category": "Primary",
+    "type": "Shotgun",
+    "url": "https://helldivers.wiki.gg/wiki/DBS-2_Double_Freedom",
+    "rpm": 650,
+    "mag": 2,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 70,
+        "durable": 35,
+        "ap": 3,
+        "pellets": 12,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "m90a-shotgun",
+    "name": "M90A Shotgun",
+    "category": "Primary",
+    "type": "Shotgun",
+    "url": "https://helldivers.wiki.gg/wiki/M90A_Shotgun",
+    "rpm": 80,
+    "mag": 6,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 66,
+        "durable": 24,
+        "ap": 2,
+        "pellets": 11,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "sg-97-sweeper",
+    "name": "SG-97 Sweeper",
+    "category": "Primary",
+    "type": "Shotgun",
+    "url": "https://helldivers.wiki.gg/wiki/SG-97_Sweeper",
+    "rpm": 150,
+    "mag": 7,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 42,
+        "durable": 11,
+        "ap": 3,
+        "pellets": 12,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "r-36-eruptor",
+    "name": "R-36 Eruptor",
+    "category": "Primary",
+    "type": "Explosive",
+    "url": "https://helldivers.wiki.gg/wiki/R-36_Eruptor",
+    "rpm": 32,
+    "mag": 5,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 230,
+        "durable": 115,
+        "ap": 4,
+        "pellets": 1,
+        "explosion": {
+          "damage": 225,
+          "durable": 225,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": null
+        },
+        "note": "Also 110 shrapnel x30 (AP/durable not listed; omitted)"
+      }
+    ]
+  },
+  {
+    "id": "cb-9-exploding-crossbow",
+    "name": "CB-9 Exploding Crossbow",
+    "category": "Primary",
+    "type": "Explosive",
+    "url": "https://helldivers.wiki.gg/wiki/CB-9_Exploding_Crossbow",
+    "rpm": 50,
+    "mag": 5,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 270,
+        "durable": 50,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 350,
+          "durable": 350,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "gl-15-evictor",
+    "name": "GL-15 Evictor",
+    "category": "Primary",
+    "type": "Explosive",
+    "url": "https://helldivers.wiki.gg/wiki/GL-15_Evictor",
+    "rpm": 60,
+    "mag": 4,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 50,
+        "durable": 2,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 440,
+          "durable": 440,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "las-5-scythe",
+    "name": "LAS-5 Scythe",
+    "category": "Primary",
+    "type": "Energy-Based",
+    "url": "https://helldivers.wiki.gg/wiki/LAS-5_Scythe",
+    "rpm": null,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 350,
+        "durable": 70,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Beam: damage per second; also fire 100 DPS. Heat capacity 8s"
+      }
+    ]
+  },
+  {
+    "id": "plas-1-scorcher",
+    "name": "PLAS-1 Scorcher",
+    "category": "Primary",
+    "type": "Energy-Based",
+    "url": "https://helldivers.wiki.gg/wiki/PLAS-1_Scorcher",
+    "rpm": 350,
+    "mag": 20,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 100,
+        "durable": 50,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": {
+          "damage": 100,
+          "durable": 100,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "las-16-sickle",
+    "name": "LAS-16 Sickle",
+    "category": "Primary",
+    "type": "Energy-Based",
+    "url": "https://helldivers.wiki.gg/wiki/LAS-16_Sickle",
+    "rpm": 750,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 60,
+        "durable": 6,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Heat-based: 8.4s / ~106 shots before overheat"
+      }
+    ]
+  },
+  {
+    "id": "sg-8p-punisher-plasma",
+    "name": "SG-8P Punisher Plasma",
+    "category": "Primary",
+    "type": "Energy-Based",
+    "url": "https://helldivers.wiki.gg/wiki/SG-8P_Punisher_Plasma",
+    "rpm": 80,
+    "mag": 10,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": {
+          "damage": 225,
+          "durable": 225,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": null
+        },
+        "note": "Damage is from plasma explosion"
+      }
+    ]
+  },
+  {
+    "id": "arc-12-blitzer",
+    "name": "ARC-12 Blitzer",
+    "category": "Primary",
+    "type": "Energy-Based",
+    "url": "https://helldivers.wiki.gg/wiki/ARC-12_Blitzer",
+    "rpm": 45,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 50,
+        "durable": 35,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Arc; Damage Comparison lists 50/35, infobox lists 250 Arc. Infinite ammo"
+      }
+    ]
+  },
+  {
+    "id": "plas-101-purifier",
+    "name": "PLAS-101 Purifier",
+    "category": "Primary",
+    "type": "Energy-Based",
+    "url": "https://helldivers.wiki.gg/wiki/PLAS-101_Purifier",
+    "rpm": 1000,
+    "mag": 15,
+    "modes": [
+      {
+        "name": "Charged",
+        "damage": 200,
+        "durable": 100,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 300,
+          "durable": 300,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": null
+        }
+      },
+      {
+        "name": "Uncharged",
+        "damage": 100,
+        "durable": null,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 75,
+          "durable": null,
+          "ap": null,
+          "innerRadius": null,
+          "outerRadius": null
+        },
+        "note": "Uncharged values from infobox only; durable/explosion AP not listed"
+      }
+    ]
+  },
+  {
+    "id": "plas-39-accelerator-rifle",
+    "name": "PLAS-39 Accelerator Rifle",
+    "category": "Primary",
+    "type": "Energy-Based",
+    "url": "https://helldivers.wiki.gg/wiki/PLAS-39_Accelerator_Rifle",
+    "rpm": 550,
+    "mag": 9,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 250,
+        "durable": 125,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 100,
+          "durable": 100,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "las-17-double-edge-sickle",
+    "name": "LAS-17 Double-Edge Sickle",
+    "category": "Primary",
+    "type": "Energy-Based",
+    "url": "https://helldivers.wiki.gg/wiki/LAS-17_Double-Edge_Sickle",
+    "rpm": 700,
+    "mag": null,
+    "modes": [
+      {
+        "name": "LAS-16_P",
+        "damage": 60,
+        "durable": 6,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      },
+      {
+        "name": "LAS-17_P",
+        "damage": 55,
+        "durable": 5,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      },
+      {
+        "name": "LAS-17_P1",
+        "damage": 70,
+        "durable": 7,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      },
+      {
+        "name": "LAS-17_P2",
+        "damage": 70,
+        "durable": 7,
+        "ap": 4,
+        "pellets": 1,
+        "explosion": null
+      }
+    ],
+    "note": "Projectile variants named by wiki attack ID (damage 55-70); heat 15s/175 shots"
+  },
+  {
+    "id": "las-13-trident",
+    "name": "LAS-13 Trident",
+    "category": "Primary",
+    "type": "Energy-Based",
+    "url": "https://helldivers.wiki.gg/wiki/LAS-13_Trident",
+    "rpm": 300,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 60,
+        "durable": 6,
+        "ap": 2,
+        "pellets": 6,
+        "explosion": null,
+        "note": "Beam weapon: 6 beams x 60 (360 per shot). Heat 2s / 10 shots"
+      }
+    ]
+  },
+  {
+    "id": "las-12-sai",
+    "name": "LAS-12 Sai",
+    "category": "Primary",
+    "type": "Energy-Based",
+    "url": "https://helldivers.wiki.gg/wiki/LAS-12_Sai",
+    "rpm": 800,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 80,
+        "durable": 4,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Heat 4s / 53 shots"
+      }
+    ]
+  },
+  {
+    "id": "jar-5-dominator",
+    "name": "JAR-5 Dominator",
+    "category": "Primary",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/JAR-5_Dominator",
+    "rpm": 250,
+    "mag": 15,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 275,
+        "durable": 90,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "flam-66-torcher",
+    "name": "FLAM-66 Torcher",
+    "category": "Primary",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/FLAM-66_Torcher",
+    "rpm": null,
+    "mag": 100,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 2,
+        "durable": 2,
+        "ap": 4,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Flame spray per-hit 2/2 (Damage Comparison); fire DoT 150 DPS per infobox"
+      }
+    ]
+  },
+  {
+    "id": "vg-70-variable",
+    "name": "VG-70 Variable",
+    "category": "Primary",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/VG-70_Variable",
+    "rpm": 300,
+    "mag": 49,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 85,
+        "durable": 23,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ],
+    "note": "Selectable rates 300/550/750 rpm"
+  },
+  {
+    "id": "p-2-peacemaker",
+    "name": "P-2 Peacemaker",
+    "category": "Secondary",
+    "type": "Pistol",
+    "url": "https://helldivers.wiki.gg/wiki/P-2_Peacemaker",
+    "rpm": 900,
+    "mag": 15,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 100,
+        "durable": 20,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "p-19-redeemer",
+    "name": "P-19 Redeemer",
+    "category": "Secondary",
+    "type": "Pistol",
+    "url": "https://helldivers.wiki.gg/wiki/P-19_Redeemer",
+    "rpm": 1100,
+    "mag": 31,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 70,
+        "durable": 12,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "p-4-senator",
+    "name": "P-4 Senator",
+    "category": "Secondary",
+    "type": "Pistol",
+    "url": "https://helldivers.wiki.gg/wiki/P-4_Senator",
+    "rpm": 200,
+    "mag": 6,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 225,
+        "durable": 75,
+        "ap": 4,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "p-113-verdict",
+    "name": "P-113 Verdict",
+    "category": "Secondary",
+    "type": "Pistol",
+    "url": "https://helldivers.wiki.gg/wiki/P-113_Verdict",
+    "rpm": 450,
+    "mag": 10,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 140,
+        "durable": 32,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "p-92-warrant",
+    "name": "P-92 Warrant",
+    "category": "Secondary",
+    "type": "Pistol",
+    "url": "https://helldivers.wiki.gg/wiki/P-92_Warrant",
+    "rpm": 450,
+    "mag": 13,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 80,
+        "durable": 20,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "m6c-socom-pistol",
+    "name": "M6C/SOCOM Pistol",
+    "category": "Secondary",
+    "type": "Pistol",
+    "url": "https://helldivers.wiki.gg/wiki/M6C/SOCOM_Pistol",
+    "rpm": 900,
+    "mag": 12,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 125,
+        "durable": 28,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "p-69-veto",
+    "name": "P-69 Veto",
+    "category": "Secondary",
+    "type": "Pistol",
+    "url": "https://helldivers.wiki.gg/wiki/P-69_Veto",
+    "rpm": 750,
+    "mag": 12,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 105,
+        "durable": 35,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "p-44-mist",
+    "name": "P-44 Mist",
+    "category": "Secondary",
+    "type": "Pistol",
+    "url": "https://helldivers.wiki.gg/wiki/P-44_Mist",
+    "rpm": 400,
+    "mag": 25,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 110,
+        "durable": 18,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "cqc-19-stun-lance",
+    "name": "CQC-19 Stun Lance",
+    "category": "Secondary",
+    "type": "Melee",
+    "url": "https://helldivers.wiki.gg/wiki/CQC-19_Stun_Lance",
+    "rpm": null,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 165,
+        "durable": 83,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Melee; Stun Large"
+      }
+    ]
+  },
+  {
+    "id": "cqc-30-stun-baton",
+    "name": "CQC-30 Stun Baton",
+    "category": "Secondary",
+    "type": "Melee",
+    "url": "https://helldivers.wiki.gg/wiki/CQC-30_Stun_Baton",
+    "rpm": null,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 120,
+        "durable": 60,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Melee; Stun Large"
+      }
+    ]
+  },
+  {
+    "id": "cqc-5-combat-hatchet",
+    "name": "CQC-5 Combat Hatchet",
+    "category": "Secondary",
+    "type": "Melee",
+    "url": "https://helldivers.wiki.gg/wiki/CQC-5_Combat_Hatchet",
+    "rpm": 100,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 240,
+        "durable": 120,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Melee; rpm = swings/min"
+      }
+    ]
+  },
+  {
+    "id": "cqc-2-saber",
+    "name": "CQC-2 Saber",
+    "category": "Secondary",
+    "type": "Melee",
+    "url": "https://helldivers.wiki.gg/wiki/CQC-2_Saber",
+    "rpm": 150,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 188,
+        "durable": 98,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Melee; rpm = swings/min"
+      }
+    ]
+  },
+  {
+    "id": "cqc-42-machete",
+    "name": "CQC-42 Machete",
+    "category": "Secondary",
+    "type": "Melee",
+    "url": "https://helldivers.wiki.gg/wiki/CQC-42_Machete",
+    "rpm": 72,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 300,
+        "durable": 150,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Melee; rpm = swings/min"
+      }
+    ]
+  },
+  {
+    "id": "cqc-73-entrenchment-tool",
+    "name": "CQC-73 Entrenchment Tool",
+    "category": "Secondary",
+    "type": "Melee",
+    "url": "https://helldivers.wiki.gg/wiki/CQC-73_Entrenchment_Tool",
+    "rpm": 150,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 165,
+        "durable": null,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Melee; durable not listed (civilian CQC-72 lists 83)"
+      }
+    ]
+  },
+  {
+    "id": "las-7-dagger",
+    "name": "LAS-7 Dagger",
+    "category": "Secondary",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/LAS-7_Dagger",
+    "rpm": null,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 250,
+        "durable": 50,
+        "ap": 2,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Beam: damage per second; also fire 100 DPS. Heat 6.67s"
+      }
+    ]
+  },
+  {
+    "id": "gp-31-grenade-pistol",
+    "name": "GP-31 Grenade Pistol",
+    "category": "Secondary",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/GP-31_Grenade_Pistol",
+    "rpm": null,
+    "mag": 1,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 250,
+        "durable": 250,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 400,
+          "durable": 400,
+          "ap": 3,
+          "innerRadius": 2.25,
+          "outerRadius": 6.5
+        },
+        "note": "Radii from shared GP-31 attack on One-Two page; outer AP Light"
+      }
+    ]
+  },
+  {
+    "id": "sg-22-bushwhacker",
+    "name": "SG-22 Bushwhacker",
+    "category": "Secondary",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/SG-22_Bushwhacker",
+    "rpm": 650,
+    "mag": 3,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 54,
+        "durable": 15,
+        "ap": 2,
+        "pellets": 9,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "p-72-crisper",
+    "name": "P-72 Crisper",
+    "category": "Secondary",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/P-72_Crisper",
+    "rpm": null,
+    "mag": 50,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 2,
+        "durable": 2,
+        "ap": 4,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Flame spray per-hit 2/2 (Damage Comparison); fire DoT 150 DPS per infobox"
+      }
+    ]
+  },
+  {
+    "id": "plas-15-loyalist",
+    "name": "PLAS-15 Loyalist",
+    "category": "Secondary",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/PLAS-15_Loyalist",
+    "rpm": 1000,
+    "mag": 8,
+    "modes": [
+      {
+        "name": "Uncharged",
+        "damage": 150,
+        "durable": 75,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 75,
+          "durable": 75,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": null
+        }
+      },
+      {
+        "name": "Charged",
+        "damage": 150,
+        "durable": 75,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 225,
+          "durable": 225,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "gp-20-ultimatum",
+    "name": "GP-20 Ultimatum",
+    "category": "Secondary",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/GP-20_Ultimatum",
+    "rpm": null,
+    "mag": 1,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 1000,
+        "durable": 1000,
+        "ap": 6,
+        "pellets": 1,
+        "explosion": {
+          "damage": 2000,
+          "durable": 2000,
+          "ap": 6,
+          "innerRadius": null,
+          "outerRadius": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "las-58-talon",
+    "name": "LAS-58 Talon",
+    "category": "Secondary",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/LAS-58_Talon",
+    "rpm": 750,
+    "mag": 7,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 200,
+        "durable": 20,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "p-35-re-educator",
+    "name": "P-35 Re-Educator",
+    "category": "Secondary",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/P-35_Re-Educator",
+    "rpm": 110,
+    "mag": 6,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 60,
+        "durable": 10,
+        "ap": 4,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Gas + confusion status"
+      }
+    ]
+  },
+  {
+    "id": "p-33-missile-pistol",
+    "name": "P-33 Missile Pistol",
+    "category": "Secondary",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/P-33_Missile_Pistol",
+    "rpm": 60,
+    "mag": 1,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 1000,
+        "durable": 1000,
+        "ap": 5,
+        "pellets": 1,
+        "explosion": {
+          "damage": 300,
+          "durable": 300,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "p-40-k-bolt-pistol",
+    "name": "P/40-K Bolt Pistol",
+    "category": "Secondary",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/P/40-K_Bolt_Pistol",
+    "rpm": 150,
+    "mag": 6,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 325,
+        "durable": 115,
+        "ap": 4,
+        "pellets": 1,
+        "explosion": {
+          "damage": 175,
+          "durable": 175,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "p-34-breacher",
+    "name": "P-34 Breacher",
+    "category": "Secondary",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/P-34_Breacher",
+    "rpm": 20,
+    "mag": 1,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 60,
+        "durable": 0,
+        "ap": 4,
+        "pellets": 1,
+        "explosion": {
+          "damage": 2000,
+          "durable": 2000,
+          "ap": 7,
+          "innerRadius": null,
+          "outerRadius": null
+        },
+        "note": "Also fire 150/s over 4s"
+      }
+    ]
+  },
+  {
+    "id": "g-12-high-explosive",
+    "name": "G-12 High Explosive",
+    "category": "Throwable",
+    "type": "Standard",
+    "url": "https://helldivers.wiki.gg/wiki/G-12_High_Explosive",
+    "rpm": null,
+    "mag": 5,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 4,
+        "pellets": 1,
+        "explosion": {
+          "damage": 800,
+          "durable": 800,
+          "ap": 4,
+          "innerRadius": null,
+          "outerRadius": 7
+        },
+        "note": "No direct-hit damage; radius is wiki infobox blast radius (stored as outerRadius)"
+      }
+    ]
+  },
+  {
+    "id": "g-6-frag",
+    "name": "G-6 Frag",
+    "category": "Throwable",
+    "type": "Standard",
+    "url": "https://helldivers.wiki.gg/wiki/G-6_Frag",
+    "rpm": null,
+    "mag": 6,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 500,
+          "durable": 500,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": 10
+        },
+        "note": "Radius from infobox (outerRadius). Also 110 shrapnel x35 (AP not listed; omitted)"
+      }
+    ]
+  },
+  {
+    "id": "g-10-incendiary",
+    "name": "G-10 Incendiary",
+    "category": "Throwable",
+    "type": "Standard",
+    "url": "https://helldivers.wiki.gg/wiki/G-10_Incendiary",
+    "rpm": null,
+    "mag": 5,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 300,
+          "durable": 300,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": 7
+        },
+        "note": "Radius from infobox (outerRadius). Fire 100 DPS"
+      }
+    ]
+  },
+  {
+    "id": "g-7-pineapple",
+    "name": "G-7 Pineapple",
+    "category": "Throwable",
+    "type": "Standard",
+    "url": "https://helldivers.wiki.gg/wiki/G-7_Pineapple",
+    "rpm": null,
+    "mag": 5,
+    "modes": [
+      {
+        "name": "Grenade",
+        "damage": 0,
+        "durable": 0,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 300,
+          "durable": 300,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": 10
+        }
+      },
+      {
+        "name": "Bomblets",
+        "damage": 300,
+        "durable": 300,
+        "ap": 3,
+        "pellets": 18,
+        "explosion": {
+          "damage": 100,
+          "durable": 100,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": null
+        },
+        "note": "18 bomblets"
+      }
+    ],
+    "note": "Radius from infobox (outerRadius)"
+  },
+  {
+    "id": "ted-63-dynamite",
+    "name": "TED-63 Dynamite",
+    "category": "Throwable",
+    "type": "Standard",
+    "url": "https://helldivers.wiki.gg/wiki/TED-63_Dynamite",
+    "rpm": null,
+    "mag": 4,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 4,
+        "pellets": 1,
+        "explosion": {
+          "damage": 1000,
+          "durable": 1000,
+          "ap": 4,
+          "innerRadius": null,
+          "outerRadius": 12
+        },
+        "note": "No direct-hit damage; radius is wiki infobox blast radius (stored as outerRadius)"
+      }
+    ]
+  },
+  {
+    "id": "g-16-impact",
+    "name": "G-16 Impact",
+    "category": "Throwable",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/G-16_Impact",
+    "rpm": null,
+    "mag": 5,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 4,
+        "pellets": 1,
+        "explosion": {
+          "damage": 400,
+          "durable": 400,
+          "ap": 4,
+          "innerRadius": null,
+          "outerRadius": 7
+        },
+        "note": "No direct-hit damage; radius is wiki infobox blast radius (stored as outerRadius)"
+      }
+    ]
+  },
+  {
+    "id": "g-123-thermite",
+    "name": "G-123 Thermite",
+    "category": "Throwable",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/G-123_Thermite",
+    "rpm": null,
+    "mag": 3,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 7,
+        "pellets": 1,
+        "explosion": {
+          "damage": 2000,
+          "durable": 2000,
+          "ap": 7,
+          "innerRadius": null,
+          "outerRadius": 2
+        },
+        "note": "Radius from infobox (outerRadius). Also fire 150/s over 6.5s"
+      }
+    ]
+  },
+  {
+    "id": "g-13-incendiary-impact",
+    "name": "G-13 Incendiary Impact",
+    "category": "Throwable",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/G-13_Incendiary_Impact",
+    "rpm": null,
+    "mag": 5,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 150,
+          "durable": 150,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": 7
+        },
+        "note": "Radius from infobox (outerRadius). Fire 100 DPS"
+      }
+    ]
+  },
+  {
+    "id": "k-2-throwing-knife",
+    "name": "K-2 Throwing Knife",
+    "category": "Throwable",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/K-2_Throwing_Knife",
+    "rpm": null,
+    "mag": 20,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 300,
+        "durable": 150,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": null
+      }
+    ]
+  },
+  {
+    "id": "g-4-gas",
+    "name": "G-4 Gas",
+    "category": "Throwable",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/G-4_Gas",
+    "rpm": null,
+    "mag": 4,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 6,
+        "pellets": 1,
+        "explosion": {
+          "damage": 3,
+          "durable": 3,
+          "ap": 6,
+          "innerRadius": null,
+          "outerRadius": 7
+        },
+        "note": "Radius from infobox (outerRadius). Gas cloud 25 DPS + confusion"
+      }
+    ]
+  },
+  {
+    "id": "g-50-seeker",
+    "name": "G-50 Seeker",
+    "category": "Throwable",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/G-50_Seeker",
+    "rpm": null,
+    "mag": 5,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 4,
+        "pellets": 1,
+        "explosion": {
+          "damage": 500,
+          "durable": 500,
+          "ap": 4,
+          "innerRadius": null,
+          "outerRadius": 7
+        },
+        "note": "No direct-hit damage; radius is wiki infobox blast radius (stored as outerRadius)"
+      }
+    ]
+  },
+  {
+    "id": "g-142-pyrotech",
+    "name": "G-142 Pyrotech",
+    "category": "Throwable",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/G-142_Pyrotech",
+    "rpm": null,
+    "mag": 6,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 50,
+          "durable": 50,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": 5
+        },
+        "note": "Explosion AP Medium; fire spray (AT III) 20 DPS. Radius from infobox"
+      }
+    ]
+  },
+  {
+    "id": "g-31-arc",
+    "name": "G-31 Arc",
+    "category": "Throwable",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/G-31_Arc",
+    "rpm": null,
+    "mag": 5,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 100,
+        "durable": 70,
+        "ap": 4,
+        "pellets": 10,
+        "explosion": null,
+        "note": "Arc x10 chains; Stun Small; radius 10m"
+      }
+    ]
+  },
+  {
+    "id": "tm-1-lure-mine",
+    "name": "TM-1 Lure Mine",
+    "category": "Throwable",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/TM-1_Lure_Mine",
+    "rpm": null,
+    "mag": 4,
+    "modes": [
+      {
+        "name": "Explosion",
+        "damage": 0,
+        "durable": 0,
+        "ap": 5,
+        "pellets": 1,
+        "explosion": {
+          "damage": 1000,
+          "durable": 1000,
+          "ap": 5,
+          "innerRadius": null,
+          "outerRadius": 8
+        }
+      },
+      {
+        "name": "Shrapnel",
+        "damage": 110,
+        "durable": null,
+        "ap": 3,
+        "pellets": 35,
+        "explosion": null,
+        "note": "Shrapnel durable not listed"
+      }
+    ]
+  },
+  {
+    "id": "g-48-giga-grenade",
+    "name": "G-48 Giga Grenade",
+    "category": "Throwable",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/G-48_Giga_Grenade",
+    "rpm": null,
+    "mag": 2,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 5,
+        "pellets": 1,
+        "explosion": {
+          "damage": 2000,
+          "durable": 2000,
+          "ap": 5,
+          "innerRadius": null,
+          "outerRadius": 12
+        },
+        "note": "No direct-hit damage; radius is wiki infobox blast radius (stored as outerRadius)"
+      }
+    ]
+  },
+  {
+    "id": "g-40-k-melta-mine",
+    "name": "G/40-K Melta Mine",
+    "category": "Throwable",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/G/40-K_Melta_Mine",
+    "rpm": null,
+    "mag": 4,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 7,
+        "pellets": 1,
+        "explosion": {
+          "damage": 2000,
+          "durable": 2000,
+          "ap": 7,
+          "innerRadius": null,
+          "outerRadius": 6
+        },
+        "note": "Radius from infobox. Also 600 flamewall x2"
+      }
+    ]
+  },
+  {
+    "id": "g-8-immolation",
+    "name": "G-8 Immolation",
+    "category": "Throwable",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/G-8_Immolation",
+    "rpm": null,
+    "mag": 6,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 0,
+        "pellets": 1,
+        "explosion": {
+          "damage": 20,
+          "durable": 20,
+          "ap": 0,
+          "innerRadius": null,
+          "outerRadius": 10
+        },
+        "note": "Fire"
+      }
+    ]
+  },
+  {
+    "id": "g-60-anti-tank-seeker",
+    "name": "G-60 Anti-Tank Seeker",
+    "category": "Throwable",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/G-60_Anti-Tank_Seeker",
+    "rpm": null,
+    "mag": 3,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 5,
+        "pellets": 1,
+        "explosion": {
+          "damage": 1800,
+          "durable": 1800,
+          "ap": 5,
+          "innerRadius": null,
+          "outerRadius": 12
+        },
+        "note": "No direct-hit damage; radius is wiki infobox blast radius (stored as outerRadius)"
+      }
+    ]
+  },
+  {
+    "id": "g-11-caltrops",
+    "name": "G-11 Caltrops",
+    "category": "Throwable",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/G-11_Caltrops",
+    "rpm": null,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Standard",
+        "damage": 0,
+        "durable": 0,
+        "ap": 3,
+        "pellets": 1,
+        "explosion": {
+          "damage": 50,
+          "durable": 10,
+          "ap": 3,
+          "innerRadius": null,
+          "outerRadius": 10
+        },
+        "note": "Proximity caltrops; Stun Small"
+      }
+    ]
+  }
+]

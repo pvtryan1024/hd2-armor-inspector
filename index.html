@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HD2 Armor Inspector</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">HD2 <b>Armor Inspector</b></span>
+    </div>
+    <div class="topbar-meta" id="buildInfo"></div>
+    <button class="btn ghost" id="shareBtn" title="Copy a link to this exact setup">Copy link</button>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT: enemy picker -->
+    <aside class="panel enemies-panel">
+      <div class="panel-head">
+        <h2>Target</h2>
+        <div class="seg" id="factionTabs" role="tablist"></div>
+        <input class="search" id="enemySearch" type="search" placeholder="Search enemies…" autocomplete="off">
+      </div>
+      <ul class="list" id="enemyList"></ul>
+    </aside>
+
+    <!-- CENTER: armor schematic -->
+    <section class="stage">
+      <div class="stage-head">
+        <div>
+          <div class="eyebrow" id="enemyFaction"></div>
+          <h1 id="enemyName">—</h1>
+          <a id="enemyLink" class="src" target="_blank" rel="noopener">wiki ↗</a>
+        </div>
+        <div class="stage-controls">
+          <div class="seg" id="stageTabs" title="Switch between the 3D model and the flat body map">
+            <button data-sv="3d">3D model</button>
+            <button data-sv="map" class="on">Body map</button>
+          </div>
+          <button class="btn ghost" id="fireBtn" title="Click hitzones to shoot them one at a time">Fire mode</button>
+          <div class="seg" id="viewTabs" title="Filter hitzones by the view they're visible from">
+            <button data-view="all" class="on">All</button>
+            <button data-view="front">Front</button>
+            <button data-view="side">Side</button>
+            <button data-view="rear">Rear</button>
+          </div>
+          <div class="seg" id="colorTabs" title="How hitzones are coloured">
+            <button data-color="pen" class="on">Penetration</button>
+            <button data-color="ttk">Shots to kill</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary" id="summary"></div>
+
+      <div class="fire-hud hidden" id="fireHud"></div>
+
+      <div class="stage-view">
+      <div class="kill-banner hidden" id="killBanner"></div>
+
+      <div class="viewer3d hidden" id="viewer3d">
+        <div class="v3-toolbar">
+          <label class="btn ghost sm edit-only" title="Load a .glb model for this enemy">Load .glb<input type="file" id="v3File" accept=".glb,.gltf" hidden></label>
+          <button class="btn ghost sm edit-only" id="v3Edit" title="Click meshes and assign them to wiki hitzones">Edit hitzones</button>
+          <button class="btn ghost sm hidden edit-only" id="v3Save">Save mapping</button>
+          <button class="btn ghost sm" id="v3Reset">Reset camera</button>
+          <label class="opt v3-tex" title="Show the model's own materials instead of hitzone colours"><input type="checkbox" id="v3Tex"> Original materials</label>
+          <span class="v3-status" id="v3Status"></span>
+        </div>
+        <div class="v3-canvas" id="v3Canvas"></div>
+        <div class="v3-empty hidden" id="v3Empty">
+          <h3>No 3D model for this enemy yet</h3>
+          <p class="public-only">Use the <b>Body map</b> view instead. Enemies with a <span class="badge3d">3D</span> tag in the list have a model.</p>
+          <div class="edit-only">
+          <p>Drop a <code>.glb</code> into <code>models/</code> named after the enemy id (<code id="v3Id"></code>.glb), or load one with the button above.</p>
+          <div class="v3-arch" id="v3Arch"></div>
+          <p class="muted">Then use <b>Edit hitzones</b> to click each mesh and pick which wiki part it is.</p>
+          </div>
+        </div>
+        <div class="v3-editor hidden" id="v3Editor"></div>
+      </div>
+
+      <div class="schematic" id="schematic">
+        <div class="zone z-head"><span class="zone-label">Head</span><div class="tiles"></div></div>
+        <div class="zone z-arms"><span class="zone-label">Arms &amp; weapons</span><div class="tiles"></div></div>
+        <div class="zone z-body"><span class="zone-label">Body</span><div class="tiles"></div></div>
+        <div class="zone z-rear"><span class="zone-label">Rear &amp; weak spots</span><div class="tiles"></div></div>
+        <div class="zone z-legs"><span class="zone-label">Legs</span><div class="tiles"></div></div>
+      </div>
+      </div>
+
+      <div class="legend" id="legend"></div>
+
+      <div class="tabs-row">
+        <div class="seg" id="bottomTabs">
+          <button data-tab="parts" class="on">Hitzones</button>
+          <button data-tab="rank">Best weapons vs target</button>
+        </div>
+      </div>
+      <div class="table-wrap" id="partsTableWrap"><table class="data" id="partsTable"></table></div>
+      <div class="table-wrap hidden" id="rankTableWrap">
+        <p class="hint">Every weapon ranked by fewest shots to kill, using its best hitzone in the current view. Ties broken by damage per shot.</p>
+        <table class="data" id="rankTable"></table>
+      </div>
+    </section>
+
+    <!-- RIGHT: weapon picker -->
+    <aside class="panel weapons-panel">
+      <div class="panel-head">
+        <h2>Weapon</h2>
+        <div class="seg wrap" id="catTabs"></div>
+        <input class="search" id="weaponSearch" type="search" placeholder="Search weapons…" autocomplete="off">
+      </div>
+      <ul class="list" id="weaponList"></ul>
+
+      <div class="weapon-card" id="weaponCard"></div>
+    </aside>
+  </main>
+
+  <div class="tooltip" id="tooltip" role="tooltip"></div>
+
+  <footer class="foot">
+    Enemy and weapon data from the <a href="https://helldivers.wiki.gg/" target="_blank" rel="noopener">Helldivers 2 Wiki</a> and its contributors,
+    used under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>;
+    values were reformatted for this calculator. Game archive IDs from the HD2 modding community's ID sheet.<br>
+    Simplified damage model (AP vs AV, durable mix, % to main, explosions); expect a few percent error.
+    Fan project, non-commercial, not affiliated with Arrowhead Game Studios or Sony Interactive Entertainment.
+    Helldivers is a trademark of Sony Interactive Entertainment.
+  </footer>
+
+  <script src="data/data.js"></script>
+  <script src="app.js"></script>
+  <script type="importmap">
+    { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    } }
+  </script>
+  <script type="module" src="viewer3d.js"></script>
+</body>
+</html>
