@@ -143,6 +143,10 @@ const stageOf = (key) => { const p = primOf(key); return /_damaged?$/i.test(p) ?
 function instanceFor(entry, key, i) {
   const n = lastDetail?.enemy.parts[i]?.count || 1;
   if (n < 2) return null;
+  // map "pieces": { mesh: piece index } fixes which piece a mesh is (Caustic Charger spore sacs: each its own)
+  // (null: the whole part, no single piece)
+  const pk = entry.map.pieces && [key, key.replace(/(_\d+|#\d+)$/, '')].find((x) => x in entry.map.pieces);
+  if (pk) return entry.map.pieces[pk];
   const bases = [...new Set(entry.meshes.map((m) => m.key).filter((k) => partIndexFor(entry, k) === i).map(baseOf))].sort();
   // pieces in several bits (Overseer upper + lower leg, a Warrior leg in 3 segments): side and position
   // in the name decide the piece (l/left, r/right × front/fore, back/rear/hind)
@@ -151,11 +155,9 @@ function instanceFor(entry, key, i) {
     const pos = /(front|fore)/i.test(b) ? 'f' : /(back|rear|hind)/i.test(b) ? 'b' : '';
     return side ? side + pos : '';
   };
-  if (bases.length > n) {
-    const keys = [...new Set(bases.filter(tok).map(tok))].sort();
-    // the named pieces give exactly the count: they decide; an unnamed extra (spore growths on the Caustic
-    // Charger's body) belongs to the whole part
-    if (keys.length === n) return tok(baseOf(key)) ? keys.indexOf(tok(baseOf(key))) : null;
+  if (bases.length > n && bases.every((b) => tok(b))) {
+    const keys = [...new Set(bases.map(tok))].sort();
+    if (keys.length === n) return keys.indexOf(tok(baseOf(key)));
   }
   const at = bases.indexOf(baseOf(key));
   return at < 0 ? null : at % n;
@@ -816,7 +818,7 @@ $('#v3Save').addEventListener('click', async () => {
   if (!current) return;
   // inner hitboxes are saved too (the auto-placed ones become fixed once saved)
   const colliders = (current.colliders || []).map(({ def }) => ({ part: def.part, from: def.from.map((v) => +(+v).toFixed(4)), to: def.to.map((v) => +(+v).toFixed(4)), radius: def.radius }));
-  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(current.map.vanish ? { vanish: current.map.vanish } : {}), ...(colliders.length ? { colliders } : {}) }, null, 2);
+  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(current.map.vanish ? { vanish: current.map.vanish } : {}), ...(current.map.pieces ? { pieces: current.map.pieces } : {}), ...(colliders.length ? { colliders } : {}) }, null, 2);
   if (SERVED) {
     try {
       const r = await fetch(`api/map/${encodeURIComponent(currentId)}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });

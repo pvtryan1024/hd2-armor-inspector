@@ -58,5 +58,18 @@
   ],
   "vanish": [
     "Spore Flesh (6)"
-  ]
+  ],
+  "pieces": {
+    "left_claw_blob": 0,
+    "right_claw_blob": 1,
+    "left_front_leg_blob": 2,
+    "right_front_leg_blob": 3,
+    "left_back_leg_blob": 4,
+    "right_back_leg_blob": 5,
+    "butt_1": null,
+    "side_left_1": null,
+    "side_right_1": null,
+    "body_1": null,
+    "head_1": null
+  }
 }
