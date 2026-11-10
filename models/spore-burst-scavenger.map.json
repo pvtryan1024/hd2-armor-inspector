@@ -5,8 +5,10 @@
     "butt": "Main",
     "body": "Main",
     "Head": "Head",
-    "b_head": "Head",
-    "b_head_2": "Head"
+    "b_head": "Limbs (6)",
+    "b_head_2": "Main"
   },
-  "hidden": []
+  "hidden": [
+    "b_Bone_b1cf4f38"
+  ]
 }
