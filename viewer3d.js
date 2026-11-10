@@ -53,6 +53,31 @@ function resize() {
 }
 new ResizeObserver(resize).observe(host);
 
+const hpCard = document.createElement('div');
+hpCard.className = 'v3-hpcard hidden';
+host.appendChild(hpCard);
+const hpAt = new THREE.Vector3();
+let hpKey = '';
+
+function updateHpCard() {
+  const hp = lastDetail?.fire && !editing ? lastDetail.hitHp : null;
+  const pt = lastDetail?.hit?.point;
+  if (!hp || !pt || !current) { hpCard.classList.add('hidden'); return; }
+  const key = JSON.stringify(hp);
+  if (key !== hpKey) {
+    hpKey = key;
+    const bar = hp.cons != null ? `<div class="hpbar cons"><b style="width:${hp.cons * 100}%"></b></div>`
+      : `<div class="hpbar${hp.main ? ' main' : ''}"><b style="width:${hp.frac * 100}%"></b></div>`;
+    hpCard.innerHTML = `<div class="hc-name">${hp.name}</div>${hp.gone ? '' : bar}<div class="hc-text${hp.gone ? ' gone' : ''}">${hp.text}</div>`;
+  }
+  hpAt.fromArray(pt).project(camera);
+  if (hpAt.z > 1) { hpCard.classList.add('hidden'); return; } // behind the camera
+  const w = host.clientWidth, h = host.clientHeight;
+  hpCard.style.left = `${((hpAt.x + 1) / 2) * w}px`;
+  hpCard.style.top = `${((1 - hpAt.y) / 2) * h}px`;
+  hpCard.classList.remove('hidden');
+}
+
 (function loop() {
   requestAnimationFrame(loop);
   if (host.offsetParent === null) return; // hidden tab: skip work
@@ -614,3 +639,9 @@ window.addEventListener('hd2:update', (ev) => {
   if (ev.detail.stageView === '3d') requestAnimationFrame(resize);
 });
 HD2.refresh();
+
+// the health card follows the camera every frame (started last: it reads state declared further up)
+(function hpLoop() {
+  requestAnimationFrame(hpLoop);
+  if (host.offsetParent !== null) updateHpCard();
+})();

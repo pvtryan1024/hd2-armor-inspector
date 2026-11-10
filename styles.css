@@ -311,6 +311,16 @@ table.data tr.click { cursor: pointer; }
 .hpbar b { display: block; height: 100%; background: var(--text); transition: width 0.15s; }
 .hpbar.wide { width: 140px; }
 .tile.on-cons { --c: #6f8a72 !important; filter: saturate(0.6); } /* broken, still soaking hits on constitution */
+/* 3D: remaining health of the piece hit last, pinned beside the impact point */
+.v3-hpcard {
+  position: absolute; z-index: 3; transform: translate(14px, -50%); pointer-events: none; min-width: 130px;
+  background: rgba(12, 15, 19, 0.9); border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 8px; display: grid; gap: 4px;
+  font: 11px var(--font-mono); color: var(--text); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+.v3-hpcard .hc-name { font: 700 13px/1 var(--font-head); text-transform: uppercase; letter-spacing: 0.04em; }
+.v3-hpcard .hc-text { color: var(--muted); }
+.v3-hpcard .hc-text.gone { color: var(--pen-none); font-weight: 700; }
+.v3-hpcard .hpbar.main b { background: var(--pen-none); }
 .hpbar.cons b { background: #ff9b3d; } /* constitution: broken but still taking hits */
 .hpbar.wide b { background: var(--pen-none); }
 .tile.gone { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }

@@ -1033,6 +1033,25 @@
       return !!(l && !l.main && (l.gone ?? l.frac <= 0));
     });
     const goneInst = e.parts.map((_, i) => (state.fire ? partLeft(i)?.gones || null : null));
+    // fire mode: remaining health of the piece hit last, for the floating card on the 3D model
+    let hitHp = null;
+    if (state.fire && state.sim && state.hit && !state.hit.covered) {
+      const p = e.parts[state.hit.idx], l = partLeft(state.hit.idx);
+      const k = state.hit.k ?? ((p.count || 1) === 1 ? 0 : null); // a single part reads like one piece
+      if (l) {
+        const one = k != null && l.segs;
+        const frac = one ? l.segs[k] : l.frac;
+        const cons = one ? l.csegs?.[k] : null;
+        const gone = !l.main && (one ? l.gones?.[k] : l.gone);
+        hitHp = {
+          name: pieceName(p, state.hit.k), frac: Math.max(0, frac), cons, gone, main: !!l.main,
+          text: l.main ? `uses Main · ${fmt(Math.max(0, frac * e.parts[mainIndexFor(e, state.hit.idx)].health))} left`
+            : gone ? 'Destroyed'
+            : cons != null ? `Broken · ${fmt(cons * p.cons)} constitution`
+            : one ? `${fmt(frac * p.health)} / ${fmt(p.health)} HP` : l.label,
+        };
+      }
+    }
     const w = weapon();
     const m = w ? w.modes[state.mode] || w.modes[0] : null;
     // projectile AP per angle band; the 3D shader colours each pixel by its own impact angle
@@ -1040,7 +1059,7 @@
     const exAp = state.explosion && m?.explosion ? m.explosion.ap ?? -1 : -1;
     const ap4 = m ? ANGLE_BANDS.map((_, b) => Math.max(m.explosionOnly ? -1 : apFor(m, b), exAp)) : null;
     window.dispatchEvent(new CustomEvent('hd2:update', { detail: {
-      enemy: e, colors, gone, goneInst, fire: state.fire, stageView: state.stageView,
+      enemy: e, colors, gone, goneInst, hitHp, fire: state.fire, stageView: state.stageView,
       colorMode: state.color, ap4, avs: e.parts.map((p) => p.av), bands: ANGLE_BANDS,
       hit: state.hit, blast: blastRadii(m),
     } }));
