@@ -405,11 +405,14 @@ const colliderMat = new THREE.MeshBasicMaterial({ color: 0xffe710, wireframe: tr
 function defaultColliders(entry) {
   const parts = lastDetail?.enemy.parts || [];
   const inner = parts.find((p) => /^inner flesh$/i.test(p.name));
-  const byKey = new Map(entry.meshes.map((m) => [m.key, m.mesh]));
-  const head = byKey.get('head'), butt = byKey.get('butt');
-  if (!inner || !head || !butt) return [];
-  const a = new THREE.Box3().setFromObject(head).getCenter(new THREE.Vector3());
-  const b = new THREE.Box3().setFromObject(butt).getCenter(new THREE.Vector3());
+  // the intact head / butt, including numbered sub-meshes ("head_1", "head_2" on multi-material models)
+  const box = (name) => {
+    const b = new THREE.Box3();
+    entry.meshes.forEach(({ key, mesh }) => { if (primOf(key) === name) b.expandByObject(mesh); });
+    return b.isEmpty() ? null : b.getCenter(new THREE.Vector3());
+  };
+  const a = box('head'), b = box('butt');
+  if (!inner || !a || !b) return [];
   const from = a.clone().lerp(b, 0.15), to = a.clone().lerp(b, 0.85); // trimmed so it stays inside the body
   return [{ part: inner.name, from: from.toArray(), to: to.toArray(), radius: +(a.distanceTo(b) * 0.2).toFixed(3), auto: true }];
 }
