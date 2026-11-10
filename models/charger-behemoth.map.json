@@ -1,0 +1,39 @@
+{
+  "enemy": "charger-behemoth",
+  "meshes": {
+    "right_front_leg": "Front Leg Armor (2)",
+    "side_left_damaged": "Inner Flesh",
+    "side_right_damaged": "Inner Flesh",
+    "right_front_leg_damaged": "Leg Flesh (4)",
+    "head": "Head",
+    "right_back_leg": "Rear Leg Armor (2)",
+    "side_right": "Torso Armor (2)",
+    "head_damaged": "Head",
+    "claw_left": "Claws (2)",
+    "butt": "Butt",
+    "left_front_leg": "Front Leg Armor (2)",
+    "side_left": "Torso Armor (2)",
+    "left_front_leg_damaged": "Leg Flesh (4)",
+    "right_back_leg_damaged": "Leg Flesh (4)",
+    "left_back_leg_damaged": "Leg Flesh (4)",
+    "left_back_leg": "Rear Leg Armor (2)",
+    "claw_right": "Claws (2)"
+  },
+  "hidden": [
+    "butt_hurt",
+    "left_front_leg_gib",
+    "claw_left_gib",
+    "side_left_damaged",
+    "side_right_damaged",
+    "right_front_leg_damaged",
+    "butt_damaged",
+    "claw_right_gib",
+    "head_damaged",
+    "left_back_leg_gib",
+    "right_back_leg_gib",
+    "right_front_leg_gib",
+    "left_front_leg_damaged",
+    "right_back_leg_damaged",
+    "left_back_leg_damaged"
+  ]
+}

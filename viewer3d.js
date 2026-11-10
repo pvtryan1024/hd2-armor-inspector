@@ -114,7 +114,7 @@ function frame() {
   const center = box.getCenter(new THREE.Vector3());
   const r = Math.max(size.x, size.y, size.z) || 1;
   controls.target.copy(center);
-  camera.position.copy(center).add(new THREE.Vector3(r * 1.1, r * 0.6, r * 1.6));
+  camera.position.copy(center).add(new THREE.Vector3(r * 1.5, r * 0.8, r * 2.1));
   camera.near = r / 200; camera.far = r * 50; camera.updateProjectionMatrix();
   grid.position.y = box.min.y;
   grid.scale.setScalar(Math.max(0.1, r / 8));

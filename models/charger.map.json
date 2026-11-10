@@ -1,0 +1,39 @@
+{
+  "enemy": "charger",
+  "meshes": {
+    "left_front_leg": "Front Leg Armor (2)",
+    "right_front_leg": "Front Leg Armor (2)",
+    "head_damaged": "Head",
+    "side_right_damaged": "Inner Flesh",
+    "left_back_leg": "Rear Leg Armor (2)",
+    "side_left": "Torso Armor (2)",
+    "right_back_leg_damaged": "Leg Flesh (4)",
+    "butt": "Butt",
+    "head": "Head",
+    "claw_right": "Claws (2)",
+    "right_back_leg": "Rear Leg Armor (2)",
+    "right_front_leg_damaged": "Leg Flesh (4)",
+    "side_left_damaged": "Inner Flesh",
+    "left_front_leg_damaged": "Leg Flesh (4)",
+    "side_right": "Torso Armor (2)",
+    "claw_left": "Claws (2)",
+    "left_back_leg_damaged": "Leg Flesh (4)"
+  },
+  "hidden": [
+    "head_damaged",
+    "side_right_damaged",
+    "claw_left_gib",
+    "right_back_leg_damaged",
+    "left_back_leg_gib",
+    "right_back_leg_gib",
+    "right_front_leg_gib",
+    "butt_damaged",
+    "butt_hurt",
+    "right_front_leg_damaged",
+    "side_left_damaged",
+    "left_front_leg_gib",
+    "left_front_leg_damaged",
+    "claw_right_gib",
+    "left_back_leg_damaged"
+  ]
+}
