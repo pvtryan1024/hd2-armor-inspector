@@ -7,6 +7,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
+
+THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
+THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
+THREE.Mesh.prototype.raycast = acceleratedRaycast;
 
 const HD2 = window.HD2;
 const $ = (s) => document.querySelector(s);
@@ -106,6 +111,7 @@ function prepare(root) {
     seen.set(key, n + 1);
     if (n) key = `${key}#${n + 1}`;
     o.userData.key = key;
+    if (!o.isSkinnedMesh) o.geometry.computeBoundsTree();
     o.userData.orig = o.material;
     o.userData.hz = hitzoneMaterial();
     meshes.push({ key, mesh: o });
@@ -283,6 +289,7 @@ function paint() {
 
 /* ---------- picking ---------- */
 const ray = new THREE.Raycaster();
+ray.firstHitOnly = true;
 const ptr = new THREE.Vector2();
 const nm = new THREE.Matrix3();
 function pick(ev) {
@@ -305,19 +312,28 @@ function pick(ev) {
 }
 
 let downAt = null;
-renderer.domElement.addEventListener('pointerdown', (ev) => { downAt = [ev.clientX, ev.clientY]; });
+renderer.domElement.addEventListener('pointerdown', (ev) => { downAt = [ev.clientX, ev.clientY, performance.now()]; });
+let hoverEv = null;
 renderer.domElement.addEventListener('pointermove', (ev) => {
   if (ev.buttons) { HD2.hideTip(); return; }
+  if (!hoverEv) requestAnimationFrame(() => { const e = hoverEv; hoverEv = null; hover(e); });
+  hoverEv = ev;
+});
+function hover(ev) {
   const h = pick(ev);
   if (!h) { HD2.hideTip(); return; }
   const i = partIndexFor(current, h.mesh.userData.key);
   if (editing) { status(`${h.mesh.userData.key}${i >= 0 ? ' → ' + lastDetail.enemy.parts[i].name : ' (unassigned)'}`); return; }
   HD2.hideTip();
   if (i >= 0) HD2.tip(i, ev.clientX, ev.clientY, { deg: h.deg });
-});
+}
 renderer.domElement.addEventListener('pointerleave', () => HD2.hideTip());
 renderer.domElement.addEventListener('pointerup', (ev) => {
-  if (!downAt || Math.hypot(ev.clientX - downAt[0], ev.clientY - downAt[1]) > 5) return; // it was a drag
+  if (!downAt) return;
+  const moved = Math.hypot(ev.clientX - downAt[0], ev.clientY - downAt[1]);
+  const held = performance.now() - downAt[2];
+  downAt = null;
+  if (moved > 12 || (moved > 4 && held > 350)) return; // it was a drag to rotate the camera
   const h = pick(ev);
   if (!h) return;
   if (editing) {

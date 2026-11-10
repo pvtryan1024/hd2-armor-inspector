@@ -569,8 +569,12 @@
     publish3d(e, results);
     renderLegend();
     renderPartsTable(e, results);
-    if (state.tab === 'rank') renderRankTable(e);
-    if (state.tab === 'real') renderRealTable(e);
+    const tabKey = JSON.stringify([state.tab, e.id, state.view, state.showInner, state.explosion, state.allPellets, state.band, state.dist, state.weaponId]);
+    if (tabKey !== lastTabKey) {
+      lastTabKey = tabKey;
+      if (state.tab === 'rank') renderRankTable(e);
+      if (state.tab === 'real') renderRealTable(e);
+    }
   }
 
   function renderSummary(e, w, results) {
@@ -1127,6 +1131,8 @@
   }
 
   /* ---------------- wiring ---------------- */
+
+  let lastTabKey = null; // rankings are rebuilt only when their inputs change
 
   function render(keepCard) {
     renderFactionTabs();
