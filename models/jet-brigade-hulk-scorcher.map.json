@@ -4,7 +4,6 @@
     "arm_right": "Arms (2)",
     "leg_right": "Legs (2)",
     "chest": "Main",
-    "back": "Heatsink",
     "arm_left": "Arms (2)",
     "leg_left": "Legs (2)",
     "weapon_left": "Arms (2)",
@@ -21,6 +20,7 @@
     "leg_right_damaged",
     "leg_left_damaged",
     "shoulder_right_damaged",
-    "torso_damaged"
+    "torso_damaged",
+    "back"
   ]
 }
