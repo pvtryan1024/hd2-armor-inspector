@@ -198,11 +198,27 @@
   function simulate(mode, enemy, idx, opts) {
     const part = enemy.parts[idx];
     const s = shotDamage(mode, part, enemy, opts);
-    const res = { ...s, killAt: null, breakAt: null, downs: false, perMain: 0, why: '' };
+    const res = { ...s, killAt: null, breakAt: null, downs: false, perMain: 0, why: '', strip: null };
     const sim = newSim(enemy);
-    for (let shot = 1; shot <= MAX_SHOTS; shot++) {
+    let shot0 = 0;
+    // armored part: shoot the plate until it breaks; its damage to Main carries over
+    const ci = part.coveredBy && !opts.exposeAll ? enemy.parts.findIndex((p) => p.name === part.coveredBy) : -1;
+    if (ci >= 0) {
+      const sc = shotDamage(mode, enemy.parts[ci], enemy, opts);
+      for (;;) {
+        if (shot0 >= MAX_SHOTS) return res;
+        const o = applyShot(sim, enemy, ci, sc);
+        shot0++;
+        if (sim.dead) { res.killAt = shot0; res.downs = sim.dead.how === 'downed'; res.why = sim.dead.why; res.strip = { part: part.coveredBy, shots: shot0 }; return res; }
+        if (o.broke) break;
+        if (!o.progress) return res; // can't get through the armor
+      }
+      res.strip = { part: part.coveredBy, shots: shot0 };
+    }
+    for (let n = 1; shot0 + n <= MAX_SHOTS; n++) {
+      const shot = shot0 + n;
       const o = applyShot(sim, enemy, idx, s);
-      if (shot === 1) res.perMain = o.toMain;
+      if (n === 1) res.perMain = o.toMain;
       if (o.broke && res.breakAt == null) res.breakAt = shot;
       if (sim.dead) {
         res.killAt = shot;
@@ -281,12 +297,18 @@
     const near = armor.filter((i) => words.some((w) => enemy.parts[i].name.toLowerCase().includes(w)));
     return near.length ? near : armor;
   }
+  const coverTag = (p, open) => (open ? 'armor off' : `🛡 ${esc(p.coveredBy.replace(/\s*\(\d+\)$/, ''))}`);
   const hiddenTag = (p, open) => (p.hidden === 'angle' ? 'hard to reach' : open ? 'exposed' : '🔒 covered');
 
   function isExposed(enemy, idx, sim = null) {
     const p = enemy.parts[idx];
-    if (!p.hidden || state.showInner) return true;
+    if ((!p.hidden && !p.coveredBy) || state.showInner) return true;
     if (p.hidden === 'angle') return !!sim; // a shot you actually placed reached it
+    if (p.coveredBy && !p.hidden) {
+      if (!sim) return true; // time to kill already includes stripping the plate
+      const ci = enemy.parts.findIndex((q) => q.name === p.coveredBy);
+      return ci < 0 || !sim.hp[ci] || sim.hp[ci].some((h) => h <= 0);
+    }
     if (!sim) return false;
     return coverFor(enemy, idx).some((i) => sim.hp[i] && sim.hp[i].some((h) => h <= 0));
   }
@@ -345,7 +367,7 @@
   const weaponById = (id) => DATA.weapons.find((w) => w.id === id);
   const enemy = () => enemyById(state.enemyId);
   const weapon = () => weaponById(state.weaponId);
-  const opts = () => ({ explosion: state.explosion, allPellets: state.allPellets, band: state.band, dist: state.dist });
+  const opts = () => ({ explosion: state.explosion, allPellets: state.allPellets, band: state.band, dist: state.dist, exposeAll: state.showInner });
 
   /* ---------------- rendering: lists ---------------- */
 
@@ -566,7 +588,7 @@
           const fatal = part.fatal === true ? '<span class="fatal" title="Destroying this kills">☠ fatal</span>' : part.fatal === 'downs' ? '<span class="fatal" title="Destroying this downs the enemy">☠ downs</span>' : '';
           const covered = !isExposed(e, i, state.fire ? state.sim : null);
           return `<div class="tile ${vis ? '' : 'dim'} ${covered ? 'covered' : ''} ${left && left.frac <= 0 ? 'gone' : ''}" data-i="${i}" style="--c:${color};${size}" ${covered ? 'title="Behind armor: break the armor first"' : ''}>
-              ${part.hidden ? `<span class="inner-tag">${hiddenTag(part, !covered)}</span>` : ''}
+              ${part.hidden ? `<span class="inner-tag">${hiddenTag(part, !covered)}</span>` : part.coveredBy ? `<span class="inner-tag">${coverTag(part, state.fire && isExposed(e, i, state.sim))}</span>` : ''}
               <span class="av">AV${part.av}</span>
               <div class="name">${esc(part.name)}</div>
               <div class="row"><span>${typeof part.health === 'number' ? fmt(part.health) + ' HP' : 'Main HP'} ${fatal}</span><span><span class="big">${big}</span> ${small}</span></div>
@@ -599,7 +621,7 @@
         if (!visible(part, state.view)) return '';
         const pc = r ? penClass(r, part) : null;
         return `<tr data-i="${i}">
-          <td>${esc(part.name)}${part.hidden ? ` <span class="inner-tag inline">${hiddenTag(part, isExposed(e, i, state.fire ? state.sim : null))}</span>` : ''}</td>
+          <td>${esc(part.name)}${part.hidden ? ` <span class="inner-tag inline">${hiddenTag(part, isExposed(e, i, state.fire ? state.sim : null))}</span>` : part.coveredBy ? ` <span class="inner-tag inline">${coverTag(part, state.fire && isExposed(e, i, state.sim))}</span>` : ''}</td>
           <td class="num" title="${esc(avName(part.av))}">${part.av}</td>
           <td class="num">${typeof part.health === 'number' ? fmt(part.health) : '<span class="muted">Main</span>'}</td>
           <td class="num">${pct(part.durable)}</td>
@@ -610,7 +632,7 @@
             <td class="num">${fmt(r.total)}</td>
             <td class="num">${fmt(r.perMain)}</td>
             <td class="num">${r.breakAt ?? '—'}</td>
-            <td class="num">${r.kind === 'shot' ? r.killAt ?? '—' : shotsLabel(r)}</td>
+            <td class="num">${r.kind === 'shot' ? r.killAt ?? '—' : shotsLabel(r)}${r.strip ? ` <span class="muted" title="Includes shots to destroy ${esc(r.strip.part)}">(${r.strip.shots} armor)</span>` : ''}</td>
             <td class="num"><b>${ttkHtml(r)}${r.reload ? '<span class="muted" title="More shots than one magazine">*</span>' : ''}</b></td>` : ''}
         </tr>`;
       })
@@ -749,7 +771,9 @@
     const mode = w.modes[state.mode] || w.modes[0];
     const part = e.parts[i];
     if (!isExposed(e, i, state.sim)) {
-      state.sim.log.unshift(`${part.name} is behind armor — break the armor first (or turn on "Covered parts: exposed")`);
+      state.sim.log.unshift(part.coveredBy && !part.hidden
+        ? `${part.name} is under ${part.coveredBy} — break it first`
+        : `${part.name} is behind armor — break the armor first (or turn on "Covered parts: exposed")`);
       state.sim.log.length = Math.min(state.sim.log.length, 6);
       render();
       return;
@@ -940,6 +964,7 @@
     if (r) {
       if (pc === 'immune') verdict = 'This zone cannot be damaged.';
       else if (r.ttk != null && r.kind !== 'shot') verdict = `Kills in <b>${fmtTime(r.ttk)}</b> (${r.kind === 'beam' ? 'continuous beam' : esc(r.why)}).`;
+      else if (r.strip && r.killAt) verdict = `Kills in <b>${r.killAt}</b> shots${r.ttk != null ? ` (<b>${fmtTime(r.ttk)}</b>)` : ''}: <b>${r.strip.shots}</b> to break ${esc(r.strip.part)}, then ${r.killAt - r.strip.shots} into ${esc(part.name)}. Armor damage to Main counts.`;
       else if (isOneShot(r)) verdict = `<b>One shot</b> kill (${fmt(r.total)} dmg)${r.downs ? ' — downs it' : part.fatal === true && r.breakAt === 1 ? ' by destroying this part' : ''}.`;
       else if (r.killAt) verdict = `Kills in <b>${r.killAt}</b> shot${r.killAt > 1 ? 's' : ''}${r.ttk != null ? ` (<b>${fmtTime(r.ttk)}</b>)` : ''}${r.downs ? ' (downs it)' : r.breakAt === r.killAt && part.fatal === true ? ' by destroying this part' : ' via Main health'}.`;
       else if (r.breakAt) verdict = `Breaks in <b>${r.breakAt}</b> shot${r.breakAt > 1 ? 's' : ''}, but that alone won't kill it.`;
@@ -1029,7 +1054,7 @@
     $('#rankTableWrap').classList.toggle('hidden', state.tab !== 'rank');
     $('#realTableWrap').classList.toggle('hidden', state.tab !== 'real');
     $$('#stageTabs button').forEach((b) => b.classList.toggle('on', b.dataset.sv === state.stageView));
-    const hasInner = enemy()?.parts.some((p) => p.hidden);
+    const hasInner = enemy()?.parts.some((p) => p.hidden || p.coveredBy);
     $('#innerBtn').classList.toggle('hidden', !hasInner);
     $('#innerBtn').classList.toggle('on', state.showInner);
     $('#innerBtn').textContent = state.showInner ? 'Covered parts: exposed' : 'Covered parts: hidden';

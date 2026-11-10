@@ -46,8 +46,22 @@ const normPart = (p) => {
   q.count = q.count || (m ? +m[1] : 1);
   return q;
 };
+// Armor that must be destroyed before the part under it can be hit (time to kill strips it first)
+const LIMB = ['Limb Armor (8)', 'Limb Armor'];
+const COVERS = [
+  { enemy: /overseer/i, parts: { 'Torso': ['Chest Armor'], 'Right Arm': LIMB, 'Left Arm': LIMB, 'Legs (2)': LIMB } },
+  { enemy: /^agitator$/i, parts: { 'Head': ['Helmet'], 'Torso': ['Torso Armor'], 'Upper Arms (2)': ['Pauldrons (2)'] } },
+];
+
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
+  for (const c of COVERS) {
+    if (!c.enemy.test(e.name)) continue;
+    for (const p of e.parts) {
+      const cover = (c.parts[p.name] || []).find((n) => e.parts.some((q) => q.name === n));
+      if (cover) p.coveredBy = cover;
+    }
+  }
   // "Inner Flesh", "Internals", "Leg Flesh"…: behind armor until it breaks
   if (!/broken/i.test(e.name)) e.parts.forEach((p) => { if (/\b(inner|internals?|flesh)\b/i.test(p.name)) p.hidden = true;
     // undersides aren't armored over, just hard to get an angle on
