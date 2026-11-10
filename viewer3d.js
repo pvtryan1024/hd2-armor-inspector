@@ -205,13 +205,14 @@ function frame() {
 }
 
 function show(entry) {
-  if (current) scene.remove(current.root);
+  if (current) { scene.remove(current.root); current.colliders?.forEach((c) => c.mesh.removeFromParent()); }
   current = entry;
   selectedKey = null;
   $('#v3Empty').classList.toggle('hidden', !!entry);
   $('#v3Id').textContent = currentId || '';
   if (!entry) { $('#v3Legend').classList.add('hidden'); status(SERVED ? '' : 'Open via "node serve.js" to auto-load models'); renderEditor(); return; }
   scene.add(entry.root);
+  entry.colliders?.forEach((c) => scene.add(c.mesh));
   applyHidden();
   frame();
   paint();
@@ -263,7 +264,7 @@ async function loadForEnemy(id) {
     if (m && m.ok) map = { meshes: {}, hidden: [], ...(await m.json()) };
     const entry = { root: gltf.scene, meshes: prepare(gltf.scene), map };
     cache.set(id, entry);
-    if (currentId === id) show(entry);
+    if (currentId === id) { show(entry); buildColliders(entry); }
   } catch (err) {
     if (currentId !== id) return;
     // a 404 just means no model yet
@@ -355,6 +356,61 @@ function paint() {
     lg.innerHTML = `Colours follow the impact angle from your camera<br>` +
       bands.map((b, k) => `${b.name.replace(' angle', '')} ${b.range}: <b>AP ${ap4[k]}</b>`).join(' · ');
   }
+}
+
+/* ---------- inner hitboxes ----------
+ * Invisible shapes for hitboxes that have no mesh (e.g. a Charger's Inner Flesh), saved in the map as
+ * colliders: [{ part, from: [x,y,z], to: [x,y,z], radius }]. Only over-penetrating shots look for them.
+ * Without a saved one, a Charger-style model gets a cylinder from its head to its butt. Shown as a
+ * wireframe while editing hitzones. */
+const colliderMat = new THREE.MeshBasicMaterial({ color: 0xffe710, wireframe: true, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthTest: false });
+
+function defaultColliders(entry) {
+  const parts = lastDetail?.enemy.parts || [];
+  const inner = parts.find((p) => /^inner flesh$/i.test(p.name));
+  const byKey = new Map(entry.meshes.map((m) => [m.key, m.mesh]));
+  const head = byKey.get('head'), butt = byKey.get('butt');
+  if (!inner || !head || !butt) return [];
+  const a = new THREE.Box3().setFromObject(head).getCenter(new THREE.Vector3());
+  const b = new THREE.Box3().setFromObject(butt).getCenter(new THREE.Vector3());
+  const from = a.clone().lerp(b, 0.15), to = a.clone().lerp(b, 0.85); // trimmed so it stays inside the body
+  return [{ part: inner.name, from: from.toArray(), to: to.toArray(), radius: +(a.distanceTo(b) * 0.2).toFixed(3), auto: true }];
+}
+
+function buildColliders(entry) {
+  if (entry.colliders) entry.colliders.forEach((c) => c.mesh.removeFromParent());
+  const defs = entry.map.colliders?.length ? entry.map.colliders : defaultColliders(entry);
+  entry.colliders = defs.map((c) => {
+    const from = new THREE.Vector3().fromArray(c.from), to = new THREE.Vector3().fromArray(c.to);
+    const len = from.distanceTo(to);
+    const mesh = new THREE.Mesh(new THREE.CylinderGeometry(c.radius, c.radius, len, 16, 1), colliderMat);
+    mesh.position.copy(from).lerp(to, 0.5);
+    mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), to.clone().sub(from).normalize());
+    mesh.renderOrder = 20;
+    mesh.userData.collider = c;
+    scene.add(mesh);
+    return { def: c, mesh };
+  });
+  showColliders();
+}
+const showColliders = () => current?.colliders?.forEach(({ mesh }) => { mesh.visible = editing; });
+
+/** Over-penetration target along the shot: the first inner hitbox the ray passes through behind the impact. */
+const thruRay = new THREE.Raycaster();
+function innerAlong(h) {
+  if (!current?.colliders?.length) return null;
+  thruRay.set(h.origin, h.point.clone().sub(h.origin).normalize());
+  const meshes = current.colliders.map((c) => c.mesh);
+  const vis = meshes.map((m) => m.visible);
+  meshes.forEach((m) => { m.visible = true; });
+  const hits = thruRay.intersectObjects(meshes, false);
+  meshes.forEach((m, i) => { m.visible = vis[i]; });
+  const dist = h.point.distanceTo(h.origin);
+  const hit = hits.find((x) => x.distance > dist - 1e-3);
+  if (!hit) return null;
+  const parts = lastDetail?.enemy.parts || [];
+  const idx = parts.findIndex((p) => p.name === hit.object.userData.collider.part);
+  return idx >= 0 ? { idx, d: hit.distance - dist } : null;
 }
 
 /* ---------- explosions ----------
@@ -479,7 +535,7 @@ function shoot(h) {
   const blast = blastHits(h, lastDetail?.blast?.outer);
   const parts = {};
   for (const b of blast) if (parts[b.idx] == null || b.d < parts[b.idx]) parts[b.idx] = b.d;
-  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, thru: innerAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
   if (said) status(said);
 }
 
@@ -583,6 +639,7 @@ $('#v3Editor').addEventListener('change', (ev) => {
 
 $('#v3Edit').addEventListener('click', () => {
   editing = !editing;
+  showColliders();
   if (editing) HD2.hideTip();
   renderEditor();
   paint();
@@ -590,7 +647,9 @@ $('#v3Edit').addEventListener('click', () => {
 
 $('#v3Save').addEventListener('click', async () => {
   if (!current) return;
-  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden }, null, 2);
+  // inner hitboxes are saved too (the auto-placed ones become fixed once saved)
+  const colliders = (current.colliders || []).map(({ def }) => ({ part: def.part, from: def.from.map((v) => +(+v).toFixed(4)), to: def.to.map((v) => +(+v).toFixed(4)), radius: def.radius }));
+  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(colliders.length ? { colliders } : {}) }, null, 2);
   if (SERVED) {
     try {
       const r = await fetch(`api/map/${encodeURIComponent(currentId)}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });

@@ -110,15 +110,16 @@
    * Projectiles lose speed (penetration slowdown) and with it damage, on the range-falloff curve;
    * beams carry full damage. */
   const cleaveCost = (p) => p.av + ((p.durable ?? 0) >= 0.76 ? 3 : (p.durable ?? 0) >= 0.25 ? 2 : 1);
-  function overpen(mode, enemy, idx, s, opts) {
+  function overpen(mode, enemy, idx, s, opts, target) {
     const p = enemy.parts[idx];
-    if (!p.behind || !(s.proj > 0) || mode.explosionOnly) return null;
+    const behind = target !== undefined ? (target == null ? null : enemy.parts[target]?.name) : p.behind;
+    if (!behind || !(s.proj > 0) || mode.explosionOnly) return null;
     const ap = s.ap;
     if (!(ap > p.av)) return null;
     if (ARMOR_RE.test(p.name) && p.av > 0 && ap < 3 * p.av) return null;
     const left = ap - cleaveCost(p);
     if (!(left > p.av)) return null;
-    const j = enemy.parts.findIndex((q) => q.name === p.behind);
+    const j = enemy.parts.findIndex((q) => q.name === behind);
     if (j < 0) return null;
     const s2 = shotDamage({ ...mode, ap: left, apAngles: null, explosion: null }, enemy.parts[j], enemy, { ...opts, explosion: false, exDist: 0 });
     // speed lost going through → damage lost (projectiles only)
@@ -959,7 +960,8 @@
     const band = bandOf(hit.deg);
     const o = { ...opts(), band };
     const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0 }) }];
-    const thru = overpen(mode, e, hit.idx, rows[0].s, o);
+    // 3D shots: only an inner hitbox the ray actually passes through counts (hit.thru from the viewer)
+    const thru = overpen(mode, e, hit.idx, rows[0].s, o, 'thru' in hit ? hit.thru?.idx ?? null : undefined);
     const radii = blastRadii(mode);
     if (radii) {
       // pieces reached by the blast rays (3D view); the struck piece already took the full blast
