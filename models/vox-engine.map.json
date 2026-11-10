@@ -5,7 +5,6 @@
     "left_rocket": "Missile Launchers (2)",
     "right_back_tracks_whole": "Tracks (4)",
     "boss_lid": "Hatches (2)",
-    "vent_under_damaged": "Vents (6)",
     "left_back_knee": "Trackpod Latches (4)",
     "body_whole": "Undercarriage",
     "left_flap": "Torso Flaps (2)",
@@ -24,7 +23,12 @@
     "right_flap": "Torso Flaps (2)",
     "left_speaker": "Speakers (2)",
     "cannon_left": "Cannons (2)",
-    "cannon_right": "Cannons (2)"
+    "cannon_right": "Cannons (2)",
+    "vent_lower_left": "Vents (6)",
+    "vent_lower_right": "Vents (6)",
+    "vent_upper_left": "Vents (6)",
+    "vent_upper_right": "Vents (6)",
+    "right_rocket_cap": "Missile Launchers (2)"
   },
   "hidden": [
     "torso_damaged",
@@ -39,6 +43,12 @@
     "right_speaker_damaged",
     "left_speaker_damaged",
     "cannon_left_destroyed",
-    "cannon_right_destroyed"
+    "cannon_right_destroyed",
+    "vent_back_bar_damaged",
+    "vent_lower_left_damaged",
+    "vent_lower_right_damaged",
+    "vent_upper_left_damaged",
+    "vent_upper_right_damaged",
+    "tracks_static"
   ]
 }

@@ -401,8 +401,19 @@ const SOURCES = {
   dropship: { src: CY + 'vehicles/cyborg_dropship/cyborg_dropship.unit.glb', rules: [[/^body$/, 'Fuselage'], [/thruster$/, 'Thruster (4)']] },
   'vox-engine': {
     src: CY + 'vehicles/cyborg_siege_engine/cyborg_siege_engine.unit.glb',
+    // unnamed pieces, matched by shape: the side vents and their damaged states (front is -z, left is -x);
+    // 0xda9368a8 is murmur("vent_back_bar_damaged"). Raw names: the hash 0x8dc6adf9 is used twice.
+    names: {
+      'g_siege_engine 0xda9368a8': 'vent_back_bar_damaged',
+      'g_siege_engine 0x2b5e39ae': 'vent_lower_left', 'g_siege_engine 0xe1e29f85': 'vent_lower_left_damaged',
+      'g_siege_engine 0xcbf1a9ea': 'vent_lower_right', 'g_siege_engine 0x9ff82b07': 'vent_lower_right_damaged',
+      'g_siege_engine 0x63d08f86': 'vent_upper_left', 'g_siege_engine 0xf1a41290': 'vent_upper_left_damaged',
+      'g_siege_engine 0x8dc6adf9': 'vent_upper_right', 'g_siege_engine 0xc6f4b828': 'vent_upper_right_damaged',
+      'g_rockets 0x8dc6adf9': 'right_rocket_cap',
+    },
+    hide: ['tracks_static'], // in the damaged group: the broken tracks
     rules: [
-      [/^sarcophagus$/, 'Sarcophagus'], [/^torso(_whole)?$/, 'Torso'], [/^(left|right)_rocket$/, 'Missile Launchers (2)'],
+      [/^sarcophagus$/, 'Sarcophagus'], [/^torso(_whole)?$/, 'Torso'], [/^(left|right)_rocket(_cap)?$/, 'Missile Launchers (2)'],
       [/^(left|right)_speaker$/, 'Speakers (2)'], [/^(left|right)_flap$/, 'Torso Flaps (2)'], [/^(left|right)_(front|back)_tracks(_whole)?$/, 'Tracks (4)'],
       [/^(left|right)_(front|back)_knee$/, 'Trackpod Latches (4)'], [/^vent_/, 'Vents (6)'], [/^boss_lid$/, 'Hatches (2)'], [/^body(_whole)?$/, 'Undercarriage'],
     ],
@@ -412,11 +423,46 @@ const SOURCES = {
   'factory-strider': {
     src: CY + 'vehicles/cyborg_spawner/cyborg_spawner.unit.glb',
     boneGroups: FS_BONES,
+    // the unnamed leg plates, knee shields and hull pieces, matched by shape (front is -z, left is -x)
+    names: {
+      'g_body 0x310533ad': 'leg_upper_right_front',
+      'g_body 0x1eb59a4b': 'leg_upper_right_front_damaged',
+      'g_body 0x2c3b2366': 'leg_lower_right_front',
+      'g_body 0xbfccb1d6': 'leg_lower_right_front_damaged',
+      'g_body 0x786baaac': 'knee_right_front',
+      'g_body 0x8e95c6c4': 'knee_right_front_damaged',
+      'g_body 0x26972a16': 'leg_upper_right_back',
+      'g_body 0xe6831f1d': 'leg_upper_right_back_damaged',
+      'g_body 0xb52f6c2e': 'leg_lower_right_back',
+      'g_body 0x55170a50': 'leg_lower_right_back_damaged',
+      'g_body 0xe80e4269': 'knee_right_back',
+      'g_body 0x59514b2a': 'knee_right_back_damaged',
+      'g_body 0x381e23fe': 'leg_upper_left_front',
+      'g_body 0xe70581d4': 'leg_upper_left_front_damaged',
+      'g_body 0x6b56de64': 'leg_lower_left_front',
+      'g_body 0x8725aab5': 'leg_lower_left_front_damaged',
+      'g_body 0xa183b2c3': 'knee_left_front',
+      'g_body 0x3b80ff88': 'knee_left_front_damaged',
+      'g_body 0x2e96058c': 'leg_upper_left_back',
+      'g_body 0x9c80bd56': 'leg_upper_left_back_damaged',
+      'g_body 0xa38b1f5f': 'leg_lower_left_back',
+      'g_body 0x209fd2d9': 'leg_lower_left_back_damaged',
+      'g_body 0x7c6adac4': 'knee_left_back',
+      'g_body 0xe84be9f0': 'knee_left_back_damaged',
+      'g_body 0xa7d0ffed': 'top_right',
+      'g_body 0x8aeb874e': 'top_right_damaged',
+      'g_body 0xbb57b318': 'top_left',
+      'g_body 0xee621fe2': 'top_left_damaged',
+      'g_body 0xeb86b86c': 'side_right',
+      'g_body 0x28ad2203': 'side_right_damaged',
+      'g_body 0x16ce220f': 'side_left',
+      'g_body 0xa6f944fb': 'side_left_damaged'
+    },
     rules: [
       [/^armor_head(_whole)?$/, 'Head Armor'], [/^(head(_whole)?|head)$/, 'Head Body'], [/^neck(_whole)?$/, 'Neck'],
       [/^armor_front(_whole)?$/, 'Front Armor'], [/^front(_whole)?$/, 'Front Top Armor'], [/^armor_rear(_whole)?$/, 'Rear Armor'],
-      [/^engine_rear(_whole)?$/, 'Rear Engine Armor'], [/^body_static$/, 'Main'],
-      [/^knee_armor$/, 'Knee Armor (4)'], [/^leg_armor$/, 'Leg Armor (8)'], [/^leg_assembly$/, 'Leg Assembly (4)'], [/^neck$/, 'Neck'], [/^body$/, 'Main'],
+      [/^engine_rear(_whole)?$/, 'Rear Engine Armor'], [/^body_static$/, 'Main'], [/^(top|side)_(left|right)$/, 'Main'],
+      [/^knee_(armor|(left|right)_(front|back))$/, 'Knee Armor (4)'], [/^leg_(armor|(upper|lower)_(left|right)_(front|back))$/, 'Leg Armor (8)'], [/^leg_assembly$/, 'Leg Assembly (4)'], [/^neck$/, 'Neck'], [/^body$/, 'Main'],
     ],
   },
   'cannon-turret': { src: CY + 'turrets/cyborg_turret_command_bunker_hmg/cyborg_turret_command_bunker_hmg.unit.glb', rules: MAIN_ONLY },
@@ -570,7 +616,8 @@ async function prep(id) {
     if (!mesh) continue;
     const isGear = gearNames.some((g) => node.getName().startsWith(g.name));
     if (!isGear && (/shadow|collision|culling/i.test(node.getName()) || lodLevel(node.getName()) !== bestLod)) { node.dispose(); continue; }
-    const n = gearNames.some((a) => node.getName().startsWith(a.name)) ? node.getName() : clean(node.getName());
+    const raw = node.getName();
+    const n = gearNames.some((a) => raw.startsWith(a.name)) ? raw : cfg.names?.[raw] || cfg.names?.[clean(raw)] || clean(raw);
     node.setName(n);
     mesh.setName(n);
     names.push(n);
@@ -642,7 +689,7 @@ async function prep(id) {
       if (!gear && gearNames.some((a) => n.startsWith(a.name)) && HIDE.test(n)) map.hidden.push(n);
       if (gear) map.meshes[n] = gear.part;
       else if (rule) map.meshes[n] = rule[1];
-      if (HIDE.test(n)) map.hidden.push(n);
+      if (HIDE.test(n) || cfg.hide?.includes(n)) map.hidden.push(n);
     }
     fs.writeFileSync(mapPath, JSON.stringify(map, null, 2) + '\n');
     const unassigned = names.filter((n) => !map.meshes[n] && !map.hidden.includes(n));
