@@ -91,6 +91,28 @@ enemies.forEach((e) => {
   });
 });
 
+// Stagger Force needed to stagger (interrupt) each enemy, from the wiki's Stagger page
+const STAGGER = {
+  1: ['Caustic Spitter', 'Pouncer', 'Scavenger', 'Spore Burst Scavenger', /voteless/i],
+  10: ['Assault Raider', 'Brawler', 'Commissar', 'Incendiary Rocket Raider', 'Jet Brigade Commissar', 'Jet Brigade MG Raider', 'Jet Brigade Trooper', 'MG Raider', 'Marauder', 'Pyro Trooper', 'Rocket Raider', 'Trooper'],
+  15: ['Hunter', 'Predator Hunter', 'Spore Burst Hunter'],
+  20: ['Alpha Warrior', 'Caustic Warrior', 'Hive Guard', 'Rupture Warrior', 'Spore Burst Warrior', 'Warrior', 'Agitator', 'Radical'],
+  25: ['Alpha Commander', 'Brood Commander'],
+  30: ['Caustic Spewer', 'Nursing Spewer', 'Predator Stalker', 'Rupture Spewer', 'Stalker', 'Berserker', 'Conflagration Devastator', 'Devastator', 'Heavy Devastator',
+    'Incendiary MG Devastator', 'Jet Brigade Devastator', 'Reinforced Scout Strider', 'Rocket Devastator', 'Scout Strider', 'Elevated Overseer'],
+  35: ['Crescent Overseer', 'Overseer'],
+  38: ['Dragonroach', 'Charger', 'Charger Behemoth', 'Rupture Charger', 'Caustic Charger'],
+  40: ['Hulk Bruiser', 'Hulk Firebomber', 'Hulk Obliterator', 'Hulk Scorcher', 'Jet Brigade Hulk Bruiser', 'Jet Brigade Hulk Scorcher', 'War Strider', 'Gatekeeper', 'Harvester', 'Veracitor'],
+  45: ['Fleshmob'],
+  50: ['Impaler', 'Bile Titan', 'Spore Burst Bile Titan'],
+};
+enemies.forEach((e) => {
+  for (const [t, names] of Object.entries(STAGGER)) {
+    const base = e.name.replace(/\s*\((armor )?broken\)$/i, ''); // broken variants stagger like the original
+    if (names.some((n) => (typeof n === 'string' ? n === base : n.test(base)))) e.stagger = +t;
+  }
+});
+
 // Game archive IDs per enemy, from the HD2 modding community's ID sheet (Enemies & NPC IDs tab),
 // so you know which archive to open in Filediver. The CSV holds four side-by-side column groups.
 const ARCHIVE_ALIASES = {
@@ -203,6 +225,29 @@ weapons.forEach((w) => {
   });
 });
 
+// Stagger and push forces per weapon mode, gathered from each weapon page's "Special Effects" (data/forces.json)
+const forcesPath = path.join(dir, 'forces.json');
+let forceModes = 0;
+if (fs.existsSync(forcesPath)) {
+  const forces = JSON.parse(fs.readFileSync(forcesPath, 'utf8'));
+  weapons.forEach((w) => {
+    const f = forces[w.id];
+    if (!f || !f.modes) return;
+    const list = Object.values(f.modes);
+    (w.modes || []).forEach((m) => {
+      const v = f.modes[m.name] || (list.length === 1 ? list[0] : null);
+      if (!v) return;
+      if (v.stagger != null) m.stagger = v.stagger;
+      if (v.push != null) m.push = v.push;
+      if (m.explosion) {
+        if (v.exStagger != null) m.explosion.stagger = v.exStagger;
+        if (v.exPush != null) m.explosion.push = v.exPush;
+      }
+      if (m.stagger != null || m.explosion?.stagger != null) forceModes++;
+    });
+  });
+}
+
 // Display names: drop the "A/" (sentry) and "E/" (emplacement) prefixes; ids stay the same so links keep working
 weapons.forEach((w) => {
   if (['Sentry', 'Emplacement'].includes(w.category)) w.name = w.name.replace(/^[AE]\//, '');
@@ -232,6 +277,8 @@ if (fs.existsSync(thumbsDir)) for (const f of fs.readdirSync(thumbsDir)) { const
 const wthumbsDir = path.join(__dirname, 'images', 'weapons');
 const wthumbs = {};
 if (fs.existsSync(wthumbsDir)) for (const f of fs.readdirSync(wthumbsDir)) { const m = /^([a-z0-9-]+).(png|svg)$/.exec(f); if (m) wthumbs[m[1]] = m[2]; }
+
+console.log(`stagger: ${enemies.filter((e) => e.stagger != null).length} enemies with a threshold, ${forceModes} weapon modes with forces`);
 
 const out = {
   built: new Date().toISOString().slice(0, 10),

@@ -82,6 +82,10 @@
     const first = p.name.toLowerCase().split(/\s+/)[0];
     const grp = mains.find((i) => enemy.parts[i].name.toLowerCase().startsWith(first + ' '));
     if (grp != null) return grp;
+    // tanks: weapons on top belong to the turret; tracks, engine and anything else unnamed to the hull
+    const pool = (re) => mains.find((i) => re.test(enemy.parts[i].name));
+    if (/launch tube|cannon|barrel|heatsink/i.test(p.name) && pool(/^turret/i) != null) return pool(/^turret/i);
+    if (pool(/^hull/i) != null) return pool(/^hull/i);
     return mains.find((i) => /^main$/i.test(enemy.parts[i].name.trim())) ?? mains[0];
   }
 
@@ -781,6 +785,19 @@
   }
 
   /** hit = { deg } when fired from the 3D view, so the real impact angle picks the AP. */
+  /** Stagger needs damage that lands with Stagger Force ≥ the enemy's threshold (no build-up between hits);
+   *  a staggered enemy is shoved back by the Push Force. Explosions bring their own forces. */
+  function forceNote(mode, enemy, s, blast) {
+    const st = Math.max(mode.explosionOnly ? -1 : mode.stagger ?? -1, blast ? mode.explosion?.stagger ?? -1 : -1);
+    const push = Math.max(mode.explosionOnly ? -1 : mode.push ?? -1, blast ? mode.explosion?.push ?? -1 : -1);
+    if (st < 0) return '';
+    if (!(s.total > 0 || s.mainEx > 0)) return '';
+    const thr = enemy.stagger;
+    if (thr == null) return ` · stagger ${st} (no threshold listed)`;
+    if (st < thr) return ` · no stagger (${st} < ${thr})`;
+    return ` [[Staggered]] ${st} ≥ ${thr}${push > 0 ? ` [[Pushed]] force ${push}` : ''}`;
+  }
+
   function fireAt(i, hit, k) {
     const e = enemy(), w = weapon();
     if (!e || !w || !state.sim || state.sim.dead) return;
@@ -798,7 +815,7 @@
     const s = shotDamage(mode, part, e, { ...opts(), band });
     const o = applyShot(state.sim, e, i, s, false, k);
     const label = k != null && (part.count || 1) > 1 ? `${part.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${part.count}` : part.name;
-    state.sim.log.unshift(`#${state.sim.shots} ${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}`);
+    state.sim.log.unshift(`#${state.sim.shots} ${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
     state.sim.log.length = Math.min(state.sim.log.length, 6);
     render();
   }
@@ -827,7 +844,7 @@
           <span class="hud-v">${fmt(Math.max(0, sim.pool[i]))}</span>`).join('')}
         <button class="btn ghost sm" id="resetSim">Reset</button>
       </div>
-      <div class="hud-log">${sim.log.length ? sim.log.map(esc).join('<br>') : 'Click a hitzone to fire one shot of the selected weapon.'}</div>`;
+      <div class="hud-log">${sim.log.length ? sim.log.map((l) => esc(l).replace(/\[\[(\w+)\]\]/g, '<span class="force-tag">$1</span>')).join('<br>') : 'Click a hitzone to fire one shot of the selected weapon.'}</div>`;
     if (sim.dead) {
       banner.classList.remove('hidden');
       banner.innerHTML = `<div class="kb-title">${sim.dead.how === 'downed' ? 'Downed' : 'Killed'}</div>
@@ -895,7 +912,7 @@
         if (o.broke) notes.push(`${e.parts[r.idx].name} destroyed`);
       });
       const d = res.rows[0];
-      state.sim.log.unshift(`#${state.sim.shots} ${e.parts[d.idx].name} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : 'ricochet'}${res.rows.length > 1 ? ` + blast on ${res.rows.length - 1} part${res.rows.length > 2 ? 's' : ''}` : ''}${notes.length ? ' — ' + notes.join(', ') : ''}`);
+      state.sim.log.unshift(`#${state.sim.shots} ${e.parts[d.idx].name} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : 'ricochet'}${res.rows.length > 1 ? ` + blast on ${res.rows.length - 1} part${res.rows.length > 2 ? 's' : ''}` : ''}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}`);
       state.sim.log.length = Math.min(state.sim.log.length, 6);
     }
     render();
