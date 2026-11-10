@@ -1280,7 +1280,7 @@
     $('#fireBtn').addEventListener('click', () => { state.fire = !state.fire; resetSim(); render(); });
     $('#innerBtn').addEventListener('click', () => { state.showInner = !state.showInner; render(); });
     $('.stage').addEventListener('click', (ev) => {
-      if (ev.target.closest('#resetSim, #resetSim2')) { resetSim(); render(); }
+      if (ev.target.closest('#resetSim, #resetSim2')) { resetSim(); state.hit = null; render(); } // clears the shot ray, panel and health card too
       if (ev.target.closest('#shotClose')) { state.hit = null; render(); }
     });
     $('#stageTabs').addEventListener('click', (ev) => {

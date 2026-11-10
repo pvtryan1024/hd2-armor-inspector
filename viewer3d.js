@@ -636,6 +636,7 @@ window.addEventListener('hd2:update', (ev) => {
   lastDetail = ev.detail;
   if (ev.detail.enemy.id !== currentId) { drawShot(null); loadForEnemy(ev.detail.enemy.id); }
   else { paint(); if (editing) renderEditor(); drawShot(ev.detail.hit, ev.detail.blast); }
+  updateHpCard(); // right away, e.g. Reset hides it without waiting for the next frame
   if (ev.detail.stageView === '3d') requestAnimationFrame(resize);
 });
 HD2.refresh();
