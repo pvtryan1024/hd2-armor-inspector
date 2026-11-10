@@ -35,11 +35,14 @@ const CHARGER = [
 // the abdomen: armor plates ("tail", Butt Armor) over the soft sac (Lower Sac); 0xf4fb223e is the burst sac.
 // the torso: the soft body (Upper Sac) under the side plates (two hash meshes, 3 plates each) and a front plate;
 // each side's wound mesh shows when that side's armor breaks
+const BT_SAC = [[-0.6, 6.0, -1.6], [0.6, 7.4, 2.3]]; // the belly between the legs
 const BT_BODY = {
   names: { '0x3f868f69': 'torso_left', '0x30fa360a': 'torso_right', torso_gibs_left: 'torso_left_gibs', torso_gibs_right: 'torso_right_gibs', torso_gibs: 'torso_burst' },
   shells: [
     { mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail', tipBones: /^spine_lower_4$/ },
-    { mesh: 'torso', main: 'torso', rest: 'torso_{side}_plates', halves: true, softBox: [[-0.6, 6.0, -1.6], [0.6, 7.4, 2.3]] }, // Torso Armor (2) is left and right
+    { mesh: 'torso', main: 'torso', rest: 'torso_{side}_plates', halves: true, softBox: BT_SAC }, // Torso Armor (2) is left and right
+    // the burst upper sac: only the gore (blobs + the torn belly between the legs); its copy of the armor is dropped
+    { mesh: 'torso_burst', main: 'torso_burst', keepPieces: true, softBox: BT_SAC },
   ],
 };
 const BILE_TITAN = [
@@ -268,6 +271,9 @@ function splitShells(doc, node, sp, likeBoxes) {
     const isPlate = (x, i) => (likeBoxes ? likeBoxes.some((b) => sameBox(b, x.box)) : i > 0 && x.n >= total * 0.02);
     let body = sh.filter((x, i) => !isPlate(x, i)).flatMap((x) => x.tris);
     let plates = sh.filter(isPlate).flatMap((x) => x.tris);
+    // keepPieces: the loose pieces are part of what stays (gore blobs); the box below only trims the main piece
+    const extra = sp.keepPieces ? plates : [];
+    if (sp.keepPieces) plates = [];
     // tipBones: the tail tip is welded to the body; its upper half is armored, its underside soft.
     // Tip triangles (by bone) above the tip's mid-height, per slice along the body, go to the plates.
     if (sp.tipBones && !likeBoxes) {
@@ -303,7 +309,7 @@ function splitShells(doc, node, sp, likeBoxes) {
       }
       body = keep;
     }
-    if (!plates.length) continue;
+    if (!plates.length && !sp.softBox) continue;
     // softBox: the armor is welded to the soft body (Bile Titan torso: everything but the small belly between
     // the legs is armored, leg sockets too): only body triangles centred inside the box stay soft
     if (sp.softBox && !likeBoxes) {
@@ -326,6 +332,7 @@ function splitShells(doc, node, sp, likeBoxes) {
       }
       body = keep;
     }
+    body.push(...extra);
     const idx = (list) => doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(list)).setBuffer(buffer);
     if (!likeBoxes) { const p = prim.clone(); p.setIndices(idx(plates)); restPrims.push(p); }
     prim.setIndices(idx(body));
