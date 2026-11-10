@@ -19,7 +19,8 @@
     "leg_left_front_inner": "Leg Armor (12)",
     "leg_right_back_outer_bottom": "Leg Armor (12)",
     "head": "Head",
-    "0xf4fb223e": "Butt Armor"
+    "0xf4fb223e": "Lower Sac",
+    "tail_sac": "Lower Sac"
   },
   "hidden": [
     "leg_right_back_inner_gibs",
@@ -47,7 +48,7 @@
     "0xf4fb223e": {
       "part": "Lower Sac",
       "replaces": [
-        "tail"
+        "tail_sac"
       ]
     }
   }

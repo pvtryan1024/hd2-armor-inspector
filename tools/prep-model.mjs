@@ -212,6 +212,64 @@ function splitByBone(doc, node, groupOf) {
   return [...parts.keys()];
 }
 
+/** Loose pieces of a primitive (triangles joined by shared vertices or shared positions):
+ *  [{ tris: [a, b, c, …], n: vertex count, box: [lo, hi] }], largest first. */
+function shellsOf(prim) {
+  const P = prim.getAttribute('POSITION'), I = prim.getIndices();
+  const n = P.getCount(), par = Int32Array.from({ length: n }, (_, i) => i), v = [0, 0, 0];
+  const find = (x) => { while (par[x] !== x) x = par[x] = par[par[x]]; return x; };
+  const join = (x, y) => { par[find(x)] = find(y); };
+  const pos = [], seen = new Map();
+  for (let i = 0; i < n; i++) {
+    pos.push(P.getElement(i, v).slice());
+    const k = v.map((x) => Math.round(x * 1000)).join(',');
+    if (seen.has(k)) join(i, seen.get(k)); else seen.set(k, i);
+  }
+  const m = I ? I.getCount() : n, at = (t) => (I ? I.getScalar(t) : t);
+  for (let t = 0; t + 2 < m; t += 3) { join(at(t), at(t + 1)); join(at(t), at(t + 2)); }
+  const shells = new Map();
+  for (let t = 0; t + 2 < m; t += 3) {
+    const r = find(at(t));
+    if (!shells.has(r)) shells.set(r, { tris: [], verts: new Set() });
+    const sh = shells.get(r);
+    for (let k = 0; k < 3; k++) { sh.tris.push(at(t + k)); sh.verts.add(at(t + k)); }
+  }
+  return [...shells.values()].map(({ tris, verts }) => {
+    const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
+    for (const i of verts) for (let k = 0; k < 3; k++) { lo[k] = Math.min(lo[k], pos[i][k]); hi[k] = Math.max(hi[k], pos[i][k]); }
+    return { tris, n: verts.size, box: [lo, hi] };
+  }).sort((a, b) => b.n - a.n);
+}
+const sameBox = (a, b) => a[0].every((x, k) => Math.abs(x - b[0][k]) < 0.01 && Math.abs(a[1][k] - b[1][k]) < 0.01);
+
+/** Tails in one mesh: the soft body is the largest loose piece (plus crumbs under 2 %), the armor plates
+ *  are the other pieces. { mesh, main, rest, prim?, dropLike? }: the body becomes "main", the plates a new
+ *  mesh "rest"; with dropLike the plates are dropped instead when they repeat the plates of that mesh
+ *  (a damage state that carries its own copy). Only primitives whose material matches prim are cut. */
+function splitShells(doc, node, sp, likeBoxes) {
+  const buffer = doc.getRoot().listBuffers()[0];
+  const mesh = node.getMesh(), restPrims = [];
+  for (const prim of mesh.listPrimitives()) {
+    if (sp.prim && !sp.prim.test(prim.getMaterial()?.getName() || '')) continue;
+    const sh = shellsOf(prim);
+    const total = sh.reduce((a, x) => a + x.n, 0);
+    const isPlate = (x, i) => (likeBoxes ? likeBoxes.some((b) => sameBox(b, x.box)) : i > 0 && x.n >= total * 0.02);
+    const body = sh.filter((x, i) => !isPlate(x, i)).flatMap((x) => x.tris);
+    const plates = sh.filter(isPlate).flatMap((x) => x.tris);
+    if (!plates.length) continue;
+    const idx = (list) => doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(list)).setBuffer(buffer);
+    if (!likeBoxes) { const p = prim.clone(); p.setIndices(idx(plates)); restPrims.push(p); }
+    prim.setIndices(idx(body));
+  }
+  node.setName(sp.main); mesh.setName(sp.main);
+  if (!restPrims.length || !sp.rest) return [];
+  const m = doc.createMesh(sp.rest);
+  restPrims.forEach((p) => m.addPrimitive(p));
+  const n = doc.createNode(sp.rest).setMesh(m).setSkin(node.getSkin()).setMatrix(node.getMatrix());
+  (node.getParentNode() || doc.getRoot().listScenes()[0]).addChild(n);
+  return [sp.rest];
+}
+
 /** Bone that weighs most on a skinned mesh overall; for a rigid mesh, the bone nearest its centre. */
 function mainBone(node, doc) {
   const skin = node.getSkin();
@@ -304,15 +362,18 @@ const tank = (sides) => ({ src: CY + 'vehicles/cyborg_tank/cyborg_tank.unit.glb'
 const MAIN_ONLY = [[/./, 'Main']];
 
 const SOURCES = {
-  charger: { src: 'content/fac_bugs/cha_charger/cha_charger.unit.glb', rules: CHARGER },
-  'charger-behemoth': { src: 'content/fac_bugs/cha_charger_bull/cha_charger_bull.unit.glb', rules: CHARGER },
+  // charger butts: the armor plates on top and the soft butt below are pieces of one mesh
+  charger: { src: 'content/fac_bugs/cha_charger/cha_charger.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates' }], rules: CHARGER },
+  'charger-behemoth': { src: 'content/fac_bugs/cha_charger_bull/cha_charger_bull.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates' }], rules: CHARGER },
   // the Rupture's front legs are its digging plates (Frontal Tarsal Plate Armor, AV5)
-  'rupture-charger': { src: 'content/fac_bugs/cha_charger_burrower/cha_charger_burrower.unit.glb', rules: [[/^(left|right)_front_leg$/, 'Frontal Tarsal Plate Armor (2)'], ...CHARGER] },
-  'caustic-charger': { src: 'content/fac_bugs/cha_charger_acid/cha_charger_acid.unit.glb', rules: [[/_blob$/, 'Spore Flesh (6)'], ...CHARGER] },
-  'bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider.unit.glb', rules: BILE_TITAN },
-  'spore-burst-bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider_gloom.unit.glb', rules: BILE_TITAN },
+  'rupture-charger': { src: 'content/fac_bugs/cha_charger_burrower/cha_charger_burrower.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates' }], rules: [[/^(left|right)_front_leg$/, 'Frontal Tarsal Plate Armor (2)'], ...CHARGER] },
+  'caustic-charger': { src: 'content/fac_bugs/cha_charger_acid/cha_charger_acid.unit.glb', shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', prim: /cha_charger/ }], rules: [[/_blob$/, 'Spore Flesh (6)'], ...CHARGER] },
+  // the abdomen: armor plates ("tail", Butt Armor) over the soft sac; 0xf4fb223e is the burst sac
+  'bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider.unit.glb', shells: [{ mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail' }], rules: BILE_TITAN },
+  'spore-burst-bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider_gloom.unit.glb', shells: [{ mesh: '0xf4fb223e', main: '0xf4fb223e', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail' }], rules: BILE_TITAN },
   impaler: {
     src: 'content/fac_bugs/cha_impaler/cha_impaler.unit.glb',
+    shells: [{ mesh: 'tail', main: 'tail', rest: 'tail_plates' }],
     rules: [
       [/^head$/, 'Head'],
       [/^head_shield$/, 'Crest Armor'],
@@ -634,6 +695,19 @@ async function prep(id) {
     if (!node.getMesh() || node.getSkin() || !/^0x[0-9a-f]+$/i.test(node.getName())) continue;
     const pts = node.getMesh().listPrimitives().reduce((a, p) => a + (p.getAttribute('POSITION')?.getCount() || 0), 0);
     if (pts <= 36) { names.splice(names.indexOf(node.getName()), 1); node.dispose(); }
+  }
+  // tails: armor plates and soft body apart (plates of a damage-state copy are dropped)
+  if (cfg.shells) {
+    const byName = (nm) => root.listNodes().find((x) => x.getMesh() && x.getName() === nm);
+    const plateBoxes = (nm) => byName(nm)?.getMesh().listPrimitives().flatMap((p) => shellsOf(p).slice(1).map((x) => x.box)) || [];
+    const likes = Object.fromEntries(cfg.shells.filter((sp) => sp.dropLike).map((sp) => [sp.mesh, plateBoxes(sp.dropLike)]));
+    for (const sp of cfg.shells) {
+      const node = byName(sp.mesh);
+      if (!node) { console.warn(`${id}: no mesh ${sp.mesh} to split`); continue; }
+      const added = splitShells(doc, node, sp, likes[sp.mesh]);
+      names[names.indexOf(sp.mesh)] = sp.main;
+      names.push(...added);
+    }
   }
   // one-mesh bodies (and, with skinnedHash, hash-named skinned bodies): split by bone into named pieces
   if (cfg.split) {

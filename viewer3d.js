@@ -256,16 +256,21 @@ function pieceGone(key) {
 function swapBroken() {
   if (!current || editing) return;
   const hidden = new Set(current.map.hidden);
-  // group every mesh by piece: intact meshes, its _damaged meshes, its _gib / _destroyed meshes
+  // group every mesh by piece: intact meshes, its _damaged meshes, its _gib / _destroyed meshes, and the
+  // other half of a split tail ("butt_plates" over "butt", "tail_sac" under "tail"): it goes with the piece's
+  // remains, and plates also go when their own hitzone breaks (a sac waits for its burst replacement)
+  const ATTACHED = /_(plates|sac)$/i;
   const groups = new Map();
   for (const m of current.meshes) {
     const st = stageOf(m.key);
     if (st === 3) continue; // "_hurt": not used
-    const b = baseOf(m.key);
-    if (!groups.has(b)) groups.set(b, [[], [], []]);
-    groups.get(b)[st].push(m);
+    const att = st === 0 && ATTACHED.test(primOf(m.key));
+    const b = baseOf(m.key).replace(ATTACHED, '');
+    if (!groups.has(b)) groups.set(b, [[], [], [], []]);
+    groups.get(b)[att ? 3 : st].push(m);
   }
-  for (const [intact, dmg, gib] of groups.values()) {
+  for (const [intact, dmg, gib, attached] of groups.values()) {
+    for (const m of attached) if (!hidden.has(m.key)) m.mesh.visible = !(/_plates$/i.test(primOf(m.key)) && pieceGone(m.key));
     if (!dmg.length && !gib.length) continue;
     // the piece's own plate: intact meshes of its hitzone (a spore blob of another hitzone stays put)
     const linked = intact.filter((m) => !hidden.has(m.key) && partIndexFor(current, m.key) >= 0);
@@ -282,6 +287,7 @@ function swapBroken() {
     for (const m of mine) { m.mesh.visible = stage === 0 || (stage === 2 && !remains); m.mesh.userData.remains = stage === 2 && !remains; }
     for (const m of dmg) { m.mesh.visible = stage === 1 || remains === dmg; m.mesh.userData.revealed = stage === 1; m.mesh.userData.remains = remains === dmg; }
     for (const m of gib) { m.mesh.visible = remains === gib; m.mesh.userData.remains = remains === gib; m.mesh.userData.revealed = false; }
+    if (stage === 2) for (const m of attached) m.mesh.visible = false;
   }
   // map "after": { mesh: { part, replaces: [mesh…] } }: a mesh that takes over from others once a part dies
   // (Bile Titan: the burst-sac butt replaces the butt when the Lower Sac pops), while those still show intact

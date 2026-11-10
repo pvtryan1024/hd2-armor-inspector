@@ -19,7 +19,8 @@
     "claw_left": "Claws (2)",
     "left_back_leg_damaged": "Leg Flesh (4)",
     "body": "Main",
-    "left_front_leg_gib": "Front Leg Armor (2)"
+    "left_front_leg_gib": "Front Leg Armor (2)",
+    "butt_plates": "Rear Armor Plates"
   },
   "hidden": [
     "head_damaged",
