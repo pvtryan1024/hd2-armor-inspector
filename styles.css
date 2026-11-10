@@ -301,6 +301,8 @@ table.data tr.click { cursor: pointer; }
 .hud-k { color: var(--muted); font: 600 11px var(--font-head); letter-spacing: 0.12em; text-transform: uppercase; }
 .hud-v { font: 700 16px var(--font-mono); }
 .hud-log { color: var(--muted); font: 12px/1.5 var(--font-mono); }
+.hpbars { display: flex; gap: 3px; }
+.hpbars .hpbar { flex: 1; }
 .hpbar { height: 5px; border-radius: 3px; background: rgba(0,0,0,0.45); overflow: hidden; }
 .hpbar b { display: block; height: 100%; background: var(--text); transition: width 0.15s; }
 .hpbar.wide { width: 140px; }

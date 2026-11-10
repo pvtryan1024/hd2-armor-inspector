@@ -57,8 +57,12 @@ const COVERS = [
   { enemy: /bile titan/i, parts: { 'Inner Flesh': ['Torso Armor (2)'], 'Front Left Leg Flesh': ['Leg Armor (12)'], 'Leg Flesh (3)': ['Leg Armor (12)'] } },
 ];
 
+// Armor that never breaks: still passes its % to Main, but never exposes anything
+const INDESTRUCTIBLE = [{ enemy: /hive guard/i, part: /armou?r|plate/i }];
+
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
+  for (const c of INDESTRUCTIBLE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.indestructible = true; });
   for (const c of COVERS) {
     if (!c.enemy.test(e.name)) continue;
     for (const p of e.parts) {

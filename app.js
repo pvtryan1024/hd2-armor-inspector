@@ -168,6 +168,10 @@
       if (k >= 0) {
         const capped = part.overflow ? s.total : Math.min(s.total, inst[k]);
         out.toMain = capped * toMain + s.mainEx;
+        if (part.indestructible) {
+          if (out.toMain > 0) out.progress = true;
+          return feedMain();
+        }
         inst[k] -= s.total;
         if (s.total > 0) out.progress = true;
         if (inst[k] <= 0) {
@@ -183,15 +187,18 @@
       }
     }
 
-    if (mi >= 0 && sim.pool[mi] != null && out.toMain > 0) {
-      sim.pool[mi] -= out.toMain;
-      out.progress = true;
-      const mp = enemy.parts[mi];
-      if (sim.pool[mi] <= 0 && !sim.dead && (/^main$/i.test(mp.name.trim()) || mp.fatal)) {
-        sim.dead = { how: 'killed', why: `${mp.name} health depleted`, idx: mi };
+    return feedMain();
+    function feedMain() {
+      if (mi >= 0 && sim.pool[mi] != null && out.toMain > 0) {
+        sim.pool[mi] -= out.toMain;
+        out.progress = true;
+        const mp = enemy.parts[mi];
+        if (sim.pool[mi] <= 0 && !sim.dead && (/^main$/i.test(mp.name.trim()) || mp.fatal)) {
+          sim.dead = { how: 'killed', why: `${mp.name} health depleted`, idx: mi };
+        }
       }
+      return out;
     }
-    return out;
   }
 
   /** Repeated shots into one hitzone until the enemy dies or nothing changes. */
@@ -591,8 +598,8 @@
               ${part.hidden ? `<span class="inner-tag">${hiddenTag(part, !covered)}</span>` : part.coveredBy ? `<span class="inner-tag">${coverTag(part, state.fire && isExposed(e, i, state.sim))}</span>` : ''}
               <span class="av">AV${part.av}</span>
               <div class="name">${esc(part.name)}</div>
-              <div class="row"><span>${typeof part.health === 'number' ? fmt(part.health) + ' HP' : 'Main HP'} ${fatal}</span><span><span class="big">${big}</span> ${small}</span></div>
-              ${left ? `<div class="hpbar" title="${esc(left.label)}"><b style="width:${Math.max(0, left.frac * 100)}%"></b></div>` : ''}
+              <div class="row"><span>${part.indestructible ? 'Indestructible' : typeof part.health === 'number' ? fmt(part.health) + ' HP' : 'Main HP'} ${fatal}</span><span><span class="big">${big}</span> ${small}</span></div>
+              ${left ? `<div class="hpbars" title="${esc(left.label)}">${(left.segs || [left.frac]).map((f) => `<div class="hpbar"><b style="width:${Math.max(0, f * 100)}%"></b></div>`).join('')}</div>` : ''}
             </div>`;
         })
         .join('');
@@ -761,7 +768,8 @@
     const total = p.health * inst.length;
     const sum = inst.reduce((a, h) => a + Math.max(0, h), 0);
     const alive = inst.filter((h) => h > 0).length;
-    return { frac: sum / total, label: `${alive}/${inst.length} intact · ${fmt(sum)} HP left`, alive };
+    if (p.indestructible) return { frac: 1, segs: inst.map(() => 1), label: 'Indestructible', alive: inst.length };
+    return { frac: sum / total, segs: inst.map((h) => Math.max(0, h) / p.health), label: `${alive}/${inst.length} intact · ${fmt(sum)} HP left`, alive };
   }
 
   /** hit = { deg } when fired from the 3D view, so the real impact angle picks the AP. */
