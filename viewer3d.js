@@ -730,6 +730,19 @@ function drawShot(hit, blast) {
   dot.position.copy(p);
   [ray, normal, dot].forEach((m) => { m.renderOrder = 12; shotGroup.add(m); });
 
+  // a ricochet: the round glances off, mirrored about the surface normal (grey, with an arrowhead)
+  if (hit.ricochet && !hit.ground && !hit.covered) {
+    const d = p.clone().sub(o).normalize();
+    const r = d.clone().addScaledVector(n, -2 * d.dot(n)).normalize();
+    const len = size * 0.45;
+    const end = p.clone().addScaledVector(r, len);
+    const glance = new THREE.Line(new THREE.BufferGeometry().setFromPoints([p, end]), new THREE.LineBasicMaterial({ color: 0xa7b0ba, transparent: true, opacity: 0.9, depthTest: false }));
+    const head = new THREE.Mesh(new THREE.ConeGeometry(size * 0.012, size * 0.04, 12), new THREE.MeshBasicMaterial({ color: 0xa7b0ba, depthTest: false }));
+    head.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), r);
+    head.position.copy(end);
+    [glance, head].forEach((m) => { m.renderOrder = 12; shotGroup.add(m); });
+  }
+
   if (blast) {
     // inner radius: translucent red; outer: orange shells fading out toward the edge
     if (blast.inner > 0) {
