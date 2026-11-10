@@ -179,13 +179,15 @@
       const k = want != null ? (instGone(part, inst[want]) ? -1 : want) : inst.findIndex((h) => !instGone(part, h));
       if (k >= 0) {
         const wasUp = inst[k] > 0;
-        const capped = part.overflow ? s.total : Math.min(s.total, inst[k] + cons);
+        // capped parts pass at most what's left: health first, then (once broken) constitution
+        const capped = part.overflow ? s.total : Math.min(s.total, wasUp ? inst[k] : inst[k] + cons);
         out.toMain = capped * toMain + s.mainEx;
         if (part.indestructible) {
           if (out.toMain > 0) out.progress = true;
           return feedMain();
         }
         inst[k] -= s.total;
+        if (wasUp && cons && inst[k] < 0) inst[k] = 0; // the breaking shot doesn't spill into constitution; it starts counting after
         if (s.total > 0) out.progress = true;
         if (wasUp && inst[k] <= 0) out.broke = true;
         // fatal parts: with a bleed rate the enemy is done once the part breaks (it bleeds out);
@@ -625,7 +627,7 @@
           }
           const fatal = part.fatal === true ? '<span class="fatal" title="Destroying this kills">☠ fatal</span>' : part.fatal === 'downs' ? '<span class="fatal" title="Destroying this downs the enemy">☠ downs</span>' : '';
           const covered = !isExposed(e, i, state.fire ? state.sim : null, inst);
-          return `<div class="tile ${vis ? '' : 'dim'} ${covered ? 'covered' : ''} ${left && (left.gone ?? left.frac <= 0) ? 'gone' : ''}" data-i="${i}"${inst != null ? ` data-k="${inst}"` : ''} style="--c:${color};${size}" ${covered ? 'title="Behind armor: break the armor first"' : ''}>
+          return `<div class="tile ${vis ? '' : 'dim'} ${covered ? 'covered' : ''} ${left && (left.gone ?? left.frac <= 0) ? 'gone' : left?.csegs?.some((c) => c != null) && left.csegs.every((c, n) => c != null || left.gones?.[n]) ? 'on-cons' : ''}" data-i="${i}"${inst != null ? ` data-k="${inst}"` : ''} style="--c:${color};${size}" ${covered ? 'title="Behind armor: break the armor first"' : ''}>
               ${part.hidden ? `<span class="inner-tag">${hiddenTag(part, !covered)}</span>` : part.coveredBy ? `<span class="inner-tag">${coverTag(part, state.fire && isExposed(e, i, state.sim, inst))}</span>` : ''}
               <span class="av">AV${part.av}</span>
               <div class="name">${inst != null ? `${esc(part.name.replace(/\s*\(\d+\)$/, ''))} <span class="muted">${inst + 1}/${n}</span>` : esc(part.name)}</div>
@@ -855,7 +857,7 @@
       state.sim.log.unshift(part.coveredBy && !part.hidden
         ? `${part.name} is under ${part.coveredBy} — break it first`
         : `${part.name} is behind armor — break the armor first (or turn on "Covered parts: exposed")`);
-      state.sim.log.length = Math.min(state.sim.log.length, 6);
+      state.sim.log.length = Math.min(state.sim.log.length, 8);
       render();
       return;
     }
@@ -865,7 +867,7 @@
     const o = applyShot(state.sim, e, i, s, false, k);
     const label = k != null && (part.count || 1) > 1 ? `${part.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${part.count}` : part.name;
     state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
-    state.sim.log.length = Math.min(state.sim.log.length, 6);
+    state.sim.log.length = Math.min(state.sim.log.length, 8);
     render();
   }
 
@@ -946,7 +948,7 @@
     if (hit.covered) {
       if (state.fire && state.sim && !state.sim.dead) {
         state.sim.log.unshift(`${e0.parts[hit.idx].name} is behind armor — break the armor first`);
-        state.sim.log.length = Math.min(state.sim.log.length, 6);
+        state.sim.log.length = Math.min(state.sim.log.length, 8);
       }
       render();
       return;
@@ -962,7 +964,7 @@
       });
       const d = res.rows[0];
       state.sim.log.unshift(`#${state.sim.shots} ${tag}${e.parts[d.idx].name} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : 'ricochet'}${res.rows.length > 1 ? ` + blast on ${res.rows.length - 1} part${res.rows.length > 2 ? 's' : ''}` : ''}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}`);
-      state.sim.log.length = Math.min(state.sim.log.length, 6);
+      state.sim.log.length = Math.min(state.sim.log.length, 8);
     }
     render();
   }
