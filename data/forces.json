@@ -1,0 +1,2193 @@
+{
+ "ar-23-liberator": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "ar-23p-liberator-penetrator": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "ar-23c-liberator-concussive": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 60,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "ar-23a-liberator-carbine": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "ar-23l-liberator-legacy": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "sta-52-assault-rifle": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "ar-32-pacifier": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "ma5c-assault-rifle": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "ar-2-coyote": {
+  "modes": {
+   "Standard": {
+    "stagger": 12,
+    "push": 12,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Fire element: 0/0/0"
+ },
+ "ar-59-suppressor": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "ar-61-tenderizer": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "br-14-adjudicator": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 12,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "ar-gl-21-one-two": {
+  "modes": {
+   "8mm Rifle": {
+    "stagger": 15,
+    "push": 12,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   },
+   "40mm Grenade": {
+    "stagger": 40,
+    "push": 10,
+    "demolition": 30,
+    "exStagger": 25,
+    "exPush": 30,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "ar-11-arbitrator": {
+  "modes": {
+   "4mm Rifle": {
+    "stagger": 15,
+    "push": 12,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   },
+   "10g Underbarrel Shotgun": {
+    "stagger": 20,
+    "push": 20,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Shotgun values per pellet (x9)"
+ },
+ "r-63-diligence": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 14,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "r-63cs-diligence-counter-sniper": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 14,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "r-2124-constitution": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 14,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Bayonet melee: demolition 10, stagger 25, push 30"
+ },
+ "r-6-deadeye": {
+  "modes": {
+   "Standard": {
+    "stagger": 30,
+    "push": 35,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "r-2-amendment": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 14,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Bayonet melee: demolition 10, stagger 25, push 30"
+ },
+ "r-72-censor": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 14,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "r-4-hyena": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 14,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Fire element: 0/0/0"
+ },
+ "r-40-sightliner": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 25,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "r-40-k-hot-shot-marksman-rifle": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 14,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "mp-98-knight": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 5,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "smg-37-defender": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 5,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "smg-72-pummeler": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 5,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "smg-32-reprimand": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "sta-11-smg": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 4,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "m7s-smg": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 5,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "smg-flam-34-stoker": {
+  "modes": {
+   "12mm": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   },
+   "Flamethrower": {
+    "stagger": 5,
+    "push": 5,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Fire status: 0/0/0"
+ },
+ "smg-203-gallant": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 4,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "sg-8-punisher": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 30,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Shotgun pellet projectile (likely per pellet)"
+ },
+ "sg-225-breaker": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Shotgun pellet projectile (likely per pellet)"
+ },
+ "sg-8s-slugger": {
+  "modes": {
+   "Standard": {
+    "stagger": 30,
+    "push": 35,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "sg-225sp-breaker-sprayandpray": {
+  "modes": {
+   "Standard": {
+    "stagger": 3,
+    "push": 1,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Shotgun pellet projectile (likely per pellet)"
+ },
+ "sg-225ie-breaker-incendiary": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Shotgun pellet projectile (likely per pellet); Fire: 0/0/0"
+ },
+ "sg-451-cookout": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 20,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Fire: 0/0/0"
+ },
+ "sg-20-halt": {
+  "modes": {
+   "Flechette": {
+    "stagger": 20,
+    "push": 20,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   },
+   "Stun": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Flechette 11 pellets, stun 20 pellets (values per pellet)"
+ },
+ "dbs-2-double-freedom": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 30,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "m90a-shotgun": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 30,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "sg-97-sweeper": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 20,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Bayonet melee: demolition 10, stagger 25, push 30"
+ },
+ "r-36-eruptor": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 20,
+    "demolition": 30,
+    "exStagger": 35,
+    "exPush": 40,
+    "exDemolition": 20
+   }
+  },
+  "note": "Shrapnel: demolition 10, stagger 10, push 20"
+ },
+ "cb-9-exploding-crossbow": {
+  "modes": {
+   "Standard": {
+    "stagger": 30,
+    "push": 10,
+    "demolition": 30,
+    "exStagger": 25,
+    "exPush": 30,
+    "exDemolition": 20
+   }
+  },
+  "note": ""
+ },
+ "gl-15-evictor": {
+  "modes": {
+   "Standard": {
+    "stagger": 30,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": 25,
+    "exPush": 30,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "las-5-scythe": {
+  "modes": {
+   "Standard": {
+    "stagger": 0,
+    "push": 0,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Beam"
+ },
+ "plas-1-scorcher": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": 10,
+    "exPush": 7,
+    "exDemolition": 10
+   }
+  },
+  "note": ""
+ },
+ "las-16-sickle": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "sg-8p-punisher-plasma": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": 35,
+    "exPush": 30,
+    "exDemolition": 10
+   }
+  },
+  "note": ""
+ },
+ "arc-12-blitzer": {
+  "modes": {
+   "Standard": {
+    "stagger": 30,
+    "push": 25,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Arc attack"
+ },
+ "plas-101-purifier": {
+  "modes": {
+   "Charged": {
+    "stagger": 20,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": 35,
+    "exPush": 30,
+    "exDemolition": 10
+   },
+   "Uncharged": {
+    "stagger": 20,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": 10,
+    "exPush": 7,
+    "exDemolition": 10
+   }
+  },
+  "note": "Uncharged = min charge"
+ },
+ "plas-39-accelerator-rifle": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": 10,
+    "exPush": 7,
+    "exDemolition": 10
+   }
+  },
+  "note": ""
+ },
+ "las-17-double-edge-sickle": {
+  "modes": {
+   "LAS-16_P": {
+    "stagger": 10,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   },
+   "LAS-17_P": {
+    "stagger": 10,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   },
+   "LAS-17_P1": {
+    "stagger": 10,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   },
+   "LAS-17_P2": {
+    "stagger": 10,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "las-13-trident": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Beam"
+ },
+ "las-12-sai": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "jar-5-dominator": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 15,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "flam-66-torcher": {
+  "modes": {
+   "Standard": {
+    "stagger": 5,
+    "push": 5,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Fire status: 0/0/0"
+ },
+ "vg-70-variable": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 4,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "p-2-peacemaker": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 4,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "p-19-redeemer": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 4,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "p-4-senator": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "p-113-verdict": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "p-92-warrant": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "m6c-socom-pistol": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "p-69-veto": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 15,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "p-44-mist": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 4,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "cqc-19-stun-lance": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 30,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Melee"
+ },
+ "cqc-30-stun-baton": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 30,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Melee"
+ },
+ "cqc-5-combat-hatchet": {
+  "modes": {
+   "Standard": {
+    "stagger": 25,
+    "push": 30,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Melee"
+ },
+ "cqc-2-saber": {
+  "modes": {
+   "Standard": {
+    "stagger": 25,
+    "push": 30,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Melee"
+ },
+ "cqc-42-machete": {
+  "modes": {
+   "Standard": {
+    "stagger": 30,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Melee"
+ },
+ "cqc-73-entrenchment-tool": {
+  "modes": {
+   "Standard": {
+    "stagger": 25,
+    "push": 30,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Melee"
+ },
+ "las-7-dagger": {
+  "modes": {
+   "Standard": {
+    "stagger": 0,
+    "push": 0,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Beam; Fire status: 0/0/0"
+ },
+ "gp-31-grenade-pistol": {
+  "modes": {
+   "Standard": {
+    "stagger": 40,
+    "push": 10,
+    "demolition": 30,
+    "exStagger": 25,
+    "exPush": 30,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "sg-22-bushwhacker": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 30,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Shotgun pellet projectile (likely per pellet)"
+ },
+ "p-72-crisper": {
+  "modes": {
+   "Standard": {
+    "stagger": 5,
+    "push": 5,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Fire status: 0/0/0"
+ },
+ "plas-15-loyalist": {
+  "modes": {
+   "Uncharged": {
+    "stagger": 20,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": 10,
+    "exPush": 7,
+    "exDemolition": 10
+   },
+   "Charged": {
+    "stagger": 20,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": 35,
+    "exPush": 30,
+    "exDemolition": 10
+   }
+  },
+  "note": "Charged = 0.75s+"
+ },
+ "gp-20-ultimatum": {
+  "modes": {
+   "Standard": {
+    "stagger": 50,
+    "push": 20,
+    "demolition": 40,
+    "exStagger": 70,
+    "exPush": 60,
+    "exDemolition": 40
+   }
+  },
+  "note": ""
+ },
+ "las-58-talon": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "p-35-re-educator": {
+  "modes": {
+   "Standard": {
+    "stagger": 1,
+    "push": 1,
+    "demolition": 1,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Gas status: 0/0/0"
+ },
+ "p-33-missile-pistol": {
+  "modes": {
+   "Standard": {
+    "stagger": 40,
+    "push": 25,
+    "demolition": 30,
+    "exStagger": 40,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "p-40-k-bolt-pistol": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 15,
+    "demolition": 20,
+    "exStagger": 35,
+    "exPush": 5,
+    "exDemolition": 10
+   }
+  },
+  "note": ""
+ },
+ "p-34-breacher": {
+  "modes": {
+   "Standard": {
+    "stagger": 10,
+    "push": 10,
+    "demolition": 15,
+    "exStagger": 20,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": "Thermite status: demolition 10, stagger 0, push 0"
+ },
+ "g-12-high-explosive": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 30,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": "30"
+ },
+ "g-6-frag": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 25,
+    "exPush": 40,
+    "exDemolition": 20
+   }
+  },
+  "note": "Shrapnel: demolition 10, stagger 10, push 20"
+ },
+ "g-10-incendiary": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 20,
+    "exPush": 15,
+    "exDemolition": 30
+   }
+  },
+  "note": "Fire: 0/0/0"
+ },
+ "g-7-pineapple": {
+  "modes": {
+   "Grenade": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 25,
+    "exPush": 40,
+    "exDemolition": 30
+   },
+   "Bomblets": {
+    "stagger": 25,
+    "push": 40,
+    "demolition": 30,
+    "exStagger": 25,
+    "exPush": 40,
+    "exDemolition": 20
+   }
+  },
+  "note": "Main explosion (G-7 PINEAPPLE E); Bomblet projectile (G-7 P) and bomblet explosion (G-7 P IE)"
+ },
+ "ted-63-dynamite": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 40,
+    "exPush": 40,
+    "exDemolition": 40
+   }
+  },
+  "note": ""
+ },
+ "g-16-impact": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 30,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "g-123-thermite": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 20,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": "Thermite status: demolition 10, stagger 0, push 0"
+ },
+ "g-13-incendiary-impact": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 20,
+    "exPush": 15,
+    "exDemolition": 30
+   }
+  },
+  "note": "Fire: 0/0/0"
+ },
+ "k-2-throwing-knife": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 5,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "g-4-gas": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 10,
+    "exPush": 10,
+    "exDemolition": 30
+   }
+  },
+  "note": "Gas status: 0/0/0"
+ },
+ "g-50-seeker": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 30,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "g-142-pyrotech": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 50,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": "Spray/fire (G-142 PYROTECH S): demolition 10, stagger 5, push 5"
+ },
+ "g-31-arc": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 10,
+    "demolition": 20,
+    "exStagger": 0,
+    "exPush": 0,
+    "exDemolition": 0
+   }
+  },
+  "note": "Projectile fields hold the arc (G-31 ARC E A) values; explosion itself is 0/0/0"
+ },
+ "tm-1-lure-mine": {
+  "modes": {
+   "Explosion": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 30,
+    "exPush": 40,
+    "exDemolition": 30
+   },
+   "Shrapnel": {
+    "stagger": 10,
+    "push": 20,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Shrapnel projectile (AC-8 P2)"
+ },
+ "g-48-giga-grenade": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 40,
+    "exPush": 40,
+    "exDemolition": 40
+   }
+  },
+  "note": ""
+ },
+ "g-40-k-melta-mine": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 40,
+    "exPush": 40,
+    "exDemolition": 40
+   }
+  },
+  "note": "Flamewall: demolition 10, stagger 40, push 40"
+ },
+ "g-8-immolation": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 40,
+    "exPush": 0,
+    "exDemolition": 0
+   }
+  },
+  "note": "Fire status: 0/0/0"
+ },
+ "g-60-anti-tank-seeker": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 40,
+    "exPush": 45,
+    "exDemolition": 40
+   }
+  },
+  "note": ""
+ },
+ "g-11-caltrops": {
+  "modes": {
+   "Standard": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 30,
+    "exPush": 0,
+    "exDemolition": 10
+   }
+  },
+  "note": ""
+ },
+ "mg-43-machine-gun": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 12,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "m-105-stalwart": {
+  "modes": {
+   "Standard": {
+    "stagger": 15,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "mg-206-heavy-machine-gun": {
+  "modes": {
+   "Standard": {
+    "stagger": 25,
+    "push": 20,
+    "demolition": 15,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "m-1000-maxigun": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 24,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "mgx-42-bullet-storm": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "apw-1-anti-materiel-rifle": {
+  "modes": {
+   "Standard": {
+    "stagger": 25,
+    "push": 25,
+    "demolition": 20,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "amw-20-apex": {
+  "modes": {
+   "Standard": {
+    "stagger": 40,
+    "push": 25,
+    "demolition": 30,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Page does not say projectile vs explosion"
+ },
+ "rs-422-railgun": {
+  "modes": {
+   "Minimum charge (0.45s)": {
+    "stagger": 35,
+    "push": 15,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   },
+   "Max charge (Unsafe, 3.0s)": {
+    "stagger": 35,
+    "push": 15,
+    "demolition": 10,
+    "exStagger": 5,
+    "exPush": 40,
+    "exDemolition": 20
+   }
+  },
+  "note": "Max charge explosion = Overcharge E (AoE)"
+ },
+ "gr-8-recoilless-rifle": {
+  "modes": {
+   "HEAT": {
+    "stagger": 50,
+    "push": 25,
+    "demolition": 30,
+    "exStagger": 50,
+    "exPush": 40,
+    "exDemolition": 30
+   },
+   "HE": {
+    "stagger": 50,
+    "push": 25,
+    "demolition": 30,
+    "exStagger": 60,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": "Page lists GR-8 P / P1 without naming HEAT/HE; assumed P=HEAT, P1=HE (only diff: P1 IE stagger 60 vs 50). Backblast E: demolition 10, stagger 30, push 20"
+ },
+ "eat-17-expendable-anti-tank": {
+  "modes": {
+   "Standard": {
+    "stagger": 50,
+    "push": 25,
+    "demolition": 30,
+    "exStagger": 60,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": "Backblast E: demolition 10, stagger 30, push 15"
+ },
+ "eat-700-expendable-napalm": {
+  "modes": {
+   "Rocket": {
+    "stagger": 50,
+    "push": 25,
+    "demolition": 30,
+    "exStagger": 50,
+    "exPush": 40,
+    "exDemolition": 30
+   },
+   "Napalm bomblet": {
+    "stagger": 50,
+    "push": 25,
+    "demolition": 30,
+    "exStagger": 50,
+    "exPush": 25,
+    "exDemolition": 30
+   }
+  },
+  "note": "Backblast E: demolition 10, stagger 30, push 15; Bomblet = EAT-700 P1 / P1 IE (assumed)"
+ },
+ "eat-411-leveller": {
+  "modes": {
+   "Standard": {
+    "stagger": 50,
+    "push": 20,
+    "demolition": 40,
+    "exStagger": 100,
+    "exPush": 40,
+    "exDemolition": 40
+   }
+  },
+  "note": "Backblast E: demolition 10, stagger 30, push 15"
+ },
+ "las-99-quasar-cannon": {
+  "modes": {
+   "Standard": {
+    "stagger": 50,
+    "push": 40,
+    "demolition": 30,
+    "exStagger": 50,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "faf-14-spear": {
+  "modes": {
+   "Standard": {
+    "stagger": 50,
+    "push": 25,
+    "demolition": 40,
+    "exStagger": 60,
+    "exPush": 70,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "mls-4x-commando": {
+  "modes": {
+   "Standard": {
+    "stagger": 40,
+    "push": 25,
+    "demolition": 30,
+    "exStagger": 40,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": "Backblast E: demolition 10, stagger 20, push 10"
+ },
+ "rl-77-airburst-rocket-launcher": {
+  "modes": {
+   "Rocket (direct)": {
+    "stagger": 50,
+    "push": 40,
+    "demolition": 30,
+    "exStagger": 30,
+    "exPush": 20,
+    "exDemolition": 10
+   },
+   "Bomblet": {
+    "stagger": 25,
+    "push": 40,
+    "demolition": 25,
+    "exStagger": 25,
+    "exPush": 40,
+    "exDemolition": 20
+   }
+  },
+  "note": "Page lists RL-77 P/P1/P2/P3: P 30d/50s/40p, P1 25/25/40, P2 30/50/40, P3 25/25/40; IE: P 10d/30s/20p, P1 20/25/40, P2 25/25/40. Mapped P->Rocket, P1->Bomblet (assumed)"
+ },
+ "sta-x3-w-a-s-p-launcher": {
+  "modes": {
+   "Burst": {
+    "stagger": 35,
+    "push": 25,
+    "demolition": 30,
+    "exStagger": 25,
+    "exPush": 50,
+    "exDemolition": 30
+   },
+   "Artillery (carrier)": {
+    "stagger": 30,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": 25,
+    "exPush": 50,
+    "exDemolition": 30
+   }
+  },
+  "note": "Assumed P=Burst, P1=Artillery carrier"
+ },
+ "ac-8-autocannon": {
+  "modes": {
+   "APHET": {
+    "stagger": 30,
+    "push": 20,
+    "demolition": 30,
+    "exStagger": 40,
+    "exPush": 40,
+    "exDemolition": 30
+   },
+   "Flak": {
+    "stagger": 30,
+    "push": 30,
+    "demolition": 20,
+    "exStagger": 25,
+    "exPush": 40,
+    "exDemolition": 20
+   }
+  },
+  "note": "Shrapnel (AC-8 P2): demolition 10, stagger 10, push 20"
+ },
+ "gl-21-grenade-launcher": {
+  "modes": {
+   "Standard": {
+    "stagger": 30,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": 25,
+    "exPush": 30,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "gl-28-belt-fed-grenade-launcher": {
+  "modes": {
+   "Standard": {
+    "stagger": 30,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": 20,
+    "exPush": 20,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "gl-52-de-escalator": {
+  "modes": {
+   "Grenade impact": {
+    "stagger": 30,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": 0,
+    "exPush": 0,
+    "exDemolition": 0
+   },
+   "Arc discharge": {
+    "stagger": 35,
+    "push": 10,
+    "demolition": 20,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Arc (GL-52 P IE A)"
+ },
+ "plas-45-epoch": {
+  "modes": {
+   "Uncharged": {
+    "stagger": 30,
+    "push": 15,
+    "demolition": 10,
+    "exStagger": 20,
+    "exPush": 7,
+    "exDemolition": 10
+   },
+   "Full charge (2.6s)": {
+    "stagger": 30,
+    "push": 15,
+    "demolition": 10,
+    "exStagger": 35,
+    "exPush": 30,
+    "exDemolition": 30
+   }
+  },
+  "note": "Full charge = P3 / P3 IE; Overcharge E explosion also 30d/35s/30p"
+ },
+ "s-11-speargun": {
+  "modes": {
+   "Standard": {
+    "stagger": 80,
+    "push": 35,
+    "demolition": 30,
+    "exStagger": 10,
+    "exPush": 10,
+    "exDemolition": 30
+   }
+  },
+  "note": "Gas status: 0/0/0"
+ },
+ "sg-88-break-action-shotgun": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 20,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "las-98-laser-cannon": {
+  "modes": {
+   "Beam": {
+    "stagger": 0,
+    "push": 0,
+    "demolition": 20,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Beam; Fire status: 0/0/0"
+ },
+ "las-44-nova": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 20,
+    "demolition": 17,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "40-k-meltagun": {
+  "modes": {
+   "Standard": {
+    "stagger": 40,
+    "push": 40,
+    "demolition": 30,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Beam attack"
+ },
+ "arc-3-arc-thrower": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 10,
+    "demolition": 20,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Arc"
+ },
+ "flam-40-flamethrower": {
+  "modes": {
+   "Spray": {
+    "stagger": 5,
+    "push": 5,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Fire status: 0/0/0"
+ },
+ "b-flam-80-cremator": {
+  "modes": {
+   "Spray": {
+    "stagger": 5,
+    "push": 5,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Fire status: 0/0/0"
+ },
+ "tx-41-sterilizer": {
+  "modes": {
+   "Spray": {
+    "stagger": 10,
+    "push": 5,
+    "demolition": 5,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Gas attack; second gas damage profile 0/0/0"
+ },
+ "ms-11-solo-silo": {
+  "modes": {
+   "Impact explosion": {
+    "stagger": null,
+    "push": null,
+    "demolition": 40,
+    "exStagger": 100,
+    "exPush": 40,
+    "exDemolition": 40
+   },
+   "Main explosion": {
+    "stagger": null,
+    "push": null,
+    "demolition": 40,
+    "exStagger": 100,
+    "exPush": 40,
+    "exDemolition": 40
+   }
+  },
+  "note": "Missile demolition 40 (stagger/push not given); impact and main explosion identical"
+ },
+ "b-md-c4-pack": {
+  "modes": {
+   "Detonation": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 30,
+    "exPush": 40,
+    "exDemolition": 40
+   }
+  },
+  "note": ""
+ },
+ "eagle-500kg-bomb": {
+  "modes": {
+   "Bomb": {
+    "stagger": 20,
+    "push": 15,
+    "demolition": 50,
+    "exStagger": 100,
+    "exPush": 40,
+    "exDemolition": 50
+   }
+  },
+  "note": "Explosion = main (S P E, explode after); impact explosion (S P IE): demolition 40, stagger 10, push 40"
+ },
+ "eagle-airstrike": {
+  "modes": {
+   "Bomb (x6)": {
+    "stagger": 20,
+    "push": 15,
+    "demolition": 40,
+    "exStagger": 50,
+    "exPush": 40,
+    "exDemolition": 40
+   }
+  },
+  "note": "Per bomb"
+ },
+ "eagle-cluster-bomb": {
+  "modes": {
+   "Bomb casing": {
+    "stagger": 20,
+    "push": 15,
+    "demolition": 40,
+    "exStagger": 50,
+    "exPush": 40,
+    "exDemolition": 30
+   },
+   "Bomblet": {
+    "stagger": 30,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": 50,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "eagle-strafing-run": {
+  "modes": {
+   "Cannon round": {
+    "stagger": 35,
+    "push": 3,
+    "demolition": 30,
+    "exStagger": 35,
+    "exPush": 5,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "eagle-110mm-rocket-pods": {
+  "modes": {
+   "Rocket": {
+    "stagger": 40,
+    "push": 15,
+    "demolition": 40,
+    "exStagger": 30,
+    "exPush": 10,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "orbital-railcannon-strike": {
+  "modes": {
+   "Shell": {
+    "stagger": 60,
+    "push": 35,
+    "demolition": 50,
+    "exStagger": 30,
+    "exPush": 50,
+    "exDemolition": 50
+   }
+  },
+  "note": ""
+ },
+ "orbital-precision-strike": {
+  "modes": {
+   "Shell": {
+    "stagger": 50,
+    "push": 20,
+    "demolition": 50,
+    "exStagger": 70,
+    "exPush": 60,
+    "exDemolition": 50
+   }
+  },
+  "note": ""
+ },
+ "orbital-380mm-he-barrage": {
+  "modes": {
+   "Shell": {
+    "stagger": 50,
+    "push": 20,
+    "demolition": 50,
+    "exStagger": 70,
+    "exPush": 60,
+    "exDemolition": 50
+   }
+  },
+  "note": ""
+ },
+ "orbital-walking-barrage": {
+  "modes": {
+   "Shell": {
+    "stagger": 50,
+    "push": 20,
+    "demolition": 50,
+    "exStagger": 70,
+    "exPush": 60,
+    "exDemolition": 50
+   }
+  },
+  "note": ""
+ },
+ "orbital-120mm-he-barrage": {
+  "modes": {
+   "Shell": {
+    "stagger": 20,
+    "push": 20,
+    "demolition": 50,
+    "exStagger": 70,
+    "exPush": 40,
+    "exDemolition": 50
+   }
+  },
+  "note": ""
+ },
+ "orbital-gatling-barrage": {
+  "modes": {
+   "Round": {
+    "stagger": 35,
+    "push": 3,
+    "demolition": 30,
+    "exStagger": 35,
+    "exPush": 5,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "orbital-airburst-strike": {
+  "modes": {
+   "Shell": {
+    "stagger": 60,
+    "push": 15,
+    "demolition": 50,
+    "exStagger": 50,
+    "exPush": 40,
+    "exDemolition": 30
+   },
+   "Shrapnel": {
+    "stagger": 10,
+    "push": 20,
+    "demolition": 10,
+    "exStagger": 50,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "orbital-laser": {
+  "modes": {
+   "Beam": {
+    "stagger": 30,
+    "push": 30,
+    "demolition": 50,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Laser DPS attack; Fire status: 0/0/0"
+ },
+ "a-mg-43-machine-gun-sentry": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 12,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "a-g-16-gatling-sentry": {
+  "modes": {
+   "Standard": {
+    "stagger": 20,
+    "push": 12,
+    "demolition": 10,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Page lists MG-43 P projectile"
+ },
+ "a-ac-8-autocannon-sentry": {
+  "modes": {
+   "Standard": {
+    "stagger": 40,
+    "push": 10,
+    "demolition": 30,
+    "exStagger": 30,
+    "exPush": 30,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "a-mls-4x-rocket-sentry": {
+  "modes": {
+   "Standard": {
+    "stagger": 35,
+    "push": 10,
+    "demolition": 30,
+    "exStagger": 30,
+    "exPush": 10,
+    "exDemolition": 30
+   }
+  },
+  "note": "Projectile push reported as 10 but change history mentions 20->15; backblast E: demolition 10, stagger 30, push 15"
+ },
+ "a-m-12-mortar-sentry": {
+  "modes": {
+   "Standard": {
+    "stagger": 30,
+    "push": 10,
+    "demolition": 10,
+    "exStagger": 35,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ },
+ "a-las-98-laser-sentry": {
+  "modes": {
+   "Beam": {
+    "stagger": 0,
+    "push": 0,
+    "demolition": 20,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Beam; Fire status: 0/0/0"
+ },
+ "e-mg-101-hmg-emplacement": {
+  "modes": {
+   "Standard": {
+    "stagger": 25,
+    "push": 15,
+    "demolition": 20,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": "Anatomy table lists Demo Force 40 for main part (likely emplacement's own durability)"
+ },
+ "e-at-12-anti-tank-emplacement": {
+  "modes": {
+   "APHE 75mm": {
+    "stagger": 50,
+    "push": 25,
+    "demolition": 30,
+    "exStagger": 60,
+    "exPush": 40,
+    "exDemolition": 30
+   }
+  },
+  "note": ""
+ }
+}
