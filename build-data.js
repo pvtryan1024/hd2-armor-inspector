@@ -49,7 +49,10 @@ const normPart = (p) => {
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
   // "Inner Flesh", "Internals", "Leg Flesh"…: behind armor until it breaks
-  if (!/broken/i.test(e.name)) e.parts.forEach((p) => { if (/\b(inner|internals?|flesh)\b/i.test(p.name)) p.hidden = true; });
+  if (!/broken/i.test(e.name)) e.parts.forEach((p) => { if (/\b(inner|internals?|flesh)\b/i.test(p.name)) p.hidden = true;
+    // undersides aren't armored over, just hard to get an angle on
+    else if (/\bunderside\b/i.test(p.name)) p.hidden = 'angle';
+  });
 });
 
 // Game archive IDs per enemy, from the HD2 modding community's ID sheet (Enemies & NPC IDs tab),

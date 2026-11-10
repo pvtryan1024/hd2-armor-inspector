@@ -281,9 +281,12 @@
     const near = armor.filter((i) => words.some((w) => enemy.parts[i].name.toLowerCase().includes(w)));
     return near.length ? near : armor;
   }
+  const hiddenTag = (p, open) => (p.hidden === 'angle' ? 'hard to reach' : open ? 'exposed' : '🔒 covered');
+
   function isExposed(enemy, idx, sim = null) {
     const p = enemy.parts[idx];
     if (!p.hidden || state.showInner) return true;
+    if (p.hidden === 'angle') return !!sim; // a shot you actually placed reached it
     if (!sim) return false;
     return coverFor(enemy, idx).some((i) => sim.hp[i] && sim.hp[i].some((h) => h <= 0));
   }
@@ -563,7 +566,7 @@
           const fatal = part.fatal === true ? '<span class="fatal" title="Destroying this kills">☠ fatal</span>' : part.fatal === 'downs' ? '<span class="fatal" title="Destroying this downs the enemy">☠ downs</span>' : '';
           const covered = !isExposed(e, i, state.fire ? state.sim : null);
           return `<div class="tile ${vis ? '' : 'dim'} ${covered ? 'covered' : ''} ${left && left.frac <= 0 ? 'gone' : ''}" data-i="${i}" style="--c:${color};${size}" ${covered ? 'title="Behind armor: break the armor first"' : ''}>
-              ${part.hidden ? `<span class="inner-tag">${covered ? '🔒 covered' : 'exposed'}</span>` : ''}
+              ${part.hidden ? `<span class="inner-tag">${hiddenTag(part, !covered)}</span>` : ''}
               <span class="av">AV${part.av}</span>
               <div class="name">${esc(part.name)}</div>
               <div class="row"><span>${typeof part.health === 'number' ? fmt(part.health) + ' HP' : 'Main HP'} ${fatal}</span><span><span class="big">${big}</span> ${small}</span></div>
@@ -596,7 +599,7 @@
         if (!visible(part, state.view)) return '';
         const pc = r ? penClass(r, part) : null;
         return `<tr data-i="${i}">
-          <td>${esc(part.name)}${part.hidden ? ` <span class="inner-tag inline">${isExposed(e, i, state.fire ? state.sim : null) ? 'exposed' : '🔒 covered'}</span>` : ''}</td>
+          <td>${esc(part.name)}${part.hidden ? ` <span class="inner-tag inline">${hiddenTag(part, isExposed(e, i, state.fire ? state.sim : null))}</span>` : ''}</td>
           <td class="num" title="${esc(avName(part.av))}">${part.av}</td>
           <td class="num">${typeof part.health === 'number' ? fmt(part.health) : '<span class="muted">Main</span>'}</td>
           <td class="num">${pct(part.durable)}</td>
