@@ -1,0 +1,15 @@
+{
+  "enemy": "shrieker",
+  "meshes": {
+    "g_wings": "Wings (2)",
+    "leg_right_front": "Limbs",
+    "leg_left_back": "Limbs",
+    "body": "Main",
+    "wing_left": "Wings (2)",
+    "leg_left_front": "Limbs",
+    "head": "Head",
+    "leg_right_back": "Limbs",
+    "wing_right": "Wings (2)"
+  },
+  "hidden": []
+}

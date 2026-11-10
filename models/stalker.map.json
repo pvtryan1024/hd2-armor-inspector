@@ -1,0 +1,16 @@
+{
+  "enemy": "stalker",
+  "meshes": {
+    "claw_left": "Claws (2)",
+    "body": "Body Armor",
+    "head": "Head",
+    "claw_right": "Claws (2)",
+    "leg_right_front": "Legs (4)",
+    "leg_right_back": "Legs (4)",
+    "wing_right": "Wings",
+    "wing_left": "Wings",
+    "leg_left_front": "Legs (4)",
+    "leg_left_back": "Legs (4)"
+  },
+  "hidden": []
+}

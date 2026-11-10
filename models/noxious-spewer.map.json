@@ -1,0 +1,18 @@
+{
+  "enemy": "noxious-spewer",
+  "meshes": {
+    "b_lower_spine1": "Main",
+    "b_lower_spine1_2": "Main",
+    "head": "Head",
+    "body": "Main",
+    "b_lower_spine1_3": "Main",
+    "butt": "Butt",
+    "b_lower_spine1_4": "Main",
+    "b_lower_spine1_5": "Main",
+    "b_lower_spine1_6": "Main"
+  },
+  "hidden": [
+    "butt_destroyed",
+    "head_damaged"
+  ]
+}

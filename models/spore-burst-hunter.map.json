@@ -1,0 +1,16 @@
+{
+  "enemy": "spore-burst-hunter",
+  "meshes": {
+    "claw_left": "Claws (2)",
+    "head": "Head",
+    "leg_left_front": "Legs (4)",
+    "leg_right_front": "Legs (4)",
+    "claw_right": "Claws (2)",
+    "body": "Main",
+    "leg_left_back": "Legs (4)",
+    "wing_left": "Wings (2)",
+    "wing_right": "Wings (2)",
+    "leg_right_back": "Legs (4)"
+  },
+  "hidden": []
+}

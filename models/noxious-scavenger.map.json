@@ -1,0 +1,11 @@
+{
+  "enemy": "noxious-scavenger",
+  "meshes": {
+    "b_boss": "Main",
+    "b_boss_2": "Main",
+    "Head": "Head",
+    "body": "Main",
+    "butt": "Main"
+  },
+  "hidden": []
+}

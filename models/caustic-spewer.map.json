@@ -1,0 +1,22 @@
+{
+  "enemy": "caustic-spewer",
+  "meshes": {
+    "b_lower_spine1": "Main",
+    "b_lower_spine1_2": "Main",
+    "b_lower_spine1_3": "Main",
+    "head": "Head",
+    "b_lower_spine1_4": "Main",
+    "b_lower_spine1_5": "Main",
+    "b_lower_spine1_6": "Main",
+    "b_lower_spine1_7": "Main",
+    "b_lower_spine1_8": "Main",
+    "body": "Main",
+    "b_lower_spine1_9": "Main",
+    "b_lower_spine1_10": "Main",
+    "butt": "Butt"
+  },
+  "hidden": [
+    "butt_destroyed",
+    "head_damaged"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "enemy": "scavenger",
+  "meshes": {
+    "head": "Head",
+    "leg_left_back": "Limbs (6)",
+    "leg_left_front": "Limbs (6)",
+    "claw_left": "Limbs (6)",
+    "body": "Main",
+    "leg_right_back": "Limbs (6)",
+    "leg_right_front": "Limbs (6)",
+    "claw_right": "Limbs (6)"
+  },
+  "hidden": []
+}

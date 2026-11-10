@@ -1,0 +1,12 @@
+{
+  "enemy": "spore-burst-scavenger",
+  "meshes": {
+    "b_Bone_b1cf4f38": "Main",
+    "butt": "Main",
+    "body": "Main",
+    "Head": "Head",
+    "b_head": "Head",
+    "b_head_2": "Head"
+  },
+  "hidden": []
+}

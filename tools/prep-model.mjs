@@ -100,6 +100,97 @@ function mat4Mul(a, b) {
   for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) o[c * 4 + r] += a[k * 4 + r] * b[c * 4 + k];
   return o;
 }
+/** Split a skinned mesh into one mesh per bone group: each triangle goes to the group of the bone that
+ *  weighs most on its vertices. groupOf(jointName) → piece name. Returns the new piece names. */
+function splitByBone(doc, node, groupOf) {
+  const mesh = node.getMesh(), skin = node.getSkin();
+  if (!skin) return [];
+  const jg = skin.listJoints().map((j) => groupOf(j.getName()));
+  const buffer = doc.getRoot().listBuffers()[0];
+  const parts = new Map();
+  for (const prim of mesh.listPrimitives()) {
+    const J = prim.getAttribute('JOINTS_0'), W = prim.getAttribute('WEIGHTS_0'), I = prim.getIndices();
+    if (!J || !W) continue;
+    const vg = new Array(J.getCount()), j4 = [], w4 = [];
+    for (let v = 0; v < vg.length; v++) {
+      J.getElement(v, j4); W.getElement(v, w4);
+      let b = 0;
+      for (let k = 1; k < w4.length; k++) if (w4[k] > w4[b]) b = k;
+      vg[v] = jg[j4[b]] || 'body';
+    }
+    const n = I ? I.getCount() : prim.getAttribute('POSITION').getCount();
+    const tris = new Map();
+    for (let t = 0; t + 2 < n; t += 3) {
+      const a = I ? I.getScalar(t) : t, b = I ? I.getScalar(t + 1) : t + 1, c = I ? I.getScalar(t + 2) : t + 2;
+      const g = vg[b] === vg[c] ? vg[b] : vg[a];
+      if (!tris.has(g)) tris.set(g, []);
+      tris.get(g).push(a, b, c);
+    }
+    for (const [g, list] of tris) {
+      const p = prim.clone();
+      p.setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(list)).setBuffer(buffer));
+      if (!parts.has(g)) parts.set(g, []);
+      parts.get(g).push(p);
+    }
+  }
+  const parent = node.getParentNode();
+  const scene = doc.getRoot().listScenes()[0];
+  for (const [g, prims] of parts) {
+    const m = doc.createMesh(g);
+    prims.forEach((p) => m.addPrimitive(p));
+    const n = doc.createNode(g).setMesh(m).setSkin(skin).setMatrix(node.getMatrix());
+    (parent || scene).addChild(n);
+  }
+  node.dispose();
+  return [...parts.keys()];
+}
+
+/** Bone that weighs most on a skinned mesh overall; for a rigid mesh, the bone nearest its centre. */
+function mainBone(node, doc) {
+  const skin = node.getSkin();
+  if (!skin) {
+    const joints = doc ? doc.getRoot().listSkins().flatMap((sk) => sk.listJoints()) : [];
+    const pos = node.getMesh().listPrimitives()[0]?.getAttribute('POSITION');
+    if (!joints.length || !pos) return null;
+    const lo = pos.getMin([]), hi = pos.getMax([]);
+    const m = node.getWorldMatrix(), c = [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2];
+    const w = [0, 1, 2].map((r) => m[r] * c[0] + m[4 + r] * c[1] + m[8 + r] * c[2] + m[12 + r]);
+    let best = null, bd = Infinity;
+    for (const j of joints) {
+      if (/cull|root|boss|skeleton|culling/i.test(j.getName())) continue;
+      const t = j.getWorldTranslation();
+      const d = (t[0] - w[0]) ** 2 + (t[1] - w[1]) ** 2 + (t[2] - w[2]) ** 2;
+      if (d < bd) { bd = d; best = j.getName(); }
+    }
+    return best;
+  }
+  const sum = new Map(), j4 = [], w4 = [];
+  for (const prim of node.getMesh().listPrimitives()) {
+    const J = prim.getAttribute('JOINTS_0'), W = prim.getAttribute('WEIGHTS_0');
+    if (!J || !W) continue;
+    for (let v = 0; v < J.getCount(); v++) {
+      J.getElement(v, j4); W.getElement(v, w4);
+      for (let k = 0; k < w4.length; k++) if (w4[k] > 0) sum.set(j4[k], (sum.get(j4[k]) || 0) + w4[k]);
+    }
+  }
+  let best = null, bw = 0;
+  for (const [j, w] of sum) if (w > bw) { bw = w; best = j; }
+  return best == null ? null : skin.listJoints()[best]?.getName() || null;
+}
+
+// bone groups shared by the bugs: head bits, claws, legs by side and position, wings, everything else = body
+const BUG_BONES = (bone) => {
+  const b = bone.toLowerCase();
+  if (/(^|_)(head|jaw|tusk|mouth|tooth|gullet|neck|jugular|mandible|look_at)/.test(b) || /collar_(\d|base)/.test(b)) return 'head';
+  const side = /^l_/.test(b) ? 'left' : /^r_/.test(b) ? 'right' : '';
+  if (side && /(claw|collar|thumb|wrist|elbow)/.test(b) && !/leg/.test(b)) return `claw_${side}`;
+  if (side && /(fore|front).*leg|leg.*(fore|front)|foreleg/.test(b)) return `leg_${side}_front`;
+  if (side && /(rear|back|hind).*leg|hindleg/.test(b)) return `leg_${side}_back`;
+  if (side && /wing/.test(b)) return `wing_${side}`;
+  if (side && /shoulder/.test(b)) return `claw_${side}`;
+  return 'body';
+};
+
 const isUnder = (n, anc) => { for (let p = n.getParentNode(); p; p = p.getParentNode()) if (p === anc) return true; return false; };
 
 // Illuminate
@@ -122,6 +213,21 @@ const OVERSEER = [
 // the Elevated / Crescent Overseer list their limb plates as one "Limb Armor" hitzone
 const OVERSEER_1 = OVERSEER.map(([re, p]) => [re, p === 'Limb Armor (8)' ? 'Limb Armor' : p]);
 const IL = 'content/fac_illuminate/';
+
+// Bugs split / named by bone: pieces head, claw_left/right, leg_<side>_front/back, wing_left/right, body
+const BG = 'content/fac_bugs/';
+const bugBody = (main, extra = []) => ({
+  boneGroups: BUG_BONES,
+  split: { mesh: /^g_body$/, bones: BUG_BONES },
+  rules: [...extra, [/^head$/i, 'Head'], [/^(body|g_body)$/i, main]],
+});
+const HUNTER = bugBody('Main', [[/^claw_/, 'Claws (2)'], [/^leg_/, 'Legs (4)'], [/^wing_/, 'Wings (2)']]);
+const STALKER = bugBody('Body Armor', [[/^claw_/, 'Claws (2)'], [/^leg_/, 'Legs (4)'], [/^wing_/, 'Wings']]);
+const SCAVENGER = bugBody('Main', [[/^(claw|leg)_/, 'Limbs (6)'], [/^(wing_|butt$)/i, 'Main']]);
+// Warriors: the real body is a hash-named skinned mesh; split it too
+const warriorBody = (rules) => { const b = bugBody('Main', rules); b.split.skinnedHash = true; return b; };
+const WARRIOR = warriorBody([[/^claw_/, 'Claws (2)'], [/^leg_/, 'Legs (4)']]);
+const SPEWER = bugBody('Main', [[/^butt$/i, 'Butt'], [/^leg_\w+_front$/, 'Front Legs (2)'], [/^leg_\w+_back$/, 'Rear Legs (2)']]);
 
 const SOURCES = {
   charger: { src: 'content/fac_bugs/cha_charger/cha_charger.unit.glb', rules: CHARGER },
@@ -169,6 +275,30 @@ const SOURCES = {
   'hulk-scorcher': { src: 'content/fac_cyborgs/cha_lieutenant_assault/cha_lieutenant_assault.unit.glb', rules: HULK },
   'jet-brigade-hulk-bruiser': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
   'jet-brigade-hulk-scorcher': { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
+  // bugs: one-mesh bodies split by bone; hash-named legs and claws named by bone
+  scavenger: { src: BG + 'cha_scavenger/cha_scavenger.unit.glb', ...SCAVENGER },
+  'spore-burst-scavenger': { src: BG + 'cha_scavenger/cha_scavenger_gloom.unit.glb', ...SCAVENGER },
+  'noxious-scavenger': { src: BG + 'cha_scavenger_defiler/cha_scavenger_defiler.unit.glb', ...SCAVENGER },
+  'caustic-spitter': { src: BG + 'cha_scavenger_spitter/cha_scavenger_spitter.unit.glb', ...SCAVENGER },
+  pouncer: { src: BG + 'cha_scavenger_predator/cha_scavenger_predator.unit.glb', ...SCAVENGER },
+  hunter: { src: BG + 'cha_hunter/cha_hunter.unit.glb', ...HUNTER },
+  'predator-hunter': { src: BG + 'cha_hunter/cha_hunter_tier3.unit.glb', ...HUNTER },
+  'spore-burst-hunter': { src: BG + 'cha_hunter/cha_hunter_gloom_tier1.unit.glb', ...HUNTER },
+  stalker: { src: BG + 'cha_stalker/cha_stalker.unit.glb', ...STALKER },
+  'predator-stalker': { src: BG + 'cha_stalker/cha_stalker.unit.glb', ...STALKER },
+  shrieker: { src: BG + 'cha_shrieker/cha_shrieker.unit.glb', ...bugBody('Main', [[/^(claw|leg)_/, 'Limbs'], [/^(g_)?wings?(_\w+)?$/, 'Wings (2)']]) },
+  warrior: { src: BG + 'cha_warrior/cha_warrior.unit.glb', ...WARRIOR },
+  'alpha-warrior': { src: BG + 'cha_warrior/cha_warrior_tier_1.unit.glb', ...WARRIOR },
+  'spore-burst-warrior': { src: BG + 'cha_warrior/cha_warrior_gloom_tier_1.unit.glb', ...WARRIOR },
+  'caustic-warrior': { src: BG + 'cha_warrior_acid/cha_warrior_acid.unit.glb', ...WARRIOR },
+  'rupture-warrior': { src: BG + 'cha_warrior_burrower/cha_warrior_burrower.unit.glb', ...WARRIOR },
+  'hive-guard': { src: BG + 'cha_warrior_big/cha_warrior_big.unit.glb', ...warriorBody( [[/^claw_/, 'Claws (2)'], [/^leg_\w+_front(_socket)?$/, 'Front Legs (2)'], [/^leg_\w+_back(_socket)?$/, 'Rear Legs (2)']]) },
+  'alpha-commander': { src: BG + 'cha_warrior_big/cha_warrior_big_tier2.unit.glb', ...WARRIOR },
+  'brood-commander': { src: BG + 'cha_warrior_plus/cha_warrior_plus.unit.glb', ...WARRIOR },
+  'nursing-spewer': { src: BG + 'cha_boomer_nurser/cha_boomer_nurser.unit.glb', ...SPEWER },
+  'caustic-spewer': { src: BG + 'cha_boomer/cha_boomer.unit.glb', ...SPEWER },
+  'noxious-spewer': { src: BG + 'cha_boomer_defiler/cha_boomer_defiler.unit.glb', ...SPEWER },
+  'rupture-spewer': { src: BG + 'cha_boomer_burrower/cha_boomer_burrower.unit.glb', ...SPEWER },
   'light-voteless': { src: IL + 'cha_corrupted/cha_corrupted.unit.glb', rules: VOTELESS },
   'medium-voteless': { src: IL + 'cha_corrupted/cha_corrupted_v2.unit.glb', rules: VOTELESS },
   'heavy-voteless': { src: IL + 'cha_corrupted/cha_corrupted_v3.unit.glb', rules: VOTELESS },
@@ -298,6 +428,37 @@ async function prep(id) {
   }
   for (const a of root.listAnimations()) a.dispose();
 
+  // hash-named rigid boxes are the game's culling volumes (a dozen points each): not part of the body
+  for (const node of root.listNodes()) {
+    if (!node.getMesh() || node.getSkin() || !/^0x[0-9a-f]+$/i.test(node.getName())) continue;
+    const pts = node.getMesh().listPrimitives().reduce((a, p) => a + (p.getAttribute('POSITION')?.getCount() || 0), 0);
+    if (pts <= 36) { names.splice(names.indexOf(node.getName()), 1); node.dispose(); }
+  }
+  // one-mesh bodies (and, with skinnedHash, hash-named skinned bodies): split by bone into named pieces
+  if (cfg.split) {
+    const want = (n) => cfg.split.mesh.test(n.getName()) || (cfg.split.skinnedHash && n.getSkin() && /^(0x[0-9a-f]+|udim \d+)$/i.test(n.getName()));
+    for (const node of root.listNodes().filter((n) => n.getMesh() && want(n))) {
+      const at = names.indexOf(node.getName());
+      if (at >= 0) names.splice(at, 1);
+      names.push(...splitByBone(doc, node, cfg.split.bones));
+    }
+  }
+  // hash-named meshes (new maps only, so saved maps keep their keys): name them after their main bone
+  const mapExists = fs.existsSync(path.join(ROOT, 'models', `${id}.map.json`));
+  if (!mapExists && cfg.boneNames !== false) {
+    const taken = new Set(names);
+    for (const node of root.listNodes()) {
+      if (!node.getMesh() || !/^(0x[0-9a-f]+|udim \d+)$/i.test(node.getName())) continue;
+      const bone = mainBone(node, doc);
+      if (!bone) continue;
+      let nm = `b_${bone}`, k = 2;
+      while (taken.has(nm)) nm = `b_${bone}_${k++}`;
+      taken.add(nm);
+      names[names.indexOf(node.getName())] = nm;
+      node.setName(nm); node.getMesh().setName(nm);
+    }
+  }
+
   await doc.transform(
     unpartition(), // merged gear brings its own buffer; a .glb holds one
     prune(),
@@ -322,7 +483,8 @@ async function prep(id) {
   } else if (!fs.existsSync(mapPath)) {
     const map = { enemy: id, meshes: {}, hidden: [] };
     for (const n of names) {
-      const rule = cfg.rules.find(([re]) => re.test(n));
+      const key = cfg.boneGroups && n.startsWith('b_') ? cfg.boneGroups(n.slice(2).replace(/_\d+$/, '')) : n;
+      const rule = cfg.rules.find(([re]) => re.test(key));
       const gear = gearNames.find((a) => a.name === n && a.part);
       if (gear) map.meshes[n] = gear.part;
       else if (rule) map.meshes[n] = rule[1];

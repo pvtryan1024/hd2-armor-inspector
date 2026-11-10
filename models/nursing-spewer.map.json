@@ -1,0 +1,11 @@
+{
+  "enemy": "nursing-spewer",
+  "meshes": {
+    "body": "Main",
+    "head": "Head",
+    "butt": "Butt"
+  },
+  "hidden": [
+    "butt_destroyed"
+  ]
+}

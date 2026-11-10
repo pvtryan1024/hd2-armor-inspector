@@ -1,0 +1,13 @@
+{
+  "enemy": "pouncer",
+  "meshes": {
+    "b_boss": "Main",
+    "butt": "Main",
+    "b_boss_2": "Main",
+    "b_boss_3": "Main",
+    "body": "Main",
+    "b_boss_4": "Main",
+    "Head": "Head"
+  },
+  "hidden": []
+}

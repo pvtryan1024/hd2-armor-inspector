@@ -1,0 +1,13 @@
+{
+  "enemy": "caustic-spitter",
+  "meshes": {
+    "butt": "Main",
+    "b_boss": "Main",
+    "Head": "Head",
+    "body": "Main"
+  },
+  "hidden": [
+    "head_destroyed",
+    "butt_destroyed"
+  ]
+}

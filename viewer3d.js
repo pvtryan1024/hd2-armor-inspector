@@ -107,7 +107,8 @@ const norm = (s) => String(s || '').toLowerCase()
 
 function partIndexFor(entry, key) {
   const parts = lastDetail?.enemy.parts || [];
-  const name = entry.map.meshes[key];
+  // a multi-material mesh loads as numbered sub-meshes ("wing_left_1"): fall back to its own name
+  const name = key in entry.map.meshes ? entry.map.meshes[key] : entry.map.meshes[key.replace(/(_\d+|#\d+)$/, '')];
   if (name === null) return -1; // explicitly marked "not a hitzone"
   if (name) {
     const i = parts.findIndex((p) => p.name === name);
@@ -131,8 +132,17 @@ function instanceFor(entry, key, i) {
   const n = lastDetail?.enemy.parts[i]?.count || 1;
   if (n < 2) return null;
   const bases = [...new Set(entry.meshes.map((m) => m.key).filter((k) => partIndexFor(entry, k) === i).map(baseOf))].sort();
-  const side = (b) => (/(^|_)left(_|$)/i.test(b) ? 0 : /(^|_)right(_|$)/i.test(b) ? 1 : -1);
-  if (n === 2 && bases.length > 2 && bases.every((b) => side(b) >= 0)) return side(baseOf(key));
+  // pieces in several bits (Overseer upper + lower leg, a Warrior leg in 3 segments): side and position
+  // in the name decide the piece (l/left, r/right × front/fore, back/rear/hind)
+  const tok = (b) => {
+    const side = /(^|_)(l|left)(_|$)/i.test(b) ? 'l' : /(^|_)(r|right)(_|$)/i.test(b) ? 'r' : '';
+    const pos = /(front|fore)/i.test(b) ? 'f' : /(back|rear|hind)/i.test(b) ? 'b' : '';
+    return side ? side + pos : '';
+  };
+  if (bases.length > n && bases.every((b) => tok(b))) {
+    const keys = [...new Set(bases.map(tok))].sort();
+    if (keys.length === n) return keys.indexOf(tok(baseOf(key)));
+  }
   const at = bases.indexOf(baseOf(key));
   return at < 0 ? null : at % n;
 }
