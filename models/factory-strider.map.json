@@ -27,7 +27,11 @@
     "top_left": "Main",
     "top_right": "Main",
     "side_left": "Main",
-    "side_right": "Main"
+    "side_right": "Main",
+    "gatling_left_1#2": "Fusion Gatling Guns (2)",
+    "gatling_left_2#2": "Fusion Gatling Guns (2)",
+    "gatling_left_3#2": "Fusion Gatling Guns (2)",
+    "body_static_1": "Leg Assembly (4)"
   },
   "hidden": [
     "side_right_damaged",
@@ -53,8 +57,8 @@
     "leg_upper_left_back_damaged",
     "front_damaged",
     "neck_damaged",
-    "cannon_turret_destroyed",
     "gatling_left_damaged",
-    "gatling_right_damaged"
+    "gatling_right_damaged",
+    "cannon_turret_damaged"
   ]
 }

@@ -108,7 +108,7 @@ const FS_BONES = (bone) => {
 const JUMP = { src: GEAR.cJump, bone: 'attach_backpack', name: 'jetpack', part: 'Jetpack' };
 const LOADOUT = {
   'factory-strider': [
-    { src: GEAR.walkerCannon, bone: 'attach_turret', name: 'cannon_turret', part: 'Cannon Turret' },
+    { src: GEAR.tankCannon, bone: 'attach_turret', name: 'cannon_turret', part: 'Cannon Turret' },
     { src: 'extra/0x48c91e42b9f16512.unit.glb', bone: 'l_front_turret_attach', name: 'gatling_left', part: 'Fusion Gatling Guns (2)', roll: 'y' },
     { src: 'extra/0x48c91e42b9f16512.unit.glb', bone: 'r_front_turret_attach', name: 'gatling_right', part: 'Fusion Gatling Guns (2)', roll: 'y' },
   ],
