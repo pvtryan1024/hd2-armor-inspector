@@ -1,0 +1,7 @@
+{
+  "enemy": "warp-ship",
+  "meshes": {
+    "b_FbxAxisSystem_ConvertNode": "Main"
+  },
+  "hidden": []
+}

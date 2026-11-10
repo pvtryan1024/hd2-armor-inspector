@@ -25,6 +25,11 @@ for (const [into, from] of [['Factory Strider', 'Factory Strider (Armor Broken)'
   }
   enemies.splice(bi, 1);
 }
+// left off the list on purpose
+for (const name of ['Cognitive Disruptor']) {
+  const i = enemies.findIndex((e) => e.name === name);
+  if (i >= 0) enemies.splice(i, 1);
+}
 const weapons = [
   ...read('weapons-primary-secondary.json'),
   ...read('weapons-support.json'),
