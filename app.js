@@ -813,7 +813,7 @@
     $$('#bottomTabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === state.tab));
     $('#partsTableWrap').classList.toggle('hidden', state.tab !== 'parts');
     $('#rankTableWrap').classList.toggle('hidden', state.tab !== 'rank');
-    $('#stageTabs button').forEach((b) => b.classList.toggle('on', b.dataset.sv === state.stageView));
+    $$('#stageTabs button').forEach((b) => b.classList.toggle('on', b.dataset.sv === state.stageView));
     $('#schematic').classList.toggle('hidden', state.stageView !== 'map');
     $('#viewer3d').classList.toggle('hidden', state.stageView !== '3d');
     writeHash();
