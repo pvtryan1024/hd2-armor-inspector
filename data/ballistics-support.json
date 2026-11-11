@@ -545,7 +545,7 @@
     }
   },
   "ms-11-solo-silo": {
-    "Impact explosion": {
+    "Missile": {
       "velocity": null,
       "caliber": null,
       "mass": null,
@@ -557,21 +557,6 @@
         "outer": 6,
         "shockwave": 6,
         "ap": 9,
-        "falloff": "quick"
-      }
-    },
-    "Main explosion": {
-      "velocity": null,
-      "caliber": null,
-      "mass": null,
-      "drag": null,
-      "gravity": null,
-      "penSlowdown": null,
-      "explosion": {
-        "inner": 10,
-        "outer": 25,
-        "shockwave": 35,
-        "ap": 7,
         "falloff": "quick"
       }
     }

@@ -148,6 +148,9 @@
     return { mult: ex.falloff === 'slow' ? 1 - x * x : 1 - x, ap: ex.apOuter ?? (ap > 2 ? Math.max(2, ap - 1) : ap) };
   }
 
+  /** Every explosion a mode sets off at once (the Solo Silo: an impact blast and the main blast). */
+  const exList = (mode) => (mode?.explosion ? [mode.explosion, ...(mode.extraExplosions || [])] : []);
+
   /** Damage one hit does to one part, before HP caps.
    *  opts: band (impact angle), dist (range, metres), exDist (part's distance from the blast; 0 = direct hit),
    *  noProj (part only caught in the blast). */
@@ -159,26 +162,30 @@
     const raw = ((mode.damage || 0) * (1 - d) + (mode.durable ?? mode.damage ?? 0) * d) * rangeMult(mode, opts.dist);
     const proj = m == null || mode.explosionOnly || opts.noProj ? 0 : Math.floor(raw * m) * pellets;
 
-    let partEx = 0, mainEx = 0, exMult = null;
+    let partEx = 0, exMult = null;
+    const mainExBy = []; // Main's redirected share, per explosion (each blast gives it once)
     // an explosive round that ricochets doesn't go off (explosion-only weapons always do)
     const ricochet = !mode.explosionOnly && !mode.proximity && !opts.noProj && (mode.damage || 0) > 0 && !m;
-    const ex = opts.explosion && !ricochet ? mode.explosion : null;
-    if (ex && (ex.damage || ex.durable)) {
+    if (opts.explosion && !ricochet) exList(mode).forEach((ex, j) => {
+      mainExBy[j] = 0;
+      if (!(ex.damage || ex.durable)) return;
       const blast = blastAt(ex, opts.exDist || 0);
       const e = (ex.durable ?? ex.damage) * blast.mult;
-      exMult = blast.mult > 0 ? penMult(blast.ap, part.av) : 0;
+      const pm = blast.mult > 0 ? penMult(blast.ap, part.av) : 0;
+      if (pm != null && (exMult == null || pm > exMult)) exMult = pm;
       const exdr = part.exdr ?? 0;
-      partEx = exMult == null ? 0 : Math.floor(e * (1 - exdr) * exMult);
+      partEx += pm == null ? 0 : Math.floor(e * (1 - exdr) * pm);
       // redirected share skips Main's ExDR but still needs AP ≥ Main's AV
       const main = mainPart(enemy);
-      if (!isMainRow(part) && (!main || blast.ap >= main.av)) mainEx = Math.floor(e * exdr);
-    }
+      if (blast.mult > 0 && !isMainRow(part) && (!main || blast.ap >= main.av)) mainExBy[j] = Math.floor(e * exdr);
+    });
+    const mainEx = mainExBy.reduce((x, y) => x + y, 0);
     let shrap = 0;
     if (mode.shrapnel && opts.allShrap && !opts.noProj && !opts.noShrap && !ricochet && opts.explosion !== false) {
       const f = shotDamage(shrapnelMode(mode), part, enemy, { ...opts, noShrap: true, explosion: false });
       shrap = f.proj * mode.shrapnel.count;
     }
-    return { proj: proj + shrap, partEx, mainEx, pen: opts.noProj ? null : m, exPen: exMult, total: proj + shrap + partEx, ap, range: rangeMult(mode, opts.dist), ricochet, shrap };
+    return { proj: proj + shrap, partEx, mainEx, mainExBy, pen: opts.noProj ? null : m, exPen: exMult, total: proj + shrap + partEx, ap, range: rangeMult(mode, opts.dist), ricochet, shrap };
   }
 
   /** One shrapnel fragment of a mode, as a projectile of its own. */
@@ -624,9 +631,10 @@
         ${pellets > 1 ? `<div class="stat"><div class="k">Pellets</div><div class="v">${pellets}</div></div>` : ''}
         ${w.rpm ? `<div class="stat"><div class="k">RPM</div><div class="v">${fmt(w.rpm)}</div></div>` : ''}
         ${w.mag ? `<div class="stat"><div class="k">Mag</div><div class="v">${fmt(w.mag)}</div></div>` : ''}
-        ${ex && (ex.inner ?? ex.innerRadius) != null ? `<div class="stat"><div class="k">Radius</div><div class="v">${ex.inner ?? ex.innerRadius}/${ex.outer ?? ex.outerRadius ?? '?'}m</div></div>` : ''}
-        ${ex ? `<div class="stat"><div class="k">Expl. dmg</div><div class="v">${fmt(ex.durable ?? ex.damage)}</div></div>
-                <div class="stat"><div class="k">Expl. AP</div><div class="v">${ex.ap ?? '—'}</div></div>` : ''}
+        ${exList(m).map((x, j, all) => { const n = all.length > 1 ? ` ${j + 1}` : ''; return `
+          ${(x.inner ?? x.innerRadius) != null ? `<div class="stat"><div class="k">Radius${n}</div><div class="v">${x.inner ?? x.innerRadius}/${x.outer ?? x.outerRadius ?? '?'}m</div></div>` : ''}
+          <div class="stat"><div class="k">Expl.${n} dmg</div><div class="v">${fmt(x.durable ?? x.damage)}</div></div>
+          <div class="stat"><div class="k">Expl.${n} AP</div><div class="v">${x.ap ?? '—'}</div></div>`; }).join('')}
       </div>
       <div class="angles">
         <div class="ap-caption">AP by impact angle${m.apAngles ? '' : ' <span class="muted">(no angle data — same AP at every angle)</span>'}</div>
@@ -1021,12 +1029,31 @@
   /* ---------------- shots placed on the 3D model ---------------- */
 
   /** Explosion radii of the current mode, when explosions are on and the wiki lists them. */
+  /** The blast's reach for the 3D view: the explosion that reaches furthest (its radii are drawn). */
   function blastRadii(mode) {
-    const ex = state.explosion ? mode?.explosion : null;
-    if (!ex || !(ex.damage || ex.durable)) return null;
-    const inner = ex.inner ?? ex.innerRadius, outer = ex.outer ?? ex.outerRadius;
-    if (inner == null && outer == null) return null;
-    return { inner: inner ?? 0, outer: outer ?? inner, shockwave: ex.shockwave ?? null };
+    if (!state.explosion) return null;
+    let best = null;
+    for (const ex of exList(mode)) {
+      if (!(ex.damage || ex.durable)) continue;
+      const inner = ex.inner ?? ex.innerRadius, outer = ex.outer ?? ex.outerRadius;
+      if (inner == null && outer == null) continue;
+      const r = { inner: inner ?? 0, outer: outer ?? inner, shockwave: ex.shockwave ?? null };
+      if (!best || r.outer > best.outer) best = r;
+    }
+    return best;
+  }
+
+  /** Main takes each explosion's redirected share once: per explosion, only the row with the biggest share
+   *  keeps it (ties: the first row, the struck piece or the nearest). */
+  function onceMain(rows) {
+    const n = Math.max(0, ...rows.map((r) => r.s.mainExBy?.length || 0));
+    const keep = rows.map(() => []);
+    for (let j = 0; j < n; j++) {
+      const top = Math.max(0, ...rows.map((r) => r.s.mainExBy?.[j] || 0));
+      const at = top > 0 ? rows.findIndex((r) => (r.s.mainExBy?.[j] || 0) === top) : -1;
+      rows.forEach((r, i) => { keep[i][j] = i === at ? top : 0; });
+    }
+    rows.forEach((r, i) => { r.s = { ...r.s, mainExBy: keep[i], mainEx: keep[i].reduce((x, y) => x + y, 0) }; });
   }
 
   /** Damage from one shot at a 3D impact point: the struck part takes projectile + full blast, other parts
@@ -1051,12 +1078,7 @@
         const sx = shotDamage(mode, e.parts[b.idx], e, { ...o, noProj: true, exDist: b.d });
         rows.push({ idx: b.idx, k: b.k, dist: b.d, s: sx }); // listed even when the armor stops it
       }
-      const top = Math.max(0, ...rows.map((r) => r.s.mainEx));
-      let used = false;
-      rows.forEach((r) => {
-        if (!used && top > 0 && r.s.mainEx === top) used = true;
-        else r.s = { ...r.s, mainEx: 0 };
-      });
+      onceMain(rows);
     }
     // shrapnel: each fragment ray hits one piece at its own angle; fragments on the same piece add up
     let shrap = null;
@@ -1086,12 +1108,7 @@
         rows.push({ idx: b.idx, k: b.k, dist: b.d, s: shotDamage(mode, e.parts[b.idx], e, { ...o, noProj: true, exDist: b.d }) });
       }
       rows.sort((a, b) => a.dist - b.dist);
-      const top = Math.max(0, ...rows.map((r) => r.s.mainEx));
-      let used = false;
-      rows.forEach((r) => {
-        if (!used && top > 0 && r.s.mainEx === top) used = true;
-        else r.s = { ...r.s, mainEx: 0 };
-      });
+      onceMain(rows);
     }
     let shrap = null;
     if (mode.shrapnel && state.explosion && hit.shrapHits) {

@@ -799,7 +799,7 @@
     "mag": null,
     "modes": [
       {
-        "name": "Impact explosion",
+        "name": "Missile",
         "damage": 1500,
         "durable": 1500,
         "ap": 9,
@@ -811,25 +811,23 @@
           "innerRadius": 3,
           "outerRadius": 6
         },
-        "explosionOnly": true
-      },
-      {
-        "name": "Main explosion",
-        "damage": 2500,
-        "durable": 2500,
-        "ap": 7,
-        "pellets": 1,
-        "explosion": {
-          "damage": 2500,
-          "durable": 2500,
-          "ap": 7,
-          "innerRadius": 10,
-          "outerRadius": 25
-        },
+        "extraExplosions": [
+          {
+            "damage": 2500,
+            "durable": 2500,
+            "ap": 7,
+            "inner": 10,
+            "outer": 25,
+            "shockwave": 35,
+            "falloff": "quick",
+            "stagger": 100,
+            "push": 40
+          }
+        ],
         "explosionOnly": true
       }
     ],
-    "note": "Explosion-only; damage/ap fields mirror explosion inner values. 180s cooldown."
+    "note": "Explosion-only; one missile sets off both explosions (impact 1500 AP9 3/6 m and main 2500 AP7 10/25 m). 180s cooldown."
   },
   {
     "id": "b-md-c4-pack",

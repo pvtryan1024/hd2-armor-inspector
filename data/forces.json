@@ -1869,15 +1869,7 @@
  },
  "ms-11-solo-silo": {
   "modes": {
-   "Impact explosion": {
-    "stagger": null,
-    "push": null,
-    "demolition": 40,
-    "exStagger": 100,
-    "exPush": 40,
-    "exDemolition": 40
-   },
-   "Main explosion": {
+   "Missile": {
     "stagger": null,
     "push": null,
     "demolition": 40,

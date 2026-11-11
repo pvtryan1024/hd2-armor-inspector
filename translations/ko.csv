@@ -760,8 +760,7 @@ mode,Arc discharge,,firing mode
 mode,Full charge (2.6s),,firing mode
 mode,Beam,,firing mode
 mode,Spray,,firing mode
-mode,Impact explosion,,firing mode
-mode,Main explosion,,firing mode
+mode,Missile,,firing mode
 mode,Detonation,,firing mode
 mode,Bomb,,firing mode
 mode,Bomb (x6),,firing mode
