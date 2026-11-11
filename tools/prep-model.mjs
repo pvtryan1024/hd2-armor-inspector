@@ -761,7 +761,10 @@ const SOURCES = {
   },
   // the Annihilator's turret on its own: the turret is Turret Front, the heat sink on its back cut out (Heatsink)
   'cannon-turret': { src: GEAR.tankCannon, cuts: [{ mesh: 'body', name: 'turret_heatsink', box: [[-2, -0.15, 1.24], [2, 0.95, 2.14]] }], rules: [[/^body$/, 'Turret Front'], [/^turret_heatsink$/, 'Heatsink']] },
-  'bunker-turret': { src: CY + 'turrets/cyborg_turret_small_autocannon/cyborg_turret_small_autocannon.unit.glb', rules: MAIN_ONLY },
+  // the heat sink: the two fin banks on the back face, either side of the centre column (like the Shredder's)
+  'bunker-turret': { src: CY + 'turrets/cyborg_turret_small_autocannon/cyborg_turret_small_autocannon.unit.glb',
+    cuts: [[-0.7, -0.2], [0.2, 0.7]].map(([x0, x1], i) => ({ mesh: 'body', name: `heatsink_${i ? 'right' : 'left'}`, box: [[x0, 0.28, 0.65], [x1, 0.72, 0.95]] })),
+    rules: [[/^heatsink_(left|right)$/, 'Heatsink'], [/./, 'Main']] },
   'mg-emplacement-light-fusion-cycler': { src: CY + 'emplacements/cyborg_emplacement_mg/cyborg_emplacement_mg.unit.glb', rules: MAIN_ONLY },
   'mg-emplacement-heavy-fusion-repeater': { src: CY + 'emplacements/cyborg_emplacement_hmg/cyborg_emplacement_hmg.unit.glb', rules: MAIN_ONLY },
   'light-voteless': { src: IL + 'cha_corrupted/cha_corrupted.unit.glb', rules: VOTELESS },

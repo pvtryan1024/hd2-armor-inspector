@@ -2,7 +2,9 @@
   "enemy": "bunker-turret",
   "meshes": {
     "body": "Main",
-    "body_damaged": "Main"
+    "body_damaged": "Main",
+    "heatsink_left": "Heatsink",
+    "heatsink_right": "Heatsink"
   },
   "hidden": [
     "body_damaged"
