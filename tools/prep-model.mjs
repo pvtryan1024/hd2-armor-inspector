@@ -710,7 +710,10 @@ const SOURCES = {
   },
   // cyborg_spawner is the Factory Strider (skeleton "cyborg_big_walker_skeleton"); the Fabricator is a building: best guess the bunker
   // the factory building (a box with a vent hatch on top)
-  'automaton-fabricator': { src: 'extra/cyborg_spawner_factory.unit.glb', boneNames: false, rules: [[/^(g_)?cyborg_spawner_factory$/, 'Main']] },
+  'automaton-fabricator': { src: 'extra/cyborg_spawner_factory.unit.glb', boneNames: false,
+    // the two exhaust ducts on the roof's front end (Vents), per triangle
+    cuts: ['left', 'right'].map((s) => ({ mesh: 'g_cyborg_spawner_factory', name: `vent_${s}`, tris: true, box: s === 'left' ? [[-2.2, 3.7, -2.95], [-0.6, 6.0, -0.5]] : [[0.6, 3.7, -2.95], [2.2, 6.0, -0.5]] })),
+    rules: [[/^(g_)?cyborg_spawner_factory$/, 'Main'], [/^vent_(left|right)$/, 'Vents']] },
   'factory-strider': {
     src: CY + 'vehicles/cyborg_spawner/cyborg_spawner.unit.glb',
     boneGroups: FS_BONES,

@@ -180,12 +180,19 @@
       if (blast.mult > 0 && !isMainRow(part) && (!main || blast.ap >= main.av)) mainExBy[j] = Math.floor(e * exdr);
     });
     const mainEx = mainExBy.reduce((x, y) => x + y, 0);
+    // demolition: a structure part (the Fabricator) is destroyed outright by enough demolition force, from the
+    // round itself (direct hit) or an explosion that reaches it; demolitionBlast parts (its vents) only by explosions
+    let demo = false;
+    if (part.demolition && !ricochet) {
+      if (!part.demolitionBlast && !opts.noProj && !mode.explosionOnly && m != null && (mode.demolition || 0) >= part.demolition) demo = true;
+      if (opts.explosion) for (const ex of exList(mode)) if ((ex.demolition || 0) >= part.demolition && blastAt(ex, opts.exDist || 0).mult > 0) demo = true;
+    }
     let shrap = 0;
     if (mode.shrapnel && opts.allShrap && !opts.noProj && !opts.noShrap && !ricochet && opts.explosion !== false) {
       const f = shotDamage(shrapnelMode(mode), part, enemy, { ...opts, noShrap: true, explosion: false });
       shrap = f.proj * mode.shrapnel.count;
     }
-    return { proj: proj + shrap, partEx, mainEx, mainExBy, pen: opts.noProj ? null : m, exPen: exMult, total: proj + shrap + partEx, ap, range: rangeMult(mode, opts.dist), ricochet, shrap };
+    return { proj: proj + shrap, partEx, mainEx, mainExBy, demo, pen: opts.noProj ? null : m, exPen: exMult, total: proj + shrap + partEx, ap, range: rangeMult(mode, opts.dist), ricochet, shrap };
   }
 
   /** One shrapnel fragment of a mode, as a projectile of its own. */
@@ -216,6 +223,10 @@
     const out = { progress: false, toMain: 0, broke: false, dealt: s.total };
     if (sim.dead || part.av < 0 || part.av >= 11) return out;
     if (!extra) sim.shots++; // blast damage to other parts belongs to the same shot
+    if (s.demo && part.fatal) {
+      sim.dead = { how: 'killed', why: `${part.name} destroyed by demolition force`, idx };
+      return Object.assign(out, { progress: true, broke: true });
+    }
     const mi = mainIndexFor(enemy, idx);
     const toMain = part.toMain ?? 0; // "-" on the wiki: nothing reaches Main (shields, jetpacks, mounted guns)
 

@@ -821,7 +821,8 @@
             "shockwave": 35,
             "falloff": "quick",
             "stagger": 100,
-            "push": 40
+            "push": 40,
+            "demolition": 40
           }
         ],
         "explosionOnly": true

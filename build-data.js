@@ -285,9 +285,11 @@ if (fs.existsSync(forcesPath)) {
       if (!v) return;
       if (v.stagger != null) m.stagger = v.stagger;
       if (v.push != null) m.push = v.push;
+      if (v.demolition != null) m.demolition = v.demolition; // demolition force: what structures it can destroy
       if (m.explosion) {
         if (v.exStagger != null) m.explosion.stagger = v.exStagger;
         if (v.exPush != null) m.explosion.push = v.exPush;
+        if (v.exDemolition != null) m.explosion.demolition = v.exDemolition;
       }
       if (m.stagger != null || m.explosion?.stagger != null) forceModes++;
     });

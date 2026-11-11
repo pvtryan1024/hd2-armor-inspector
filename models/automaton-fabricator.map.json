@@ -1,7 +1,9 @@
 {
   "enemy": "automaton-fabricator",
   "meshes": {
-    "g_cyborg_spawner_factory": "Main"
+    "g_cyborg_spawner_factory": "Main",
+    "vent_left": "Vents",
+    "vent_right": "Vents"
   },
   "hidden": [
     "0x6a31aebb",

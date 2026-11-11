@@ -2988,7 +2988,22 @@
         "constitution": null,
         "fatal": true,
         "exdr": 0,
-        "location": "Front, Side, Rear"
+        "location": "Front, Side, Rear",
+        "demolition": 40
+      },
+      {
+        "name": "Vents",
+        "health": "main",
+        "av": 5,
+        "durable": 1,
+        "toMain": 1,
+        "overflow": null,
+        "constitution": null,
+        "fatal": true,
+        "exdr": 0,
+        "location": "Top",
+        "demolition": 20,
+        "demolitionBlast": true
       }
     ]
   },
