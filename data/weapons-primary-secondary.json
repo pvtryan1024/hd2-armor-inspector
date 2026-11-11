@@ -1485,11 +1485,11 @@
       {
         "name": "Standard",
         "damage": 165,
-        "durable": null,
+        "durable": 83,
         "ap": 3,
         "pellets": 1,
         "explosion": null,
-        "note": "Melee; durable not listed (civilian CQC-72 lists 83)"
+        "note": "Melee 165 / 83 at AP 3"
       }
     ]
   },
@@ -2123,11 +2123,11 @@
       {
         "name": "Shrapnel",
         "damage": 110,
-        "durable": null,
+        "durable": 35,
         "ap": 3,
         "pellets": 35,
         "explosion": null,
-        "note": "Shrapnel durable not listed"
+        "note": "Shrapnel 110 / 35; AP 3 direct and slight angle, 2 large, 0 extreme"
       }
     ]
   },
