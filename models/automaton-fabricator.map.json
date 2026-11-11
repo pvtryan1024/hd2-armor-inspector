@@ -1,9 +1,13 @@
 {
   "enemy": "automaton-fabricator",
   "meshes": {
-    "chunk_03": "Main",
-    "chunk_02": "Main",
-    "chunk_01": "Main"
+    "g_cyborg_spawner_factory": "Main"
   },
-  "hidden": []
+  "hidden": [
+    "0x6a31aebb",
+    "0x721447e1",
+    "0x4c4bbbaa",
+    "0x58dbd6b6",
+    "0x861e5809"
+  ]
 }

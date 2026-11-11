@@ -709,7 +709,8 @@ const SOURCES = {
     ],
   },
   // cyborg_spawner is the Factory Strider (skeleton "cyborg_big_walker_skeleton"); the Fabricator is a building: best guess the bunker
-  'automaton-fabricator': { src: 'extra/0x3ce73c30ff7e3146.unit.glb', boneNames: false, rules: MAIN_ONLY },
+  // the factory building (a box with a vent hatch on top)
+  'automaton-fabricator': { src: 'extra/cyborg_spawner_factory.unit.glb', boneNames: false, rules: [[/^(g_)?cyborg_spawner_factory$/, 'Main']] },
   'factory-strider': {
     src: CY + 'vehicles/cyborg_spawner/cyborg_spawner.unit.glb',
     boneGroups: FS_BONES,
