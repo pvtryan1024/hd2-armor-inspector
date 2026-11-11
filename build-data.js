@@ -343,7 +343,8 @@ if (fs.existsSync(wthumbsDir)) for (const f of fs.readdirSync(wthumbsDir)) { con
 
 console.log(`stagger: ${enemies.filter((e) => e.stagger != null).length} enemies with a threshold, ${forceModes} weapon modes with forces`);
 
-// Translations: translations/<lang>.csv (type, english, <lang>, where), filled in by hand; empty cells stay English
+// Translations: translations/*.csv (type, english, where, then a column per language: korean, chinese,
+// japanese, … with a "<language> review" column beside each for drafts awaiting approval); empty cells stay English
 function parseCsv(text) {
   const rows = [];
   let row = [], cell = '', q = false;
@@ -363,19 +364,24 @@ function parseCsv(text) {
   if (cell || row.length) { row.push(cell); rows.push(row); }
   return rows;
 }
+const LANG_COLS = { korean: 'ko', chinese: 'zh', japanese: 'ja' };
 const i18n = {};
 const trDir = path.join(__dirname, 'translations');
 if (fs.existsSync(trDir)) {
   for (const f of fs.readdirSync(trDir)) {
-    const m = /^([a-z]{2}(?:-[a-z]{2})?)\.csv$/i.exec(f);
-    if (!m) continue;
+    if (!/\.csv$/i.test(f)) continue;
     const rows = parseCsv(fs.readFileSync(path.join(trDir, f), 'utf8').replace(/^\ufeff/, ''));
     const head = rows.shift().map((h) => h.trim().toLowerCase());
-    const en = head.indexOf('english'), tr = head.findIndex((h, i) => i !== en && !['type', 'where'].includes(h));
-    const dict = {};
-    for (const r of rows) if (r[en]?.trim() && r[tr]?.trim()) dict[r[en].trim()] = r[tr].trim();
-    i18n[m[1].toLowerCase()] = dict;
-    console.log(`translations: ${f} — ${Object.keys(dict).length} of ${rows.length} filled in`);
+    const en = head.indexOf('english');
+    if (en < 0) continue;
+    head.forEach((h, c) => {
+      const lang = LANG_COLS[h];
+      if (!lang) return; // type, where, review columns
+      const dict = (i18n[lang] ||= {});
+      let n = 0;
+      for (const r of rows) if (r[en]?.trim() && r[c]?.trim()) { dict[r[en].trim()] = r[c].trim(); n++; }
+      console.log(`translations: ${f} ${h} — ${n} of ${rows.length} filled in`);
+    });
   }
 }
 

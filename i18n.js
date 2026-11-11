@@ -1,8 +1,9 @@
-/* Page translation. Translations live in translations/<lang>.csv (english → translated, filled in by hand)
- * and are built into data.js as HD2_DATA.i18n[lang]. With a language picked, every text node and
+/* Page translation. Translations live in translations/*.csv (english → a column per language, filled in by
+ * hand) and are built into data.js as HD2_DATA.i18n[lang]. With a language picked, every text node and
  * title/placeholder whose text matches an English entry is swapped one-to-one; entries with {n} match
  * any number in that spot. Text without a translation stays in English. The flags (bottom left) switch
- * language; the choice is remembered and links can carry it (#…&lang=ko). */
+ * language; the choice is remembered and links can carry it (#…&lang=ko). Without either, the browser's
+ * preferred language picks it (ko / zh / ja, else English). */
 (() => {
   'use strict';
 
@@ -10,11 +11,23 @@
   const LANGS = [
     { id: 'en', label: 'English (US)', flag: flagUS() },
     { id: 'ko', label: '한국어', flag: flagKR() },
+    { id: 'zh', label: '简体中文', flag: flagCN() },
+    { id: 'ja', label: '日本語', flag: flagJP() },
   ];
   const fromHash = new URLSearchParams(location.hash.slice(1)).get('lang');
   let saved = null;
   try { saved = localStorage.getItem('hd2-lang'); } catch { /* storage blocked */ }
-  const lang = LANGS.some((l) => l.id === fromHash) ? fromHash : LANGS.some((l) => l.id === saved) ? saved : 'en';
+  // first visit: the browser's preferred languages (its UI / region setting), first one we have, e.g.
+  // ko-KR → ko, zh-CN / zh-TW → zh, ja-JP → ja; anything else stays English
+  const fromBrowser = () => {
+    for (const tag of navigator.languages?.length ? navigator.languages : [navigator.language || '']) {
+      const base = String(tag).toLowerCase().split('-')[0];
+      if (base === 'en') return 'en';
+      if (LANGS.some((l) => l.id === base)) return base;
+    }
+    return 'en';
+  };
+  const lang = LANGS.some((l) => l.id === fromHash) ? fromHash : LANGS.some((l) => l.id === saved) ? saved : fromBrowser();
   document.documentElement.lang = lang;
 
   // ---- language switch (bottom left)
@@ -112,6 +125,21 @@
     const stripes = Array.from({ length: 13 }, (_, i) => (i % 2 ? '' : `<rect y="${i * 10}" width="190" height="10" fill="#b22234"/>`)).join('');
     return `<svg viewBox="0 0 190 130" width="26" height="18" aria-hidden="true"><rect width="190" height="130" fill="#fff"/>${stripes}<rect width="76" height="70" fill="#3c3b6e"/>`
       + Array.from({ length: 20 }, (_, i) => `<circle cx="${8 + (i % 5) * 15}" cy="${8 + Math.floor(i / 5) * 17}" r="2.6" fill="#fff"/>`).join('') + '</svg>';
+  }
+  function flagCN() {
+    // a five-pointed star: outer radius r, centre (x, y), turned by rot degrees
+    const star = (x, y, r, rot) => {
+      const pts = Array.from({ length: 10 }, (_, i) => {
+        const a = ((i * 36 + rot - 90) * Math.PI) / 180, rr = i % 2 ? r * 0.382 : r;
+        return `${(x + rr * Math.cos(a)).toFixed(1)},${(y + rr * Math.sin(a)).toFixed(1)}`;
+      });
+      return `<polygon points="${pts.join(' ')}" fill="#ffde00"/>`;
+    };
+    return `<svg viewBox="0 0 30 20" width="26" height="18" aria-hidden="true"><rect width="30" height="20" fill="#de2910"/>`
+      + star(5, 5, 3, 0) + star(10, 2, 1, 23) + star(12, 4, 1, 46) + star(12, 7, 1, 70) + star(10, 9, 1, 21) + '</svg>';
+  }
+  function flagJP() {
+    return '<svg viewBox="0 0 30 20" width="26" height="18" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><circle cx="15" cy="10" r="6" fill="#bc002d"/></svg>';
   }
   function flagKR() {
     // trigram bars (gun, gon, gam, ri): solid = full bar, broken = two halves
