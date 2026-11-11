@@ -119,6 +119,10 @@ Object.assign(GEAR, {
 });
 // Scout Strider upper hulls and HMG: unnamed models from its archive (exported by hash into extra/)
 const SCOUT_TURRET = [{ mesh: 'body', name: 'turret_system', bone: /^turret$/ }];
+// the pilot (the Commissar body) at its seat on the turret platform
+const SCOUT_PILOT = { src: 'content/fac_cyborgs/cha_conscript_commander/cha_conscript_commander.unit.glb', bone: 'attach_pilot', name: 'pilot', part: 'Pilot',
+  // kneeling on the platform, hands forward on the controls (as in game): lowered 0.3 m, thighs forward, knees folded
+  offset: [0, 0, -0.3], pose: { l_leg: [0, 0, 80], r_leg: [0, 0, 80], l_knee: [0, 0, -130], r_knee: [0, 0, -130], l_shoulder: [0, 0, 60], r_shoulder: [0, 0, 60] } };
 const SCOUT_HMG = { src: 'extra/0x2a346bf4552997e2.unit.glb', bone: 'gun_pitch', name: 'hmg', part: 'HMG', offset: [0, 0, 0.3] }; // raised 0.3 m: the barrels come out through the gap in the front plate
 // Factory Strider ("cyborg_big_walker_skeleton"): leg pieces by bone
 const FS_BONES = (bone) => {
@@ -143,7 +147,7 @@ const LOADOUT = {
     { src: 'extra/0x48c91e42b9f16512.unit.glb', bone: 'l_gattling_socket', name: 'minigun_left', part: 'Miniguns (2)' },
     { src: 'extra/0x48c91e42b9f16512.unit.glb', bone: 'r_gattling_socket', name: 'minigun_right', part: 'Miniguns (2)' },
   ],
-  'scout-strider': [{ src: 'extra/0xee00bfe8ff769f70.unit.glb', bone: 'turret', name: 'hull', part: 'Front Plate' }, SCOUT_HMG],
+  'scout-strider': [{ src: 'extra/0xee00bfe8ff769f70.unit.glb', bone: 'turret', name: 'hull', part: 'Front Plate' }, SCOUT_HMG, SCOUT_PILOT],
   'reinforced-scout-strider': [
     { src: 'extra/0xd3cd6f0ca83bb51e.unit.glb', bone: 'turret', name: 'hull', part: 'Faceplate' }, SCOUT_HMG,
     // rocket rails on the hull sides, rockets pointing forward (its four meshes are hash-named LODs: keep the best)
@@ -806,6 +810,19 @@ async function prep(id) {
   const gearNames = [];
   for (const a of LOADOUT[id] || []) {
     const adoc = await io.read(path.join(EXPORTS, a.src));
+    // pose: { bone: [x, y, z] degrees } turns those bones of the gear in their own frame (a pilot kneeling at
+    // its seat: the exports carry no animations, so the bind pose is all there is otherwise)
+    const pose = a.pose;
+    for (const [bone, deg] of Object.entries(pose || {})) {
+      const n = adoc.getRoot().listNodes().find((x) => x.getName() === bone);
+      if (!n) { console.warn(`${id}: pose bone ${bone} not found`); continue; }
+      const q = (ax, d) => { const h = (d * Math.PI) / 360, v = [0, 0, 0, Math.cos(h)]; v[ax] = Math.sin(h); return v; };
+      const mul = (p, r) => [
+        p[3] * r[0] + p[0] * r[3] + p[1] * r[2] - p[2] * r[1], p[3] * r[1] - p[0] * r[2] + p[1] * r[3] + p[2] * r[0],
+        p[3] * r[2] + p[0] * r[1] - p[1] * r[0] + p[2] * r[3], p[3] * r[3] - p[0] * r[0] - p[1] * r[1] - p[2] * r[2]];
+      const d = mul(q(2, deg[2] || 0), mul(q(1, deg[1] || 0), q(0, deg[0] || 0)));
+      n.setRotation(mul(n.getRotation(), d));
+    }
     // keep the most detailed copy: some gear only ships a lower LOD (the Berserker chainsaw has just LOD1)
     const lodOf = (n) => +(/LOD(\d)$/i.exec(n.getName())?.[1] ?? 0);
     const meshes = adoc.getRoot().listNodes().filter((n) => n.getMesh() && !/shadow|collision|culling/i.test(n.getName()));
