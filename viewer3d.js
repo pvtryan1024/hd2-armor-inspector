@@ -513,20 +513,32 @@ const showColliders = () => current?.colliders?.forEach(({ mesh }) => { mesh.vis
 
 /** Over-penetration target along the shot: the first inner hitbox the ray passes through behind the impact. */
 const thruRay = new THREE.Raycaster();
-function innerAlong(h) {
-  if (!current?.colliders?.length) return null;
-  thruRay.set(h.origin, h.point.clone().sub(h.origin).normalize());
-  const meshes = current.colliders.map((c) => c.mesh);
-  const vis = meshes.map((m) => m.visible);
-  meshes.forEach((m) => { m.visible = true; });
-  const hits = thruRay.intersectObjects(meshes, false);
-  meshes.forEach((m, i) => { m.visible = vis[i]; });
-  const dist = h.point.distanceTo(h.origin);
-  const hit = hits.find((x) => x.distance > dist - 1e-3);
-  if (!hit) return null;
+/** Overpenetration follows the shot's own path: the next hitzone piece along the line after the struck one
+ *  (another part's mesh, a revealed flesh mesh, or an invisible inner collider), with its distance past the
+ *  impact. Whether the round actually gets through is the cleave rule's call (app.js overpen). The struck
+ *  piece's own meshes (its back side) are passed over; meshes that aren't hitzones don't stop it. */
+function thruAlong(h) {
+  if (!current) return null;
+  const dir = h.point.clone().sub(h.origin).normalize();
+  thruRay.set(h.point.clone().addScaledVector(dir, 1e-3), dir);
+  thruRay.far = Infinity;
+  const i0 = partIndexFor(current, h.mesh.userData.key), k0 = instanceFor(current, h.mesh.userData.key, i0);
+  const live = current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains);
+  const cols = (current.colliders || []).map((c) => c.mesh);
+  const vis = cols.map((m) => m.visible);
+  cols.forEach((m) => { m.visible = true; });
+  const hits = thruRay.intersectObjects([...live, ...cols], false).sort((a, b) => a.distance - b.distance);
+  cols.forEach((m, i) => { m.visible = vis[i]; });
   const parts = lastDetail?.enemy.parts || [];
-  const idx = parts.findIndex((p) => p.name === hit.object.userData.collider.part);
-  return idx >= 0 ? { idx, d: hit.distance - dist } : null;
+  for (const x of hits) {
+    let idx, k = null;
+    if (x.object.userData.collider) idx = parts.findIndex((p) => p.name === x.object.userData.collider.part);
+    else { idx = partIndexFor(current, x.object.userData.key); if (idx >= 0) k = instanceFor(current, x.object.userData.key, idx); }
+    if (idx < 0 || (idx === i0 && k === k0)) continue;
+    if (x.distance < 0.02) continue; // overlapping the struck surface (spores grown on the butt): not behind it
+    return { idx, k, d: x.distance };
+  }
+  return null;
 }
 
 /* ---------- explosions ----------
@@ -747,7 +759,7 @@ function shoot(h) {
   for (const m of bv.revealed) { const ri = partIndexFor(current, m.userData.key); if (ri >= 0 && !(ri in revealedK)) revealedK[ri] = instanceFor(current, m.userData.key, ri); }
   const parts = {};
   for (const b of blast) if (parts[b.idx] == null || b.d < parts[b.idx]) parts[b.idx] = b.d;
-  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), thru: innerAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), thru: thruAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
   if (said) status(said);
 }
 

@@ -1019,8 +1019,9 @@
     const o = { ...opts(), band };
     if (hit.ground) return resolveGround(hit, mode, band, o);
     const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0, noShrap: true }) }];
-    // 3D shots: only an inner hitbox the ray actually passes through counts (hit.thru from the viewer)
-    const thru = overpen(mode, e, hit.idx, rows[0].s, o, 'thru' in hit ? hit.thru?.idx ?? null : undefined);
+    // 3D shots: the next piece along the shot's path (hit.thru from the viewer), if the cleave rule lets it through
+    const thru0 = overpen(mode, e, hit.idx, rows[0].s, o, 'thru' in hit ? hit.thru?.idx ?? null : undefined);
+    const thru = thru0 ? { ...thru0, k: hit.thru?.k ?? null } : null;
     const radii = rows[0].s.ricochet ? null : blastRadii(mode); // a ricochet means no blast at all
     if (radii) {
       // pieces reached by the blast rays (3D view); the struck piece already took the full blast
@@ -1165,8 +1166,8 @@
           notes.push(`shrapnel ${res.shrap.hit}/${res.shrap.count} hit`);
         }
         if (k === 0 && res.thru && !state.sim.dead) { // over-penetration into the part behind
-          const o2 = applyShot(state.sim, e, res.thru.idx, res.thru.s, true);
-          notes.push(`through into ${e.parts[res.thru.idx].name} (AP ${res.thru.ap}): ${fmt(res.thru.s.total)} dmg${o2.broke ? ', destroyed' : ''}`);
+          const o2 = applyShot(state.sim, e, res.thru.idx, res.thru.s, true, res.thru.k ?? undefined);
+          notes.push(`through into ${pieceName(e.parts[res.thru.idx], res.thru.k)} (AP ${res.thru.ap}): ${fmt(res.thru.s.total)} dmg${o2.broke ? ', destroyed' : ''}`);
         }
       });
       const d = res.rows[0];
