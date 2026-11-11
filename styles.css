@@ -530,6 +530,7 @@ body.editor .public-only { display: none !important; }
   text-decoration: none; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35); white-space: nowrap;
 }
 .bmc:hover { background: #ffe94d; }
+.bmc { transition: bottom 0.2s ease; }
 .bmc svg { display: block; flex: none; }
 .lang-switch {
   position: fixed; left: 12px; bottom: 12px; z-index: 60; display: grid; grid-template-columns: repeat(6, auto); gap: 4px; padding: 4px;
@@ -539,6 +540,10 @@ body.editor .public-only { display: none !important; }
 .lang-switch button svg { width: 30px; height: 30px; display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4); }
 .lang-switch button:hover { opacity: 0.85; }
 .lang-switch button.on { opacity: 1; border-color: var(--accent); }
+/* folded: only the current flag (it opens the rest); the coffee button drops down to sit just above it */
+.lang-switch.collapsed { grid-template-columns: auto; }
+.lang-switch.collapsed button:not(.on) { display: none; }
+body.flags-collapsed .bmc { bottom: 66px; }
 
 /* fire HUD: killed without Main running out (a fatal part destroyed) */
 .hud-dead { color: var(--pen-none); font-weight: 700; white-space: nowrap; }

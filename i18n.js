@@ -44,9 +44,22 @@
   bar.className = 'lang-switch';
   // the current language first (highlighted), then the rest in order (Ukrainian before Russian)
   bar.innerHTML = [...LANGS.filter((l) => l.id === lang), ...LANGS.filter((l) => l.id !== lang)].map((l) => `<button type="button" data-lang="${l.id}" class="${l.id === lang ? 'on' : ''}" title="${l.label}" aria-label="${l.label}">${l.flag.replace('<svg ', `<svg preserveAspectRatio="${['en', 'zh'].includes(l.id) ? 'xMinYMid' : 'xMidYMid'} slice" `)}</button>`).join('');
+  // every flag at first; after 3 s only the current one. Clicking it opens them all again (and they fold
+  // away 3 s after the last interaction).
+  let foldTimer = 0;
+  const setFolded = (on) => { bar.classList.toggle('collapsed', on); document.body.classList.toggle('flags-collapsed', on); };
+  const fold = (ms = 3000) => { clearTimeout(foldTimer); foldTimer = setTimeout(() => setFolded(true), ms); };
+  bar.addEventListener('pointerenter', () => clearTimeout(foldTimer));
+  bar.addEventListener('pointerleave', () => { if (!bar.classList.contains('collapsed')) fold(); });
   bar.addEventListener('click', (ev) => {
     const b = ev.target.closest('button[data-lang]');
-    if (!b || b.dataset.lang === lang) return;
+    if (!b) return;
+    if (b.dataset.lang === lang) {
+      setFolded(!bar.classList.contains('collapsed'));
+      if (bar.classList.contains('collapsed')) clearTimeout(foldTimer);
+      else fold();
+      return;
+    }
     try { localStorage.setItem('hd2-lang', b.dataset.lang); } catch { /* storage blocked */ }
     const p = new URLSearchParams(location.hash.slice(1));
     p.delete('lang');
@@ -54,6 +67,7 @@
     location.reload(); // the page is rebuilt in English and translated again from scratch
   });
   document.body.appendChild(bar);
+  fold();
 
   const dict = lang === 'en' ? null : DICTS[lang];
   if (!dict) return;
