@@ -260,33 +260,39 @@
     }
   }
 
-  /** An explosive round whose projectile breaks a plate: the plate takes the projectile, and the explosion
-   *  that follows lands on the part the plate was covering (a Charger Behemoth's leg flesh under its leg
-   *  armor: the AC-8's AP 3 blast can't hurt the AV 4 plate, but it hits the exposed AV 2 flesh). Confirmed in
-   *  game: the AC-8 kills in one shot fewer than without it, while plain rounds (AMR, Railgun) show that
-   *  surplus damage itself does not carry over. Returns the split shot, or null to apply it as usual. */
-  function blastUnder(sim, enemy, idx, s, mode, o, want) {
-    if (!o.explosion || !mode.explosion || !(s.proj > 0) || s.ricochet) return null;
-    const part = enemy.parts[idx];
-    const under = enemy.parts.findIndex((q) => q.coveredBy === part.name);
-    const inst = sim.hp[idx];
-    if (under < 0 || !inst) return null;
-    const k = want != null ? want : inst.findIndex((h) => !instGone(part, h));
-    if (k < 0 || !(inst[k] > 0) || s.proj < inst[k]) return null; // the projectile alone doesn't break it
-    const ex = shotDamage(mode, enemy.parts[under], enemy, { ...o, noProj: true, exDist: 0 });
-    return { idx: under, plate: { ...s, partEx: 0, mainEx: 0, total: s.proj }, ex };
-  }
-  /** Apply one shot to a part, splitting it when its projectile breaks a plate (blastUnder). */
+  /** One shot with both impact and explosion, in the order the game does it: the impact lands first and
+   *  changes the state (a plate it breaks is gone), then the explosion is worked out against that new state:
+   *  - the struck piece still has a hitbox (or no health of its own, like Main): the explosion hits it too
+   *  - the impact broke a plate that covers another part: the explosion lands on that part instead
+   *    (Charger Behemoth leg: the AC-8's AP 3 blast can't hurt the AV 4 plate, but it hits the exposed AV 2
+   *    flesh; verified in game: AC-8 kills in 8 where AMR needs 9 and Railgun 7 like the simulation, so surplus
+   *    damage itself never carries over)
+   *  - the impact destroyed the piece and nothing is under it: the explosion meets the destroyed piece
+   *    (only an overflow part still passes damage on to Main)
+   *  Plain rounds and explosion-only weapons are applied in one go. o.combined: the old all-at-once sum. */
   function applyHit(sim, enemy, idx, s, mode, o, extra, want) {
-    const bu = blastUnder(sim, enemy, idx, s, mode, o, want);
-    if (!bu) return applyShot(sim, enemy, idx, s, extra, want);
-    const out = applyShot(sim, enemy, idx, bu.plate, extra, want);
-    if (!sim.dead) {
-      const o2 = applyShot(sim, enemy, bu.idx, bu.ex, true);
-      out.under = { idx: bu.idx, dealt: bu.ex.total, broke: o2.broke, toMain: o2.toMain };
-      out.toMain += o2.toMain;
-      out.progress = out.progress || o2.progress;
+    const ex = o.explosion && mode.explosion && !s.ricochet && s.proj > 0;
+    if (!ex || o.combined) return applyShot(sim, enemy, idx, s, extra, want);
+    const part = enemy.parts[idx];
+    const inst = sim.hp[idx];
+    const k = inst ? (want != null ? want : inst.findIndex((h) => !instGone(part, h))) : -1;
+    // 1. impact
+    const out = applyShot(sim, enemy, idx, { ...s, partEx: 0, mainEx: 0, total: s.proj }, extra, k >= 0 ? k : want);
+    if (sim.dead) return out;
+    // 2. explosion, against what is there now
+    const stripped = inst && k >= 0 && instGone(part, inst[k]);
+    const under = stripped ? enemy.parts.findIndex((q) => q.coveredBy === part.name) : -1;
+    let o2;
+    if (under >= 0) {
+      const sx = shotDamage(mode, enemy.parts[under], enemy, { ...o, noProj: true, exDist: 0 });
+      o2 = applyShot(sim, enemy, under, sx, true);
+      out.under = { idx: under, dealt: sx.total, broke: o2.broke, toMain: o2.toMain };
+    } else {
+      o2 = applyShot(sim, enemy, idx, { ...s, proj: 0, total: s.partEx }, true, k >= 0 ? k : want);
     }
+    out.toMain += o2.toMain;
+    out.progress = out.progress || o2.progress;
+    out.broke = out.broke || o2.broke;
     return out;
   }
   /** Log text for the explosion that went on into the part under a broken plate. */
