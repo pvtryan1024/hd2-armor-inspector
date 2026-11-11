@@ -525,6 +525,8 @@ function buildColliders(entry) {
   });
   showColliders();
 }
+/** Colliders that take plain shots and blasts (direct: true), with their matrices current. */
+const directColliders = () => (current?.colliders || []).filter((c) => c.def.direct).map((c) => { c.mesh.updateMatrixWorld(); return c.mesh; });
 const showColliders = () => current?.colliders?.forEach(({ mesh }) => { mesh.visible = editing; });
 
 /** Over-penetration target along the shot: the first inner hitbox the ray passes through behind the impact. */
@@ -603,7 +605,7 @@ function shrapnelHits(h, spec) {
   if (spec.spread === 'surface') {
     dirs = fibDirs(spec.count * 2).filter((d) => d.dot(into) > 0).slice(0, spec.count);
   } else dirs = fibDirs(spec.count);
-  const targets = current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key));
+  const targets = [...current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key)), ...directColliders()];
   const origin = h.point.clone().addScaledVector(h.normal, 0.02);
   const out = [];
   blastRay.far = spec.range || 7;
@@ -636,7 +638,8 @@ function blastHits(h, outer) {
   if (!(outer > 0)) return [];
   const centre = h.point.clone().addScaledVector(h.normal, 0.01); // just off the surface that was struck
   const live = (m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key); // destroyed pieces: no hitbox
-  const meshes = current.meshes.map((m) => m.mesh).filter(live); // what the blast can hit, and what blocks it
+  // what the blast can hit, and what blocks it; direct colliders too (the Barrager's launch tubes)
+  const meshes = [...current.meshes.map((m) => m.mesh).filter(live), ...directColliders()];
   const pieceOf = (m) => { const i = partIndexFor(current, m.userData.key); return i < 0 ? null : `${i}:${instanceFor(current, m.userData.key, i)}`; };
   const local = new THREE.Vector3(), hitAt = { point: new THREE.Vector3() }, dir = new THREE.Vector3(), v3 = new THREE.Vector3();
   // can the blast see point p of this piece? (nothing else in the way; non-hitzone meshes block too)
@@ -653,14 +656,28 @@ function blastHits(h, outer) {
     if (idx < 0) continue; // not a hitzone (still blocks)
     const id = pieceOf(mesh);
     mesh.updateMatrixWorld();
-    local.copy(centre);
-    mesh.worldToLocal(local);
-    if (!mesh.geometry.boundsTree?.closestPointToPoint(local, hitAt)) continue;
-    const near = mesh.localToWorld(hitAt.point.clone());
-    if (near.distanceTo(centre) > outer) continue;
-    // candidate points, nearest first: the closest point, then a spread of the mesh's vertices in range
-    const pts = [near], pos = mesh.geometry.attributes.position, step = Math.max(1, Math.floor(pos.count / BLAST_SAMPLES));
-    for (let i = 0; i < pos.count; i += step) { v3.fromBufferAttribute(pos, i); mesh.localToWorld(v3); if (v3.distanceTo(centre) <= outer) pts.push(v3.clone()); }
+    let near;
+    const pts = [];
+    if (mesh.userData.collider) { // a box collider: its closest point, then points across its faces
+      const box = new THREE.Box3().setFromObject(mesh);
+      near = box.clampPoint(centre, new THREE.Vector3());
+      if (near.distanceTo(centre) > outer) continue;
+      pts.push(near);
+      for (const fx of [0, 0.25, 0.5, 0.75, 1]) for (const fy of [0, 0.5, 1]) for (const fz of [0, 0.5, 1]) {
+        const q = new THREE.Vector3(box.min.x + (box.max.x - box.min.x) * fx, box.min.y + (box.max.y - box.min.y) * fy, box.min.z + (box.max.z - box.min.z) * fz);
+        if (q.distanceTo(centre) <= outer) pts.push(q);
+      }
+    } else {
+      local.copy(centre);
+      mesh.worldToLocal(local);
+      if (!mesh.geometry.boundsTree?.closestPointToPoint(local, hitAt)) continue;
+      near = mesh.localToWorld(hitAt.point.clone());
+      if (near.distanceTo(centre) > outer) continue;
+      // candidate points, nearest first: the closest point, then a spread of the mesh's vertices in range
+      pts.push(near);
+      const pos = mesh.geometry.attributes.position, step = Math.max(1, Math.floor(pos.count / BLAST_SAMPLES));
+      for (let i = 0; i < pos.count; i += step) { v3.fromBufferAttribute(pos, i); mesh.localToWorld(v3); if (v3.distanceTo(centre) <= outer) pts.push(v3.clone()); }
+    }
     pts.sort((p, q) => p.distanceTo(centre) - q.distanceTo(centre));
     const seen = pts.find((p) => sees(p, id));
     if (!seen) continue;
@@ -694,8 +711,7 @@ function pick(ev) {
   camera.updateMatrixWorld();
   current.root.updateMatrixWorld();
   ray.setFromCamera(ptr, camera);
-  const direct = (current.colliders || []).filter((c) => c.def.direct).map((c) => c.mesh);
-  direct.forEach((m) => m.updateMatrixWorld());
+  const direct = directColliders();
   const hits = ray.intersectObjects([...current.meshes.map((m) => m.mesh).filter((m) => m.visible), ...direct], false).sort((a, b) => a.distance - b.distance);
   // destroyed parts have no hitbox: the shot goes through to whatever is behind them
   const hit = hits.find((h) => h.object.userData.collider || (h.object.material.opacity > 0.2 && !h.object.userData.remains && !noHitbox(current, h.object.userData.key)));
