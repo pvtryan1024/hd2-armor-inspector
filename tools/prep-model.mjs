@@ -383,7 +383,8 @@ function splitShells(doc, node, sp, likeBoxes) {
 }
 
 /** Cut out the loose pieces that lie inside a box (posed model space): weak spots modelled into a bigger
- *  mesh (the Hulk's eye plate, the War Strider's eye and visor). { mesh, name, box: [lo, hi] } */
+ *  mesh (the Hulk's eye plate, the War Strider's eye and visor). { mesh, name, box: [lo, hi] }
+ *  Or by bone: { mesh, name, bone: /re/ } takes the pieces most of whose vertices that bone drives. */
 function cutBox(doc, node, cut) {
   const skin = node.getSkin(), m16 = [];
   const mats = skin ? skin.listJoints().map((j, i) => mat4Mul(j.getWorldMatrix(), skin.getInverseBindMatrices().getElement(i, m16).slice())) : null;
@@ -404,8 +405,12 @@ function cutBox(doc, node, cut) {
       return o;
     };
     const inside = [], rest = [];
+    const jn = skin ? skin.listJoints().map((j) => j.getName()) : [];
+    const byBone = (i) => { J.getElement(i, j4); W.getElement(i, w4); let b = 0; for (let q = 1; q < 4; q++) if (w4[q] > w4[b]) b = q; return cut.bone.test(jn[j4[b]] || ''); };
     for (const sh of shellsOf(prim)) {
-      const ok = [...new Set(sh.tris)].every((i) => posed(i).every((x, k) => x >= cut.box[0][k] && x <= cut.box[1][k]));
+      const vs = [...new Set(sh.tris)];
+      const ok = cut.bone ? vs.filter(byBone).length >= vs.length * 0.6
+        : vs.every((i) => posed(i).every((x, k) => x >= cut.box[0][k] && x <= cut.box[1][k]));
       (ok ? inside : rest).push(...sh.tris);
     }
     if (!inside.length) continue;
@@ -517,7 +522,10 @@ const SOURCES = {
   charger: { src: 'content/fac_bugs/cha_charger/cha_charger.unit.glb', cuts: CHARGER_BELLY, shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', tipBones: /^spine4$/ }], rules: CHARGER },
   'charger-behemoth': { src: 'content/fac_bugs/cha_charger_bull/cha_charger_bull.unit.glb', cuts: CHARGER_BELLY, shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', tipBones: /^spine4$/ }], rules: CHARGER },
   // the Rupture's front legs are its digging plates (Frontal Tarsal Plate Armor, AV5)
-  'rupture-charger': { src: 'content/fac_bugs/cha_charger_burrower/cha_charger_burrower.unit.glb', cuts: CHARGER_BELLY, shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', tipBones: /^spine4$/ }], rules: [[/^(left|right)_front_leg$/, 'Frontal Tarsal Plate Armor (2)'], ...CHARGER] },
+  // Rupture Charger: the last front-leg segment, the one standing on the ground, is the AV 5 Frontal Tarsal Plate;
+  // the arm joining the body stays Front Leg Armor (AV 4)
+  'rupture-charger': { src: 'content/fac_bugs/cha_charger_burrower/cha_charger_burrower.unit.glb',
+    cuts: [...CHARGER_BELLY, { mesh: 'left_front_leg', name: 'left_front_tarsal', bone: /^middle_leg_3_l$/ }, { mesh: 'right_front_leg', name: 'right_front_tarsal', bone: /^middle_leg_3_r$/ }], shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', tipBones: /^spine4$/ }], rules: [[/^(left|right)_front_tarsal$/, 'Frontal Tarsal Plate Armor (2)'], ...CHARGER] },
   'caustic-charger': { src: 'content/fac_bugs/cha_charger_acid/cha_charger_acid.unit.glb', cuts: CHARGER_BELLY, shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', prim: /cha_charger/, tipBones: /^spine4$/ }], rules: [[/_blob$/, 'Spore Flesh'], ...CHARGER] },
   'bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider.unit.glb', ...BT_BODY, rules: BILE_TITAN },
   'spore-burst-bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider_gloom.unit.glb', ...BT_BODY, rules: BILE_TITAN },

@@ -3,8 +3,8 @@
   "meshes": {
     "head": "Head",
     "left_back_leg": "Rear Leg Armor (2)",
-    "right_front_leg": "Frontal Tarsal Plate Armor (2)",
-    "left_front_leg": "Frontal Tarsal Plate Armor (2)",
+    "right_front_leg": "Front Leg Armor (2)",
+    "left_front_leg": "Front Leg Armor (2)",
     "side_left_damaged": "Inner Flesh",
     "left_front_leg_damaged": "Leg Flesh (4)",
     "left_back_leg_damaged": "Leg Flesh (4)",
@@ -20,7 +20,9 @@
     "claw_right": "Claws (2)",
     "body": "Main",
     "butt_plates": "Rear Armor Plates",
-    "body_underside": "Underside"
+    "body_underside": "Underside",
+    "left_front_tarsal": "Frontal Tarsal Plate Armor (2)",
+    "right_front_tarsal": "Frontal Tarsal Plate Armor (2)"
   },
   "hidden": [
     "butt_damaged",
