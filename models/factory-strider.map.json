@@ -59,6 +59,6 @@
     "neck_damaged",
     "gatling_left_damaged",
     "gatling_right_damaged",
-    "cannon_turret_damaged"
+    "cannon_turret_destroyed"
   ]
 }
