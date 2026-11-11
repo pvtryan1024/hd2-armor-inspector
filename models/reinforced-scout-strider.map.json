@@ -3,12 +3,13 @@
   "meshes": {
     "r_hip": "Waist",
     "l_hip": "Waist",
-    "body": "Main",
+    "body": "Waist",
     "legs": "Legs (2)",
     "hull": "Faceplate",
     "hmg": "HMG",
     "rail_left": "Rocket Rails (2)",
-    "rail_right": "Rocket Rails (2)"
+    "rail_right": "Rocket Rails (2)",
+    "turret_system": "Turret System"
   },
   "hidden": [
     "body_damaged",

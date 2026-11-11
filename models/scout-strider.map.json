@@ -6,7 +6,8 @@
     "body": "Waist",
     "legs": "Legs (2)",
     "hull": "Front Plate",
-    "hmg": "HMG"
+    "hmg": "HMG",
+    "turret_system": "Turret System"
   },
   "hidden": [
     "body_damaged",
