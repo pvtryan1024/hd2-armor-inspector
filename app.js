@@ -1155,6 +1155,7 @@
   function placeGround(hit) {
     state.hit = hit;
     const res = resolveHit(hit);
+    state.hit = { ...state.hit, blast: res?.radii || null };
     if (!res?.radii && !res?.shrap) { render(); return 'Ground: no explosion with this weapon, nothing happens'; }
     if (state.fire && state.sim && !state.sim.dead) {
       const e = enemy(), notes = [];
@@ -1206,7 +1207,7 @@
       return `Blocked: ${e0.parts[hit.idx].name} is behind armor`;
     }
     const res = resolveHit(hit);
-    if (res) state.hit = { ...state.hit, ricochet: !!res.rows[0].s.ricochet };
+    if (res) state.hit = { ...state.hit, ricochet: !!res.rows[0].s.ricochet, blast: res.radii || null };
     if (res && state.fire && state.sim && !state.sim.dead) {
       const e = enemy();
       const notes = [];
@@ -1341,7 +1342,7 @@
       shrapnel: m?.shrapnel && state.explosion ? { count: m.shrapnel.count, spread: m.shrapnel.spread, range: blastRadii(m)?.outer || 7 } : null,
       enemy: e, colors, gone, goneInst, hitHp, fire: state.fire, stageView: state.stageView,
       colorMode: state.color, ap4, avs: e.parts.map((p) => p.av), bands: ANGLE_BANDS,
-      hit: state.hit, blast: state.hit?.ricochet ? null : blastRadii(m), radii: blastRadii(m), explosive: !!(blastRadii(m) || (m?.shrapnel && state.explosion)),
+      hit: state.hit, blast: state.hit?.blast || null, radii: blastRadii(m), explosive: !!(blastRadii(m) || (m?.shrapnel && state.explosion)),
     } }));
   }
 
