@@ -94,9 +94,14 @@ const INDESTRUCTIBLE = [{ enemy: /hive guard/i, part: /armou?r|plate/i }];
 
 // a part under two plates: either one breaking exposes it (Rupture Charger: the leg flesh runs under the upper
 // arm's Front Leg Armor and under the Frontal Tarsal Plate of the ground segment)
+// the wiki's "No (Downs)": destroying the part (constitution included) downs the enemy, and anything that
+// damages it after that finishes it. Verified for Hulk legs: one leg fully destroyed, the Hulk lives on (no bleed)
+// but a single shot to any part kills it. (The Dropship's thrusters carry the same note: not confirmed, left out.)
+const DOWNS = [{ enemy: /hulk/i, part: /^legs\b/i }];
 const ALSO_COVERED = [{ enemy: /^Rupture Charger$/, parts: { 'Leg Flesh (4)': 'Frontal Tarsal Plate Armor (2)' } }];
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
+  for (const c of DOWNS) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.fatal = 'downs'; });
   for (const c of ALSO_COVERED) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.alsoCoveredBy = c.parts[p.name]; });
   for (const c of BEHIND) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.behind = c.parts[p.name]; });
   for (const c of LOCATION_FIX) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.location = c.location; });
