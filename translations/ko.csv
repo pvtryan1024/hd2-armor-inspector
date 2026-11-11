@@ -1,771 +1,771 @@
-﻿type,english,korean,where
-ui,HD{n},,start page
-ui,Armor Inspector,,start page
-ui,Alpha,,start page
-ui,Alpha version · numbers and features may change,알파 버전 · 수치와 기능은 추후 변경 예정,start page
-ui,{n} enemies · {n} weapons · data {n}-{n}-{n},{n} 구현된 적 · {n} 구현된 무기 · 마지막 빌드 날짜 {n}-{n}-{n},start page
-ui,Copy link,,start page
-ui,Target,적,start page
-ui,Bugs · {n} enemies,,start page
-ui,Bots · {n} enemies,,start page
-ui,Squids · {n} enemies,,start page
-ui,wiki ↗,,start page
-ui,{n}D model,,start page
-ui,Body map,,start page
-ui,Fire mode,피격 시뮬레이션,start page
-ui,Covered parts: hidden,장갑에 덥힌 부위: 가려짐,start page
-ui,All,전부,start page
-ui,Front,정면,start page
-ui,Side,측면,start page
-ui,Rear,후면,start page
-ui,Penetration,관통,start page
-ui,Time to kill,,start page
-ui,Main health,전체 체력,start page
-ui,Heavy · AV{n},,start page
-ui,{n} s,,start page
-ui,{n} shots · via Butt (downs),,start page
-ui,Damageable zones,타격 가능 구역,start page
-ui,hitzones this weapon hurts,본 무기로 피해 줄 수 있는 구역,start page
-ui,Fatal parts,치명 부위,start page
-ui,besides Main,,start page
-ui,Shots fired,발사한 탄수,start page
-ui,Reset,초기화,start page
-ui,Click a hitzone to fire one shot of the selected weapon.,클릭해서 무기를 선택한 무기를 발사,start page
-ui,Load .glb,.glb 파일 로드,start page
-ui,Edit hitzones,,start page
-ui,Save mapping,,start page
-ui,Reset camera,카메라 재설정,start page
-ui,Original materials,,start page
-ui,{n} meshes · {n} linked to hitzones,,start page
-ui,Colours follow the impact angle from your camera,,start page
-ui,Direct {n}–{n}°:,,start page
-ui,AP {n},,start page
-ui,· Slight {n}–{n}°:,,start page
-ui,· Large {n}–{n}°:,,start page
-ui,· Extreme {n}–{n}°:,,start page
-ui,No {n}D model for this enemy yet,,start page
-ui,Use the,,start page
-ui,view instead. Enemies with a,,start page
-ui,{n}D,,start page
-ui,tag in the list have a model.,,start page
-ui,Drop a,,start page
-ui,.glb,,start page
-ui,models/,,start page
-ui,named after the enemy id (,,start page
-ui,".glb), or load one with the button above.",,start page
-ui,"In Filediver, look in archive:",,start page
-ui,Then use,,start page
-ui,to click each mesh and pick which wiki part it is.,,start page
-ui,AV{n},,start page
-ui,{n} HP,,start page
-ui,☠ fatal,☠ 치명,start page
-ui,no dmg,피해 못줌,start page
-ui,Arms & weapons,,start page
-ui,Rear & weak spots,,start page
-ui,🛡 Torso Armor,🛡 상체 장갑,start page
-ui,Main HP,전체 체력,start page
-ui,dmg/shot,발당 데미지,start page
-ui,hard to reach,접근 어려움,start page
-ui,☠ downs,,start page
-ui,🛡 Front Leg Armor,🛡 정면 다리 장갑,start page
-ui,Penetrates · {n}%,관통함 · {n}%,start page
-ui,Reduced · {n}%,일부 감소함 · {n}%,start page
-ui,Ricochet · {n},튕겨남 · {n},start page
-ui,Immune,면역,start page
-ui,Tile size ≈ part health · ☠ = fatal when destroyed,타일 크기 ≈ 부위의 체력 · ☠ = 파괴시 치명 (사망) ,start page
-ui,Hitzones,피격 부위,start page
-ui,Best weapons vs target,가장 유용한 무기,start page
-ui,Real life case,실제 전투시,start page
-ui,Hitzone,피격,start page
-ui,Health,체력,start page
-ui,Durable,내구력,start page
-ui,To main,전체 체력으로 전달 비율,start page
-ui,Fatal,치명 부위,start page
-ui,ExDR,폭발 저항,start page
-ui,Result,결과,start page
-ui,Dmg/shot,발당 데미지,start page
-ui,Main/shot,,start page
-ui,Break,파괴,start page
-ui,Shots,발수,start page
-ui,TTK,,start page
-ui,Yes,예,start page
-ui,#NAME?,,start page
-ui,No,아니오,start page
-ui,Downs,,start page
-ui,"One-shot kills come first, sorted by damage (highest first); everything else is ranked by time to kill on its best hitzone in the current view. Time comes from RPM with the first shot at {n} s; reloads are not included (* = needs more than one magazine). Weapons without an RPM are ranked by shot count after timed kills.",,start page
-ui,"You won't always hit the weak spot. For each weapon this takes every reachable hitzone in the current view that can kill, then uses the midpoint between the fastest and the slowest time to kill. Weapons are ranked by that midpoint.",,start page
-ui,Weapon,무기,start page
-ui,Primary · Assault Rifle,주무기,start page
-ui,Damage,피해량,start page
-ui,RPM,분당발수,start page
-ui,Mag,탄창,start page
-ui,AP by impact angle,각도에 따른 관통력,start page
-ui,Direct,직격,start page
-ui,Slight,약간의 각도,start page
-ui,Large,큰 각도,start page
-ui,Extreme,매우 큰 각도,start page
-ui,"Armor this shot defeats at direct (green = full, yellow-green = {n}%, red = ricochet). Body map and tables use this angle; the {n}D view uses the real angle from your camera.",,start page
-ui,Range,거리,start page
-ui,{n} m,,start page
-ui,Projectile damage at {n} m:,,start page
-ui,(drag falloff),,start page
-ui,Enemy and weapon data from the,,start page
-ui,Helldivers {n} Wiki,,start page
-ui,"and its contributors, used under",,start page
-ui,CC BY-NC-SA {n},,start page
-ui,"; values were reformatted for this calculator, and enemy icons were downscaled to thumbnails. Faction emblems traced by Dogo{n} Game archive IDs from the HD{n} modding community's ID sheet.",,start page
-ui,"Simplified damage model (AP vs AV, durable mix, % to main, explosions); expect a few percent error. Fan project, non-commercial, not affiliated with Arrowhead Game Studios or Sony Interactive Entertainment. Helldivers is a trademark of Sony Interactive Entertainment.",,start page
-ui,Back to the start page,,start page (title)
-ui,Early version: data and features may change,,start page (title)
-ui,Copy a link to this exact setup,,start page (title)
-ui,Search all enemies…,적 이름으로 검색,start page (placeholder)
-ui,Switch between the {n}D model and the flat body map,,start page (title)
-ui,Click hitzones to shoot them one at a time,,start page (title)
-ui,"Inner and flesh parts (Inner Flesh, Leg Flesh, Internals) sit behind armor, and undersides are hard to reach. They're left out of time to kill and the rankings; toggle to include them.",,start page (title)
-ui,Filter hitzones by the view they're visible from,,start page (title)
-ui,How hitzones are coloured,,start page (title)
-ui,Load a .glb model for this enemy,,start page (title)
-ui,Click meshes and assign them to wiki hitzones,,start page (title)
-ui,Show the model's own materials instead of hitzone colours,,start page (title)
-ui,Destroying this kills,,start page (title)
-ui,{n}/{n} intact · {n} HP left,,start page (title)
-ui,{n} HP left,,start page (title)
-ui,Behind armor: break the armor first,갑옷 먼저 파괴시 접근 가능,start page (title)
-ui,uses Main health,메인 체력 사용,start page (title)
-ui,Destroying this downs the enemy,파괴하면 적이 쓰러짐,start page (title)
-ui,Heavy,,start page (title)
-ui,Excess damage overflows to Main,초과 데미지는 전체 체력에 적용됨,start page (title)
-ui,Very Light,,start page (title)
-ui,Light,,start page (title)
-ui,More shots than one magazine,탄창 하나 이상 사용,start page (title)
-ui,Unarmored,장갑 없음,start page (title)
-ui,Search all weapons…,무기 이름으로 검색,start page (placeholder)
-ui,Direct ({n}–{n}°),직격 ({n}–{n}°),start page (title)
-ui,Slight angle ({n}–{n}°),약간의 입사각 ({n}–{n}°),start page (title)
-ui,Large angle ({n}–{n}°),큰 입사각 ({n}–{n}°),start page (title)
-ui,Extreme angle ({n}–{n}°),매우 큰 입사각 ({n}–{n}°),start page (title)
-ui,AV{n} Unarmored: {n}%,AV{n} 장갑 없음: {n}%,start page (title)
-ui,AV{n} Very Light: {n}%,AV{n} 매우 경장갑: {n}%,start page (title)
-ui,AV{n} Light: {n}%,AV{n} 경장갑: {n}%,start page (title)
-ui,AV{n} Medium: ricochet,AV{n} 일반장갑: 도탄,start page (title)
-ui,AV{n} Heavy: ricochet,,start page (title)
-ui,AV{n} Tank I: ricochet,,start page (title)
-ui,AV{n} Tank II: ricochet,,start page (title)
-ui,AV{n} Tank III: ricochet,,start page (title)
-ui,AV{n} Tank IV: ricochet,,start page (title)
-ui,AV{n} Tank V: ricochet,,start page (title)
-ui,AV{n} Tank VI: ricochet,,start page (title)
-ui,Loading model…,모델 로딩중…,start page (fire off)
-ui,← Factions,← 팩션,enemy page
-ui,← Categories,← 카테고리,enemy page
-ui,AP{n},,enemy page
-ui,AP{n}/{n},,enemy page
-ui,AP{n}/{n}/{n},,enemy page
-ui,Back to factions,팩션 선택으로,enemy page (title)
-ui,{n}D model available,,enemy page (title)
-ui,Back to categories,카테고리 선택으로,enemy page (title)
-ui,Light · AV{n},,enemy page
-ui,{n} shots · via Head,,enemy page
-ui,"In Filediver, look in archives:",,enemy page
-ui,Missle Variant,,enemy page
-ui,Medium,,enemy page (title)
-ui,Language,언어,enemy page (aria-label)
-ui,English,영어,enemy page (title)
-ui,Unarmored · AV{n},,enemy page
-ui,{n} shots · via Right Arm,,enemy page
-ui,Armored Overseer + Staff,,enemy page
-ui,Overseer Only,오버시어에만 적용,enemy page
-ui,🛡 Limb Armor,🛡 사지 갑옷,enemy page
-ui,🛡 Chest Armor,🛡 흉갑,enemy page
-ui,({n} armor),,enemy page
-ui,Includes shots to destroy Chest Armor,흉갑 파괴까지의 발수 포함,enemy page (title)
-ui,Includes shots to destroy Limb Armor ({n}),사지 갑옷 파괴까지의 발수 포함 ({n}),enemy page (title)
-ui,{n} shots · via Heatsink (downs),,enemy page
-ui,"In Filediver, look in archives for the",,enemy page
-ui,Hulk,헐크,enemy page
-ui,family:,,enemy page
-ui,None,,enemy page
-ui,Nothing in view dies to this,,enemy page
-ui,🛡 Front Armor,🛡 정면 갑옷,enemy page
-ui,🛡 Side Armor,🛡 측면 갑옷,enemy page
-ui,🛡 Rear Armor,🛡 후면 갑옷,enemy page
-ui,Tank I,전차 장갑 1단계,enemy page (title)
-ui,Primary · Explosive,주무기 · 폭발성,explosive weapon
-ui,Radius,반경,explosive weapon
-ui,{n}/{n}m,,explosive weapon
-ui,Expl. dmg,폭발 데미지,explosive weapon
-ui,Expl. AP,폭발 관통력,explosive weapon
-ui,No drag: no falloff over range,거리에 따른 데미지 감소 없음,explosive weapon
-ui,Include explosion (direct hit),폭발 데미지 포함 (직격),explosive weapon
-ui,All {n} shrapnel hit the part,,explosive weapon
-ui,Also {n} shrapnel x{n} (AP/durable not listed; omitted),,explosive weapon
-ui,Includes shots to destroy Torso Armor ({n}),흉갑 파괴까지의 발수 포함,explosive weapon (title)
-ui,Includes shots to destroy Front Leg Armor ({n}),다리 장갑 파괴까지의 발수 포함,explosive weapon (title)
-ui,AV{n} Medium: {n}%,,explosive weapon (title)
-ui,AV{n} Heavy: {n}%,,explosive weapon (title)
-ui,Body map and time to kill: count every fragment on the struck part (an upper bound). The {n}D view traces each fragment instead.,,explosive weapon (title)
-ui,Support · Autocannon,지원 · 오토캐논,flak
-ui,Ammo / mode,발사 모드 변경,flak
-ui,burn · Burning on Main health,,flamethrower
-ui,Support · Flame,,flamethrower
-ui,No ballistics data: range has no effect,,flamethrower
-ui,Damage per flame particle tick as listed; ignites targets: burn {n} Fire/s (AP{n}) for {n}s.,,flamethrower
-ui,Category,카테고리,tab rank
-ui,Mode,모드,tab rank
-ui,Best hitzone,,tab rank
-ui,{n} shot,,tab rank
-ui,One shot,한 방,tab rank
-ui,{n} shots,,tab rank
-ui,{n} s*,,tab rank
-ui,Fastest,,tab real
-ui,Slowest,,tab real
-ui,Real life,,tab real
-ui,~{n} shots,,tab real
-ui,no kill,,time-to-kill colours
-ui,{n} shots +reload,,time-to-kill colours
-ui,Time to kill: instant,즉시 죽임,time-to-kill colours
-ui,{n} s+,,time-to-kill colours
-ui,"From RPM; first shot at {n} s, reloads not included",,time-to-kill colours
-ui,Can't kill through this zone,피해 못줌,time-to-kill colours
-ui,Elapsed,,body map fire
-ui,"#{n} Butt: {n} dmg, {n} to Main — destroyed",,body map fire
-ui,"#{n} Butt: {n} dmg, {n} to Main · no stagger ({n} < {n})",,body map fire
-ui,Downed,,body map fire
-ui,Butt destroyed · {n} shots,,body map fire
-ui,Fire again,,body map fire
-ui,Covered parts: exposed,,covered parts
-ui,Very Light · AV{n},,covered parts
-ui,Torso is under Torso Armor — break it first,,covered parts
-ui,No archive ID known for this enemy yet. Search for it in Filediver by name.,,covered parts
-ui,armor off,,covered parts
-ui,{n} dmg · via Head,,no model
-ui,New Variant?,,no model
-faction,Terminids,,faction picker
-faction,Automatons,,faction picker
-faction,Illuminate,,faction picker
-category,Primary,주무기,weapon categories
-category,Secondary,보조무기,weapon categories
-category,Throwable,투척무기,weapon categories
-category,Support,지원무기,weapon categories
-category,Eagle,이글,weapon categories
-category,Orbital,궤도 폭격,weapon categories
-category,Sentry,센트리,weapon categories
-category,Emplacement,,weapon categories
-weapon type,Assault Rifle,돌격소총,weapon card
-weapon type,Marksman Rifle,지정사수소총,weapon card
-weapon type,Sniper Rifle,저격총,weapon card
-weapon type,Energy-Based,에너지 무기,weapon card
-weapon type,Submachine Gun,기관단총,weapon card
-weapon type,Shotgun,산탄총,weapon card
-weapon type,Explosive,폭발성,weapon card
-weapon type,Special,특수,weapon card
-weapon type,Pistol,권총,weapon card
-weapon type,Melee,근접무기,weapon card
-weapon type,Standard,,weapon card
-weapon type,Machine Gun,기관총,weapon card
-weapon type,Rifle,소총,weapon card
-weapon type,Launcher,발사기,weapon card
-weapon type,Energy,에너지 무기,weapon card
-weapon type,Autocannon,오토캐논,weapon card
-weapon type,Flame,화염,weapon card
-enemy,Scavenger,스캐빈저,enemy list
-enemy,Pouncer,파운서,enemy list
-enemy,Caustic Spitter,,enemy list
-enemy,Spore Burst Scavenger,스포어 버스트 스캐빈저,enemy list
-enemy,Noxious Scavenger,,enemy list
-enemy,Shrieker,슈리커,enemy list
-enemy,Hunter,헌터,enemy list
-enemy,Predator Hunter,프레데터 헌터,enemy list
-enemy,Spore Burst Hunter,스포어 버스트 헌터,enemy list
-enemy,Warrior,워리어,enemy list
-enemy,Alpha Warrior,알파 워리어,enemy list
-enemy,Spore Burst Warrior,스포어 버스트 워리어,enemy list
-enemy,Rupture Warrior,럽쳐 워리어,enemy list
-enemy,Caustic Warrior,,enemy list
-enemy,Hive Guard,하이브 가드,enemy list
-enemy,Brood Commander,브루드 커맨더,enemy list
-enemy,Alpha Commander,알파 커맨더,enemy list
-enemy,Stalker,스토커,enemy list
-enemy,Predator Stalker,프레데터 스토커,enemy list
-enemy,Nursing Spewer,너싱 스퓨어,enemy list
-enemy,Noxious Spewer,,enemy list
-enemy,Caustic Spewer,,enemy list
-enemy,Rupture Spewer,럽쳐 스퓨어,enemy list
-enemy,Charger,차저,enemy list
-enemy,Charger Behemoth,차저 베히모스,enemy list
-enemy,Rupture Charger,럽처 차저,enemy list
-enemy,Caustic Charger,,enemy list
-enemy,Impaler,임페일러,enemy list
-enemy,Bile Titan,바일 타이탄,enemy list
-enemy,Spore Burst Bile Titan,스포어 버스트 바일 타이탄,enemy list
-enemy,Dragonroach,드래곤 로치,enemy list
-enemy,Hive Lord,하이브로드,enemy list
-enemy,Trooper,트루퍼,enemy list
-enemy,Commissar,코미사르,enemy list
-enemy,Marauder,머로더,enemy list
-enemy,Brawler,브롤러,enemy list
-enemy,MG Raider,MG 레이더,enemy list
-enemy,Rocket Raider,로켓 레이더,enemy list
-enemy,Assault Raider,어썰트 레이더,enemy list
-enemy,Jet Brigade Commissar,제트 여단 커미서,enemy list
-enemy,Jet Brigade MG Raider,제트 여단 MG 레이더,enemy list
-enemy,Jet Brigade Trooper,제트 여단 트루퍼,enemy list
-enemy,Incendiary Rocket Raider,소각대 로켓 레이더,enemy list
-enemy,Pyro Trooper,파이로 트루퍼,enemy list
-enemy,Devastator,데바스테이터,enemy list
-enemy,Heavy Devastator,방패 데바스테이터,enemy list
-enemy,Rocket Devastator,로켓 데바스테이터,enemy list
-enemy,Jet Brigade Devastator,제트 여단 데버스테이터,enemy list
-enemy,Conflagration Devastator,컨플래그레이션 데버스테이터,enemy list
-enemy,Incendiary MG Devastator,인센디어리 MG 데버스테이터,enemy list
-enemy,Berserker,버서커,enemy list
-enemy,Hulk Bruiser,헐크 브루저,enemy list
-enemy,Hulk Scorcher,헐크 스코처,enemy list
-enemy,Hulk Obliterator,헐크 오블리터레이터,enemy list
-enemy,Hulk Firebomber,헐크 파이어보머,enemy list
-enemy,Jet Brigade Hulk Bruiser,제트 여단 헐크 브루저,enemy list
-enemy,Jet Brigade Hulk Scorcher,제트 여단 헐크 스코처,enemy list
-enemy,Scout Strider,스카우트 스트라이더,enemy list
-enemy,Scout Strider Pilot,,enemy list
-enemy,Reinforced Scout Strider,강화 스카우트 스트라이더,enemy list
-enemy,Annihilator Tank,어나이얼레이터 탱크,enemy list
-enemy,Shredder Tank,슈레더 탱크,enemy list
-enemy,Barrager Tank,바라저 탱크,enemy list
-enemy,Cannon Turret,캐논 포탑,enemy list
-enemy,Bunker Turret,쁘띠 포탑,enemy list
-enemy,Mortar Emplacement,박격포,enemy list
-enemy,Anti-Air Emplacement,대공 거치포,enemy list
-enemy,MG Emplacement (Light Fusion Cycler),,enemy list
-enemy,MG Emplacement (Heavy Fusion Repeater),,enemy list
-enemy,Automaton Fabricator,제조기,enemy list
-enemy,Gunship,건십,enemy list
-enemy,Dropship,드롭십,enemy list
-enemy,War Strider,워 스트라이더,enemy list
-enemy,Factory Strider,팩토리 스트라이더,enemy list
-enemy,Agitator,애지테이터,enemy list
-enemy,Radical,래디컬,enemy list
-enemy,Vox Engine,복스 엔진,enemy list
-enemy,Light Voteless,무권자 (경),enemy list
-enemy,Medium Voteless,무권자 ,enemy list
-enemy,Heavy Voteless,무권자 (헤비),enemy list
-enemy,Overseer,오버시어,enemy list
-enemy,Elevated Overseer,비행 오버시어,enemy list
-enemy,Crescent Overseer,박격포 오버시어,enemy list
-enemy,Watcher,와쳐,enemy list
-enemy,Fleshmob,플레시몹,enemy list
-enemy,Harvester,하베스터,enemy list
-enemy,Harvester (Armor Broken),,enemy list
-enemy,Stingray,스팅레이,enemy list
-enemy,Leviathan,리바이어던,enemy list
-enemy,Leviathan (Broken),,enemy list
-enemy,Gatekeeper,게이트키퍼,enemy list
-enemy,Gatekeeper (Broken),,enemy list
-enemy,Obtruder,옵트루더,enemy list
-enemy,Veracitor,버레이시터,enemy list
-enemy,Crusher,크러셔,enemy list
-enemy,Wretch,렛치,enemy list
-enemy,Warp Ship,워프 함선,enemy list
-enemy,Illuminate Overship,오버쉽,enemy list
-enemy,Gazer,게이저,enemy list
-enemy,Gazer Spire,게이저 스파이어,enemy list
-enemy,Lightning Spire,번개 첨탑,enemy list
-enemy,Warp Gateway,워프 게이트웨이,enemy list
-enemy,Cognitive Disruptor,인지 분열기,enemy list
-part,Main,전체 체력,hitzones
-part,Head,머리,hitzones
-part,Limbs,사지,hitzones
-part,Wings,날개,hitzones
-part,Claws,발톱,hitzones
-part,Legs,다리,hitzones
-part,Frontal Tarsal Plate Armor,,hitzones
-part,Front Legs,앞다리,hitzones
-part,Rear Legs,뒷다리,hitzones
-part,Body Armor,,hitzones
-part,Underbelly,,hitzones
-part,Left Legs,왼다리,hitzones
-part,Right Legs,오른다리,hitzones
-part,Mouth,입,hitzones
-part,Spinal Plates,,hitzones
-part,Butt,둔부,hitzones
-part,Torso Armor,흉갑,hitzones
-part,Inner Flesh,속살,hitzones
-part,Underside,하부,hitzones
-part,Rear Armor Plates,후면 장갑,hitzones
-part,Front Leg Armor,,hitzones
-part,Rear Leg Armor,,hitzones
-part,Leg Flesh,,hitzones
-part,Spore Flesh,,hitzones
-part,Tentacle Armor,,hitzones
-part,Tentacle Flesh,,hitzones
-part,Crest Armor,,hitzones
-part,Leg Armor,,hitzones
-part,Butt Armor,,hitzones
-part,Upper Sac,,hitzones
-part,Lower Sac,,hitzones
-part,Front Left Leg Flesh,,hitzones
-part,Carapace,,hitzones
-part,Thorax Sac,,hitzones
-part,Abdomen Sac,,hitzones
-part,Thorax Innards,,hitzones
-part,Abdomen Innards,,hitzones
-part,Abdomen Armor,,hitzones
-part,Crown,,hitzones
-part,Jaws,,hitzones
-part,Mandibles,,hitzones
-part,Dorsal Plate Armor,,hitzones
-part,Sterna Plate Armor,,hitzones
-part,Lower Sterna Plate Armor,,hitzones
-part,Fins,,hitzones
-part,Torso,,hitzones
-part,Arms,,hitzones
-part,Left Arm,,hitzones
-part,Right Arm,,hitzones
-part,Leg,,hitzones
-part,Backpack Main,,hitzones
-part,Backpack,,hitzones
-part,Jetpack,,hitzones
-part,Fuel Tanks Main,,hitzones
-part,Fuel Tanks,,hitzones
-part,Shoulders,,hitzones
-part,Stomach,,hitzones
-part,Pelvis,,hitzones
-part,Shield,,hitzones
-part,Rockets,,hitzones
-part,Rocket Pods,,hitzones
-part,Chest,,hitzones
-part,Shoulder,,hitzones
-part,Arm,,hitzones
-part,Heatsink,,hitzones
-part,Pilot,,hitzones
-part,Front Plate,,hitzones
-part,HMG,,hitzones
-part,Turret System,,hitzones
-part,Waist,,hitzones
-part,Faceplate,,hitzones
-part,Rocket Rails,,hitzones
-part,Turret Main,,hitzones
-part,Turret Front,,hitzones
-part,Turret Heatsink,,hitzones
-part,Hull Main,,hitzones
-part,Hull Front,,hitzones
-part,Hull Sides,,hitzones
-part,Engine Bay,,hitzones
-part,Tracks,,hitzones
-part,Turret Front and Sides,,hitzones
-part,Hull Side,,hitzones
-part,Launch Tubes,,hitzones
-part,Fuselage,,hitzones
-part,Front Thrusters,,hitzones
-part,Rear Thrusters,,hitzones
-part,Thruster,,hitzones
-part,Eyes,,hitzones
-part,Fusion Cannons,,hitzones
-part,Grenade Launchers,,hitzones
-part,Crotch,,hitzones
-part,Hip Joints,,hitzones
-part,Greaves,,hitzones
-part,Stratagem Scrambler,,hitzones
-part,Fusion Gatling Guns,,hitzones
-part,Head Armor,,hitzones
-part,Head Body,,hitzones
-part,Neck Armor,,hitzones
-part,Neck,,hitzones
-part,Front Top Armor,,hitzones
-part,Front Engine Weakspot,,hitzones
-part,Front Armor,,hitzones
-part,Side Armor,,hitzones
-part,Rear Engine Armor,,hitzones
-part,Rear Engine Weakspot,,hitzones
-part,Rear Armor,,hitzones
-part,Knee Armor,,hitzones
-part,Leg Assembly,,hitzones
-part,Belly Panels,,hitzones
-part,Circuits Front,,hitzones
-part,Side Circuits,,hitzones
-part,Rear Circuits,,hitzones
-part,Helmet,,hitzones
-part,Pauldrons,,hitzones
-part,Upper Arms,,hitzones
-part,Forearms,,hitzones
-part,Pelvis and Left Leg,,hitzones
-part,Right Leg,,hitzones
-part,Torso Circuits,,hitzones
-part,Pauldron,,hitzones
-part,Sarcophagus,,hitzones
-part,Cannons,,hitzones
-part,Missile Launchers,,hitzones
-part,Miniguns,,hitzones
-part,Speakers,,hitzones
-part,Fog Lights,,hitzones
-part,Torso Flaps,,hitzones
-part,Vents,,hitzones
-part,Hatches,,hitzones
-part,Undercarriage,,hitzones
-part,Trackpod Latches,,hitzones
-part,Chest Armor,,hitzones
-part,Crotch Armor,,hitzones
-part,Limb Armor,,hitzones
-part,Body,,hitzones
-part,Eye,,hitzones
-part,Upper Fin,,hitzones
-part,Lower Fin,,hitzones
-part,Side Fins,,hitzones
-part,Head Chunks,,hitzones
-part,Stomach Chunks,,hitzones
-part,Shield Generators,,hitzones
-part,Chassis,,hitzones
-part,Carapace Weakspots,,hitzones
-part,Left Hip Joint,,hitzones
-part,Right & Middle Hip Joints,,hitzones
-part,Left Upper Thigh Armor,,hitzones
-part,Right & Middle Upper Thigh Armor,,hitzones
-part,Lower Thigh Armor,,hitzones
-part,Shin Armor,,hitzones
-part,Left Foot Armor,,hitzones
-part,Right & Middle Foot Armor,,hitzones
-part,Exposed Leg Internals,,hitzones
-part,Damaged Chassis,,hitzones
-part,Internals,,hitzones
-part,Right & Left Upper Leg Internals,,hitzones
-part,Middle Upper Leg Internals,,hitzones
-part,Lower Leg Internals,,hitzones
-part,Gun Ports,,hitzones
-part,Turrets,,hitzones
-part,Front Vertebra,,hitzones
-part,Front Fins,,hitzones
-part,Warp Disc,,hitzones
-part,Forward-Middle Vertebra,,hitzones
-part,Forward-Middle Fins,,hitzones
-part,Rearward-Middle Vertebra,,hitzones
-part,Rearward-Middle Fins,,hitzones
-part,Rear Vertebra,,hitzones
-part,Rear Fins,,hitzones
-part,Tail,,hitzones
-part,Damaged Rearward-Middle Vertebra,,hitzones
-part,Shield Generator,,hitzones
-part,Rear Weakspot,,hitzones
-part,Cockpit,,hitzones
-part,Cockpit Weakspot,,hitzones
-part,Shoulder Armor,,hitzones
-part,Arm Armor,,hitzones
-part,Guns,,hitzones
-part,Gun Weakspots,,hitzones
-part,Hips,,hitzones
-part,Arms (Broken Armor),,hitzones
-part,Legs (Broken Armor),,hitzones
-part,Vertical Fins,,hitzones
-part,Lateral Fins,,hitzones
-part,Lower Arms,,hitzones
-part,Arm Weakspots,,hitzones
-part,Rear Hip,,hitzones
-part,Upper Legs,,hitzones
-part,Lower Legs,,hitzones
-part,Rear Leg,,hitzones
-part,Beamer,,hitzones
-part,Frontal Fuselage,,hitzones
-part,Rear Fuselage,,hitzones
-part,Engine,,hitzones
-part,Stern,,hitzones
-part,Bow,,hitzones
-part,Port,,hitzones
-part,Sphere,,hitzones
-part,Base,,hitzones
-weapon,AR-23 Liberator,AR-23 리버레이터,weapon list
-weapon,AR-23P Liberator Penetrator,AR-23P 리버레이터 페네트레이터,weapon list
-weapon,AR-23C Liberator Concussive,AR-23C 리버레이터 컨커시브,weapon list
-weapon,AR-23A Liberator Carbine,AR-23A 리버레이터 카빈,weapon list
-weapon,AR-23L Liberator Legacy,AR-23L 리버레이터 레거시,weapon list
-weapon,StA-52 Assault Rifle,StA-52 돌격소총,weapon list
-weapon,AR-32 Pacifier,AR-32 퍼시파이어,weapon list
-weapon,MA5C Assault Rifle,MA5C 어썰트 라이플,weapon list
-weapon,AR-2 Coyote,AR-2 코요테,weapon list
-weapon,AR-59 Suppressor,AR-59 서프레서,weapon list
-weapon,AR-61 Tenderizer,AR-61 텐더라이저,weapon list
-weapon,BR-14 Adjudicator,BR-14 어드주디케이터,weapon list
-weapon,AR/GL-21 One-Two,AR/GL-21 원-투,weapon list
-weapon,AR-11 Arbitrator,AR-11 아비트레이터,weapon list
-weapon,R-63 Diligence,R-63 딜리전스,weapon list
-weapon,R-63CS Diligence Counter Sniper,R-63CS 딜리전스 카운터 저격소총,weapon list
-weapon,R-2124 Constitution,R-2124 콘스티튜션,weapon list
-weapon,R-6 Deadeye,R-6 데드아이,weapon list
-weapon,R-2 Amendment,R-2 어멘드멘트,weapon list
-weapon,R-72 Censor,R-72 센서,weapon list
-weapon,R-4 Hyena,R-4 하이에나,weapon list
-weapon,R-40 Sightliner,R-40 사이트라이너,weapon list
-weapon,R/40-K Hot-Shot Marksman Rifle,R/40-K 핫샷 마크스맨 라이플,weapon list
-weapon,MP-98 Knight,MP-98 나이트,weapon list
-weapon,SMG-37 Defender,SMG-37 디펜더,weapon list
-weapon,SMG-72 Pummeler,SMG-72 퍼멜러,weapon list
-weapon,SMG-32 Reprimand,SMG-32 레프리맨드,weapon list
-weapon,StA-11 SMG,StA-11 기관단총,weapon list
-weapon,M7S SMG,M7S 기관단총,weapon list
-weapon,SMG/FLAM-34 Stoker,SMG/FLAM-34 스토커,weapon list
-weapon,SMG-203 Gallant,SMG-203 갤런트,weapon list
-weapon,SG-8 Punisher,SG-8 퍼니셔,weapon list
-weapon,SG-225 Breaker,SG-225 브레이커,weapon list
-weapon,SG-8S Slugger,SG-8S 슬러거,weapon list
-weapon,SG-225SP Breaker Spray&Pray,SG-225SP 브레이커 스프레이 앤 프레이,weapon list
-weapon,SG-225IE Breaker Incendiary,SG-225IE 브레이커 인센디어리,weapon list
-weapon,SG-451 Cookout,SG-451 쿡아웃,weapon list
-weapon,SG-20 Halt,SG-20 홀트,weapon list
-weapon,DBS-2 Double Freedom,DBS-2 더블 프리덤,weapon list
-weapon,M90A Shotgun,M90A 샷건,weapon list
-weapon,SG-97 Sweeper,SG-97 스위퍼,weapon list
-weapon,R-36 Eruptor,R-36 이럽터,weapon list
-weapon,CB-9 Exploding Crossbow,CB-9 익스플로딩 크로스보우,weapon list
-weapon,GL-15 Evictor,GL-15 이빅터,weapon list
-weapon,LAS-5 Scythe,LAS-5 사이스,weapon list
-weapon,PLAS-1 Scorcher,PLAS-1 스코처,weapon list
-weapon,LAS-16 Sickle,LAS-16 시클,weapon list
-weapon,SG-8P Punisher Plasma,SG-8P 퍼니셔 플라즈마,weapon list
-weapon,ARC-12 Blitzer,ARC-12 블리처,weapon list
-weapon,PLAS-101 Purifier,PLAS-101 퓨리파이어,weapon list
-weapon,PLAS-39 Accelerator Rifle,PLAS-39 가속 소총,weapon list
-weapon,LAS-17 Double-Edge Sickle,LAS-17 더블 엣지 시클,weapon list
-weapon,LAS-13 Trident,LAS-13 트라이던트,weapon list
-weapon,LAS-12 Sai,LAS-12 사이,weapon list
-weapon,JAR-5 Dominator,JAR-5 도미네이터,weapon list
-weapon,FLAM-66 Torcher,FLAM-66 토처,weapon list
-weapon,VG-70 Variable,VG-70 배리어블,weapon list
-weapon,P-2 Peacemaker,P-2 피스메이커,weapon list
-weapon,P-19 Redeemer,P-19 리디머,weapon list
-weapon,P-4 Senator,P-4 세너터,weapon list
-weapon,P-113 Verdict,P-113 버딕트,weapon list
-weapon,P-92 Warrant,P-92 워런트,weapon list
-weapon,M6C/SOCOM Pistol,M6C/SOCOM 권총,weapon list
-weapon,P-69 Veto,P-69 비토,weapon list
-weapon,P-44 Mist,P-44 미스트,weapon list
-weapon,CQC-19 Stun Lance,CQC-19 기절 창,weapon list
-weapon,CQC-30 Stun Baton,CQC-30 기절 제압봉,weapon list
-weapon,CQC-5 Combat Hatchet,CQC-5 컴뱃 해칫,weapon list
-weapon,CQC-2 Saber,CQC-2 세이버,weapon list
-weapon,CQC-42 Machete,CQC-42 마체테,weapon list
-weapon,CQC-73 Entrenchment Tool,CQC-73 참호 도구,weapon list
-weapon,LAS-7 Dagger,LAS-7 대거,weapon list
-weapon,GP-31 Grenade Pistol,GP-31 유탄 권총,weapon list
-weapon,SG-22 Bushwhacker,SG-22 부시웨커,weapon list
-weapon,P-72 Crisper,P-72 크리스퍼,weapon list
-weapon,PLAS-15 Loyalist,PLAS-15 로열리스트,weapon list
-weapon,GP-20 Ultimatum,GP-20 얼티메이텀,weapon list
-weapon,LAS-58 Talon,LAS-58 탈론,weapon list
-weapon,P-35 Re-Educator,P-35 리에듀케이터,weapon list
-weapon,P-33 Missile Pistol,P-33 미사일 권총,weapon list
-weapon,P/40-K Bolt Pistol,P/40-K 볼트 피스톨,weapon list
-weapon,P-34 Breacher,P-34 브리처,weapon list
-weapon,G-12 High Explosive,G-12 고폭,weapon list
-weapon,G-6 Frag,G-6 세열,weapon list
-weapon,G-10 Incendiary,G-10 소이,weapon list
-weapon,G-7 Pineapple,G-7 파인애플,weapon list
-weapon,TED-63 Dynamite,TED-63 다이너마이트,weapon list
-weapon,G-16 Impact,G-16 충격,weapon list
-weapon,G-123 Thermite,G-123 테르밋,weapon list
-weapon,G-13 Incendiary Impact,G-13 소이 충격,weapon list
-weapon,K-2 Throwing Knife,K-2 투척 나이프,weapon list
-weapon,G-4 Gas,G-4 가스,weapon list
-weapon,G-50 Seeker,G-50 시커,weapon list
-weapon,G-142 Pyrotech,G-142 파이로테크,weapon list
-weapon,G-31 Arc,G-31 아크,weapon list
-weapon,TM-1 Lure Mine,TM-1 유인 지뢰,weapon list
-weapon,G-48 Giga Grenade,G-48 기가 수류탄,weapon list
-weapon,G/40-K Melta Mine,G/40-K 멜타마인,weapon list
-weapon,G-8 Immolation,G-8 번제,weapon list
-weapon,G-60 Anti-Tank Seeker,G-60 대전차 드론,weapon list
-weapon,G-11 Caltrops,G-11 마름쇠,weapon list
-weapon,MG-43 Machine Gun,MG-43 기관총,weapon list
-weapon,M-105 Stalwart,M-105 스털워트,weapon list
-weapon,MG-206 Heavy Machine Gun,MG-206 중기관총,weapon list
-weapon,M-1000 Maxigun,M-1000 맥시건,weapon list
-weapon,MGX-42 Bullet Storm,MGX-42 불릿 스톰,weapon list
-weapon,APW-1 Anti-Materiel Rifle,APW-1 대물소총,weapon list
-weapon,AMW-20 Apex,AMW-20 에이펙스,weapon list
-weapon,RS-422 Railgun,RS-422 레일건,weapon list
-weapon,GR-8 Recoilless Rifle,GR-8 무반동포,weapon list
-weapon,EAT-17 Expendable Anti-Tank,EAT-17 일회성 대전차,weapon list
-weapon,EAT-700 Expendable Napalm,EAT-700 일회성 네이팜,weapon list
-weapon,EAT-411 Leveller,EAT-411 평탄화기,weapon list
-weapon,LAS-99 Quasar Cannon,LAS-99 퀘이사 캐넌,weapon list
-weapon,FAF-14 Spear,FAF-14 스피어,weapon list
-weapon,MLS-4X Commando,MLS-4X 코만도,weapon list
-weapon,RL-77 Airburst Rocket Launcher,RL-77 공중폭발 로켓 발사기,weapon list
-weapon,StA-X3 W.A.S.P. Launcher,StA-X3 W.A.S.P. 발사기,weapon list
-weapon,AC-8 Autocannon,AC-8 오토캐넌,weapon list
-weapon,GL-21 Grenade Launcher,GL-21 유탄 발사기,weapon list
-weapon,GL-28 Belt-Fed Grenade Launcher,GL-28 벨트식 유탄 발사기,weapon list
-weapon,GL-52 De-Escalator,GL-52 디에스컬레이터,weapon list
-weapon,PLAS-45 Epoch,PLAS-45 에포크,weapon list
-weapon,S-11 Speargun,S-11 작살총,weapon list
-weapon,SG-88 Break-Action Shotgun,SG-88 중절식 산탄총,weapon list
-weapon,LAS-98 Laser Cannon,LAS-98 레이저 캐넌,weapon list
-weapon,LAS-44 Nova,LAS-44 노바,weapon list
-weapon,40-K Meltagun,40-K 멜타건,weapon list
-weapon,ARC-3 Arc Thrower,ARC-3 아크 발사기,weapon list
-weapon,FLAM-40 Flamethrower,FLAM-40 화염방사기,weapon list
-weapon,B/FLAM-80 Cremator,B/FLAM-80 크리메이터,weapon list
-weapon,TX-41 Sterilizer,TX-41 스터릴라이저,weapon list
-weapon,MS-11 Solo Silo,MS-11 솔로 사일로,weapon list
-weapon,B/MD C4 Pack,B/MD C4 팩,weapon list
-weapon,Eagle 500kg Bomb,이글 500kg 폭탄,weapon list
-weapon,Eagle Airstrike,이글 공중타격,weapon list
-weapon,Eagle Cluster Bomb,이글 집속탄,weapon list
-weapon,Eagle Strafing Run,이글 기총소사,weapon list
-weapon,Eagle 110mm Rocket Pods,이글 110mm 로켓 포드,weapon list
-weapon,Orbital Railcannon Strike,궤도 레일캐넌 타격,weapon list
-weapon,Orbital Precision Strike,궤도 정밀 타격,weapon list
-weapon,Orbital 380mm HE Barrage,궤도 380mm 고폭 폭격,weapon list
-weapon,Orbital Walking Barrage,궤도 이동 폭격,weapon list
-weapon,Orbital 120mm HE Barrage,궤도 120mm 고폭 폭격,weapon list
-weapon,Orbital Gatling Barrage,궤도 개틀링 폭격,weapon list
-weapon,Orbital Airburst Strike,궤도 공중폭발 타격,weapon list
-weapon,Orbital Laser,궤도 레이저,weapon list
-weapon,MG-43 Machine Gun Sentry,A/MG-43 기관총 센트리,weapon list
-weapon,G-16 Gatling Sentry,A/G-16 개틀링 센트리,weapon list
-weapon,AC-8 Autocannon Sentry,A/AC-8 오토캐넌 센트리,weapon list
-weapon,MLS-4X Rocket Sentry,A/MLS-4X 로켓 센트리,weapon list
-weapon,M-12 Mortar Sentry,A/M-12 박격포 센트리,weapon list
-weapon,LAS-98 Laser Sentry,A/LAS-98 레이저 센트리,weapon list
-weapon,MG-101 HMG Emplacement,E/MG-101 중기관총 거치포,weapon list
-weapon,AT-12 Anti-Tank Emplacement,E/AT-12 대전차 거치포,weapon list
-mode,8mm Rifle,,firing mode
-mode,40mm Grenade,,firing mode
-mode,4mm Rifle,,firing mode
-mode,10g Underbarrel Shotgun,,firing mode
-mode,12mm,,firing mode
-mode,Flamethrower,,firing mode
-mode,Flechette,플래셰트,firing mode
-mode,Stun,기절탄,firing mode
-mode,Charged,,firing mode
-mode,Uncharged,,firing mode
-mode,LAS-16_P,,firing mode
-mode,LAS-17_P,,firing mode
-mode,LAS-17_P1,,firing mode
-mode,LAS-17_P2,,firing mode
-mode,Grenade,수류탄,firing mode
-mode,Bomblets,,firing mode
-mode,Explosion,폭발,firing mode
-mode,Shrapnel,파편,firing mode
-mode,Minimum charge (0.45s),,firing mode
-mode,"Max charge (Unsafe, 3.0s)",,firing mode
-mode,HEAT,,firing mode
-mode,HE,,firing mode
-mode,Rocket,,firing mode
-mode,Napalm bomblet,,firing mode
-mode,Rocket (direct),,firing mode
-mode,Bomblet,,firing mode
-mode,Burst,,firing mode
-mode,Artillery (carrier),,firing mode
-mode,APHET,,firing mode
-mode,Flak,,firing mode
-mode,Grenade impact,,firing mode
-mode,Arc discharge,,firing mode
-mode,Full charge (2.6s),,firing mode
-mode,Beam,,firing mode
-mode,Spray,,firing mode
-mode,Missile,,firing mode
-mode,Detonation,,firing mode
-mode,Bomb,,firing mode
-mode,Bomb (x6),,firing mode
-mode,Bomb casing,,firing mode
-mode,Cannon round,,firing mode
-mode,Shell,,firing mode
-mode,Round,,firing mode
-mode,APHE 75mm,,firing mode
+﻿type,english,korean,where,review
+ui,HD{n},HD{n},start page,check
+ui,Armor Inspector,아머 인스펙터,start page,check
+ui,Alpha,알파,start page,check
+ui,Alpha version · numbers and features may change,알파 버전 · 수치와 기능은 추후 변경 예정,start page,
+ui,{n} enemies · {n} weapons · data {n}-{n}-{n},{n} 구현된 적 · {n} 구현된 무기 · 마지막 빌드 날짜 {n}-{n}-{n},start page,
+ui,Copy link,링크 복사,start page,check
+ui,Target,적,start page,
+ui,Bugs · {n} enemies,버그 · 적 {n}종,start page,check
+ui,Bots · {n} enemies,봇 · 적 {n}종,start page,check
+ui,Squids · {n} enemies,오징어 · 적 {n}종,start page,check
+ui,wiki ↗,위키 ↗,start page,check
+ui,{n}D model,{n}D 모델,start page,check
+ui,Body map,부위 맵,start page,check
+ui,Fire mode,피격 시뮬레이션,start page,
+ui,Covered parts: hidden,장갑에 덥힌 부위: 가려짐,start page,
+ui,All,전부,start page,
+ui,Front,정면,start page,
+ui,Side,측면,start page,
+ui,Rear,후면,start page,
+ui,Penetration,관통,start page,
+ui,Time to kill,처치 시간,start page,check
+ui,Main health,전체 체력,start page,
+ui,Heavy · AV{n},중장갑 · AV{n},start page,check
+ui,{n} s,{n}초,start page,check
+ui,{n} shots · via Butt (downs),{n}발 · 엉덩이 경유 (다운),start page,check
+ui,Damageable zones,타격 가능 구역,start page,
+ui,hitzones this weapon hurts,본 무기로 피해 줄 수 있는 구역,start page,
+ui,Fatal parts,치명 부위,start page,
+ui,besides Main,전체 체력 외,start page,check
+ui,Shots fired,발사한 탄수,start page,
+ui,Reset,초기화,start page,
+ui,Click a hitzone to fire one shot of the selected weapon.,클릭해서 무기를 선택한 무기를 발사,start page,
+ui,Load .glb,.glb 파일 로드,start page,
+ui,Edit hitzones,피격 부위 편집,start page,check
+ui,Save mapping,매핑 저장,start page,check
+ui,Reset camera,카메라 재설정,start page,
+ui,Original materials,원본 재질,start page,check
+ui,{n} meshes · {n} linked to hitzones,메시 {n}개 · 피격 부위에 연결 {n}개,start page,check
+ui,Colours follow the impact angle from your camera,색상은 카메라 기준 입사각을 따릅니다,start page,check
+ui,Direct {n}–{n}°:,직격 {n}–{n}°:,start page,check
+ui,AP {n},AP {n},start page,check
+ui,· Slight {n}–{n}°:,· 약간의 각도 {n}–{n}°:,start page,check
+ui,· Large {n}–{n}°:,· 큰 각도 {n}–{n}°:,start page,check
+ui,· Extreme {n}–{n}°:,· 매우 큰 각도 {n}–{n}°:,start page,check
+ui,No {n}D model for this enemy yet,이 적은 아직 {n}D 모델이 없습니다,start page,check
+ui,Use the,대신,start page,check
+ui,view instead. Enemies with a,보기를 사용하세요. 목록에서,start page,check
+ui,{n}D,{n}D,start page,check
+ui,tag in the list have a model.,태그가 있는 적은 모델이 있습니다.,start page,check
+ui,Drop a,적 id 이름의,start page,check
+ui,.glb,.glb,start page,check
+ui,models/,models/,start page,check
+ui,named after the enemy id (,파일을 넣거나 (,start page,check
+ui,".glb), or load one with the button above.",".glb), 위의 버튼으로 불러오세요.",start page,check
+ui,"In Filediver, look in archive:",Filediver에서 다음 아카이브를 찾으세요:,start page,check
+ui,Then use,그다음,start page,check
+ui,to click each mesh and pick which wiki part it is.,로 각 메시를 클릭해 위키 부위를 지정하세요.,start page,check
+ui,AV{n},AV{n},start page,check
+ui,{n} HP,{n} HP,start page,check
+ui,☠ fatal,☠ 치명,start page,
+ui,no dmg,피해 못줌,start page,
+ui,Arms & weapons,팔 & 무기,start page,check
+ui,Rear & weak spots,후면 & 약점,start page,check
+ui,🛡 Torso Armor,🛡 상체 장갑,start page,
+ui,Main HP,전체 체력,start page,
+ui,dmg/shot,발당 데미지,start page,
+ui,hard to reach,접근 어려움,start page,
+ui,☠ downs,☠ 다운,start page,check
+ui,🛡 Front Leg Armor,🛡 정면 다리 장갑,start page,
+ui,Penetrates · {n}%,관통함 · {n}%,start page,
+ui,Reduced · {n}%,일부 감소함 · {n}%,start page,
+ui,Ricochet · {n},튕겨남 · {n},start page,
+ui,Immune,면역,start page,
+ui,Tile size ≈ part health · ☠ = fatal when destroyed,타일 크기 ≈ 부위의 체력 · ☠ = 파괴시 치명 (사망) ,start page,
+ui,Hitzones,피격 부위,start page,
+ui,Best weapons vs target,가장 유용한 무기,start page,
+ui,Real life case,실제 전투시,start page,
+ui,Hitzone,피격,start page,
+ui,Health,체력,start page,
+ui,Durable,내구력,start page,
+ui,To main,전체 체력으로 전달 비율,start page,
+ui,Fatal,치명 부위,start page,
+ui,ExDR,폭발 저항,start page,
+ui,Result,결과,start page,
+ui,Dmg/shot,발당 데미지,start page,
+ui,Main/shot,발당 전체 체력 데미지,start page,
+ui,Break,파괴,start page,
+ui,Shots,발수,start page,
+ui,TTK,처치 시간,start page,check
+ui,Yes,예,start page,
+ui,+of,+초과,start page,check
+ui,No,아니오,start page,
+ui,Downs,다운됨,start page,
+ui,"One-shot kills come first, sorted by damage (highest first); everything else is ranked by time to kill on its best hitzone in the current view. Time comes from RPM with the first shot at {n} s; reloads are not included (* = needs more than one magazine). Weapons without an RPM are ranked by shot count after timed kills.",한 방에 죽이는 무기가 먼저 나오며 피해량 순(높은 순)으로 정렬됩니다. 나머지는 현재 보기에서 가장 좋은 피격 부위의 처치 시간 순입니다. 시간은 분당발수로 계산하며 첫 발은 {n}초입니다. 재장전은 포함하지 않습니다 (* = 탄창 하나 이상 필요). 분당발수가 없는 무기는 시간 계산된 무기 뒤에 발수 순으로 나옵니다.,start page,check
+ui,"You won't always hit the weak spot. For each weapon this takes every reachable hitzone in the current view that can kill, then uses the midpoint between the fastest and the slowest time to kill. Weapons are ranked by that midpoint.","항상 약점을 맞출 수는 없습니다. 무기마다 현재 보기에서 맞출 수 있고 죽일 수 있는 모든 피격 부위를 보고, 가장 빠른 처치 시간과 가장 느린 처치 시간의 중간값을 씁니다. 무기는 그 중간값 순으로 정렬됩니다.",start page,check
+ui,Weapon,무기,start page,
+ui,Primary · Assault Rifle,주무기,start page,
+ui,Damage,피해량,start page,
+ui,RPM,분당발수,start page,
+ui,Mag,탄창,start page,
+ui,AP by impact angle,각도에 따른 관통력,start page,
+ui,Direct,직격,start page,
+ui,Slight,약간의 각도,start page,
+ui,Large,큰 각도,start page,
+ui,Extreme,매우 큰 각도,start page,
+ui,"Armor this shot defeats at direct (green = full, yellow-green = {n}%, red = ricochet). Body map and tables use this angle; the {n}D view uses the real angle from your camera.","직격 시 이 사격이 뚫는 장갑 (초록 = 전부, 연두 = {n}%, 빨강 = 도탄). 부위 맵과 표는 이 각도를 쓰고, {n}D 보기는 카메라 기준 실제 각도를 씁니다.",start page,check
+ui,Range,거리,start page,
+ui,{n} m,{n} m,start page,check
+ui,Projectile damage at {n} m:,{n} m에서 탄환 피해량:,start page,check
+ui,(drag falloff),(공기저항 감소),start page,check
+ui,Enemy and weapon data from the,적과 무기 데이터 출처:,start page,check
+ui,Helldivers {n} Wiki,Helldivers {n} 위키,start page,check
+ui,"and its contributors, used under","및 기여자, 사용 라이선스:",start page,check
+ui,CC BY-NC-SA {n},CC BY-NC-SA {n},start page,check
+ui,"; values were reformatted for this calculator, and enemy icons were downscaled to thumbnails. Faction emblems traced by Dogo{n} Game archive IDs from the HD{n} modding community's ID sheet.","; 수치는 이 계산기에 맞게 다시 정리했고, 적 아이콘은 썸네일로 축소했습니다. 팩션 문장은 Dogo{n}가 따라 그렸습니다. 게임 아카이브 ID는 HD{n} 모딩 커뮤니티의 ID 시트에서 가져왔습니다.",start page,check
+ui,"Simplified damage model (AP vs AV, durable mix, % to main, explosions); expect a few percent error. Fan project, non-commercial, not affiliated with Arrowhead Game Studios or Sony Interactive Entertainment. Helldivers is a trademark of Sony Interactive Entertainment.","단순화한 피해 모델입니다 (AP 대 AV, 내구력 혼합, 전체 체력 전달 비율, 폭발). 몇 퍼센트 오차가 있을 수 있습니다. 비상업적 팬 프로젝트이며 Arrowhead Game Studios 및 Sony Interactive Entertainment와 무관합니다. Helldivers는 Sony Interactive Entertainment의 상표입니다.",start page,check
+ui,Back to the start page,시작 페이지로,start page (title),check
+ui,Early version: data and features may change,초기 버전: 데이터와 기능은 바뀔 수 있습니다,start page (title),check
+ui,Copy a link to this exact setup,지금 설정 그대로의 링크 복사,start page (title),check
+ui,Search all enemies…,적 이름으로 검색,start page (placeholder),
+ui,Switch between the {n}D model and the flat body map,{n}D 모델과 평면 부위 맵 전환,start page (title),check
+ui,Click hitzones to shoot them one at a time,피격 부위를 클릭해 한 발씩 사격,start page (title),check
+ui,"Inner and flesh parts (Inner Flesh, Leg Flesh, Internals) sit behind armor, and undersides are hard to reach. They're left out of time to kill and the rankings; toggle to include them.","내부와 살 부위 (Inner Flesh, Leg Flesh, Internals)는 장갑 뒤에 있고, 아랫면은 맞추기 어렵습니다. 처치 시간과 순위에서 빠져 있으며, 켜면 포함됩니다.",start page (title),check
+ui,Filter hitzones by the view they're visible from,보이는 방향별로 피격 부위 거르기,start page (title),check
+ui,How hitzones are coloured,피격 부위 색상 기준,start page (title),check
+ui,Load a .glb model for this enemy,이 적의 .glb 모델 불러오기,start page (title),check
+ui,Click meshes and assign them to wiki hitzones,메시를 클릭해 위키 피격 부위에 지정,start page (title),check
+ui,Show the model's own materials instead of hitzone colours,피격 부위 색상 대신 모델 원래 재질 보기,start page (title),check
+ui,Destroying this kills,파괴하면 죽음,start page (title),check
+ui,{n}/{n} intact · {n} HP left,{n}/{n} 온전 · {n} HP 남음,start page (title),check
+ui,{n} HP left,{n} HP 남음,start page (title),check
+ui,Behind armor: break the armor first,갑옷 먼저 파괴시 접근 가능,start page (title),
+ui,uses Main health,메인 체력 사용,start page (title),
+ui,Destroying this downs the enemy,파괴하면 적이 쓰러짐,start page (title),
+ui,Heavy,중장갑,start page (title),check
+ui,Excess damage overflows to Main,초과 데미지는 전체 체력에 적용됨,start page (title),
+ui,Very Light,매우 경장갑,start page (title),check
+ui,Light,경장갑,start page (title),check
+ui,More shots than one magazine,탄창 하나 이상 사용,start page (title),
+ui,Unarmored,장갑 없음,start page (title),
+ui,Search all weapons…,무기 이름으로 검색,start page (placeholder),
+ui,Direct ({n}–{n}°),직격 ({n}–{n}°),start page (title),
+ui,Slight angle ({n}–{n}°),약간의 입사각 ({n}–{n}°),start page (title),
+ui,Large angle ({n}–{n}°),큰 입사각 ({n}–{n}°),start page (title),
+ui,Extreme angle ({n}–{n}°),매우 큰 입사각 ({n}–{n}°),start page (title),
+ui,AV{n} Unarmored: {n}%,AV{n} 장갑 없음: {n}%,start page (title),
+ui,AV{n} Very Light: {n}%,AV{n} 매우 경장갑: {n}%,start page (title),
+ui,AV{n} Light: {n}%,AV{n} 경장갑: {n}%,start page (title),
+ui,AV{n} Medium: ricochet,AV{n} 일반장갑: 도탄,start page (title),
+ui,AV{n} Heavy: ricochet,AV{n} 중장갑: 도탄,start page (title),check
+ui,AV{n} Tank I: ricochet,AV{n} 전차 장갑 1단계: 도탄,start page (title),check
+ui,AV{n} Tank II: ricochet,AV{n} 전차 장갑 2단계: 도탄,start page (title),check
+ui,AV{n} Tank III: ricochet,AV{n} 전차 장갑 3단계: 도탄,start page (title),check
+ui,AV{n} Tank IV: ricochet,AV{n} 전차 장갑 4단계: 도탄,start page (title),check
+ui,AV{n} Tank V: ricochet,AV{n} 전차 장갑 5단계: 도탄,start page (title),check
+ui,AV{n} Tank VI: ricochet,AV{n} 전차 장갑 6단계: 도탄,start page (title),check
+ui,Loading model…,모델 로딩중…,start page (fire off),
+ui,← Factions,← 팩션,enemy page,
+ui,← Categories,← 카테고리,enemy page,
+ui,AP{n},AP{n},enemy page,check
+ui,AP{n}/{n},AP{n}/{n},enemy page,check
+ui,AP{n}/{n}/{n},AP{n}/{n}/{n},enemy page,check
+ui,Back to factions,팩션 선택으로,enemy page (title),
+ui,{n}D model available,{n}D 모델 있음,enemy page (title),check
+ui,Back to categories,카테고리 선택으로,enemy page (title),
+ui,Light · AV{n},경장갑 · AV{n},enemy page,check
+ui,{n} shots · via Head,{n}발 · 머리 경유,enemy page,check
+ui,"In Filediver, look in archives:",Filediver에서 다음 아카이브를 찾으세요:,enemy page,check
+ui,Missle Variant,미사일 변형,enemy page,check
+ui,Medium,일반장갑,enemy page (title),check
+ui,Language,언어,enemy page (aria-label),
+ui,English,영어,enemy page (title),
+ui,Unarmored · AV{n},장갑 없음 · AV{n},enemy page,check
+ui,{n} shots · via Right Arm,{n}발 · 오른팔 경유,enemy page,check
+ui,Armored Overseer + Staff,장갑 오버시어 + 지팡이,enemy page,check
+ui,Overseer Only,오버시어에만 적용,enemy page,
+ui,🛡 Limb Armor,🛡 사지 갑옷,enemy page,
+ui,🛡 Chest Armor,🛡 흉갑,enemy page,
+ui,({n} armor),({n} 장갑),enemy page,check
+ui,Includes shots to destroy Chest Armor,흉갑 파괴까지의 발수 포함,enemy page (title),
+ui,Includes shots to destroy Limb Armor ({n}),사지 갑옷 파괴까지의 발수 포함 ({n}),enemy page (title),
+ui,{n} shots · via Heatsink (downs),{n}발 · 방열판 경유 (다운),enemy page,check
+ui,"In Filediver, look in archives for the",Filediver에서 다음 계열의 아카이브를 찾으세요:,enemy page,check
+ui,Hulk,헐크,enemy page,
+ui,family:,계열:,enemy page,check
+ui,None,없음,enemy page,check
+ui,Nothing in view dies to this,현재 보기에서 이 무기로 죽는 대상 없음,enemy page,check
+ui,🛡 Front Armor,🛡 정면 갑옷,enemy page,
+ui,🛡 Side Armor,🛡 측면 갑옷,enemy page,
+ui,🛡 Rear Armor,🛡 후면 갑옷,enemy page,
+ui,Tank I,전차 장갑 1단계,enemy page (title),
+ui,Primary · Explosive,주무기 · 폭발성,explosive weapon,
+ui,Radius,반경,explosive weapon,
+ui,{n}/{n}m,{n}/{n}m,explosive weapon,check
+ui,Expl. dmg,폭발 데미지,explosive weapon,
+ui,Expl. AP,폭발 관통력,explosive weapon,
+ui,No drag: no falloff over range,거리에 따른 데미지 감소 없음,explosive weapon,
+ui,Include explosion (direct hit),폭발 데미지 포함 (직격),explosive weapon,
+ui,All {n} shrapnel hit the part,파편 {n}개 모두 부위에 명중,explosive weapon,check
+ui,Also {n} shrapnel x{n} (AP/durable not listed; omitted),파편 {n} x{n} 추가 (AP/내구력 미기재로 제외),explosive weapon,check
+ui,Includes shots to destroy Torso Armor ({n}),흉갑 파괴까지의 발수 포함,explosive weapon (title),
+ui,Includes shots to destroy Front Leg Armor ({n}),다리 장갑 파괴까지의 발수 포함,explosive weapon (title),
+ui,AV{n} Medium: {n}%,AV{n} 일반장갑: {n}%,explosive weapon (title),check
+ui,AV{n} Heavy: {n}%,AV{n} 중장갑: {n}%,explosive weapon (title),check
+ui,Body map and time to kill: count every fragment on the struck part (an upper bound). The {n}D view traces each fragment instead.,부위 맵과 처치 시간: 맞은 부위에 파편이 전부 맞는 것으로 계산 (최대치). {n}D 보기는 파편을 하나씩 추적합니다.,explosive weapon (title),check
+ui,Support · Autocannon,지원 · 오토캐논,flak,
+ui,Ammo / mode,발사 모드 변경,flak,
+ui,burn · Burning on Main health,화상 · 전체 체력에 화상 피해,flamethrower,check
+ui,Support · Flame,지원 · 화염,flamethrower,check
+ui,No ballistics data: range has no effect,탄도 데이터 없음: 거리 영향 없음,flamethrower,check
+ui,Damage per flame particle tick as listed; ignites targets: burn {n} Fire/s (AP{n}) for {n}s.,표기된 수치는 화염 입자 틱당 피해량. 대상에 불을 붙임: {n}초 동안 초당 화염 피해 {n} (AP{n}).,flamethrower,check
+ui,Category,카테고리,tab rank,
+ui,Mode,모드,tab rank,
+ui,Best hitzone,가장 좋은 피격 부위,tab rank,check
+ui,{n} shot,{n}발,tab rank,check
+ui,One shot,한 방,tab rank,
+ui,{n} shots,{n}발,tab rank,check
+ui,{n} s*,{n}초*,tab rank,check
+ui,Fastest,가장 빠름,tab real,check
+ui,Slowest,가장 느림,tab real,check
+ui,Real life,실제 전투,tab real,check
+ui,~{n} shots,~{n}발,tab real,check
+ui,no kill,처치 불가,time-to-kill colours,check
+ui,{n} shots +reload,{n}발 +재장전,time-to-kill colours,check
+ui,Time to kill: instant,즉시 죽임,time-to-kill colours,
+ui,{n} s+,{n}초+,time-to-kill colours,check
+ui,"From RPM; first shot at {n} s, reloads not included","분당발수 기준. 첫 발은 {n}초, 재장전 미포함",time-to-kill colours,check
+ui,Can't kill through this zone,피해 못줌,time-to-kill colours,
+ui,Elapsed,경과 시간,body map fire,check
+ui,"#{n} Butt: {n} dmg, {n} to Main — destroyed","#{n} 엉덩이: 피해 {n}, 전체 체력에 {n} — 파괴",body map fire,check
+ui,"#{n} Butt: {n} dmg, {n} to Main · no stagger ({n} < {n})","#{n} 엉덩이: 피해 {n}, 전체 체력에 {n} · 경직 없음 ({n} < {n})",body map fire,check
+ui,Downed,다운됨,body map fire,check
+ui,Butt destroyed · {n} shots,엉덩이 파괴 · {n}발,body map fire,check
+ui,Fire again,다시 사격,body map fire,check
+ui,Covered parts: exposed,장갑에 덮인 부위: 노출,covered parts,check
+ui,Very Light · AV{n},매우 경장갑 · AV{n},covered parts,check
+ui,Torso is under Torso Armor — break it first,상체는 상체 장갑 아래에 있습니다 — 먼저 파괴하세요,covered parts,check
+ui,No archive ID known for this enemy yet. Search for it in Filediver by name.,이 적의 아카이브 ID를 아직 모릅니다. Filediver에서 이름으로 찾아보세요.,covered parts,check
+ui,armor off,장갑 제거,covered parts,check
+ui,{n} dmg · via Head,피해 {n} · 머리 경유,no model,check
+ui,New Variant?,새 변형?,no model,check
+faction,Terminids,테르미니드,faction picker,check
+faction,Automatons,오토마톤,faction picker,check
+faction,Illuminate,일루미닛,faction picker,check
+category,Primary,주무기,weapon categories,
+category,Secondary,보조무기,weapon categories,
+category,Throwable,투척무기,weapon categories,
+category,Support,지원무기,weapon categories,
+category,Eagle,이글,weapon categories,
+category,Orbital,궤도 폭격,weapon categories,
+category,Sentry,센트리,weapon categories,
+category,Emplacement,거치포,weapon categories,check
+weapon type,Assault Rifle,돌격소총,weapon card,
+weapon type,Marksman Rifle,지정사수소총,weapon card,
+weapon type,Sniper Rifle,저격총,weapon card,
+weapon type,Energy-Based,에너지 무기,weapon card,
+weapon type,Submachine Gun,기관단총,weapon card,
+weapon type,Shotgun,산탄총,weapon card,
+weapon type,Explosive,폭발성,weapon card,
+weapon type,Special,특수,weapon card,
+weapon type,Pistol,권총,weapon card,
+weapon type,Melee,근접무기,weapon card,
+weapon type,Standard,일반,weapon card,check
+weapon type,Machine Gun,기관총,weapon card,
+weapon type,Rifle,소총,weapon card,
+weapon type,Launcher,발사기,weapon card,
+weapon type,Energy,에너지 무기,weapon card,
+weapon type,Autocannon,오토캐논,weapon card,
+weapon type,Flame,화염,weapon card,
+enemy,Scavenger,스캐빈저,enemy list,
+enemy,Pouncer,파운서,enemy list,
+enemy,Caustic Spitter,코스틱 스피터,enemy list,check
+enemy,Spore Burst Scavenger,스포어 버스트 스캐빈저,enemy list,
+enemy,Noxious Scavenger,녹셔스 스캐빈저,enemy list,check
+enemy,Shrieker,슈리커,enemy list,
+enemy,Hunter,헌터,enemy list,
+enemy,Predator Hunter,프레데터 헌터,enemy list,
+enemy,Spore Burst Hunter,스포어 버스트 헌터,enemy list,
+enemy,Warrior,워리어,enemy list,
+enemy,Alpha Warrior,알파 워리어,enemy list,
+enemy,Spore Burst Warrior,스포어 버스트 워리어,enemy list,
+enemy,Rupture Warrior,럽쳐 워리어,enemy list,
+enemy,Caustic Warrior,코스틱 워리어,enemy list,check
+enemy,Hive Guard,하이브 가드,enemy list,
+enemy,Brood Commander,브루드 커맨더,enemy list,
+enemy,Alpha Commander,알파 커맨더,enemy list,
+enemy,Stalker,스토커,enemy list,
+enemy,Predator Stalker,프레데터 스토커,enemy list,
+enemy,Nursing Spewer,너싱 스퓨어,enemy list,
+enemy,Noxious Spewer,녹셔스 스퓨어,enemy list,check
+enemy,Caustic Spewer,코스틱 스퓨어,enemy list,check
+enemy,Rupture Spewer,럽쳐 스퓨어,enemy list,
+enemy,Charger,차저,enemy list,
+enemy,Charger Behemoth,차저 베히모스,enemy list,
+enemy,Rupture Charger,럽처 차저,enemy list,
+enemy,Caustic Charger,코스틱 차저,enemy list,check
+enemy,Impaler,임페일러,enemy list,
+enemy,Bile Titan,바일 타이탄,enemy list,
+enemy,Spore Burst Bile Titan,스포어 버스트 바일 타이탄,enemy list,
+enemy,Dragonroach,드래곤 로치,enemy list,
+enemy,Hive Lord,하이브로드,enemy list,
+enemy,Trooper,트루퍼,enemy list,
+enemy,Commissar,코미사르,enemy list,
+enemy,Marauder,머로더,enemy list,
+enemy,Brawler,브롤러,enemy list,
+enemy,MG Raider,MG 레이더,enemy list,
+enemy,Rocket Raider,로켓 레이더,enemy list,
+enemy,Assault Raider,어썰트 레이더,enemy list,
+enemy,Jet Brigade Commissar,제트 여단 커미서,enemy list,
+enemy,Jet Brigade MG Raider,제트 여단 MG 레이더,enemy list,
+enemy,Jet Brigade Trooper,제트 여단 트루퍼,enemy list,
+enemy,Incendiary Rocket Raider,소각대 로켓 레이더,enemy list,
+enemy,Pyro Trooper,파이로 트루퍼,enemy list,
+enemy,Devastator,데바스테이터,enemy list,
+enemy,Heavy Devastator,방패 데바스테이터,enemy list,
+enemy,Rocket Devastator,로켓 데바스테이터,enemy list,
+enemy,Jet Brigade Devastator,제트 여단 데버스테이터,enemy list,
+enemy,Conflagration Devastator,컨플래그레이션 데버스테이터,enemy list,
+enemy,Incendiary MG Devastator,인센디어리 MG 데버스테이터,enemy list,
+enemy,Berserker,버서커,enemy list,
+enemy,Hulk Bruiser,헐크 브루저,enemy list,
+enemy,Hulk Scorcher,헐크 스코처,enemy list,
+enemy,Hulk Obliterator,헐크 오블리터레이터,enemy list,
+enemy,Hulk Firebomber,헐크 파이어보머,enemy list,
+enemy,Jet Brigade Hulk Bruiser,제트 여단 헐크 브루저,enemy list,
+enemy,Jet Brigade Hulk Scorcher,제트 여단 헐크 스코처,enemy list,
+enemy,Scout Strider,스카우트 스트라이더,enemy list,
+enemy,Scout Strider Pilot,스카우트 스트라이더 조종사,enemy list,check
+enemy,Reinforced Scout Strider,강화 스카우트 스트라이더,enemy list,
+enemy,Annihilator Tank,어나이얼레이터 탱크,enemy list,
+enemy,Shredder Tank,슈레더 탱크,enemy list,
+enemy,Barrager Tank,바라저 탱크,enemy list,
+enemy,Cannon Turret,캐논 포탑,enemy list,
+enemy,Bunker Turret,쁘띠 포탑,enemy list,
+enemy,Mortar Emplacement,박격포,enemy list,
+enemy,Anti-Air Emplacement,대공 거치포,enemy list,
+enemy,MG Emplacement (Light Fusion Cycler),MG 거치포 (경 퓨전 사이클러),enemy list,check
+enemy,MG Emplacement (Heavy Fusion Repeater),MG 거치포 (중 퓨전 리피터),enemy list,check
+enemy,Automaton Fabricator,제조기,enemy list,
+enemy,Gunship,건십,enemy list,
+enemy,Dropship,드롭십,enemy list,
+enemy,War Strider,워 스트라이더,enemy list,
+enemy,Factory Strider,팩토리 스트라이더,enemy list,
+enemy,Agitator,애지테이터,enemy list,
+enemy,Radical,래디컬,enemy list,
+enemy,Vox Engine,복스 엔진,enemy list,
+enemy,Light Voteless,무권자 (경),enemy list,
+enemy,Medium Voteless,무권자 ,enemy list,
+enemy,Heavy Voteless,무권자 (헤비),enemy list,
+enemy,Overseer,오버시어,enemy list,
+enemy,Elevated Overseer,비행 오버시어,enemy list,
+enemy,Crescent Overseer,박격포 오버시어,enemy list,
+enemy,Watcher,와쳐,enemy list,
+enemy,Fleshmob,플레시몹,enemy list,
+enemy,Harvester,하베스터,enemy list,
+enemy,Harvester (Armor Broken),하베스터 (장갑 파괴),enemy list,check
+enemy,Stingray,스팅레이,enemy list,
+enemy,Leviathan,리바이어던,enemy list,
+enemy,Leviathan (Broken),리바이어던 (파손),enemy list,check
+enemy,Gatekeeper,게이트키퍼,enemy list,
+enemy,Gatekeeper (Broken),게이트키퍼 (파손),enemy list,check
+enemy,Obtruder,옵트루더,enemy list,
+enemy,Veracitor,버레이시터,enemy list,
+enemy,Crusher,크러셔,enemy list,
+enemy,Wretch,렛치,enemy list,
+enemy,Warp Ship,워프 함선,enemy list,
+enemy,Illuminate Overship,오버쉽,enemy list,
+enemy,Gazer,게이저,enemy list,
+enemy,Gazer Spire,게이저 스파이어,enemy list,
+enemy,Lightning Spire,번개 첨탑,enemy list,
+enemy,Warp Gateway,워프 게이트웨이,enemy list,
+enemy,Cognitive Disruptor,인지 분열기,enemy list,
+part,Main,전체 체력,hitzones,
+part,Head,머리,hitzones,
+part,Limbs,사지,hitzones,
+part,Wings,날개,hitzones,
+part,Claws,발톱,hitzones,
+part,Legs,다리,hitzones,
+part,Frontal Tarsal Plate Armor,앞다리 부절판 장갑,hitzones,check
+part,Front Legs,앞다리,hitzones,
+part,Rear Legs,뒷다리,hitzones,
+part,Body Armor,몸통 장갑,hitzones,check
+part,Underbelly,아랫배,hitzones,check
+part,Left Legs,왼다리,hitzones,
+part,Right Legs,오른다리,hitzones,
+part,Mouth,입,hitzones,
+part,Spinal Plates,등뼈 판,hitzones,check
+part,Butt,둔부,hitzones,
+part,Torso Armor,흉갑,hitzones,
+part,Inner Flesh,속살,hitzones,
+part,Underside,하부,hitzones,
+part,Rear Armor Plates,후면 장갑,hitzones,
+part,Front Leg Armor,앞다리 장갑,hitzones,check
+part,Rear Leg Armor,뒷다리 장갑,hitzones,check
+part,Leg Flesh,다리 살,hitzones,check
+part,Spore Flesh,포자 살,hitzones,check
+part,Tentacle Armor,촉수 장갑,hitzones,check
+part,Tentacle Flesh,촉수 살,hitzones,check
+part,Crest Armor,볏 장갑,hitzones,check
+part,Leg Armor,다리 장갑,hitzones,check
+part,Butt Armor,엉덩이 장갑,hitzones,check
+part,Upper Sac,위쪽 주머니,hitzones,check
+part,Lower Sac,아래쪽 주머니,hitzones,check
+part,Front Left Leg Flesh,왼쪽 앞다리 살,hitzones,check
+part,Carapace,등껍질,hitzones,check
+part,Thorax Sac,가슴 주머니,hitzones,check
+part,Abdomen Sac,배 주머니,hitzones,check
+part,Thorax Innards,가슴 내장,hitzones,check
+part,Abdomen Innards,배 내장,hitzones,check
+part,Abdomen Armor,배 장갑,hitzones,check
+part,Crown,머리관,hitzones,check
+part,Jaws,턱,hitzones,check
+part,Mandibles,큰턱,hitzones,check
+part,Dorsal Plate Armor,등판 장갑,hitzones,check
+part,Sterna Plate Armor,흉판 장갑,hitzones,check
+part,Lower Sterna Plate Armor,아래 흉판 장갑,hitzones,check
+part,Fins,지느러미,hitzones,check
+part,Torso,상체,hitzones,check
+part,Arms,팔,hitzones,check
+part,Left Arm,왼팔,hitzones,check
+part,Right Arm,오른팔,hitzones,check
+part,Leg,다리,hitzones,check
+part,Backpack Main,배낭 본체,hitzones,check
+part,Backpack,배낭,hitzones,check
+part,Jetpack,제트팩,hitzones,check
+part,Fuel Tanks Main,연료 탱크 본체,hitzones,check
+part,Fuel Tanks,연료 탱크,hitzones,check
+part,Shoulders,어깨,hitzones,check
+part,Stomach,배,hitzones,check
+part,Pelvis,골반,hitzones,check
+part,Shield,방패,hitzones,check
+part,Rockets,로켓,hitzones,check
+part,Rocket Pods,로켓 포드,hitzones,check
+part,Chest,가슴,hitzones,check
+part,Shoulder,어깨,hitzones,check
+part,Arm,팔,hitzones,check
+part,Heatsink,방열판,hitzones,
+part,Pilot,조종사,hitzones,check
+part,Front Plate,전면 판,hitzones,check
+part,HMG,중기관총,hitzones,check
+part,Turret System,포탑 시스템,hitzones,check
+part,Waist,허리,hitzones,check
+part,Faceplate,안면판,hitzones,check
+part,Rocket Rails,로켓 레일,hitzones,check
+part,Turret Main,포탑 본체,hitzones,check
+part,Turret Front,포탑 전면,hitzones,check
+part,Turret Heatsink,포탑 방열판,hitzones,check
+part,Hull Main,차체 본체,hitzones,check
+part,Hull Front,차체 전면,hitzones,check
+part,Hull Sides,차체 측면,hitzones,check
+part,Engine Bay,엔진실,hitzones,check
+part,Tracks,궤도,hitzones,check
+part,Turret Front and Sides,포탑 전면과 측면,hitzones,check
+part,Hull Side,차체 측면,hitzones,check
+part,Launch Tubes,발사관,hitzones,check
+part,Fuselage,동체,hitzones,check
+part,Front Thrusters,전방 추진기,hitzones,check
+part,Rear Thrusters,후방 추진기,hitzones,check
+part,Thruster,추진기,hitzones,check
+part,Eyes,눈,hitzones,check
+part,Fusion Cannons,퓨전 캐넌,hitzones,check
+part,Grenade Launchers,유탄 발사기,hitzones,check
+part,Crotch,사타구니,hitzones,check
+part,Hip Joints,고관절,hitzones,check
+part,Greaves,정강이 갑,hitzones,check
+part,Stratagem Scrambler,스트라타젬 교란기,hitzones,check
+part,Fusion Gatling Guns,퓨전 개틀링건,hitzones,check
+part,Head Armor,머리 장갑,hitzones,check
+part,Head Body,머리 본체,hitzones,check
+part,Neck Armor,목 장갑,hitzones,check
+part,Neck,목,hitzones,check
+part,Front Top Armor,전면 상단 장갑,hitzones,check
+part,Front Engine Weakspot,전방 엔진 약점,hitzones,check
+part,Front Armor,전면 장갑,hitzones,check
+part,Side Armor,측면 장갑,hitzones,check
+part,Rear Engine Armor,후방 엔진 장갑,hitzones,check
+part,Rear Engine Weakspot,후방 엔진 약점,hitzones,check
+part,Rear Armor,후면 장갑,hitzones,check
+part,Knee Armor,무릎 장갑,hitzones,check
+part,Leg Assembly,다리 기구,hitzones,check
+part,Belly Panels,배 패널,hitzones,check
+part,Circuits Front,전면 회로,hitzones,check
+part,Side Circuits,측면 회로,hitzones,check
+part,Rear Circuits,후면 회로,hitzones,check
+part,Helmet,헬멧,hitzones,check
+part,Pauldrons,견갑,hitzones,check
+part,Upper Arms,위팔,hitzones,check
+part,Forearms,아래팔,hitzones,check
+part,Pelvis and Left Leg,골반과 왼다리,hitzones,check
+part,Right Leg,오른다리,hitzones,check
+part,Torso Circuits,상체 회로,hitzones,check
+part,Pauldron,견갑,hitzones,check
+part,Sarcophagus,석관,hitzones,check
+part,Cannons,캐넌,hitzones,check
+part,Missile Launchers,미사일 발사기,hitzones,check
+part,Miniguns,미니건,hitzones,check
+part,Speakers,스피커,hitzones,check
+part,Fog Lights,안개등,hitzones,check
+part,Torso Flaps,상체 덮개,hitzones,check
+part,Vents,배기구,hitzones,check
+part,Hatches,해치,hitzones,check
+part,Undercarriage,하부 차대,hitzones,check
+part,Trackpod Latches,궤도 포드 걸쇠,hitzones,check
+part,Chest Armor,흉갑,hitzones,check
+part,Crotch Armor,사타구니 장갑,hitzones,check
+part,Limb Armor,사지 갑옷,hitzones,check
+part,Body,몸통,hitzones,check
+part,Eye,눈,hitzones,check
+part,Upper Fin,위 지느러미,hitzones,check
+part,Lower Fin,아래 지느러미,hitzones,check
+part,Side Fins,옆 지느러미,hitzones,check
+part,Head Chunks,머리 덩어리,hitzones,check
+part,Stomach Chunks,배 덩어리,hitzones,check
+part,Shield Generators,보호막 발생기,hitzones,check
+part,Chassis,차대,hitzones,check
+part,Carapace Weakspots,등껍질 약점,hitzones,check
+part,Left Hip Joint,왼쪽 고관절,hitzones,check
+part,Right & Middle Hip Joints,오른쪽 & 가운데 고관절,hitzones,check
+part,Left Upper Thigh Armor,왼쪽 허벅지 위 장갑,hitzones,check
+part,Right & Middle Upper Thigh Armor,오른쪽 & 가운데 허벅지 위 장갑,hitzones,check
+part,Lower Thigh Armor,허벅지 아래 장갑,hitzones,check
+part,Shin Armor,정강이 장갑,hitzones,check
+part,Left Foot Armor,왼발 장갑,hitzones,check
+part,Right & Middle Foot Armor,오른쪽 & 가운데 발 장갑,hitzones,check
+part,Exposed Leg Internals,노출된 다리 내부,hitzones,check
+part,Damaged Chassis,손상된 차대,hitzones,check
+part,Internals,내부,hitzones,check
+part,Right & Left Upper Leg Internals,오른쪽 & 왼쪽 위 다리 내부,hitzones,check
+part,Middle Upper Leg Internals,가운데 위 다리 내부,hitzones,check
+part,Lower Leg Internals,아래 다리 내부,hitzones,check
+part,Gun Ports,총안,hitzones,check
+part,Turrets,포탑,hitzones,check
+part,Front Vertebra,앞 척추,hitzones,check
+part,Front Fins,앞 지느러미,hitzones,check
+part,Warp Disc,워프 원반,hitzones,check
+part,Forward-Middle Vertebra,앞-가운데 척추,hitzones,check
+part,Forward-Middle Fins,앞-가운데 지느러미,hitzones,check
+part,Rearward-Middle Vertebra,뒤-가운데 척추,hitzones,check
+part,Rearward-Middle Fins,뒤-가운데 지느러미,hitzones,check
+part,Rear Vertebra,뒤 척추,hitzones,check
+part,Rear Fins,뒤 지느러미,hitzones,check
+part,Tail,꼬리,hitzones,check
+part,Damaged Rearward-Middle Vertebra,손상된 뒤-가운데 척추,hitzones,check
+part,Shield Generator,보호막 발생기,hitzones,check
+part,Rear Weakspot,후방 약점,hitzones,check
+part,Cockpit,조종석,hitzones,check
+part,Cockpit Weakspot,조종석 약점,hitzones,check
+part,Shoulder Armor,어깨 장갑,hitzones,check
+part,Arm Armor,팔 장갑,hitzones,check
+part,Guns,총,hitzones,check
+part,Gun Weakspots,총 약점,hitzones,check
+part,Hips,엉덩관절,hitzones,check
+part,Arms (Broken Armor),팔 (장갑 파괴),hitzones,check
+part,Legs (Broken Armor),다리 (장갑 파괴),hitzones,check
+part,Vertical Fins,수직 지느러미,hitzones,check
+part,Lateral Fins,측면 지느러미,hitzones,check
+part,Lower Arms,아래팔,hitzones,check
+part,Arm Weakspots,팔 약점,hitzones,check
+part,Rear Hip,뒤 엉덩관절,hitzones,check
+part,Upper Legs,위 다리,hitzones,check
+part,Lower Legs,아래 다리,hitzones,check
+part,Rear Leg,뒷다리,hitzones,check
+part,Beamer,광선포,hitzones,check
+part,Frontal Fuselage,전방 동체,hitzones,check
+part,Rear Fuselage,후방 동체,hitzones,check
+part,Engine,엔진,hitzones,check
+part,Stern,선미,hitzones,check
+part,Bow,선수,hitzones,check
+part,Port,좌현,hitzones,check
+part,Sphere,구체,hitzones,check
+part,Base,기반,hitzones,check
+weapon,AR-23 Liberator,AR-23 리버레이터,weapon list,
+weapon,AR-23P Liberator Penetrator,AR-23P 리버레이터 페네트레이터,weapon list,
+weapon,AR-23C Liberator Concussive,AR-23C 리버레이터 컨커시브,weapon list,
+weapon,AR-23A Liberator Carbine,AR-23A 리버레이터 카빈,weapon list,
+weapon,AR-23L Liberator Legacy,AR-23L 리버레이터 레거시,weapon list,
+weapon,StA-52 Assault Rifle,StA-52 돌격소총,weapon list,
+weapon,AR-32 Pacifier,AR-32 퍼시파이어,weapon list,
+weapon,MA5C Assault Rifle,MA5C 어썰트 라이플,weapon list,
+weapon,AR-2 Coyote,AR-2 코요테,weapon list,
+weapon,AR-59 Suppressor,AR-59 서프레서,weapon list,
+weapon,AR-61 Tenderizer,AR-61 텐더라이저,weapon list,
+weapon,BR-14 Adjudicator,BR-14 어드주디케이터,weapon list,
+weapon,AR/GL-21 One-Two,AR/GL-21 원-투,weapon list,
+weapon,AR-11 Arbitrator,AR-11 아비트레이터,weapon list,
+weapon,R-63 Diligence,R-63 딜리전스,weapon list,
+weapon,R-63CS Diligence Counter Sniper,R-63CS 딜리전스 카운터 저격소총,weapon list,
+weapon,R-2124 Constitution,R-2124 콘스티튜션,weapon list,
+weapon,R-6 Deadeye,R-6 데드아이,weapon list,
+weapon,R-2 Amendment,R-2 어멘드멘트,weapon list,
+weapon,R-72 Censor,R-72 센서,weapon list,
+weapon,R-4 Hyena,R-4 하이에나,weapon list,
+weapon,R-40 Sightliner,R-40 사이트라이너,weapon list,
+weapon,R/40-K Hot-Shot Marksman Rifle,R/40-K 핫샷 마크스맨 라이플,weapon list,
+weapon,MP-98 Knight,MP-98 나이트,weapon list,
+weapon,SMG-37 Defender,SMG-37 디펜더,weapon list,
+weapon,SMG-72 Pummeler,SMG-72 퍼멜러,weapon list,
+weapon,SMG-32 Reprimand,SMG-32 레프리맨드,weapon list,
+weapon,StA-11 SMG,StA-11 기관단총,weapon list,
+weapon,M7S SMG,M7S 기관단총,weapon list,
+weapon,SMG/FLAM-34 Stoker,SMG/FLAM-34 스토커,weapon list,
+weapon,SMG-203 Gallant,SMG-203 갤런트,weapon list,
+weapon,SG-8 Punisher,SG-8 퍼니셔,weapon list,
+weapon,SG-225 Breaker,SG-225 브레이커,weapon list,
+weapon,SG-8S Slugger,SG-8S 슬러거,weapon list,
+weapon,SG-225SP Breaker Spray&Pray,SG-225SP 브레이커 스프레이 앤 프레이,weapon list,
+weapon,SG-225IE Breaker Incendiary,SG-225IE 브레이커 인센디어리,weapon list,
+weapon,SG-451 Cookout,SG-451 쿡아웃,weapon list,
+weapon,SG-20 Halt,SG-20 홀트,weapon list,
+weapon,DBS-2 Double Freedom,DBS-2 더블 프리덤,weapon list,
+weapon,M90A Shotgun,M90A 샷건,weapon list,
+weapon,SG-97 Sweeper,SG-97 스위퍼,weapon list,
+weapon,R-36 Eruptor,R-36 이럽터,weapon list,
+weapon,CB-9 Exploding Crossbow,CB-9 익스플로딩 크로스보우,weapon list,
+weapon,GL-15 Evictor,GL-15 이빅터,weapon list,
+weapon,LAS-5 Scythe,LAS-5 사이스,weapon list,
+weapon,PLAS-1 Scorcher,PLAS-1 스코처,weapon list,
+weapon,LAS-16 Sickle,LAS-16 시클,weapon list,
+weapon,SG-8P Punisher Plasma,SG-8P 퍼니셔 플라즈마,weapon list,
+weapon,ARC-12 Blitzer,ARC-12 블리처,weapon list,
+weapon,PLAS-101 Purifier,PLAS-101 퓨리파이어,weapon list,
+weapon,PLAS-39 Accelerator Rifle,PLAS-39 가속 소총,weapon list,
+weapon,LAS-17 Double-Edge Sickle,LAS-17 더블 엣지 시클,weapon list,
+weapon,LAS-13 Trident,LAS-13 트라이던트,weapon list,
+weapon,LAS-12 Sai,LAS-12 사이,weapon list,
+weapon,JAR-5 Dominator,JAR-5 도미네이터,weapon list,
+weapon,FLAM-66 Torcher,FLAM-66 토처,weapon list,
+weapon,VG-70 Variable,VG-70 배리어블,weapon list,
+weapon,P-2 Peacemaker,P-2 피스메이커,weapon list,
+weapon,P-19 Redeemer,P-19 리디머,weapon list,
+weapon,P-4 Senator,P-4 세너터,weapon list,
+weapon,P-113 Verdict,P-113 버딕트,weapon list,
+weapon,P-92 Warrant,P-92 워런트,weapon list,
+weapon,M6C/SOCOM Pistol,M6C/SOCOM 권총,weapon list,
+weapon,P-69 Veto,P-69 비토,weapon list,
+weapon,P-44 Mist,P-44 미스트,weapon list,
+weapon,CQC-19 Stun Lance,CQC-19 기절 창,weapon list,
+weapon,CQC-30 Stun Baton,CQC-30 기절 제압봉,weapon list,
+weapon,CQC-5 Combat Hatchet,CQC-5 컴뱃 해칫,weapon list,
+weapon,CQC-2 Saber,CQC-2 세이버,weapon list,
+weapon,CQC-42 Machete,CQC-42 마체테,weapon list,
+weapon,CQC-73 Entrenchment Tool,CQC-73 참호 도구,weapon list,
+weapon,LAS-7 Dagger,LAS-7 대거,weapon list,
+weapon,GP-31 Grenade Pistol,GP-31 유탄 권총,weapon list,
+weapon,SG-22 Bushwhacker,SG-22 부시웨커,weapon list,
+weapon,P-72 Crisper,P-72 크리스퍼,weapon list,
+weapon,PLAS-15 Loyalist,PLAS-15 로열리스트,weapon list,
+weapon,GP-20 Ultimatum,GP-20 얼티메이텀,weapon list,
+weapon,LAS-58 Talon,LAS-58 탈론,weapon list,
+weapon,P-35 Re-Educator,P-35 리에듀케이터,weapon list,
+weapon,P-33 Missile Pistol,P-33 미사일 권총,weapon list,
+weapon,P/40-K Bolt Pistol,P/40-K 볼트 피스톨,weapon list,
+weapon,P-34 Breacher,P-34 브리처,weapon list,
+weapon,G-12 High Explosive,G-12 고폭,weapon list,
+weapon,G-6 Frag,G-6 세열,weapon list,
+weapon,G-10 Incendiary,G-10 소이,weapon list,
+weapon,G-7 Pineapple,G-7 파인애플,weapon list,
+weapon,TED-63 Dynamite,TED-63 다이너마이트,weapon list,
+weapon,G-16 Impact,G-16 충격,weapon list,
+weapon,G-123 Thermite,G-123 테르밋,weapon list,
+weapon,G-13 Incendiary Impact,G-13 소이 충격,weapon list,
+weapon,K-2 Throwing Knife,K-2 투척 나이프,weapon list,
+weapon,G-4 Gas,G-4 가스,weapon list,
+weapon,G-50 Seeker,G-50 시커,weapon list,
+weapon,G-142 Pyrotech,G-142 파이로테크,weapon list,
+weapon,G-31 Arc,G-31 아크,weapon list,
+weapon,TM-1 Lure Mine,TM-1 유인 지뢰,weapon list,
+weapon,G-48 Giga Grenade,G-48 기가 수류탄,weapon list,
+weapon,G/40-K Melta Mine,G/40-K 멜타마인,weapon list,
+weapon,G-8 Immolation,G-8 번제,weapon list,
+weapon,G-60 Anti-Tank Seeker,G-60 대전차 드론,weapon list,
+weapon,G-11 Caltrops,G-11 마름쇠,weapon list,
+weapon,MG-43 Machine Gun,MG-43 기관총,weapon list,
+weapon,M-105 Stalwart,M-105 스털워트,weapon list,
+weapon,MG-206 Heavy Machine Gun,MG-206 중기관총,weapon list,
+weapon,M-1000 Maxigun,M-1000 맥시건,weapon list,
+weapon,MGX-42 Bullet Storm,MGX-42 불릿 스톰,weapon list,
+weapon,APW-1 Anti-Materiel Rifle,APW-1 대물소총,weapon list,
+weapon,AMW-20 Apex,AMW-20 에이펙스,weapon list,
+weapon,RS-422 Railgun,RS-422 레일건,weapon list,
+weapon,GR-8 Recoilless Rifle,GR-8 무반동포,weapon list,
+weapon,EAT-17 Expendable Anti-Tank,EAT-17 일회성 대전차,weapon list,
+weapon,EAT-700 Expendable Napalm,EAT-700 일회성 네이팜,weapon list,
+weapon,EAT-411 Leveller,EAT-411 평탄화기,weapon list,
+weapon,LAS-99 Quasar Cannon,LAS-99 퀘이사 캐넌,weapon list,
+weapon,FAF-14 Spear,FAF-14 스피어,weapon list,
+weapon,MLS-4X Commando,MLS-4X 코만도,weapon list,
+weapon,RL-77 Airburst Rocket Launcher,RL-77 공중폭발 로켓 발사기,weapon list,
+weapon,StA-X3 W.A.S.P. Launcher,StA-X3 W.A.S.P. 발사기,weapon list,
+weapon,AC-8 Autocannon,AC-8 오토캐넌,weapon list,
+weapon,GL-21 Grenade Launcher,GL-21 유탄 발사기,weapon list,
+weapon,GL-28 Belt-Fed Grenade Launcher,GL-28 벨트식 유탄 발사기,weapon list,
+weapon,GL-52 De-Escalator,GL-52 디에스컬레이터,weapon list,
+weapon,PLAS-45 Epoch,PLAS-45 에포크,weapon list,
+weapon,S-11 Speargun,S-11 작살총,weapon list,
+weapon,SG-88 Break-Action Shotgun,SG-88 중절식 산탄총,weapon list,
+weapon,LAS-98 Laser Cannon,LAS-98 레이저 캐넌,weapon list,
+weapon,LAS-44 Nova,LAS-44 노바,weapon list,
+weapon,40-K Meltagun,40-K 멜타건,weapon list,
+weapon,ARC-3 Arc Thrower,ARC-3 아크 발사기,weapon list,
+weapon,FLAM-40 Flamethrower,FLAM-40 화염방사기,weapon list,
+weapon,B/FLAM-80 Cremator,B/FLAM-80 크리메이터,weapon list,
+weapon,TX-41 Sterilizer,TX-41 스터릴라이저,weapon list,
+weapon,MS-11 Solo Silo,MS-11 솔로 사일로,weapon list,
+weapon,B/MD C4 Pack,B/MD C4 팩,weapon list,
+weapon,Eagle 500kg Bomb,이글 500kg 폭탄,weapon list,
+weapon,Eagle Airstrike,이글 공중타격,weapon list,
+weapon,Eagle Cluster Bomb,이글 집속탄,weapon list,
+weapon,Eagle Strafing Run,이글 기총소사,weapon list,
+weapon,Eagle 110mm Rocket Pods,이글 110mm 로켓 포드,weapon list,
+weapon,Orbital Railcannon Strike,궤도 레일캐넌 타격,weapon list,
+weapon,Orbital Precision Strike,궤도 정밀 타격,weapon list,
+weapon,Orbital 380mm HE Barrage,궤도 380mm 고폭 폭격,weapon list,
+weapon,Orbital Walking Barrage,궤도 이동 폭격,weapon list,
+weapon,Orbital 120mm HE Barrage,궤도 120mm 고폭 폭격,weapon list,
+weapon,Orbital Gatling Barrage,궤도 개틀링 폭격,weapon list,
+weapon,Orbital Airburst Strike,궤도 공중폭발 타격,weapon list,
+weapon,Orbital Laser,궤도 레이저,weapon list,
+weapon,MG-43 Machine Gun Sentry,A/MG-43 기관총 센트리,weapon list,
+weapon,G-16 Gatling Sentry,A/G-16 개틀링 센트리,weapon list,
+weapon,AC-8 Autocannon Sentry,A/AC-8 오토캐넌 센트리,weapon list,
+weapon,MLS-4X Rocket Sentry,A/MLS-4X 로켓 센트리,weapon list,
+weapon,M-12 Mortar Sentry,A/M-12 박격포 센트리,weapon list,
+weapon,LAS-98 Laser Sentry,A/LAS-98 레이저 센트리,weapon list,
+weapon,MG-101 HMG Emplacement,E/MG-101 중기관총 거치포,weapon list,
+weapon,AT-12 Anti-Tank Emplacement,E/AT-12 대전차 거치포,weapon list,
+mode,8mm Rifle,8mm 소총탄,firing mode,
+mode,40mm Grenade,40mm 유탄,firing mode,
+mode,4mm Rifle,4mm 소총탄,firing mode,
+mode,10g Underbarrel Shotgun,10게이지 하부 산탄총,firing mode,
+mode,12mm,12mm,firing mode,check
+mode,Flamethrower,화염방사기,firing mode,
+mode,Flechette,플래셰트,firing mode,
+mode,Stun,기절탄,firing mode,
+mode,Charged,충전됨,firing mode,
+mode,Uncharged,충전중,firing mode,
+mode,LAS-16_P,LAS-16_P,firing mode,check
+mode,LAS-17_P,LAS-17_P,firing mode,check
+mode,LAS-17_P1,LAS-17_P1,firing mode,check
+mode,LAS-17_P2,LAS-17_P2,firing mode,check
+mode,Grenade,수류탄,firing mode,
+mode,Bomblets,자탄,firing mode,
+mode,Explosion,폭발,firing mode,
+mode,Shrapnel,파편,firing mode,
+mode,Minimum charge (0.45s),최소 충전 (0.45s),firing mode,
+mode,"Max charge (Unsafe, 3.0s)","최대 충전 (안전모드 해제, 3.0s)",firing mode,
+mode,HEAT,성형작약탄,firing mode,
+mode,HE,고폭탄,firing mode,
+mode,Rocket,로켓,firing mode,
+mode,Napalm bomblet,네이팜 자탄,firing mode,
+mode,Rocket (direct),로켓 (직격),firing mode,
+mode,Bomblet,자탄,firing mode,
+mode,Burst,점사,firing mode,check
+mode,Artillery (carrier),포격 (모탄),firing mode,check
+mode,APHET,철갑모드,firing mode,
+mode,Flak,대공모드,firing mode,
+mode,Grenade impact,유탄 충격,firing mode,check
+mode,Arc discharge,아크 방전,firing mode,check
+mode,Full charge (2.6s),완전 충전 (2.6초),firing mode,check
+mode,Beam,광선,firing mode,check
+mode,Spray,분사,firing mode,check
+mode,Missile,미사일,firing mode,check
+mode,Detonation,기폭,firing mode,check
+mode,Bomb,폭탄,firing mode,check
+mode,Bomb (x6),폭탄 (x6),firing mode,check
+mode,Bomb casing,폭탄 외피,firing mode,check
+mode,Cannon round,기관포탄,firing mode,check
+mode,Shell,포탄,firing mode,check
+mode,Round,탄,firing mode,check
+mode,APHE 75mm,철갑고폭탄 75mm,firing mode,check
