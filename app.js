@@ -250,8 +250,11 @@
           if (out.toMain > 0) out.progress = true;
           return feedMain();
         }
+        const wasGone = instGone(part, inst[k]);
         inst[k] -= s.total;
         if (s.total > 0) out.progress = true;
+        // mainToOnGone (Hulk legs): shot through, the enemy is left hanging with Main at that much health
+        if (part.mainToOnGone != null && !wasGone && instGone(part, inst[k])) out.clampTo = part.mainToOnGone;
         if (wasUp && inst[k] <= 0) out.broke = true;
         // fatal parts: with a bleed rate the enemy is done once the part breaks (it bleeds out);
         // with constitution that doesn't drain, it has to be shot through the constitution too
@@ -281,6 +284,12 @@
         if (sim.pool[mi] <= 0 && !sim.dead && (/^main$/i.test(mp.name.trim()) || mp.fatal)) {
           sim.dead = { how: 'killed', why: `${mp.name} health depleted${bleedNote(mp)}`, idx: mi };
         }
+      }
+      // after this shot's own damage to Main: still alive, so Main drops to what's left hanging
+      if (out.clampTo != null && !sim.dead && mi >= 0 && sim.pool[mi] != null && sim.pool[mi] > out.clampTo) {
+        sim.pool[mi] = out.clampTo;
+        sim.hanging = `${part.name.replace(/\s*\(\d+\)$/, '')} shot through: Main left at ${fmt(out.clampTo)} HP`;
+        out.progress = true;
       }
       return out;
     }
@@ -335,6 +344,8 @@
     return ` + ${DOT_CLICK} s ${dot.label.toLowerCase()}: ${fmt(dmg)} to Main`;
   }
 
+  /** Log text for a part that left Main hanging (once, then cleared). */
+  const hangNote = (sim) => { const t = sim.hanging; sim.hanging = null; return t ? ` — ${t}` : ''; };
   /** Log text for the explosion that went on into the part under a broken plate. */
   const underNote = (enemy, o) => (o.under ? ` → explosion on the ${enemy.parts[o.under.idx].name} beneath: ${fmt(o.under.dealt)} dmg${o.under.broke ? ', destroyed' : ''}` : '');
 
@@ -1000,7 +1011,7 @@
     const o2 = thru ? applyShot(state.sim, e, thru.idx, thru.s, true) : null;
     const dotNote = dotSecond(state.sim, e, mode);
     const label = k != null && (part.count || 1) > 1 ? `${part.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${part.count}` : part.name;
-    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : s.demo ? 'demolished' : s.ricochet ? 'ricochet' : 'no damage'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${underNote(e, o)}${dotNote}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
+    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : s.demo ? 'demolished' : s.ricochet ? 'ricochet' : 'no damage'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${hangNote(state.sim)}${underNote(e, o)}${dotNote}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
     state.sim.log.length = Math.min(state.sim.log.length, 8);
     render();
   }
@@ -1207,6 +1218,7 @@
         const o = k === 0 ? applyHit(state.sim, e, r.idx, r.s, res.mode, { ...opts(), band: res.band, revealedK: hit.revealedK }, false, piece ?? undefined)
           : applyShot(state.sim, e, r.idx, r.s, true, piece ?? undefined);
         if (o.broke) notes.push(`${pieceName(e.parts[r.idx], piece)} destroyed`);
+        if (state.sim.hanging) notes.push(hangNote(state.sim).replace(/^ — /, ''));
         if (o.under) notes.push(underNote(e, o).replace(/^ → /, ''));
         // the impact broke a plate and the flesh under it took the explosion: that already sent Main its share
         if (k === 0 && o.under) mainShared = true;

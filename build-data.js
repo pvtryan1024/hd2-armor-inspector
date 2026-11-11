@@ -100,11 +100,14 @@ const INDESTRUCTIBLE = [{ enemy: /hive guard/i, part: /armou?r|plate/i }];
 //   the Hulk lives on (no bleed) but a single shot to any part kills it
 // - Dropship: a single thruster destroyed brings it down
 // allBroken: every piece's health gone also downs it, constitution or not
-const DOWNS = [{ enemy: /hulk/i, part: /^legs\b/i, allBroken: true }, { enemy: /^dropship$/i, part: /^thruster/i }];
+const DOWNS = [{ enemy: /^dropship$/i, part: /^thruster/i }];
+// a Hulk leg shot through (health and constitution gone) doesn't kill it: Main is left hanging at 1 HP
+const MAIN_TO_ON_GONE = [{ enemy: /hulk/i, part: /^legs\b/i, value: 1 }];
 const ALSO_COVERED = [{ enemy: /^Rupture Charger$/, parts: { 'Leg Flesh (4)': 'Frontal Tarsal Plate Armor (2)' } }];
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
   for (const c of DOWNS) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = 'downs'; if (c.allBroken) p.downsAllBroken = true; } });
+  for (const c of MAIN_TO_ON_GONE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = false; p.mainToOnGone = c.value; } });
   for (const c of ALSO_COVERED) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.alsoCoveredBy = c.parts[p.name]; });
   for (const c of BEHIND) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.behind = c.parts[p.name]; });
   for (const c of LOCATION_FIX) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.location = c.location; });
