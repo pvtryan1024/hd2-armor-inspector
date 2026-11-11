@@ -271,7 +271,7 @@ weapon type,Flame,화염,weapon card
 enemy,Scavenger,스캐빈저,enemy list
 enemy,Pouncer,파운서,enemy list
 enemy,Caustic Spitter,,enemy list
-enemy,Spore Burst Scavenger,,enemy list
+enemy,Spore Burst Scavenger,스포어 버스트 스캐빈저,enemy list
 enemy,Noxious Scavenger,,enemy list
 enemy,Shrieker,슈리커,enemy list
 enemy,Hunter,헌터,enemy list
@@ -293,7 +293,7 @@ enemy,Caustic Spewer,,enemy list
 enemy,Rupture Spewer,럽쳐 스퓨어,enemy list
 enemy,Charger,차저,enemy list
 enemy,Charger Behemoth,차저 베히모스,enemy list
-enemy,Rupture Charger,,enemy list
+enemy,Rupture Charger,럽처 차저,enemy list
 enemy,Caustic Charger,,enemy list
 enemy,Impaler,임페일러,enemy list
 enemy,Bile Titan,바일 타이탄,enemy list
@@ -302,49 +302,49 @@ enemy,Dragonroach,드래곤 로치,enemy list
 enemy,Hive Lord,하이브로드,enemy list
 enemy,Trooper,트루퍼,enemy list
 enemy,Commissar,코미사르,enemy list
-enemy,Marauder,,enemy list
-enemy,Brawler,,enemy list
-enemy,MG Raider,,enemy list
-enemy,Rocket Raider,,enemy list
-enemy,Assault Raider,,enemy list
-enemy,Jet Brigade Commissar,,enemy list
-enemy,Jet Brigade MG Raider,,enemy list
-enemy,Jet Brigade Trooper,,enemy list
-enemy,Incendiary Rocket Raider,,enemy list
-enemy,Pyro Trooper,,enemy list
+enemy,Marauder,머로더,enemy list
+enemy,Brawler,브롤러,enemy list
+enemy,MG Raider,MG 레이더,enemy list
+enemy,Rocket Raider,로켓 레이더,enemy list
+enemy,Assault Raider,어썰트 레이더,enemy list
+enemy,Jet Brigade Commissar,제트 여단 커미서,enemy list
+enemy,Jet Brigade MG Raider,제트 여단 MG 레이더,enemy list
+enemy,Jet Brigade Trooper,제트 여단 트루퍼,enemy list
+enemy,Incendiary Rocket Raider,소각대 로켓 레이더,enemy list
+enemy,Pyro Trooper,파이로 트루퍼,enemy list
 enemy,Devastator,데바스테이터,enemy list
 enemy,Heavy Devastator,방패 데바스테이터,enemy list
 enemy,Rocket Devastator,로켓 데바스테이터,enemy list
-enemy,Jet Brigade Devastator,,enemy list
-enemy,Conflagration Devastator,,enemy list
-enemy,Incendiary MG Devastator,,enemy list
+enemy,Jet Brigade Devastator,제트 여단 데버스테이터,enemy list
+enemy,Conflagration Devastator,컨플래그레이션 데버스테이터,enemy list
+enemy,Incendiary MG Devastator,인센디어리 MG 데버스테이터,enemy list
 enemy,Berserker,버서커,enemy list
 enemy,Hulk Bruiser,헐크 브루저,enemy list
 enemy,Hulk Scorcher,헐크 스코처,enemy list
-enemy,Hulk Obliterator,,enemy list
-enemy,Hulk Firebomber,,enemy list
-enemy,Jet Brigade Hulk Bruiser,,enemy list
-enemy,Jet Brigade Hulk Scorcher,,enemy list
-enemy,Scout Strider,,enemy list
+enemy,Hulk Obliterator,헐크 오블리터레이터,enemy list
+enemy,Hulk Firebomber,헐크 파이어보머,enemy list
+enemy,Jet Brigade Hulk Bruiser,제트 여단 헐크 브루저,enemy list
+enemy,Jet Brigade Hulk Scorcher,제트 여단 헐크 스코처,enemy list
+enemy,Scout Strider,스카우트 스트라이더,enemy list
 enemy,Scout Strider Pilot,,enemy list
-enemy,Reinforced Scout Strider,,enemy list
-enemy,Annihilator Tank,,enemy list
-enemy,Shredder Tank,,enemy list
-enemy,Barrager Tank,,enemy list
+enemy,Reinforced Scout Strider,강화 스카우트 스트라이더,enemy list
+enemy,Annihilator Tank,어나이얼레이터 탱크,enemy list
+enemy,Shredder Tank,슈레더 탱크,enemy list
+enemy,Barrager Tank,바라저 탱크,enemy list
 enemy,Cannon Turret,캐논 포탑,enemy list
 enemy,Bunker Turret,쁘띠 포탑,enemy list
-enemy,Mortar Emplacement,,enemy list
-enemy,Anti-Air Emplacement,,enemy list
+enemy,Mortar Emplacement,박격포,enemy list
+enemy,Anti-Air Emplacement,대공 거치포,enemy list
 enemy,MG Emplacement (Light Fusion Cycler),,enemy list
 enemy,MG Emplacement (Heavy Fusion Repeater),,enemy list
-enemy,Automaton Fabricator,,enemy list
-enemy,Gunship,,enemy list
-enemy,Dropship,,enemy list
-enemy,War Strider,,enemy list
-enemy,Factory Strider,,enemy list
-enemy,Agitator,,enemy list
-enemy,Radical,,enemy list
-enemy,Vox Engine,,enemy list
+enemy,Automaton Fabricator,제조기,enemy list
+enemy,Gunship,건십,enemy list
+enemy,Dropship,드롭십,enemy list
+enemy,War Strider,워 스트라이더,enemy list
+enemy,Factory Strider,팩토리 스트라이더,enemy list
+enemy,Agitator,애지테이터,enemy list
+enemy,Radical,래디컬,enemy list
+enemy,Vox Engine,복스 엔진,enemy list
 enemy,Light Voteless,무권자 (경),enemy list
 enemy,Medium Voteless,무권자 ,enemy list
 enemy,Heavy Voteless,무권자 (헤비),enemy list
@@ -352,25 +352,25 @@ enemy,Overseer,오버시어,enemy list
 enemy,Elevated Overseer,비행 오버시어,enemy list
 enemy,Crescent Overseer,박격포 오버시어,enemy list
 enemy,Watcher,와쳐,enemy list
-enemy,Fleshmob,,enemy list
-enemy,Harvester,,enemy list
+enemy,Fleshmob,플레시몹,enemy list
+enemy,Harvester,하베스터,enemy list
 enemy,Harvester (Armor Broken),,enemy list
-enemy,Stingray,,enemy list
-enemy,Leviathan,,enemy list
+enemy,Stingray,스팅레이,enemy list
+enemy,Leviathan,리바이어던,enemy list
 enemy,Leviathan (Broken),,enemy list
-enemy,Gatekeeper,,enemy list
+enemy,Gatekeeper,게이트키퍼,enemy list
 enemy,Gatekeeper (Broken),,enemy list
-enemy,Obtruder,,enemy list
-enemy,Veracitor,,enemy list
-enemy,Crusher,,enemy list
-enemy,Wretch,,enemy list
-enemy,Warp Ship,,enemy list
-enemy,Illuminate Overship,,enemy list
-enemy,Gazer,,enemy list
-enemy,Gazer Spire,,enemy list
-enemy,Lightning Spire,,enemy list
-enemy,Warp Gateway,,enemy list
-enemy,Cognitive Disruptor,,enemy list
+enemy,Obtruder,옵트루더,enemy list
+enemy,Veracitor,버레이시터,enemy list
+enemy,Crusher,크러셔,enemy list
+enemy,Wretch,렛치,enemy list
+enemy,Warp Ship,워프 함선,enemy list
+enemy,Illuminate Overship,오버쉽,enemy list
+enemy,Gazer,게이저,enemy list
+enemy,Gazer Spire,게이저 스파이어,enemy list
+enemy,Lightning Spire,번개 첨탑,enemy list
+enemy,Warp Gateway,워프 게이트웨이,enemy list
+enemy,Cognitive Disruptor,인지 분열기,enemy list
 part,Main,전체 체력,hitzones
 part,Head,머리,hitzones
 part,Limbs,사지,hitzones
@@ -382,15 +382,15 @@ part,Front Legs,앞다리,hitzones
 part,Rear Legs,뒷다리,hitzones
 part,Body Armor,,hitzones
 part,Underbelly,,hitzones
-part,Left Legs,,hitzones
-part,Right Legs,,hitzones
-part,Mouth,,hitzones
+part,Left Legs,왼다리,hitzones
+part,Right Legs,오른다리,hitzones
+part,Mouth,입,hitzones
 part,Spinal Plates,,hitzones
-part,Butt,,hitzones
-part,Torso Armor,,hitzones
-part,Inner Flesh,,hitzones
-part,Underside,,hitzones
-part,Rear Armor Plates,,hitzones
+part,Butt,둔부,hitzones
+part,Torso Armor,흉갑,hitzones
+part,Inner Flesh,속살,hitzones
+part,Underside,하부,hitzones
+part,Rear Armor Plates,후면 장갑,hitzones
 part,Front Leg Armor,,hitzones
 part,Rear Leg Armor,,hitzones
 part,Leg Flesh,,hitzones
@@ -570,161 +570,161 @@ part,Bow,,hitzones
 part,Port,,hitzones
 part,Sphere,,hitzones
 part,Base,,hitzones
-weapon,AR-23 Liberator,,weapon list
-weapon,AR-23P Liberator Penetrator,,weapon list
-weapon,AR-23C Liberator Concussive,,weapon list
-weapon,AR-23A Liberator Carbine,,weapon list
-weapon,AR-23L Liberator Legacy,,weapon list
-weapon,StA-52 Assault Rifle,,weapon list
-weapon,AR-32 Pacifier,,weapon list
-weapon,MA5C Assault Rifle,,weapon list
-weapon,AR-2 Coyote,,weapon list
-weapon,AR-59 Suppressor,,weapon list
-weapon,AR-61 Tenderizer,,weapon list
-weapon,BR-14 Adjudicator,,weapon list
-weapon,AR/GL-21 One-Two,,weapon list
-weapon,AR-11 Arbitrator,,weapon list
-weapon,R-63 Diligence,,weapon list
-weapon,R-63CS Diligence Counter Sniper,,weapon list
-weapon,R-2124 Constitution,,weapon list
-weapon,R-6 Deadeye,,weapon list
-weapon,R-2 Amendment,,weapon list
-weapon,R-72 Censor,,weapon list
-weapon,R-4 Hyena,,weapon list
-weapon,R-40 Sightliner,,weapon list
-weapon,R/40-K Hot-Shot Marksman Rifle,,weapon list
-weapon,MP-98 Knight,,weapon list
-weapon,SMG-37 Defender,,weapon list
-weapon,SMG-72 Pummeler,,weapon list
-weapon,SMG-32 Reprimand,,weapon list
-weapon,StA-11 SMG,,weapon list
-weapon,M7S SMG,,weapon list
-weapon,SMG/FLAM-34 Stoker,,weapon list
-weapon,SMG-203 Gallant,,weapon list
-weapon,SG-8 Punisher,,weapon list
-weapon,SG-225 Breaker,,weapon list
-weapon,SG-8S Slugger,,weapon list
-weapon,SG-225SP Breaker Spray&Pray,,weapon list
-weapon,SG-225IE Breaker Incendiary,,weapon list
-weapon,SG-451 Cookout,,weapon list
-weapon,SG-20 Halt,,weapon list
-weapon,DBS-2 Double Freedom,,weapon list
-weapon,M90A Shotgun,,weapon list
-weapon,SG-97 Sweeper,,weapon list
-weapon,R-36 Eruptor,,weapon list
-weapon,CB-9 Exploding Crossbow,,weapon list
-weapon,GL-15 Evictor,,weapon list
-weapon,LAS-5 Scythe,,weapon list
-weapon,PLAS-1 Scorcher,,weapon list
-weapon,LAS-16 Sickle,,weapon list
-weapon,SG-8P Punisher Plasma,,weapon list
-weapon,ARC-12 Blitzer,,weapon list
-weapon,PLAS-101 Purifier,,weapon list
-weapon,PLAS-39 Accelerator Rifle,,weapon list
-weapon,LAS-17 Double-Edge Sickle,,weapon list
-weapon,LAS-13 Trident,,weapon list
-weapon,LAS-12 Sai,,weapon list
-weapon,JAR-5 Dominator,,weapon list
-weapon,FLAM-66 Torcher,,weapon list
-weapon,VG-70 Variable,,weapon list
-weapon,P-2 Peacemaker,,weapon list
-weapon,P-19 Redeemer,,weapon list
-weapon,P-4 Senator,,weapon list
-weapon,P-113 Verdict,,weapon list
-weapon,P-92 Warrant,,weapon list
-weapon,M6C/SOCOM Pistol,,weapon list
-weapon,P-69 Veto,,weapon list
-weapon,P-44 Mist,,weapon list
-weapon,CQC-19 Stun Lance,,weapon list
-weapon,CQC-30 Stun Baton,,weapon list
-weapon,CQC-5 Combat Hatchet,,weapon list
-weapon,CQC-2 Saber,,weapon list
-weapon,CQC-42 Machete,,weapon list
-weapon,CQC-73 Entrenchment Tool,,weapon list
-weapon,LAS-7 Dagger,,weapon list
-weapon,GP-31 Grenade Pistol,,weapon list
-weapon,SG-22 Bushwhacker,,weapon list
-weapon,P-72 Crisper,,weapon list
-weapon,PLAS-15 Loyalist,,weapon list
-weapon,GP-20 Ultimatum,,weapon list
-weapon,LAS-58 Talon,,weapon list
-weapon,P-35 Re-Educator,,weapon list
-weapon,P-33 Missile Pistol,,weapon list
-weapon,P/40-K Bolt Pistol,,weapon list
-weapon,P-34 Breacher,,weapon list
-weapon,G-12 High Explosive,,weapon list
-weapon,G-6 Frag,,weapon list
-weapon,G-10 Incendiary,,weapon list
-weapon,G-7 Pineapple,,weapon list
-weapon,TED-63 Dynamite,,weapon list
-weapon,G-16 Impact,,weapon list
-weapon,G-123 Thermite,,weapon list
-weapon,G-13 Incendiary Impact,,weapon list
-weapon,K-2 Throwing Knife,,weapon list
-weapon,G-4 Gas,,weapon list
-weapon,G-50 Seeker,,weapon list
-weapon,G-142 Pyrotech,,weapon list
-weapon,G-31 Arc,,weapon list
-weapon,TM-1 Lure Mine,,weapon list
-weapon,G-48 Giga Grenade,,weapon list
-weapon,G/40-K Melta Mine,,weapon list
-weapon,G-8 Immolation,,weapon list
-weapon,G-60 Anti-Tank Seeker,,weapon list
-weapon,G-11 Caltrops,,weapon list
-weapon,MG-43 Machine Gun,,weapon list
-weapon,M-105 Stalwart,,weapon list
-weapon,MG-206 Heavy Machine Gun,,weapon list
-weapon,M-1000 Maxigun,,weapon list
-weapon,MGX-42 Bullet Storm,,weapon list
-weapon,APW-1 Anti-Materiel Rifle,,weapon list
-weapon,AMW-20 Apex,,weapon list
-weapon,RS-422 Railgun,,weapon list
-weapon,GR-8 Recoilless Rifle,,weapon list
-weapon,EAT-17 Expendable Anti-Tank,,weapon list
-weapon,EAT-700 Expendable Napalm,,weapon list
-weapon,EAT-411 Leveller,,weapon list
-weapon,LAS-99 Quasar Cannon,,weapon list
-weapon,FAF-14 Spear,,weapon list
-weapon,MLS-4X Commando,,weapon list
-weapon,RL-77 Airburst Rocket Launcher,,weapon list
-weapon,StA-X3 W.A.S.P. Launcher,,weapon list
-weapon,AC-8 Autocannon,,weapon list
-weapon,GL-21 Grenade Launcher,,weapon list
-weapon,GL-28 Belt-Fed Grenade Launcher,,weapon list
-weapon,GL-52 De-Escalator,,weapon list
-weapon,PLAS-45 Epoch,,weapon list
-weapon,S-11 Speargun,,weapon list
-weapon,SG-88 Break-Action Shotgun,,weapon list
-weapon,LAS-98 Laser Cannon,,weapon list
-weapon,LAS-44 Nova,,weapon list
-weapon,40-K Meltagun,,weapon list
-weapon,ARC-3 Arc Thrower,,weapon list
-weapon,FLAM-40 Flamethrower,,weapon list
-weapon,B/FLAM-80 Cremator,,weapon list
-weapon,TX-41 Sterilizer,,weapon list
-weapon,MS-11 Solo Silo,,weapon list
-weapon,B/MD C4 Pack,,weapon list
-weapon,Eagle 500kg Bomb,,weapon list
-weapon,Eagle Airstrike,,weapon list
-weapon,Eagle Cluster Bomb,,weapon list
-weapon,Eagle Strafing Run,,weapon list
-weapon,Eagle 110mm Rocket Pods,,weapon list
-weapon,Orbital Railcannon Strike,,weapon list
-weapon,Orbital Precision Strike,,weapon list
-weapon,Orbital 380mm HE Barrage,,weapon list
-weapon,Orbital Walking Barrage,,weapon list
-weapon,Orbital 120mm HE Barrage,,weapon list
-weapon,Orbital Gatling Barrage,,weapon list
-weapon,Orbital Airburst Strike,,weapon list
-weapon,Orbital Laser,,weapon list
-weapon,MG-43 Machine Gun Sentry,,weapon list
-weapon,G-16 Gatling Sentry,,weapon list
-weapon,AC-8 Autocannon Sentry,,weapon list
-weapon,MLS-4X Rocket Sentry,,weapon list
-weapon,M-12 Mortar Sentry,,weapon list
-weapon,LAS-98 Laser Sentry,,weapon list
-weapon,MG-101 HMG Emplacement,,weapon list
-weapon,AT-12 Anti-Tank Emplacement,,weapon list
+weapon,AR-23 Liberator,AR-23 리버레이터,weapon list
+weapon,AR-23P Liberator Penetrator,AR-23P 리버레이터 페네트레이터,weapon list
+weapon,AR-23C Liberator Concussive,AR-23C 리버레이터 컨커시브,weapon list
+weapon,AR-23A Liberator Carbine,AR-23A 리버레이터 카빈,weapon list
+weapon,AR-23L Liberator Legacy,AR-23L 리버레이터 레거시,weapon list
+weapon,StA-52 Assault Rifle,StA-52 돌격소총,weapon list
+weapon,AR-32 Pacifier,AR-32 퍼시파이어,weapon list
+weapon,MA5C Assault Rifle,MA5C 어썰트 라이플,weapon list
+weapon,AR-2 Coyote,AR-2 코요테,weapon list
+weapon,AR-59 Suppressor,AR-59 서프레서,weapon list
+weapon,AR-61 Tenderizer,AR-61 텐더라이저,weapon list
+weapon,BR-14 Adjudicator,BR-14 어드주디케이터,weapon list
+weapon,AR/GL-21 One-Two,AR/GL-21 원-투,weapon list
+weapon,AR-11 Arbitrator,AR-11 아비트레이터,weapon list
+weapon,R-63 Diligence,R-63 딜리전스,weapon list
+weapon,R-63CS Diligence Counter Sniper,R-63CS 딜리전스 카운터 저격소총,weapon list
+weapon,R-2124 Constitution,R-2124 콘스티튜션,weapon list
+weapon,R-6 Deadeye,R-6 데드아이,weapon list
+weapon,R-2 Amendment,R-2 어멘드멘트,weapon list
+weapon,R-72 Censor,R-72 센서,weapon list
+weapon,R-4 Hyena,R-4 하이에나,weapon list
+weapon,R-40 Sightliner,R-40 사이트라이너,weapon list
+weapon,R/40-K Hot-Shot Marksman Rifle,R/40-K 핫샷 마크스맨 라이플,weapon list
+weapon,MP-98 Knight,MP-98 나이트,weapon list
+weapon,SMG-37 Defender,SMG-37 디펜더,weapon list
+weapon,SMG-72 Pummeler,SMG-72 퍼멜러,weapon list
+weapon,SMG-32 Reprimand,SMG-32 레프리맨드,weapon list
+weapon,StA-11 SMG,StA-11 기관단총,weapon list
+weapon,M7S SMG,M7S 기관단총,weapon list
+weapon,SMG/FLAM-34 Stoker,SMG/FLAM-34 스토커,weapon list
+weapon,SMG-203 Gallant,SMG-203 갤런트,weapon list
+weapon,SG-8 Punisher,SG-8 퍼니셔,weapon list
+weapon,SG-225 Breaker,SG-225 브레이커,weapon list
+weapon,SG-8S Slugger,SG-8S 슬러거,weapon list
+weapon,SG-225SP Breaker Spray&Pray,SG-225SP 브레이커 스프레이 앤 프레이,weapon list
+weapon,SG-225IE Breaker Incendiary,SG-225IE 브레이커 인센디어리,weapon list
+weapon,SG-451 Cookout,SG-451 쿡아웃,weapon list
+weapon,SG-20 Halt,SG-20 홀트,weapon list
+weapon,DBS-2 Double Freedom,DBS-2 더블 프리덤,weapon list
+weapon,M90A Shotgun,M90A 샷건,weapon list
+weapon,SG-97 Sweeper,SG-97 스위퍼,weapon list
+weapon,R-36 Eruptor,R-36 이럽터,weapon list
+weapon,CB-9 Exploding Crossbow,CB-9 익스플로딩 크로스보우,weapon list
+weapon,GL-15 Evictor,GL-15 이빅터,weapon list
+weapon,LAS-5 Scythe,LAS-5 사이스,weapon list
+weapon,PLAS-1 Scorcher,PLAS-1 스코처,weapon list
+weapon,LAS-16 Sickle,LAS-16 시클,weapon list
+weapon,SG-8P Punisher Plasma,SG-8P 퍼니셔 플라즈마,weapon list
+weapon,ARC-12 Blitzer,ARC-12 블리처,weapon list
+weapon,PLAS-101 Purifier,PLAS-101 퓨리파이어,weapon list
+weapon,PLAS-39 Accelerator Rifle,PLAS-39 가속 소총,weapon list
+weapon,LAS-17 Double-Edge Sickle,LAS-17 더블 엣지 시클,weapon list
+weapon,LAS-13 Trident,LAS-13 트라이던트,weapon list
+weapon,LAS-12 Sai,LAS-12 사이,weapon list
+weapon,JAR-5 Dominator,JAR-5 도미네이터,weapon list
+weapon,FLAM-66 Torcher,FLAM-66 토처,weapon list
+weapon,VG-70 Variable,VG-70 배리어블,weapon list
+weapon,P-2 Peacemaker,P-2 피스메이커,weapon list
+weapon,P-19 Redeemer,P-19 리디머,weapon list
+weapon,P-4 Senator,P-4 세너터,weapon list
+weapon,P-113 Verdict,P-113 버딕트,weapon list
+weapon,P-92 Warrant,P-92 워런트,weapon list
+weapon,M6C/SOCOM Pistol,M6C/SOCOM 권총,weapon list
+weapon,P-69 Veto,P-69 비토,weapon list
+weapon,P-44 Mist,P-44 미스트,weapon list
+weapon,CQC-19 Stun Lance,CQC-19 기절 창,weapon list
+weapon,CQC-30 Stun Baton,CQC-30 기절 제압봉,weapon list
+weapon,CQC-5 Combat Hatchet,CQC-5 컴뱃 해칫,weapon list
+weapon,CQC-2 Saber,CQC-2 세이버,weapon list
+weapon,CQC-42 Machete,CQC-42 마체테,weapon list
+weapon,CQC-73 Entrenchment Tool,CQC-73 참호 도구,weapon list
+weapon,LAS-7 Dagger,LAS-7 대거,weapon list
+weapon,GP-31 Grenade Pistol,GP-31 유탄 권총,weapon list
+weapon,SG-22 Bushwhacker,SG-22 부시웨커,weapon list
+weapon,P-72 Crisper,P-72 크리스퍼,weapon list
+weapon,PLAS-15 Loyalist,PLAS-15 로열리스트,weapon list
+weapon,GP-20 Ultimatum,GP-20 얼티메이텀,weapon list
+weapon,LAS-58 Talon,LAS-58 탈론,weapon list
+weapon,P-35 Re-Educator,P-35 리에듀케이터,weapon list
+weapon,P-33 Missile Pistol,P-33 미사일 권총,weapon list
+weapon,P/40-K Bolt Pistol,P/40-K 볼트 피스톨,weapon list
+weapon,P-34 Breacher,P-34 브리처,weapon list
+weapon,G-12 High Explosive,G-12 고폭,weapon list
+weapon,G-6 Frag,G-6 세열,weapon list
+weapon,G-10 Incendiary,G-10 소이,weapon list
+weapon,G-7 Pineapple,G-7 파인애플,weapon list
+weapon,TED-63 Dynamite,TED-63 다이너마이트,weapon list
+weapon,G-16 Impact,G-16 충격,weapon list
+weapon,G-123 Thermite,G-123 테르밋,weapon list
+weapon,G-13 Incendiary Impact,G-13 소이 충격,weapon list
+weapon,K-2 Throwing Knife,K-2 투척 나이프,weapon list
+weapon,G-4 Gas,G-4 가스,weapon list
+weapon,G-50 Seeker,G-50 시커,weapon list
+weapon,G-142 Pyrotech,G-142 파이로테크,weapon list
+weapon,G-31 Arc,G-31 아크,weapon list
+weapon,TM-1 Lure Mine,TM-1 유인 지뢰,weapon list
+weapon,G-48 Giga Grenade,G-48 기가 수류탄,weapon list
+weapon,G/40-K Melta Mine,G/40-K 멜타마인,weapon list
+weapon,G-8 Immolation,G-8 번제,weapon list
+weapon,G-60 Anti-Tank Seeker,G-60 대전차 드론,weapon list
+weapon,G-11 Caltrops,G-11 마름쇠,weapon list
+weapon,MG-43 Machine Gun,MG-43 기관총,weapon list
+weapon,M-105 Stalwart,M-105 스털워트,weapon list
+weapon,MG-206 Heavy Machine Gun,MG-206 중기관총,weapon list
+weapon,M-1000 Maxigun,M-1000 맥시건,weapon list
+weapon,MGX-42 Bullet Storm,MGX-42 불릿 스톰,weapon list
+weapon,APW-1 Anti-Materiel Rifle,APW-1 대물소총,weapon list
+weapon,AMW-20 Apex,AMW-20 에이펙스,weapon list
+weapon,RS-422 Railgun,RS-422 레일건,weapon list
+weapon,GR-8 Recoilless Rifle,GR-8 무반동포,weapon list
+weapon,EAT-17 Expendable Anti-Tank,EAT-17 일회성 대전차,weapon list
+weapon,EAT-700 Expendable Napalm,EAT-700 일회성 네이팜,weapon list
+weapon,EAT-411 Leveller,EAT-411 평탄화기,weapon list
+weapon,LAS-99 Quasar Cannon,LAS-99 퀘이사 캐넌,weapon list
+weapon,FAF-14 Spear,FAF-14 스피어,weapon list
+weapon,MLS-4X Commando,MLS-4X 코만도,weapon list
+weapon,RL-77 Airburst Rocket Launcher,RL-77 공중폭발 로켓 발사기,weapon list
+weapon,StA-X3 W.A.S.P. Launcher,StA-X3 W.A.S.P. 발사기,weapon list
+weapon,AC-8 Autocannon,AC-8 오토캐넌,weapon list
+weapon,GL-21 Grenade Launcher,GL-21 유탄 발사기,weapon list
+weapon,GL-28 Belt-Fed Grenade Launcher,GL-28 벨트식 유탄 발사기,weapon list
+weapon,GL-52 De-Escalator,GL-52 디에스컬레이터,weapon list
+weapon,PLAS-45 Epoch,PLAS-45 에포크,weapon list
+weapon,S-11 Speargun,S-11 작살총,weapon list
+weapon,SG-88 Break-Action Shotgun,SG-88 중절식 산탄총,weapon list
+weapon,LAS-98 Laser Cannon,LAS-98 레이저 캐넌,weapon list
+weapon,LAS-44 Nova,LAS-44 노바,weapon list
+weapon,40-K Meltagun,40-K 멜타건,weapon list
+weapon,ARC-3 Arc Thrower,ARC-3 아크 발사기,weapon list
+weapon,FLAM-40 Flamethrower,FLAM-40 화염방사기,weapon list
+weapon,B/FLAM-80 Cremator,B/FLAM-80 크리메이터,weapon list
+weapon,TX-41 Sterilizer,TX-41 스터릴라이저,weapon list
+weapon,MS-11 Solo Silo,MS-11 솔로 사일로,weapon list
+weapon,B/MD C4 Pack,B/MD C4 팩,weapon list
+weapon,Eagle 500kg Bomb,이글 500kg 폭탄,weapon list
+weapon,Eagle Airstrike,이글 공중타격,weapon list
+weapon,Eagle Cluster Bomb,이글 집속탄,weapon list
+weapon,Eagle Strafing Run,이글 기총소사,weapon list
+weapon,Eagle 110mm Rocket Pods,이글 110mm 로켓 포드,weapon list
+weapon,Orbital Railcannon Strike,궤도 레일캐넌 타격,weapon list
+weapon,Orbital Precision Strike,궤도 정밀 타격,weapon list
+weapon,Orbital 380mm HE Barrage,궤도 380mm 고폭 폭격,weapon list
+weapon,Orbital Walking Barrage,궤도 이동 폭격,weapon list
+weapon,Orbital 120mm HE Barrage,궤도 120mm 고폭 폭격,weapon list
+weapon,Orbital Gatling Barrage,궤도 개틀링 폭격,weapon list
+weapon,Orbital Airburst Strike,궤도 공중폭발 타격,weapon list
+weapon,Orbital Laser,궤도 레이저,weapon list
+weapon,MG-43 Machine Gun Sentry,A/MG-43 기관총 센트리,weapon list
+weapon,G-16 Gatling Sentry,A/G-16 개틀링 센트리,weapon list
+weapon,AC-8 Autocannon Sentry,A/AC-8 오토캐넌 센트리,weapon list
+weapon,MLS-4X Rocket Sentry,A/MLS-4X 로켓 센트리,weapon list
+weapon,M-12 Mortar Sentry,A/M-12 박격포 센트리,weapon list
+weapon,LAS-98 Laser Sentry,A/LAS-98 레이저 센트리,weapon list
+weapon,MG-101 HMG Emplacement,E/MG-101 중기관총 거치포,weapon list
+weapon,AT-12 Anti-Tank Emplacement,E/AT-12 대전차 거치포,weapon list
 mode,8mm Rifle,,firing mode
 mode,40mm Grenade,,firing mode
 mode,4mm Rifle,,firing mode
