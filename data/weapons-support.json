@@ -589,7 +589,7 @@
       {
         "name": "Full charge (2.6s)",
         "damage": 800,
-        "durable": null,
+        "durable": 400,
         "ap": 5,
         "pellets": 1,
         "explosion": {
@@ -599,7 +599,7 @@
           "innerRadius": 3,
           "outerRadius": 4
         },
-        "note": "Wiki stat block lists 800 charged bolt (2.0x mult); charged durable not listed."
+        "note": "Wiki stat block: charged bolt 800 / 400 durable (2.0x the uncharged 400 / 200), explosion 800 / 800."
       }
     ],
     "note": "Overcharging past full charge causes 800-dmg self-explosion."
