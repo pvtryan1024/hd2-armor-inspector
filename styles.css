@@ -525,7 +525,7 @@ body.editor .public-only { display: none !important; }
 /* language switch: flags, bottom left */
 /* Buy me a coffee: just above the language flags */
 .bmc {
-  position: fixed; left: 12px; bottom: 52px; z-index: 60; display: inline-flex; align-items: center; gap: 6px;
+  position: fixed; left: 12px; bottom: 62px; z-index: 60; display: inline-flex; align-items: center; gap: 6px;
   padding: 5px 10px 5px 7px; border-radius: 8px; background: #ffdd00; color: #0d0c22; font-weight: 700; font-size: 12px;
   text-decoration: none; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35); white-space: nowrap;
 }
@@ -539,9 +539,7 @@ body.editor .public-only { display: none !important; }
 .lang-switch button svg { width: 28px; height: 18px; display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4); }
 .lang-switch button:hover { opacity: 0.85; }
 .lang-switch button.on { opacity: 1; border-color: var(--accent); }
-/* closed: only the current flag; open: all of them, wrapping on narrow screens */
-.lang-switch:not(.open) button:not(.on) { display: none; }
-.lang-switch.open { flex-wrap: wrap; max-width: calc(100vw - 24px); }
+.lang-switch { flex-wrap: wrap; max-width: calc(100vw - 24px); } /* wraps on narrow screens */
 
 /* fire HUD: killed without Main running out (a fatal part destroyed) */
 .hud-dead { color: var(--pen-none); font-weight: 700; white-space: nowrap; }

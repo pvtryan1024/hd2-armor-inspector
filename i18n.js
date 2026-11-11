@@ -40,11 +40,10 @@
   // ---- language switch (bottom left)
   const bar = document.createElement('div');
   bar.className = 'lang-switch';
-  bar.innerHTML = LANGS.map((l) => `<button type="button" data-lang="${l.id}" class="${l.id === lang ? 'on' : ''}" title="${l.label}" aria-label="${l.label}">${l.flag}</button>`).join('');
+  bar.innerHTML = [...LANGS.filter((l) => l.id === lang), ...LANGS.filter((l) => l.id !== lang)].map((l) => `<button type="button" data-lang="${l.id}" class="${l.id === lang ? 'on' : ''}" title="${l.label}" aria-label="${l.label}">${l.flag}</button>`).join('');
   bar.addEventListener('click', (ev) => {
     const b = ev.target.closest('button[data-lang]');
-    if (!b) return;
-    if (b.dataset.lang === lang) { bar.classList.toggle('open'); return; } // the current flag opens / closes the list
+    if (!b || b.dataset.lang === lang) return;
     try { localStorage.setItem('hd2-lang', b.dataset.lang); } catch { /* storage blocked */ }
     const p = new URLSearchParams(location.hash.slice(1));
     p.delete('lang');
@@ -52,7 +51,6 @@
     location.reload(); // the page is rebuilt in English and translated again from scratch
   });
   document.body.appendChild(bar);
-  document.addEventListener('click', (ev) => { if (!bar.contains(ev.target)) bar.classList.remove('open'); });
 
   const dict = lang === 'en' ? null : DICTS[lang];
   if (!dict) return;
