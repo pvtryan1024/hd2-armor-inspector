@@ -11,7 +11,7 @@
 
   const DATA = window.HD2_DATA || { enemies: [], weapons: [] };
   // Model loading/mapping tools only show when running locally (node serve.js) or with ?edit in the URL.
-  const EDITOR = ['localhost', '127.0.0.1'].includes(location.hostname) || /[?&]edit/.test(location.search);
+  const EDITOR = ['localhost', '127.0.0.1'].includes(location.hostname) || /[?&]edit\b/.test(location.search);
   const MAX_SHOTS = 999;
   const DEFAULT_RANGE = 30; // metres; a typical engagement distance
   const AV_NAMES = ['Unarmored', 'Very Light', 'Light', 'Medium', 'Heavy', 'Tank I', 'Tank II', 'Tank III', 'Tank IV', 'Tank V', 'Tank VI', 'Indestructible'];
@@ -239,6 +239,10 @@
           if (!part.fatalAll || allDown) {
             sim.dead = { how: part.fatal === 'downs' ? 'downed' : 'killed', why: `${part.name} destroyed${bleedNote(part)}`, idx };
           }
+        }
+        // every piece broken (health gone, constitution or not) downs it too: both Hulk legs
+        if (!sim.dead && part.downsAllBroken && inst.every((h) => h <= 0)) {
+          sim.dead = { how: 'downed', why: `every ${part.name.replace(/\s*\(\d+\)$/, '')} piece broken`, idx };
         }
       } else {
         // this one (or every one) is gone: only overflow parts keep feeding Main
