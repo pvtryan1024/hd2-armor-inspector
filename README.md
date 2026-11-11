@@ -37,7 +37,7 @@ Enemy hitzones and weapon stats come from https://helldivers.wiki.gg/.
 
 `node tools/make-test-glb.js` writes a box-built test Charger to `models/charger.glb`. It's tagged as a test model, so `build-data.js` never publishes it; overwrite it with a real model.
 
-Extracted game assets belong to Arrowhead. Keep them local and don't redistribute them.
+**Game assets.** The 3D models in `models/` and the enemy and weapon images in `images/` were extracted from Helldivers 2. They are the property of Arrowhead Game Studios and Sony Interactive Entertainment. They are included only so this free, non-commercial fan tool can show them, and no ownership or license is claimed over them. They are not covered by this project's own license, and must not be reused for commercial purposes. If you are a rights holder and want anything removed, open an issue and it will be taken down. Donations (Buy Me a Coffee) only cover hosting costs; they don't pay for, and give no rights to, any game asset.
 
 ## Damage model
 
