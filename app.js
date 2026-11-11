@@ -1531,7 +1531,17 @@
       }, 3000);
     };
     $('#enemySearch').addEventListener('input', () => { clearTimeout(backTimer); renderEnemyList(); });
-    $('#weaponSearch').addEventListener('input', renderWeaponList);
+    // the same for the weapon picker: back to the category cards 3 s after a weapon is picked
+    let wBackTimer = 0;
+    const backToCategories = () => {
+      clearTimeout(wBackTimer);
+      wBackTimer = setTimeout(() => {
+        if ($('.weapons-panel .list').matches(':hover') || $('#catTabs').matches(':hover')) { backToCategories(); return; }
+        if ($('#weaponSearch').value) return;
+        state.cat = null; renderCatTabs(); renderWeaponList(); $('#weaponList').scrollTop = 0;
+      }, 3000);
+    };
+    $('#weaponSearch').addEventListener('input', () => { clearTimeout(wBackTimer); renderWeaponList(); });
     $('#enemyList').addEventListener('click', (ev) => {
       const card = ev.target.closest('li[data-f]');
       if (card) { clearTimeout(backTimer); state.faction = card.dataset.f; render(); return; }
@@ -1544,11 +1554,12 @@
     });
     $('#weaponList').addEventListener('click', (ev) => {
       const card = ev.target.closest('li[data-c]');
-      if (card) { state.cat = card.dataset.c; render(); return; }
+      if (card) { clearTimeout(wBackTimer); state.cat = card.dataset.c; render(); return; }
       const li = ev.target.closest('li[data-id]'); if (!li) return;
       chooseWeapon(li.dataset.id);
       if ($('#weaponSearch').value) $('#weaponSearch').value = '';
       swapWeapon(); render();
+      backToCategories();
     });
     // loadout slot: highlight it, send the weapon picker back to its start (the category cards), and switch to
     // the weapon in it, if any
