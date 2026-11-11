@@ -18,8 +18,8 @@
     { id: 'fr', label: 'Français', flag: tricolour(['#0055a4', '#fff', '#ef4135'], 'v') },
     { id: 'es', label: 'Español', flag: tricolour(['#aa151b', '#f1bf00', '#f1bf00', '#aa151b'], 'h') },
     { id: 'it', label: 'Italiano', flag: tricolour(['#009246', '#fff', '#ce2b37'], 'v') },
-    { id: 'ru', label: 'Русский', flag: tricolour(['#fff', '#0039a6', '#d52b1e'], 'h') },
     { id: 'uk', label: 'Українська', flag: tricolour(['#0057b7', '#ffd700'], 'h') },
+    { id: 'ru', label: 'Русский', flag: tricolour(['#fff', '#0039a6', '#d52b1e'], 'h') },
   ];
   const fromHash = new URLSearchParams(location.hash.slice(1)).get('lang');
   let saved = null;
@@ -42,7 +42,9 @@
   // ---- language switch (bottom left)
   const bar = document.createElement('div');
   bar.className = 'lang-switch';
-  bar.innerHTML = [...LANGS.filter((l) => l.id === lang), ...LANGS.filter((l) => l.id !== lang)].map((l) => `<button type="button" data-lang="${l.id}" class="${l.id === lang ? 'on' : ''}" title="${l.label}" aria-label="${l.label}">${l.flag.replace('<svg ', `<svg preserveAspectRatio="${['en', 'zh'].includes(l.id) ? 'xMinYMid' : 'xMidYMid'} slice" `)}</button>`).join('');
+  // the current language first (highlighted); Ukrainian always comes before Russian, even with Russian picked
+  const first = lang === 'ru' ? ['uk', 'ru'] : [lang];
+  bar.innerHTML = [...first.map((id) => LANGS.find((l) => l.id === id)), ...LANGS.filter((l) => !first.includes(l.id))].map((l) => `<button type="button" data-lang="${l.id}" class="${l.id === lang ? 'on' : ''}" title="${l.label}" aria-label="${l.label}">${l.flag.replace('<svg ', `<svg preserveAspectRatio="${['en', 'zh'].includes(l.id) ? 'xMinYMid' : 'xMidYMid'} slice" `)}</button>`).join('');
   bar.addEventListener('click', (ev) => {
     const b = ev.target.closest('button[data-lang]');
     if (!b || b.dataset.lang === lang) return;
