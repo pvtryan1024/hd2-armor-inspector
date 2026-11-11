@@ -1039,17 +1039,17 @@
       {
         "name": "Uncharged",
         "damage": 100,
-        "durable": null,
+        "durable": 50,
         "ap": 3,
         "pellets": 1,
         "explosion": {
           "damage": 75,
-          "durable": null,
+          "durable": 75,
           "ap": null,
           "innerRadius": null,
           "outerRadius": null
         },
-        "note": "Uncharged values from infobox only; durable/explosion AP not listed"
+        "note": "Projectile 100 / 50 (charged 200 / 100); explosion 75 / 75 (charged 300 / 300). Explosion AP not listed."
       }
     ]
   },
