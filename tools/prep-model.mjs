@@ -745,7 +745,8 @@ const SOURCES = {
       [/^knee_(armor|(left|right)_(front|back))$/, 'Knee Armor (4)'], [/^leg_(armor|(upper|lower)_(left|right)_(front|back))$/, 'Leg Armor (8)'], [/^leg_assembly$/, 'Leg Assembly (4)'], [/^neck$/, 'Neck'], [/^body$/, 'Main'],
     ],
   },
-  'cannon-turret': { src: CY + 'turrets/cyborg_turret_command_bunker_hmg/cyborg_turret_command_bunker_hmg.unit.glb', rules: MAIN_ONLY },
+  // the Annihilator's turret on its own: the turret is Turret Front, the heat sink on its back cut out (Heatsink)
+  'cannon-turret': { src: GEAR.tankCannon, cuts: [{ mesh: 'body', name: 'turret_heatsink', box: [[-2, -0.15, 1.24], [2, 0.95, 2.14]] }], rules: [[/^body$/, 'Turret Front'], [/^turret_heatsink$/, 'Heatsink']] },
   'bunker-turret': { src: CY + 'turrets/cyborg_turret_small_autocannon/cyborg_turret_small_autocannon.unit.glb', rules: MAIN_ONLY },
   'mg-emplacement-light-fusion-cycler': { src: CY + 'emplacements/cyborg_emplacement_mg/cyborg_emplacement_mg.unit.glb', rules: MAIN_ONLY },
   'mg-emplacement-heavy-fusion-repeater': { src: CY + 'emplacements/cyborg_emplacement_hmg/cyborg_emplacement_hmg.unit.glb', rules: MAIN_ONLY },

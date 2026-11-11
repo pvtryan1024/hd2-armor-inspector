@@ -1,7 +1,10 @@
 {
   "enemy": "cannon-turret",
   "meshes": {
-    "g_body": "Main"
+    "body": "Turret Front",
+    "turret_heatsink": "Heatsink"
   },
-  "hidden": []
+  "hidden": [
+    "body_damaged"
+  ]
 }
