@@ -13,6 +13,11 @@
     "head_damaged",
     "right_arm_damaged",
     "left_arm_damaged",
-    "torso_gib"
+    "torso_gib",
+    "armor_torso_2",
+    "armor_torso_1",
+    "right_shoulderpad",
+    "armor_head_1",
+    "armor_head_2"
   ]
 }

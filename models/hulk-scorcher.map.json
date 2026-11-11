@@ -10,7 +10,13 @@
     "weapon_left": "Arms (2)",
     "chest_eye": "Head",
     "weapon_right": "Arms (2)",
-    "back_plates": "Main"
+    "back_plates": "Main",
+    "shoulderpad_right": null,
+    "shoulder_right": "Arms (2)",
+    "shoulderpad_left": null,
+    "shoulder_left": "Arms (2)",
+    "base": "Main",
+    "chest_2": null
   },
   "hidden": [
     "leg_left_damaged",

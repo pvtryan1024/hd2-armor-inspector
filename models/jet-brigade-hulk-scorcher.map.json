@@ -9,7 +9,10 @@
     "weapon_left": "Arms (2)",
     "jetpack": "Jetpack",
     "chest_eye": "Head",
-    "weapon_right": "Arms (2)"
+    "weapon_right": "Arms (2)",
+    "shoulder_right": "Arms (2)",
+    "shoulder_left": "Arms (2)",
+    "base": "Main"
   },
   "hidden": [
     "chest_damaged",
