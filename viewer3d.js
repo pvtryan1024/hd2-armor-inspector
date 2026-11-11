@@ -480,7 +480,9 @@ function paint() {
 
 /* ---------- inner hitboxes ----------
  * Invisible shapes for hitboxes that have no mesh (e.g. a Charger's Inner Flesh), saved in the map as
- * colliders: [{ part, from: [x,y,z], to: [x,y,z], radius }]. Only over-penetrating shots look for them.
+ * colliders: [{ part, from: [x,y,z], to: [x,y,z], radius }], or a box: { part, shape: 'box', centre, size }.
+ * Normally only over-penetrating shots look for them; direct: true also takes plain shots (the Barrager's
+ * launch tubes, reached through the openings at the front and back of its pod).
  * Without a saved one, a Charger-style model gets a cylinder from its head to its butt. Shown as a
  * wireframe while editing hitzones. */
 const colliderMat = new THREE.MeshBasicMaterial({ color: 0xffe710, wireframe: true, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthTest: false });
@@ -504,11 +506,18 @@ function buildColliders(entry) {
   if (entry.colliders) entry.colliders.forEach((c) => c.mesh.removeFromParent());
   const defs = entry.map.colliders?.length ? entry.map.colliders : defaultColliders(entry);
   entry.colliders = defs.map((c) => {
-    const from = new THREE.Vector3().fromArray(c.from), to = new THREE.Vector3().fromArray(c.to);
-    const len = from.distanceTo(to);
-    const mesh = new THREE.Mesh(new THREE.CylinderGeometry(c.radius, c.radius, len, 16, 1), colliderMat);
-    mesh.position.copy(from).lerp(to, 0.5);
-    mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), to.clone().sub(from).normalize());
+    let mesh;
+    if (c.shape === 'box') {
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(...c.size), colliderMat);
+      mesh.position.fromArray(c.centre);
+    } else {
+      const from = new THREE.Vector3().fromArray(c.from), to = new THREE.Vector3().fromArray(c.to);
+      const len = from.distanceTo(to);
+      mesh = new THREE.Mesh(new THREE.CylinderGeometry(c.radius, c.radius, len, 16, 1), colliderMat);
+      mesh.position.copy(from).lerp(to, 0.5);
+      mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), to.clone().sub(from).normalize());
+    }
+    mesh.userData.key = c.part; // a mesh named after a part links to it
     mesh.renderOrder = 20;
     mesh.userData.collider = c;
     scene.add(mesh);
@@ -685,9 +694,11 @@ function pick(ev) {
   camera.updateMatrixWorld();
   current.root.updateMatrixWorld();
   ray.setFromCamera(ptr, camera);
-  const hits = ray.intersectObjects(current.meshes.map((m) => m.mesh).filter((m) => m.visible), false);
+  const direct = (current.colliders || []).filter((c) => c.def.direct).map((c) => c.mesh);
+  direct.forEach((m) => m.updateMatrixWorld());
+  const hits = ray.intersectObjects([...current.meshes.map((m) => m.mesh).filter((m) => m.visible), ...direct], false).sort((a, b) => a.distance - b.distance);
   // destroyed parts have no hitbox: the shot goes through to whatever is behind them
-  const hit = hits.find((h) => h.object.material.opacity > 0.2 && !h.object.userData.remains && !noHitbox(current, h.object.userData.key));
+  const hit = hits.find((h) => h.object.userData.collider || (h.object.material.opacity > 0.2 && !h.object.userData.remains && !noHitbox(current, h.object.userData.key)));
   if (groundActive()) {
     ground.updateMatrixWorld();
     const g = ray.intersectObject(groundDisc, false)[0];
@@ -892,7 +903,8 @@ $('#v3Edit').addEventListener('click', () => {
 $('#v3Save').addEventListener('click', async () => {
   if (!current) return;
   // inner hitboxes are saved too (the auto-placed ones become fixed once saved)
-  const colliders = (current.colliders || []).map(({ def }) => ({ part: def.part, from: def.from.map((v) => +(+v).toFixed(4)), to: def.to.map((v) => +(+v).toFixed(4)), radius: def.radius }));
+  const colliders = (current.colliders || []).map(({ def }) => (def.shape === 'box' ? { part: def.part, shape: 'box', centre: def.centre, size: def.size, ...(def.direct ? { direct: true } : {}) }
+    : { part: def.part, from: def.from.map((v) => +(+v).toFixed(4)), to: def.to.map((v) => +(+v).toFixed(4)), radius: def.radius, ...(def.direct ? { direct: true } : {}) }));
   const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(current.map.vanish ? { vanish: current.map.vanish } : {}), ...(colliders.length ? { colliders } : {}) }, null, 2);
   if (SERVED) {
     try {

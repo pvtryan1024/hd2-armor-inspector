@@ -21,5 +21,22 @@
     "tracks_left_damaged",
     "body_left_damaged",
     "turret_destroyed"
+  ],
+  "colliders": [
+    {
+      "part": "Launch Tubes",
+      "shape": "box",
+      "centre": [
+        0,
+        3.6,
+        0.29
+      ],
+      "size": [
+        3.2,
+        1.1,
+        6.74
+      ],
+      "direct": true
+    }
   ]
 }
