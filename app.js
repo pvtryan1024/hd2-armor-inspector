@@ -1405,6 +1405,8 @@
     if (state.stagePinned) p.set('s', state.stageView);
     if (state.showInner) p.set('in', '1');
     if (!state.fire) p.set('f', '0');
+    const lang = new URLSearchParams(location.hash.slice(1)).get('lang'); // the language picker's (i18n.js)
+    if (lang) p.set('lang', lang);
     history.replaceState(null, '', '#' + p.toString());
   }
   function readHash() {

@@ -364,7 +364,8 @@ function parseCsv(text) {
   if (cell || row.length) { row.push(cell); rows.push(row); }
   return rows;
 }
-const LANG_COLS = { korean: 'ko', chinese: 'zh', japanese: 'ja' };
+const LANG_COLS = { korean: 'ko', chinese: 'zh', 'simplified chinese': 'zh', 'traditional chinese': 'zh-hant', japanese: 'ja',
+  german: 'de', french: 'fr', spanish: 'es', italian: 'it' };
 const i18n = {};
 const trDir = path.join(__dirname, 'translations');
 if (fs.existsSync(trDir)) {

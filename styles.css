@@ -531,6 +531,9 @@ body.editor .public-only { display: none !important; }
 .lang-switch button svg { width: 28px; height: 18px; display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4); }
 .lang-switch button:hover { opacity: 0.85; }
 .lang-switch button.on { opacity: 1; border-color: var(--accent); }
+/* closed: only the current flag; open: all of them, wrapping on narrow screens */
+.lang-switch:not(.open) button:not(.on) { display: none; }
+.lang-switch.open { flex-wrap: wrap; max-width: calc(100vw - 24px); }
 
 /* fire HUD: killed without Main running out (a fatal part destroyed) */
 .hud-dead { color: var(--pen-none); font-weight: 700; white-space: nowrap; }

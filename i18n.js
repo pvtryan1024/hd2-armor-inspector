@@ -12,7 +12,12 @@
     { id: 'en', label: 'English (US)', flag: flagUS() },
     { id: 'ko', label: '한국어', flag: flagKR() },
     { id: 'zh', label: '简体中文', flag: flagCN() },
+    { id: 'zh-hant', label: '繁體中文', flag: flagHK() },
     { id: 'ja', label: '日本語', flag: flagJP() },
+    { id: 'de', label: 'Deutsch', flag: tricolour(['#000', '#dd0000', '#ffce00'], 'h') },
+    { id: 'fr', label: 'Français', flag: tricolour(['#0055a4', '#fff', '#ef4135'], 'v') },
+    { id: 'es', label: 'Español', flag: tricolour(['#aa151b', '#f1bf00', '#f1bf00', '#aa151b'], 'h') },
+    { id: 'it', label: 'Italiano', flag: tricolour(['#009246', '#fff', '#ce2b37'], 'v') },
   ];
   const fromHash = new URLSearchParams(location.hash.slice(1)).get('lang');
   let saved = null;
@@ -21,8 +26,10 @@
   // ko-KR → ko, zh-CN / zh-TW → zh, ja-JP → ja; anything else stays English
   const fromBrowser = () => {
     for (const tag of navigator.languages?.length ? navigator.languages : [navigator.language || '']) {
-      const base = String(tag).toLowerCase().split('-')[0];
+      const t = String(tag).toLowerCase(), base = t.split('-')[0];
       if (base === 'en') return 'en';
+      // Chinese: Traditional for Taiwan / Hong Kong / Macau or an explicit Hant script, else Simplified
+      if (base === 'zh') return /-(hant|tw|hk|mo)\b/.test(t) ? 'zh-hant' : 'zh';
       if (LANGS.some((l) => l.id === base)) return base;
     }
     return 'en';
@@ -36,7 +43,8 @@
   bar.innerHTML = LANGS.map((l) => `<button type="button" data-lang="${l.id}" class="${l.id === lang ? 'on' : ''}" title="${l.label}" aria-label="${l.label}">${l.flag}</button>`).join('');
   bar.addEventListener('click', (ev) => {
     const b = ev.target.closest('button[data-lang]');
-    if (!b || b.dataset.lang === lang) return;
+    if (!b) return;
+    if (b.dataset.lang === lang) { bar.classList.toggle('open'); return; } // the current flag opens / closes the list
     try { localStorage.setItem('hd2-lang', b.dataset.lang); } catch { /* storage blocked */ }
     const p = new URLSearchParams(location.hash.slice(1));
     p.delete('lang');
@@ -44,6 +52,7 @@
     location.reload(); // the page is rebuilt in English and translated again from scratch
   });
   document.body.appendChild(bar);
+  document.addEventListener('click', (ev) => { if (!bar.contains(ev.target)) bar.classList.remove('open'); });
 
   const dict = lang === 'en' ? null : DICTS[lang];
   if (!dict) return;
@@ -137,6 +146,19 @@
     };
     return `<svg viewBox="0 0 30 20" width="26" height="18" aria-hidden="true"><rect width="30" height="20" fill="#de2910"/>`
       + star(5, 5, 3, 0) + star(10, 2, 1, 23) + star(12, 4, 1, 46) + star(12, 7, 1, 70) + star(10, 9, 1, 21) + '</svg>';
+  }
+  /** Plain striped flags: colours top to bottom ('h') or left to right ('v'). */
+  function tricolour(cols, dir) {
+    const n = cols.length;
+    return '<svg viewBox="0 0 30 20" width="26" height="18" aria-hidden="true">' + cols.map((c, i) => (dir === 'h'
+      ? `<rect y="${(20 / n) * i}" width="30" height="${20 / n + 0.1}" fill="${c}"/>`
+      : `<rect x="${(30 / n) * i}" width="${30 / n + 0.1}" height="20" fill="${c}"/>`)).join('') + '</svg>';
+  }
+  function flagHK() {
+    // red with a white five-petal bauhinia (simplified)
+    const petal = 'M0 0C-1.6-1.2-2.4-3.6-1.2-5.6C-.2-6.9 1.6-6.9 2.2-5.6C1-4.8.4-3.2 1.4-1.9C.9-1.1.4-.5 0 0Z';
+    const petals = Array.from({ length: 5 }, (_, i) => `<path d="${petal}" fill="#fff" transform="rotate(${i * 72 + 18})"/>`).join('');
+    return `<svg viewBox="0 0 30 20" width="26" height="18" aria-hidden="true"><rect width="30" height="20" fill="#de2910"/><g transform="translate(15 10.4) scale(1.15)">${petals}</g></svg>`;
   }
   function flagJP() {
     return '<svg viewBox="0 0 30 20" width="26" height="18" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><circle cx="15" cy="10" r="6" fill="#bc002d"/></svg>';
