@@ -966,7 +966,7 @@ $('#v3File').addEventListener('change', async (ev) => {
     cache.set(id, entry);
     if (currentId === id) show(entry);
     if (SERVED && file.name.toLowerCase().endsWith('.glb')) {
-      const r = await fetch(`api/model/${encodeURIComponent(id)}`, { method: 'POST', body: buf }).catch(() => null);
+      const r = await fetch(`api/model/${encodeURIComponent(id)}`, { method: 'POST', headers: { 'Content-Type': 'model/gltf-binary' }, body: buf }).catch(() => null);
       if (r && r.ok) status(`Saved as models/${id}.glb · ${entry.meshes.length} meshes`);
     }
   } catch (err) {
