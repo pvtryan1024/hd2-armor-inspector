@@ -595,35 +595,56 @@ function shrapnelHits(h, spec) {
   return out;
 }
 
-/** Pieces an explosion reaches: every piece with any surface inside the outer radius, at the distance of
- *  its closest point to the blast centre (each piece of a counted part once, at its nearest mesh). No
- *  line of sight: a 500 kg under a Bile Titan's belly reaches all twelve leg plates, as it does in game.
- *  opts.gone: meshes the impact destroyed (left out); opts.revealed: meshes that destroying them uncovers. */
-function blastHits(h, outer, opts = {}) {
+/** Pieces an explosion reaches: every piece with surface inside the outer radius that the blast can see.
+ *  A piece counts when a straight line from the blast centre reaches it (its closest point, or one of a
+ *  spread of points on its surface) before any other mesh; it takes the blast at the distance of its
+ *  nearest such point. Each piece of a counted part once. In game a 500 kg under a Bile Titan's belly
+ *  reaches the legs, claws and sacs and kills it; one landing on its back mostly meets the back plates.
+ *  A plate the impact breaks is not measured again: the model is a hollow shell, and in game the flesh
+ *  under the plate fills that spot (it takes the explosion itself, see applyHit in app.js). */
+const BLAST_SAMPLES = 24; // surface points tried per mesh besides its closest point
+function blastHits(h, outer) {
   const out = new Map(); // "part:piece" -> { idx, k, d }
   if (!(outer > 0)) return [];
   const centre = h.point.clone().addScaledVector(h.normal, 0.01); // just off the surface that was struck
   const live = (m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains; // destroyed pieces: no hitbox
-  const meshes = current.meshes.map((m) => m.mesh).filter((m) => (live(m) && !opts.gone?.has(m)) || opts.revealed?.includes(m));
-  const local = new THREE.Vector3(), hitAt = { point: new THREE.Vector3() };
+  const meshes = current.meshes.map((m) => m.mesh).filter(live); // what the blast can hit, and what blocks it
+  const pieceOf = (m) => { const i = partIndexFor(current, m.userData.key); return i < 0 ? null : `${i}:${instanceFor(current, m.userData.key, i)}`; };
+  const local = new THREE.Vector3(), hitAt = { point: new THREE.Vector3() }, dir = new THREE.Vector3(), v3 = new THREE.Vector3();
+  // can the blast see point p of this piece? (nothing else in the way; non-hitzone meshes block too)
+  const sees = (p, id) => {
+    const len = dir.copy(p).sub(centre).length();
+    if (len < 1e-4) return true;
+    blastRay.set(centre, dir.divideScalar(len));
+    blastRay.far = len + 1e-3;
+    const first = blastRay.intersectObjects(meshes, false)[0];
+    return !first || first.distance >= len - 0.02 || pieceOf(first.object) === id;
+  };
   for (const mesh of meshes) {
     const idx = partIndexFor(current, mesh.userData.key);
-    if (idx < 0) continue; // not a hitzone
+    if (idx < 0) continue; // not a hitzone (still blocks)
+    const id = pieceOf(mesh);
     mesh.updateMatrixWorld();
     local.copy(centre);
     mesh.worldToLocal(local);
     if (!mesh.geometry.boundsTree?.closestPointToPoint(local, hitAt)) continue;
-    const d = mesh.localToWorld(hitAt.point.clone()).distanceTo(centre);
-    if (d > outer) continue;
+    const near = mesh.localToWorld(hitAt.point.clone());
+    if (near.distanceTo(centre) > outer) continue;
+    // candidate points, nearest first: the closest point, then a spread of the mesh's vertices in range
+    const pts = [near], pos = mesh.geometry.attributes.position, step = Math.max(1, Math.floor(pos.count / BLAST_SAMPLES));
+    for (let i = 0; i < pos.count; i += step) { v3.fromBufferAttribute(pos, i); mesh.localToWorld(v3); if (v3.distanceTo(centre) <= outer) pts.push(v3.clone()); }
+    pts.sort((p, q) => p.distanceTo(centre) - q.distanceTo(centre));
+    const seen = pts.find((p) => sees(p, id));
+    if (!seen) continue;
+    const d = seen.distanceTo(centre);
     const k = instanceFor(current, mesh.userData.key, idx);
-    const id = `${idx}:${k}`;
     if (!out.has(id) || d < out.get(id).d) out.set(id, { idx, k, d });
   }
   return [...out.values()];
 }
 
-/** The struck piece's meshes, and what destroying it uncovers (its "_damaged" flesh): to measure the blast
- *  again for the case the impact breaks it (the explosion comes after the impact). */
+/** What destroying the struck piece uncovers (its "_damaged" flesh): if the impact breaks it, the explosion
+ *  lands on exactly that piece (the leg flesh under this leg's plate). */
 function brokenView(h) {
   const i = partIndexFor(current, h.mesh.userData.key), k = instanceFor(current, h.mesh.userData.key, i);
   const gone = new Set(current.meshes.filter(({ key }) => partIndexFor(current, key) === i && instanceFor(current, key, i) === k).map((m) => m.mesh));
@@ -721,13 +742,12 @@ function shoot(h) {
   // blast rays from the impact point (the result of every press shows in the status line)
   const blast = blastHits(h, lastDetail?.radii?.outer);
   const bv = brokenView(h);
-  const blastBroken = lastDetail?.radii ? blastHits(h, lastDetail.radii.outer, bv) : null;
   // which piece of each part breaking the struck piece uncovers (the leg flesh under this leg's plate)
   const revealedK = {};
   for (const m of bv.revealed) { const ri = partIndexFor(current, m.userData.key); if (ri >= 0 && !(ri in revealedK)) revealedK[ri] = instanceFor(current, m.userData.key, ri); }
   const parts = {};
   for (const b of blast) if (parts[b.idx] == null || b.d < parts[b.idx]) parts[b.idx] = b.d;
-  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, blastHitsBroken: blastBroken, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), thru: innerAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), thru: innerAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
   if (said) status(said);
 }
 
