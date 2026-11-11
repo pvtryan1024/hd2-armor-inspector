@@ -40,7 +40,7 @@
   // ---- language switch (bottom left)
   const bar = document.createElement('div');
   bar.className = 'lang-switch';
-  bar.innerHTML = [...LANGS.filter((l) => l.id === lang), ...LANGS.filter((l) => l.id !== lang)].map((l) => `<button type="button" data-lang="${l.id}" class="${l.id === lang ? 'on' : ''}" title="${l.label}" aria-label="${l.label}">${l.flag}</button>`).join('');
+  bar.innerHTML = [...LANGS.filter((l) => l.id === lang), ...LANGS.filter((l) => l.id !== lang)].map((l) => `<button type="button" data-lang="${l.id}" class="${l.id === lang ? 'on' : ''}" title="${l.label}" aria-label="${l.label}">${l.flag.replace('<svg ', `<svg preserveAspectRatio="${['en', 'zh'].includes(l.id) ? 'xMinYMid' : 'xMidYMid'} slice" `)}</button>`).join('');
   bar.addEventListener('click', (ev) => {
     const b = ev.target.closest('button[data-lang]');
     if (!b || b.dataset.lang === lang) return;
