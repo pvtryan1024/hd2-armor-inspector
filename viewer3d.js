@@ -482,7 +482,9 @@ function paint() {
  * Invisible shapes for hitboxes that have no mesh (e.g. a Charger's Inner Flesh), saved in the map as
  * colliders: [{ part, from: [x,y,z], to: [x,y,z], radius }], or a box: { part, shape: 'box', centre, size }.
  * Normally only over-penetrating shots look for them; direct: true also takes plain shots (the Barrager's
- * launch tubes, reached through the openings at the front and back of its pod).
+ * launch tubes, reached through the openings at the front and back of its pod). detonate: true is a trigger
+ * plane: an explosive round or grenade goes off on it instead of glancing off what's behind (inside the
+ * Fabricator's vents); other weapons, blasts and shrapnel pass through it.
  * Without a saved one, a Charger-style model gets a cylinder from its head to its butt. Shown as a
  * wireframe while editing hitzones. */
 const colliderMat = new THREE.MeshBasicMaterial({ color: 0xffe710, wireframe: true, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthTest: false });
@@ -527,6 +529,8 @@ function buildColliders(entry) {
 }
 /** Colliders that take plain shots and blasts (direct: true), with their matrices current. */
 const directColliders = () => (current?.colliders || []).filter((c) => c.def.direct).map((c) => { c.mesh.updateMatrixWorld(); return c.mesh; });
+/** Trigger planes explosive rounds go off on (detonate: true); none for other weapons. */
+const detonators = () => (lastDetail?.explosive ? (current?.colliders || []).filter((c) => c.def.detonate).map((c) => { c.mesh.updateMatrixWorld(); return c.mesh; }) : []);
 const showColliders = () => current?.colliders?.forEach(({ mesh }) => { mesh.visible = editing; });
 
 /** Over-penetration target along the shot: the first inner hitbox the ray passes through behind the impact. */
@@ -542,7 +546,7 @@ function thruAlong(h) {
   thruRay.far = Infinity;
   const i0 = partIndexFor(current, h.mesh.userData.key), k0 = instanceFor(current, h.mesh.userData.key, i0);
   const live = current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key));
-  const cols = (current.colliders || []).map((c) => c.mesh);
+  const cols = (current.colliders || []).filter((c) => !c.def.detonate).map((c) => c.mesh);
   const vis = cols.map((m) => m.visible);
   cols.forEach((m) => { m.visible = true; });
   const hits = thruRay.intersectObjects([...live, ...cols], false).sort((a, b) => a.distance - b.distance);
@@ -711,7 +715,7 @@ function pick(ev) {
   camera.updateMatrixWorld();
   current.root.updateMatrixWorld();
   ray.setFromCamera(ptr, camera);
-  const direct = directColliders();
+  const direct = [...directColliders(), ...detonators()];
   const hits = ray.intersectObjects([...current.meshes.map((m) => m.mesh).filter((m) => m.visible), ...direct], false).sort((a, b) => a.distance - b.distance);
   // destroyed parts have no hitbox: the shot goes through to whatever is behind them
   const hit = hits.find((h) => h.object.userData.collider || (h.object.material.opacity > 0.2 && !h.object.userData.remains && !noHitbox(current, h.object.userData.key)));
@@ -802,7 +806,7 @@ function shoot(h) {
   for (const m of bv.revealed) { const ri = partIndexFor(current, m.userData.key); if (ri >= 0 && !(ri in revealedK)) revealedK[ri] = instanceFor(current, m.userData.key, ri); }
   const parts = {};
   for (const b of blast) if (parts[b.idx] == null || b.d < parts[b.idx]) parts[b.idx] = b.d;
-  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, inside: insideParts(h), revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), thru: thruAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, inside: insideParts(h), detonate: !!h.mesh.userData.collider?.detonate, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), thru: thruAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
   if (said) status(said);
 }
 
@@ -928,7 +932,7 @@ $('#v3Edit').addEventListener('click', () => {
 $('#v3Save').addEventListener('click', async () => {
   if (!current) return;
   // inner hitboxes are saved too (the auto-placed ones become fixed once saved)
-  const colliders = (current.colliders || []).map(({ def }) => (def.shape === 'box' ? { part: def.part, shape: 'box', centre: def.centre, size: def.size, ...(def.direct ? { direct: true } : {}) }
+  const colliders = (current.colliders || []).map(({ def }) => (def.shape === 'box' ? { part: def.part, shape: 'box', centre: def.centre, size: def.size, ...(def.direct ? { direct: true } : {}), ...(def.detonate ? { detonate: true } : {}) }
     : { part: def.part, from: def.from.map((v) => +(+v).toFixed(4)), to: def.to.map((v) => +(+v).toFixed(4)), radius: def.radius, ...(def.direct ? { direct: true } : {}) }));
   const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(current.map.vanish ? { vanish: current.map.vanish } : {}), ...(colliders.length ? { colliders } : {}), ...(current.map.inside ? { inside: current.map.inside } : {}) }, null, 2);
   if (SERVED) {

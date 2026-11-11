@@ -1000,7 +1000,7 @@
     const o2 = thru ? applyShot(state.sim, e, thru.idx, thru.s, true) : null;
     const dotNote = dotSecond(state.sim, e, mode);
     const label = k != null && (part.count || 1) > 1 ? `${part.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${part.count}` : part.name;
-    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${underNote(e, o)}${dotNote}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
+    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : s.demo ? 'demolished' : s.ricochet ? 'ricochet' : 'no damage'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${underNote(e, o)}${dotNote}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
     state.sim.log.length = Math.min(state.sim.log.length, 8);
     render();
   }
@@ -1080,9 +1080,10 @@
     const band = bandOf(hit.deg);
     const o = { ...opts(), band, ...(hit.inside ? { inside: hit.inside } : {}) };
     if (hit.ground) return resolveGround(hit, mode, band, o);
-    const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0, noShrap: true }) }];
+    // a round that went off on a trigger plane (inside the Fabricator's vents): no impact, only its explosion
+    const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0, noShrap: true, ...(hit.detonate ? { noProj: true } : {}) }) }];
     // 3D shots: the next piece along the shot's path (hit.thru from the viewer), if the cleave rule lets it through
-    const thru0 = overpen(mode, e, hit.idx, rows[0].s, o, 'thru' in hit ? hit.thru?.idx ?? null : undefined);
+    const thru0 = hit.detonate ? null : overpen(mode, e, hit.idx, rows[0].s, o, 'thru' in hit ? hit.thru?.idx ?? null : undefined);
     const thru = thru0 ? { ...thru0, k: hit.thru?.k ?? null } : null;
     const radii = rows[0].s.ricochet ? null : blastRadii(mode); // a ricochet means no blast at all
     if (radii) {
@@ -1225,7 +1226,7 @@
       const dotNote = dotSecond(state.sim, e, res.mode);
       if (dotNote) notes.push(dotNote.replace(/^ [+·] /, ''));
       const d = res.rows[0];
-      state.sim.log.unshift(`#${state.sim.shots} ${tag}${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : 'ricochet'}${(() => { const n = res.rows.slice(1).filter((r) => r.s.partEx > 0 || r.s.mainEx > 0).length; return n ? ` + blast on ${n} part${n > 1 ? 's' : ''}` : ''; })()}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}`);
+      state.sim.log.unshift(`#${state.sim.shots} ${tag}${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : d.s.demo ? 'demolished' : d.s.ricochet ? 'ricochet' : 'no damage'}${(() => { const n = res.rows.slice(1).filter((r) => r.s.partEx > 0 || r.s.mainEx > 0).length; return n ? ` + blast on ${n} part${n > 1 ? 's' : ''}` : ''; })()}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}`);
       state.sim.log.length = Math.min(state.sim.log.length, 8);
       render();
       return `Fired #${state.sim.shots}: ${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°`;

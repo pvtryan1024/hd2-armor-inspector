@@ -39,5 +39,37 @@
         1.6
       ]
     }
+  ],
+  "colliders": [
+    {
+      "part": "Vents",
+      "shape": "box",
+      "centre": [
+        -1.4,
+        4.95,
+        -2.3
+      ],
+      "size": [
+        1,
+        1.1,
+        0.02
+      ],
+      "detonate": true
+    },
+    {
+      "part": "Vents",
+      "shape": "box",
+      "centre": [
+        1.4,
+        4.95,
+        -2.3
+      ],
+      "size": [
+        1,
+        1.1,
+        0.02
+      ],
+      "detonate": true
+    }
   ]
 }
