@@ -124,6 +124,15 @@ const SCOUT_TURRET = [{ mesh: 'body', name: 'turret_system', bone: /^turret$/ },
 const SCOUT_PILOT = { src: 'content/fac_cyborgs/cha_conscript_commander/cha_conscript_commander.unit.glb', bone: 'attach_pilot', name: 'pilot', part: 'Pilot',
   // kneeling on the platform, hands forward on the controls (as in game): lowered 0.3 m, thighs forward, knees folded
   offset: [0, 0, -0.3], pose: { l_leg: [0, 0, 80], r_leg: [0, 0, 80], l_knee: [0, 0, -130], r_knee: [0, 0, -130], l_shoulder: [0, 0, 60], r_shoulder: [0, 0, 60] } };
+// Reinforced: each rocket rail carries two rockets, above and below the rail beam; each rocket is its own part
+const RAIL_ROCKETS = ['left', 'right'].flatMap((side) => {
+  const x = side === 'left' ? [-1.2, -0.5] : [0.5, 1.2];
+  return [
+    // by piece centre: two of each rocket's four fins sit level with the rail beam (2.42 - 2.54 m)
+    { mesh: `rail_${side}`, name: `rocket_${side}_upper`, centre: true, maxLen: 1, box: [[x[0], 2.515, -1], [x[1], 2.85, 1.5]] },
+    { mesh: `rail_${side}`, name: `rocket_${side}_lower`, centre: true, maxLen: 1, box: [[x[0], 2.1, -1], [x[1], 2.445, 1.5]] },
+  ];
+});
 const SCOUT_HMG = { src: 'extra/0x2a346bf4552997e2.unit.glb', bone: 'gun_pitch', name: 'hmg', part: 'HMG', offset: [0, 0, 0.3] }; // raised 0.3 m: the barrels come out through the gap in the front plate
 // Factory Strider ("cyborg_big_walker_skeleton"): leg pieces by bone
 const FS_BONES = (bone) => {
@@ -415,8 +424,13 @@ function cutBox(doc, node, cut) {
     const byBone = (i) => { J.getElement(i, j4); W.getElement(i, w4); let b = 0; for (let q = 1; q < 4; q++) if (w4[q] > w4[b]) b = q; return cut.bone.test(jn[j4[b]] || ''); };
     for (const sh of shellsOf(prim)) {
       const vs = [...new Set(sh.tris)];
-      const ok = cut.bone ? vs.filter(byBone).length >= vs.length * 0.6
-        : vs.every((i) => posed(i).every((x, k) => x >= cut.box[0][k] && x <= cut.box[1][k]));
+      const inBox = (x) => x.every((v, k) => v >= cut.box[0][k] && v <= cut.box[1][k]);
+      let ok;
+      if (cut.bone) ok = vs.filter(byBone).length >= vs.length * 0.6;
+      else if (cut.centre) { // the piece's centre in the box, and not longer than maxLen (rail-length strips stay)
+        const pts = vs.map(posed), lo = [0, 1, 2].map((k) => Math.min(...pts.map((q) => q[k]))), hi = [0, 1, 2].map((k) => Math.max(...pts.map((q) => q[k])));
+        ok = inBox(lo.map((l, k) => (l + hi[k]) / 2)) && !(cut.maxLen && Math.max(...hi.map((h, k) => h - lo[k])) > cut.maxLen);
+      } else ok = vs.every((i) => inBox(posed(i)));
       (ok ? inside : rest).push(...sh.tris);
     }
     if (!inside.length) continue;
@@ -621,7 +635,6 @@ const SOURCES = {
   marauder: trooper('cha_conscript_tier_2.unit.glb'),
   'jet-brigade-commissar': { src: CY + 'cha_conscript_commander/cha_conscript_commander.unit.glb', ...TROOPER },
   // the Scout Strider's pilot is a Commissar body
-  'scout-strider-pilot': { src: CY + 'cha_conscript_commander/cha_conscript_commander.unit.glb', ...TROOPER },
   radical: {
     src: CY + 'cha_cyborg_elite/cha_elite_female.unit.glb',
     rules: [[/^head(_whole)?$/, 'Head'], [/^armor_torso$/, 'Torso Circuits'], [/^(left|right)_shoulderpad$/, 'Pauldron'], [/^(left|right)_arm(_whole)?$/, 'Upper Arms (2)'], [/^body(_whole)?$/, 'Main']],
@@ -644,7 +657,7 @@ const SOURCES = {
   // the body: the turret system (the platform the pilot kneels on and the HMG mechanism, on the turret bone) over the
   // waist (the hip section, on boss)
   'scout-strider': { src: CY + 'vehicles/cyborg_walker_scout/cyborg_walker_scout.unit.glb', cuts: SCOUT_TURRET, rules: [[/^[lr]_hip$/, 'Waist'], [/^leg_(left|right)$/, 'Legs (2)'], [/^turret_system$/, 'Turret System'], [/^body$/, 'Waist']] },
-  'reinforced-scout-strider': { src: CY + 'vehicles/cyborg_walker_scout/cyborg_walker_scout.unit.glb', cuts: SCOUT_TURRET, rules: [[/^[lr]_hip$/, 'Waist'], [/^leg_(left|right)$/, 'Legs (2)'], [/^turret_system$/, 'Turret System'], [/^body$/, 'Waist']] },
+  'reinforced-scout-strider': { src: CY + 'vehicles/cyborg_walker_scout/cyborg_walker_scout.unit.glb', cuts: [...SCOUT_TURRET, ...RAIL_ROCKETS], rules: [[/^rocket_(left|right)_(upper|lower)$/, 'Rockets (4)'], [/^[lr]_hip$/, 'Waist'], [/^leg_(left|right)$/, 'Legs (2)'], [/^turret_system$/, 'Turret System'], [/^body$/, 'Waist']] },
   gunship: { src: CY + 'vehicles/cyborg_gunship/cyborg_gunship.unit.glb', rules: [[/^body$/, 'Fuselage'], [/^[lr]_front_engine$/, 'Front Thrusters (2)'], [/^[lr]_back_engine$/, 'Rear Thrusters (2)']] },
   dropship: { src: CY + 'vehicles/cyborg_dropship/cyborg_dropship.unit.glb', rules: [[/^body$/, 'Fuselage'], [/thruster$/, 'Thruster (4)']] },
   'vox-engine': {

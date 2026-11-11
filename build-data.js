@@ -26,7 +26,7 @@ for (const [into, from] of [['Factory Strider', 'Factory Strider (Armor Broken)'
   enemies.splice(bi, 1);
 }
 // left off the list on purpose
-for (const name of ['Cognitive Disruptor']) {
+for (const name of ['Cognitive Disruptor', 'Scout Strider Pilot']) { // the pilot rides on (and is shot on) the Scout Strider
   const i = enemies.findIndex((e) => e.name === name);
   if (i >= 0) enemies.splice(i, 1);
 }

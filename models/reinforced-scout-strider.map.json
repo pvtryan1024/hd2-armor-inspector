@@ -10,7 +10,11 @@
     "rail_right": "Rocket Rails (2)",
     "turret_system": "Turret System",
     "leg_left": "Legs (2)",
-    "leg_right": "Legs (2)"
+    "leg_right": "Legs (2)",
+    "rocket_left_upper": "Rockets (4)",
+    "rocket_left_lower": "Rockets (4)",
+    "rocket_right_upper": "Rockets (4)",
+    "rocket_right_lower": "Rockets (4)"
   },
   "hidden": [
     "body_damaged",
