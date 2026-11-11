@@ -36,7 +36,8 @@
   </header>
 
   <main class="layout">
-    <!-- LEFT: enemy picker -->
+    <!-- LEFT: enemy picker, and the loadout under it -->
+    <div class="left-col">
     <aside class="panel enemies-panel">
       <div class="panel-head">
         <h2>Target</h2>
@@ -45,6 +46,11 @@
       </div>
       <ul class="list" id="enemyList"></ul>
     </aside>
+    <aside class="panel loadout-panel">
+      <div class="panel-head"><h2>Loadout</h2></div>
+      <div class="loadout" id="loadout"></div>
+    </aside>
+    </div>
 
     <!-- CENTER: armor schematic -->
     <section class="stage">
@@ -122,6 +128,7 @@
           <button data-tab="rank">Best weapons vs target</button>
           <button data-tab="real">Real life case</button>
         </div>
+        <div class="seg wrap hidden" id="rankCats"></div>
       </div>
       <div class="table-wrap" id="partsTableWrap"><table class="data" id="partsTable"></table></div>
       <div class="table-wrap hidden" id="rankTableWrap">

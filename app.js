@@ -25,6 +25,7 @@
   const bandOf = (deg) => ANGLE_BANDS.findIndex((b) => deg <= b.max + 0.5);
   const FACTION_ORDER = ['Terminids', 'Automatons', 'Illuminate'];
   const CAT_ORDER = ['Primary', 'Secondary', 'Throwable', 'Support', 'Eagle', 'Orbital', 'Sentry', 'Emplacement'];
+  const SLOTS = ['Primary', 'Secondary', 'Throwable', 'Support']; // the loadout box
   // shots-to-kill ramp: 1, 2, 3–4, 5–7, 8–12, 13–20, 21+
   // time-to-kill ramp in seconds: instant, ≤0.5, ≤1, ≤2, ≤4, ≤8, longer
   const TTK_STEPS = [0.01, 0.5, 1, 2, 4, 8, Infinity];
@@ -56,7 +57,23 @@
     fire: true, // fire mode is the default view
     showInner: false, // treat inner parts as already exposed
     sim: null,
+    rankCat: null, // ranking tabs: only this weapon category (null = all)
+    slot: null, // highlighted loadout slot
+    loadout: loadLoadout(), // { Primary: weaponId, Secondary, Throwable, Support }
   };
+
+  /* ---------- loadout: one weapon per slot, remembered in this browser ---------- */
+  function loadLoadout() {
+    try { const v = JSON.parse(localStorage.getItem('hd2-loadout') || '{}'); return v && typeof v === 'object' ? v : {}; } catch { return {}; }
+  }
+  function saveLoadout() { try { localStorage.setItem('hd2-loadout', JSON.stringify(state.loadout)); } catch { /* storage blocked */ } }
+  /** Pick a weapon (list, rankings): it becomes the current one and fills its category's loadout slot. */
+  function chooseWeapon(id, mode = 0) {
+    const w = weaponById(id);
+    if (!w) return;
+    state.weaponId = id; state.mode = mode; state.cat = w.category;
+    if (SLOTS.includes(w.category)) { state.loadout[w.category] = id; state.slot = w.category; saveLoadout(); }
+  }
 
   /* ---------------- damage engine ---------------- */
 
@@ -708,7 +725,7 @@
     publish3d(e, results);
     renderLegend();
     renderPartsTable(e, results);
-    const tabKey = JSON.stringify([state.tab, e.id, state.view, state.showInner, state.explosion, state.allPellets, state.band, state.dist, state.weaponId]);
+    const tabKey = JSON.stringify([state.tab, e.id, state.view, state.showInner, state.explosion, state.allPellets, state.band, state.dist, state.weaponId, state.rankCat]);
     if (tabKey !== lastTabKey) {
       lastTabKey = tabKey;
       if (state.tab === 'rank') renderRankTable(e);
@@ -823,10 +840,29 @@
     $('#partsTable').innerHTML = head + `<tbody>${rows}</tbody>`;
   }
 
+  function renderLoadout() {
+    $('#loadout').innerHTML = SLOTS.map((cat) => {
+      const w = weaponById(state.loadout[cat]);
+      return `<button type="button" class="slot ${state.slot === cat ? 'on' : ''}" data-slot="${esc(cat)}" title="${esc(w ? w.name : cat)}">
+        ${w ? weaponThumbHtml(w) : '<span class="slot-empty">+</span>'}
+        <span class="slot-cat">${esc(cat)}</span>
+        ${w ? `<span class="slot-name">${esc(w.name)}</span>` : ''}
+      </button>`;
+    }).join('');
+  }
+  /** Ranking tabs: a weapon-category filter (All, Primary, …). */
+  function renderRankCats() {
+    const el = $('#rankCats');
+    el.classList.toggle('hidden', state.tab !== 'rank' && state.tab !== 'real');
+    const cats = CAT_ORDER.filter((c) => DATA.weapons.some((w) => w.category === c));
+    el.innerHTML = [null, ...cats].map((c) => `<button type="button" data-rc="${esc(c || '')}" class="${(state.rankCat || null) === c ? 'on' : ''}">${esc(c || 'All')}</button>`).join('');
+  }
+  const rankWeapons = () => DATA.weapons.filter((w) => !state.rankCat || w.category === state.rankCat);
+
   function renderRankTable(e) {
     const o = opts();
     const rows = [];
-    for (const w of DATA.weapons) {
+    for (const w of rankWeapons()) {
       let best = null;
       w.modes.forEach((m, mi) => {
         const b = bestOf(evalEnemy(w, mi, e, o), state.view);
@@ -873,7 +909,7 @@
   function renderRealTable(e) {
     const o = opts();
     const rows = [];
-    for (const w of DATA.weapons) {
+    for (const w of rankWeapons()) {
       let best = null;
       w.modes.forEach((m, mi) => {
         const sp = spreadOf(evalEnemy(w, mi, e, o), state.view);
@@ -1418,6 +1454,7 @@
     if (state.stagePinned) p.set('s', state.stageView);
     if (state.showInner) p.set('in', '1');
     if (!state.fire) p.set('f', '0');
+    if (state.rankCat) p.set('rc', state.rankCat);
     const lang = new URLSearchParams(location.hash.slice(1)).get('lang'); // the language picker's (i18n.js)
     if (lang) p.set('lang', lang);
     history.replaceState(null, '', '#' + p.toString());
@@ -1436,6 +1473,7 @@
     state.showInner = p.get('in') === '1';
     state.fire = p.get('f') !== '0';
     if (p.has('s')) { state.stageView = p.get('s') === '3d' ? '3d' : 'map'; state.stagePinned = true; }
+    state.rankCat = CAT_ORDER.includes(p.get('rc')) ? p.get('rc') : null;
   }
 
   /* ---------------- wiring ---------------- */
@@ -1445,6 +1483,7 @@
   function render(keepCard) {
     renderFactionTabs();
     renderEnemyList();
+    renderLoadout();
     renderCatTabs();
     renderWeaponList();
     if (!keepCard) renderWeaponCard();
@@ -1459,6 +1498,7 @@
     $$('#bottomTabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === state.tab));
     $('#partsTableWrap').classList.toggle('hidden', state.tab !== 'parts');
     $('#rankTableWrap').classList.toggle('hidden', state.tab !== 'rank');
+    renderRankCats();
     $('#realTableWrap').classList.toggle('hidden', state.tab !== 'real');
     $$('#stageTabs button').forEach((b) => b.classList.toggle('on', b.dataset.sv === state.stageView));
     const hasInner = enemy()?.parts.some((p) => p.hidden || p.coveredBy);
@@ -1480,25 +1520,51 @@
       const b = ev.target.closest('button'); if (!b) return;
       state.cat = b.dataset.c || null; render();
     });
-    $('#enemySearch').addEventListener('input', renderEnemyList);
+    // 3 s after an enemy is picked the target box goes back to the faction cards (not while the pointer is on it)
+    let backTimer = 0;
+    const backToFactions = () => {
+      clearTimeout(backTimer);
+      backTimer = setTimeout(() => {
+        if ($('.enemies-panel').matches(':hover')) { backToFactions(); return; }
+        if ($('#enemySearch').value) return;
+        state.faction = null; renderFactionTabs(); renderEnemyList();
+      }, 3000);
+    };
+    $('#enemySearch').addEventListener('input', () => { clearTimeout(backTimer); renderEnemyList(); });
     $('#weaponSearch').addEventListener('input', renderWeaponList);
     $('#enemyList').addEventListener('click', (ev) => {
       const card = ev.target.closest('li[data-f]');
-      if (card) { state.faction = card.dataset.f; render(); return; }
+      if (card) { clearTimeout(backTimer); state.faction = card.dataset.f; render(); return; }
       const li = ev.target.closest('li[data-id]'); if (!li) return;
       state.enemyId = li.dataset.id; state.hit = null;
       state.faction = enemyById(li.dataset.id).faction;
       if ($('#enemySearch').value) $('#enemySearch').value = '';
       resetSim(); autoStageView(); render();
+      backToFactions();
     });
     $('#weaponList').addEventListener('click', (ev) => {
       const card = ev.target.closest('li[data-c]');
       if (card) { state.cat = card.dataset.c; render(); return; }
       const li = ev.target.closest('li[data-id]'); if (!li) return;
-      state.weaponId = li.dataset.id; state.mode = 0;
-      state.cat = weaponById(li.dataset.id).category;
+      chooseWeapon(li.dataset.id);
       if ($('#weaponSearch').value) $('#weaponSearch').value = '';
       swapWeapon(); render();
+    });
+    // loadout slot: highlight it, send the weapon picker back to its start (the category cards), and switch to
+    // the weapon in it, if any
+    $('#loadout').addEventListener('click', (ev) => {
+      const b = ev.target.closest('[data-slot]'); if (!b) return;
+      const cat = b.dataset.slot;
+      state.slot = cat; state.cat = null;
+      if ($('#weaponSearch').value) $('#weaponSearch').value = '';
+      const id = state.loadout[cat];
+      if (weaponById(id) && id !== state.weaponId) { state.weaponId = id; state.mode = 0; swapWeapon(); }
+      render();
+      $('#weaponList').scrollTop = 0;
+    });
+    $('#rankCats').addEventListener('click', (ev) => {
+      const b = ev.target.closest('[data-rc]'); if (!b) return;
+      state.rankCat = b.dataset.rc || null; render();
     });
     $('#weaponCard').addEventListener('click', (ev) => {
       const b = ev.target.closest('[data-band]'); if (!b) return;
@@ -1534,7 +1600,7 @@
     });
     const pickRow = (ev) => {
       const tr = ev.target.closest('tr[data-w]'); if (!tr) return;
-      state.weaponId = tr.dataset.w; state.mode = +tr.dataset.m; state.cat = weaponById(tr.dataset.w).category;
+      chooseWeapon(tr.dataset.w, +tr.dataset.m);
       state.tab = 'parts'; render();
       scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -1603,6 +1669,9 @@
     state.enemyId ||= (DATA.enemies.find((e) => e.id === 'charger') || DATA.enemies[0]).id;
     autoStageView();
     state.weaponId ||= (DATA.weapons.find((w) => /liberator$/i.test(w.name)) || DATA.weapons[0])?.id ?? null;
+    for (const k of Object.keys(state.loadout)) if (!SLOTS.includes(k) || weaponById(state.loadout[k])?.category !== k) delete state.loadout[k];
+    const w0 = weaponById(state.weaponId);
+    if (w0 && SLOTS.includes(w0.category)) { if (!state.loadout[w0.category]) state.loadout[w0.category] = w0.id; if (state.loadout[w0.category] === w0.id) state.slot = w0.category; }
     bind();
     render();
   }

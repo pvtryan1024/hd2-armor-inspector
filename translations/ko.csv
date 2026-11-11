@@ -769,3 +769,4 @@ mode,Cannon round,기관포탄,firing mode,check,加农炮弹,check,加農炮彈
 mode,Shell,포탄,firing mode,check,炮弹,check,炮彈,check,砲弾,check,Artilleriegranate,check,Obus,check,Obús,check,Proietto,check,Артиллерийский снаряд,check,Снаряд,check
 mode,Round,탄,firing mode,check,弹丸,check,彈丸,check,弾,check,Geschoss,check,Projectile,check,Proyectil,check,Colpo,check,Снаряд,check,Набій,check
 mode,APHE 75mm,철갑유탄 75mm,firing mode,,穿甲高爆弹 75mm,check,穿甲高爆彈 75mm,check,APHE 75mm,check,APHE 75mm,check,APHE 75 mm,check,APHE 75mm,check,APHE 75mm,check,APHE 75mm,check,APHE 75 мм,check
+ui,Loadout,로드아웃,loadout box,check,配装,check,配裝,check,ロードアウト,check,Ausrüstung,check,Équipement,check,Equipamiento,check,Equipaggiamento,check,Снаряжение,check,Спорядження,check
