@@ -260,6 +260,38 @@
     }
   }
 
+  /** An explosive round whose projectile breaks a plate: the plate takes the projectile, and the explosion
+   *  that follows lands on the part the plate was covering (a Charger Behemoth's leg flesh under its leg
+   *  armor: the AC-8's AP 3 blast can't hurt the AV 4 plate, but it hits the exposed AV 2 flesh). Confirmed in
+   *  game: the AC-8 kills in one shot fewer than without it, while plain rounds (AMR, Railgun) show that
+   *  surplus damage itself does not carry over. Returns the split shot, or null to apply it as usual. */
+  function blastUnder(sim, enemy, idx, s, mode, o, want) {
+    if (!o.explosion || !mode.explosion || !(s.proj > 0) || s.ricochet) return null;
+    const part = enemy.parts[idx];
+    const under = enemy.parts.findIndex((q) => q.coveredBy === part.name);
+    const inst = sim.hp[idx];
+    if (under < 0 || !inst) return null;
+    const k = want != null ? want : inst.findIndex((h) => !instGone(part, h));
+    if (k < 0 || !(inst[k] > 0) || s.proj < inst[k]) return null; // the projectile alone doesn't break it
+    const ex = shotDamage(mode, enemy.parts[under], enemy, { ...o, noProj: true, exDist: 0 });
+    return { idx: under, plate: { ...s, partEx: 0, mainEx: 0, total: s.proj }, ex };
+  }
+  /** Apply one shot to a part, splitting it when its projectile breaks a plate (blastUnder). */
+  function applyHit(sim, enemy, idx, s, mode, o, extra, want) {
+    const bu = blastUnder(sim, enemy, idx, s, mode, o, want);
+    if (!bu) return applyShot(sim, enemy, idx, s, extra, want);
+    const out = applyShot(sim, enemy, idx, bu.plate, extra, want);
+    if (!sim.dead) {
+      const o2 = applyShot(sim, enemy, bu.idx, bu.ex, true);
+      out.under = { idx: bu.idx, dealt: bu.ex.total, broke: o2.broke, toMain: o2.toMain };
+      out.toMain += o2.toMain;
+      out.progress = out.progress || o2.progress;
+    }
+    return out;
+  }
+  /** Log text for the explosion that went on into the part under a broken plate. */
+  const underNote = (enemy, o) => (o.under ? ` → explosion on the ${enemy.parts[o.under.idx].name} beneath: ${fmt(o.under.dealt)} dmg${o.under.broke ? ', destroyed' : ''}` : '');
+
   /** Repeated shots into one hitzone until the enemy dies or nothing changes. */
   function simulate(mode, enemy, idx, opts) {
     const part = enemy.parts[idx];
@@ -273,7 +305,7 @@
       const sc = shotDamage(mode, enemy.parts[ci], enemy, opts);
       for (;;) {
         if (shot0 >= MAX_SHOTS) return res;
-        const o = applyShot(sim, enemy, ci, sc);
+        const o = applyHit(sim, enemy, ci, sc, mode, opts);
         shot0++;
         if (sim.dead) { res.killAt = shot0; res.downs = sim.dead.how === 'downed'; res.why = sim.dead.why; res.strip = { part: part.coveredBy, shots: shot0 }; return res; }
         if (o.broke) break;
@@ -284,7 +316,7 @@
     const thru = overpen(mode, enemy, idx, s, opts);
     for (let n = 1; shot0 + n <= MAX_SHOTS; n++) {
       const shot = shot0 + n;
-      const o = applyShot(sim, enemy, idx, s);
+      const o = applyHit(sim, enemy, idx, s, mode, opts);
       if (thru && !sim.dead) { const o2 = applyShot(sim, enemy, thru.idx, thru.s, true); o.toMain += o2.toMain; o.progress = o.progress || o2.progress; }
       if (n === 1) res.perMain = o.toMain;
       if (o.broke && res.breakAt == null) res.breakAt = shot;
@@ -912,11 +944,11 @@
     const band = hit ? bandOf(hit.deg) : state.band;
     const s = shotDamage(mode, part, e, { ...opts(), band });
     const tag = shotClock();
-    const o = applyShot(state.sim, e, i, s, false, k);
+    const o = applyHit(state.sim, e, i, s, mode, { ...opts(), band }, false, k);
     const thru = !state.sim.dead ? overpen(mode, e, i, s, { ...opts(), band }) : null;
     const o2 = thru ? applyShot(state.sim, e, thru.idx, thru.s, true) : null;
     const label = k != null && (part.count || 1) > 1 ? `${part.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${part.count}` : part.name;
-    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
+    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${underNote(e, o)}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
     state.sim.log.length = Math.min(state.sim.log.length, 8);
     render();
   }
@@ -1107,8 +1139,10 @@
       const tag = shotClock();
       res.rows.forEach((r, k) => {
         const piece = k === 0 ? hit.k : r.k;
-        const o = applyShot(state.sim, e, r.idx, r.s, k > 0, piece ?? undefined);
+        const o = k === 0 ? applyHit(state.sim, e, r.idx, r.s, res.mode, { ...opts(), band: res.band }, false, piece ?? undefined)
+          : applyShot(state.sim, e, r.idx, r.s, true, piece ?? undefined);
         if (o.broke) notes.push(`${pieceName(e.parts[r.idx], piece)} destroyed`);
+        if (o.under) notes.push(underNote(e, o).replace(/^ → /, ''));
         if (k === 0 && res.shrap && !state.sim.dead) { // shrapnel fragments, each piece once with its total
           for (const f of res.shrap.rows) {
             if (state.sim.dead || !(f.s.total > 0)) continue;
