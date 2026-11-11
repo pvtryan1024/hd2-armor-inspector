@@ -6,7 +6,8 @@
     "arm_right_whole": "Upper Arms (2)",
     "body_whole": "Main",
     "head_whole": "Head",
-    "leg_right_whole": "Legs"
+    "leg_right_whole": "Legs",
+    "udim_14": "Main"
   },
   "hidden": [
     "leg_right_split",
