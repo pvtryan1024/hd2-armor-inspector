@@ -368,7 +368,7 @@ function parseCsv(text) {
   return rows;
 }
 const LANG_COLS = { korean: 'ko', chinese: 'zh', 'simplified chinese': 'zh', 'traditional chinese': 'zh-hant', japanese: 'ja',
-  german: 'de', french: 'fr', spanish: 'es', italian: 'it' };
+  german: 'de', french: 'fr', spanish: 'es', italian: 'it', russian: 'ru', ukrainian: 'uk' };
 const i18n = {};
 const trDir = path.join(__dirname, 'translations');
 if (fs.existsSync(trDir)) {

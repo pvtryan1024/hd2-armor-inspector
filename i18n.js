@@ -18,6 +18,8 @@
     { id: 'fr', label: 'Français', flag: tricolour(['#0055a4', '#fff', '#ef4135'], 'v') },
     { id: 'es', label: 'Español', flag: tricolour(['#aa151b', '#f1bf00', '#f1bf00', '#aa151b'], 'h') },
     { id: 'it', label: 'Italiano', flag: tricolour(['#009246', '#fff', '#ce2b37'], 'v') },
+    { id: 'ru', label: 'Русский', flag: tricolour(['#fff', '#0039a6', '#d52b1e'], 'h') },
+    { id: 'uk', label: 'Українська', flag: tricolour(['#0057b7', '#ffd700'], 'h') },
   ];
   const fromHash = new URLSearchParams(location.hash.slice(1)).get('lang');
   let saved = null;
