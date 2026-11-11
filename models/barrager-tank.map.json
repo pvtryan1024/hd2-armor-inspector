@@ -9,9 +9,10 @@
     "body_left": "Hull Sides (2)",
     "udim 0": "Hull Main",
     "turret": "Turret Main",
-    "launch_tubes": "Turret Main",
+    "launch_tubes": "Launch Tubes",
     "deck_left": "Hull Main",
-    "deck_right": "Hull Main"
+    "deck_right": "Hull Main",
+    "pod": "Turret Main"
   },
   "hidden": [
     "front_damaged",
@@ -21,22 +22,5 @@
     "tracks_left_damaged",
     "body_left_damaged",
     "turret_destroyed"
-  ],
-  "colliders": [
-    {
-      "part": "Launch Tubes",
-      "shape": "box",
-      "centre": [
-        0,
-        3.6,
-        0.29
-      ],
-      "size": [
-        3.2,
-        1.1,
-        6.74
-      ],
-      "direct": true
-    }
   ]
 }

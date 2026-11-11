@@ -177,8 +177,9 @@ const LOADOUT = {
   'incendiary-mg-devastator': [{ src: GEAR.machinegun, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.shield, bone: 'attach_shield', name: 'shield', part: 'Shield' }],
   'annihilator-tank': [{ src: GEAR.tankCannon, bone: 'attach_turret', name: 'turret', part: 'Turret Front' }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
   'shredder-tank': [{ src: GEAR.tankAuto, bone: 'attach_turret', name: 'turret', part: 'Turret Front and Sides' }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
-  // the rocket turret: its body (default) is the turret armor, the tube pack (gun) the Launch Tubes
-  'barrager-tank': [{ src: GEAR.tankRockets, bone: 'attach_turret', name: 'turret', part: 'Turret Main', parts: { gun: 'launch_tubes' } }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
+  // the rocket turret: its base (default) and the launcher pod (gun) are the turret armor; the tubes inside the pod
+  // are cut out of it (see barrager-tank's cuts)
+  'barrager-tank': [{ src: GEAR.tankRockets, bone: 'attach_turret', name: 'turret', part: 'Turret Main', parts: { gun: 'pod' } }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
   'war-strider': [{ src: 'extra/0x8372619b2702d743.unit.glb', bone: 'attach_left_gun', name: 'cannon_left', part: 'Fusion Cannons (2)' }, { src: 'extra/0x9ab036439f74c115.unit.glb', bone: 'attach_right_gun', name: 'cannon_right', part: 'Fusion Cannons (2)' }],
   devastator: [{ src: GEAR.rifle, bone: 'attach_r_hand', name: 'weapon_right' }],
   // the gun arm: the body only has the left forearm; the right hand holds the Devastator's gun
@@ -541,7 +542,7 @@ const CY = 'content/fac_cyborgs/';
 const TROOPER = { split: { mesh: /^body$/, bones: BOT_BONES }, rules: [[/^head$/, 'Head'], [/^arm_/, 'Arms (2)'], [/^leg_/, 'Legs (2)'], [/^(torso|collar_\w+)$/, 'Torso']] };
 const trooper = (file, extra = []) => ({ src: CY + 'cha_conscript/' + file, ...TROOPER, rules: [...extra, ...TROOPER.rules] });
 const TANK_HULL = [[/^front$/, 'Hull Front'], [/^body_(left|right)$/, 'Hull Sides (2)'], [/^rear$/, 'Engine Bay'], [/^tracks_(left|right)$/, 'Tracks (2)'], [/^udim 0$/, 'Hull Main'],
-  [/^deck_(left|right)$/, 'Hull Main'], [/^turret_heatsink$/, 'Turret Heatsink']];
+  [/^deck_(left|right)$/, 'Hull Main'], [/^turret_heatsink$/, 'Turret Heatsink'], [/^pod$/, 'Turret Main'], [/^launch_tubes$/, 'Launch Tubes']];
 // each upper-hull half: outboard of the tracks' inner edge (|x| > 1.4: the side wall, the skirt and the fender over
 // the track) is Hull Sides and keeps the name (its damage swap stays); the deck between the tracks is Hull Main
 const TANK_SIDES = ['left', 'right'].map((side) => ({ mesh: `body_${side}`, name: `body_${side}`, rest: `deck_${side}`, tris: true,
@@ -661,7 +662,8 @@ const SOURCES = {
   'incendiary-mg-devastator': { src: CY + 'cha_soldier/cha_soldier_heavy_weapon.unit.glb', rules: [[/^weapon_backpack(_whole)?$/, 'Main'], ...DEVASTATOR] }, // the shield body
   'annihilator-tank': tank('Hull Sides (2)', ANNIHILATOR_HEATSINK),
   'shredder-tank': tank('Hull Side (2)', SHREDDER_HEATSINK),
-  'barrager-tank': tank('Hull Sides (2)'),
+  // the Launch Tubes: inside the pod's armor frame (the tube faces front and back, open at both ends), per triangle
+  'barrager-tank': tank('Hull Sides (2)', [{ mesh: 'pod', name: 'launch_tubes', tris: true, box: [[-1.6, 3.05, -3.2], [1.6, 4.15, 3.0]] }]),
   'war-strider': {
     // the eye box low on the hull front and the visor block on top (both glow: m_boteye)
     cuts: [
