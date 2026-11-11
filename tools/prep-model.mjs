@@ -525,7 +525,9 @@ const SOURCES = {
   // Rupture Charger: the last front-leg segment, the one standing on the ground, is the AV 5 Frontal Tarsal Plate;
   // the arm joining the body stays Front Leg Armor (AV 4)
   'rupture-charger': { src: 'content/fac_bugs/cha_charger_burrower/cha_charger_burrower.unit.glb',
-    cuts: [...CHARGER_BELLY, { mesh: 'left_front_leg', name: 'left_front_tarsal', bone: /^middle_leg_3_l$/ }, { mesh: 'right_front_leg', name: 'right_front_tarsal', bone: /^middle_leg_3_r$/ }], shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', tipBones: /^spine4$/ }], rules: [[/^(left|right)_front_tarsal$/, 'Frontal Tarsal Plate Armor (2)'], ...CHARGER] },
+    cuts: [...CHARGER_BELLY, { mesh: 'left_front_leg', name: 'left_front_tarsal', bone: /^middle_leg_3_l$/ }, { mesh: 'right_front_leg', name: 'right_front_tarsal', bone: /^middle_leg_3_r$/ },
+      // and the leg flesh under each: revealed when that plate breaks (the same Leg Flesh piece as the arm's)
+      { mesh: 'left_front_leg_damaged', name: 'left_front_tarsal_damaged', bone: /^middle_leg_3_l/ }, { mesh: 'right_front_leg_damaged', name: 'right_front_tarsal_damaged', bone: /^middle_leg_3_r/ }], shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', tipBones: /^spine4$/ }], rules: [[/^(left|right)_front_tarsal$/, 'Frontal Tarsal Plate Armor (2)'], ...CHARGER] },
   'caustic-charger': { src: 'content/fac_bugs/cha_charger_acid/cha_charger_acid.unit.glb', cuts: CHARGER_BELLY, shells: [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', prim: /cha_charger/, tipBones: /^spine4$/ }], rules: [[/_blob$/, 'Spore Flesh'], ...CHARGER] },
   'bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider.unit.glb', ...BT_BODY, rules: BILE_TITAN },
   'spore-burst-bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider_gloom.unit.glb', ...BT_BODY, rules: BILE_TITAN },

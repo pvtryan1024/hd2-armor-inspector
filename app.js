@@ -281,7 +281,7 @@
     if (sim.dead) return out;
     // 2. explosion, against what is there now
     const stripped = inst && k >= 0 && instGone(part, inst[k]);
-    const under = stripped ? enemy.parts.findIndex((q) => q.coveredBy === part.name) : -1;
+    const under = stripped ? enemy.parts.findIndex((q) => q.coveredBy === part.name || q.alsoCoveredBy === part.name) : -1;
     let o2;
     if (under >= 0) {
       const sx = shotDamage(mode, enemy.parts[under], enemy, { ...o, noProj: true, exDist: 0 });
@@ -413,6 +413,9 @@
     if (p.hidden === 'angle') return !!sim; // a shot you actually placed reached it
     if (p.coveredBy && !p.hidden) {
       if (!sim) return true; // time to kill already includes stripping the plate
+      // under two plates (alsoCoveredBy): either one broken exposes it
+      const ai = p.alsoCoveredBy ? enemy.parts.findIndex((q) => q.name === p.alsoCoveredBy) : -1;
+      if (ai >= 0 && sim.hp[ai]?.some((h) => h <= 0)) return true;
       const ci = enemy.parts.findIndex((q) => q.name === p.coveredBy);
       const hp = sim.hp[ci];
       if (ci < 0 || !hp) return true;

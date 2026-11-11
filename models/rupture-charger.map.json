@@ -22,7 +22,9 @@
     "butt_plates": "Rear Armor Plates",
     "body_underside": "Underside",
     "left_front_tarsal": "Frontal Tarsal Plate Armor (2)",
-    "right_front_tarsal": "Frontal Tarsal Plate Armor (2)"
+    "right_front_tarsal": "Frontal Tarsal Plate Armor (2)",
+    "left_front_tarsal_damaged": "Leg Flesh (4)",
+    "right_front_tarsal_damaged": "Leg Flesh (4)"
   },
   "hidden": [
     "butt_damaged",
@@ -39,6 +41,8 @@
     "right_front_leg_damaged",
     "side_right_damaged",
     "left_back_leg_gib",
-    "left_front_leg_gib"
+    "left_front_leg_gib",
+    "left_front_tarsal_damaged",
+    "right_front_tarsal_damaged"
   ]
 }
