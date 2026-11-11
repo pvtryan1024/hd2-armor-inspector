@@ -8,7 +8,10 @@
     "tracks_right": "Tracks (2)",
     "body_left": "Hull Sides (2)",
     "udim 0": "Hull Main",
-    "turret": "Launch Tubes"
+    "turret": "Turret Main",
+    "launch_tubes": "Turret Main",
+    "deck_left": "Hull Main",
+    "deck_right": "Hull Main"
   },
   "hidden": [
     "front_damaged",
@@ -16,6 +19,7 @@
     "tracks_right_damaged",
     "rear_damaged",
     "tracks_left_damaged",
-    "body_left_damaged"
+    "body_left_damaged",
+    "turret_destroyed"
   ]
 }

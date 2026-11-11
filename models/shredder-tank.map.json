@@ -8,7 +8,10 @@
     "tracks_right": "Tracks (2)",
     "body_left": "Hull Side (2)",
     "udim 0": "Hull Main",
-    "turret": "Turret Front and Sides"
+    "turret": "Turret Front and Sides",
+    "deck_left": "Hull Main",
+    "deck_right": "Hull Main",
+    "turret_heatsink": "Turret Heatsink"
   },
   "hidden": [
     "front_damaged",

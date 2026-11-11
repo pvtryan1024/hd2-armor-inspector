@@ -177,7 +177,8 @@ const LOADOUT = {
   'incendiary-mg-devastator': [{ src: GEAR.machinegun, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.shield, bone: 'attach_shield', name: 'shield', part: 'Shield' }],
   'annihilator-tank': [{ src: GEAR.tankCannon, bone: 'attach_turret', name: 'turret', part: 'Turret Front' }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
   'shredder-tank': [{ src: GEAR.tankAuto, bone: 'attach_turret', name: 'turret', part: 'Turret Front and Sides' }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
-  'barrager-tank': [{ src: GEAR.tankRockets, bone: 'attach_turret', name: 'turret', part: 'Launch Tubes' }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
+  // the rocket turret: its body (default) is the turret armor, the tube pack (gun) the Launch Tubes
+  'barrager-tank': [{ src: GEAR.tankRockets, bone: 'attach_turret', name: 'turret', part: 'Turret Main', parts: { gun: 'launch_tubes' } }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
   'war-strider': [{ src: 'extra/0x8372619b2702d743.unit.glb', bone: 'attach_left_gun', name: 'cannon_left', part: 'Fusion Cannons (2)' }, { src: 'extra/0x9ab036439f74c115.unit.glb', bone: 'attach_right_gun', name: 'cannon_right', part: 'Fusion Cannons (2)' }],
   devastator: [{ src: GEAR.rifle, bone: 'attach_r_hand', name: 'weapon_right' }],
   // the gun arm: the body only has the left forearm; the right hand holds the Devastator's gun
@@ -422,7 +423,13 @@ function cutBox(doc, node, cut) {
     const inside = [], rest = [];
     const jn = skin ? skin.listJoints().map((j) => j.getName()) : [];
     const byBone = (i) => { J.getElement(i, j4); W.getElement(i, w4); let b = 0; for (let q = 1; q < 4; q++) if (w4[q] > w4[b]) b = q; return cut.bone.test(jn[j4[b]] || ''); };
-    for (const sh of shellsOf(prim)) {
+    if (cut.tris) { // per triangle: its centre in the box
+      for (let t = 0; t + 2 < (prim.getIndices()?.getCount() || 0); t += 3) {
+        const I = prim.getIndices(), tri = [I.getScalar(t), I.getScalar(t + 1), I.getScalar(t + 2)], c = [0, 0, 0];
+        for (const i of tri) posed(i).forEach((v, k) => { c[k] += v / 3; });
+        (c.every((v, k) => v >= cut.box[0][k] && v <= cut.box[1][k]) ? inside : rest).push(...tri);
+      }
+    } else for (const sh of shellsOf(prim)) {
       const vs = [...new Set(sh.tris)];
       const inBox = (x) => x.every((v, k) => v >= cut.box[0][k] && v <= cut.box[1][k]);
       let ok;
@@ -533,8 +540,18 @@ const SPEWER = bugBody('Main', [[/^butt$/i, 'Butt'], [/^leg_\w+_front$/, 'Front 
 const CY = 'content/fac_cyborgs/';
 const TROOPER = { split: { mesh: /^body$/, bones: BOT_BONES }, rules: [[/^head$/, 'Head'], [/^arm_/, 'Arms (2)'], [/^leg_/, 'Legs (2)'], [/^(torso|collar_\w+)$/, 'Torso']] };
 const trooper = (file, extra = []) => ({ src: CY + 'cha_conscript/' + file, ...TROOPER, rules: [...extra, ...TROOPER.rules] });
-const TANK_HULL = [[/^front$/, 'Hull Front'], [/^body_(left|right)$/, 'Hull Sides (2)'], [/^rear$/, 'Engine Bay'], [/^tracks_(left|right)$/, 'Tracks (2)'], [/^udim 0$/, 'Hull Main']];
-const tank = (sides) => ({ src: CY + 'vehicles/cyborg_tank/cyborg_tank.unit.glb', boneNames: false, rules: TANK_HULL.map(([re, p]) => [re, p === 'Hull Sides (2)' ? sides : p]) });
+const TANK_HULL = [[/^front$/, 'Hull Front'], [/^body_(left|right)$/, 'Hull Sides (2)'], [/^rear$/, 'Engine Bay'], [/^tracks_(left|right)$/, 'Tracks (2)'], [/^udim 0$/, 'Hull Main'],
+  [/^deck_(left|right)$/, 'Hull Main'], [/^turret_heatsink$/, 'Turret Heatsink']];
+// each upper-hull half: outboard of the tracks' inner edge (|x| > 1.4: the side wall, the skirt and the fender over
+// the track) is Hull Sides and keeps the name (its damage swap stays); the deck between the tracks is Hull Main
+const TANK_SIDES = ['left', 'right'].map((side) => ({ mesh: `body_${side}`, name: `body_${side}`, rest: `deck_${side}`, tris: true,
+  box: side === 'left' ? [[-3.5, -0.5, -7], [-1.4, 4, 7]] : [[1.4, -0.5, -7], [3.5, 4, 7]] }));
+const tank = (sides, cuts = []) => ({ src: CY + 'vehicles/cyborg_tank/cyborg_tank.unit.glb', boneNames: false, cuts: [...TANK_SIDES, ...cuts],
+  rules: TANK_HULL.map(([re, p]) => [re, p === 'Hull Sides (2)' ? sides : p]) });
+// the turret heat sink on the back of the turret: Annihilator the two grilles and the fin bank between them,
+// Shredder the two fin banks high on the back face
+const ANNIHILATOR_HEATSINK = [{ mesh: 'turret', name: 'turret_heatsink', box: [[-2, 2.2, 1.9], [2, 3.3, 2.8]] }];
+const SHREDDER_HEATSINK = [{ mesh: 'turret', name: 'turret_heatsink', box: [[-1.1, 2.75, 1.6], [1.1, 3.45, 2.05]] }];
 const MAIN_ONLY = [[/./, 'Main']];
 
 const SOURCES = {
@@ -642,8 +659,8 @@ const SOURCES = {
   'jet-brigade-devastator': { src: CY + 'cha_soldier/cha_soldier.unit.glb', rules: DEVASTATOR },
   'conflagration-devastator': { src: CY + 'cha_soldier/cha_soldier_heavy_weapon.unit.glb', rules: [[/^weapon_backpack(_whole)?$/, 'Main'], ...DEVASTATOR] }, // the shield body
   'incendiary-mg-devastator': { src: CY + 'cha_soldier/cha_soldier_heavy_weapon.unit.glb', rules: [[/^weapon_backpack(_whole)?$/, 'Main'], ...DEVASTATOR] }, // the shield body
-  'annihilator-tank': tank('Hull Sides (2)'),
-  'shredder-tank': tank('Hull Side (2)'),
+  'annihilator-tank': tank('Hull Sides (2)', ANNIHILATOR_HEATSINK),
+  'shredder-tank': tank('Hull Side (2)', SHREDDER_HEATSINK),
   'barrager-tank': tank('Hull Sides (2)'),
   'war-strider': {
     // the eye box low on the hull front and the visor block on top (both glow: m_boteye)
@@ -849,7 +866,10 @@ async function prep(id) {
       // "turret_damaged" or just "destroyed" (the Vox Engine cannon) → keep the state as a suffix
       const sm = /(?:^|_)(damaged?|destroyed|gibs?)$/i.exec(clean(n.getName()));
       const state = sm ? '_' + sm[1] : '';
-      n.setName(a.name + state); n.getMesh().setName(a.name + state);
+      // parts: { exportName: name } keeps a gear's sub-meshes apart (the Barrager turret's body and its launch tubes)
+      const own = a.parts?.[clean(n.getName())];
+      const nm = own || a.name + state;
+      n.setName(nm); n.getMesh().setName(nm);
     }
     const aScene = adoc.getRoot().listScenes()[0];
     // its skeleton sits under its own axis-conversion node; the bone is already in the game's axes
