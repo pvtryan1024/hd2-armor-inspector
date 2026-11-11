@@ -7,7 +7,7 @@
 // start hidden so they don't overlap the intact pieces; check and fix the rest in the 3D editor.
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { prune, dedup, textureCompress, meshopt, mergeDocuments, unpartition } from '@gltf-transform/functions';
@@ -710,7 +710,7 @@ const SOURCES = {
   },
   // cyborg_spawner is the Factory Strider (skeleton "cyborg_big_walker_skeleton"); the Fabricator is a building: best guess the bunker
   // the factory building (a box with a vent hatch on top)
-  'automaton-fabricator': { src: 'extra/cyborg_spawner_factory.unit.glb', boneNames: false,
+  'automaton-fabricator': { src: 'extra/cyborg_spawner_factory.unit.glb', origin: 'content/env_cyborg/gameplay/spawner_factory/cyborg_spawner_factory', boneNames: false,
     // the two exhaust ducts on the roof's front end (Vents), per triangle
     cuts: ['left', 'right'].map((s) => ({ mesh: 'g_cyborg_spawner_factory', name: `vent_${s}`, tris: true, box: s === 'left' ? [[-2.2, 3.7, -2.95], [-0.6, 6.0, -0.5]] : [[0.6, 3.7, -2.95], [2.2, 6.0, -0.5]] })),
     rules: [[/^(g_)?cyborg_spawner_factory$/, 'Main'], [/^vent_(left|right)$/, 'Vents']] },
@@ -1043,6 +1043,12 @@ async function prep(id) {
   console.log(`${id}: ${mb(src)} MB → ${mb(out)} MB, ${names.length} meshes; ${note}`);
 }
 
-const ids = process.argv.slice(2);
-if (!ids.length) { console.log(`usage: node tools/prep-model.mjs <id>...\nknown: ${Object.keys(SOURCES).join(', ')}`); process.exit(1); }
-for (const id of ids) await prep(id);
+// the source lists, for tools/list-sources.mjs (models/SOURCES.md)
+export { SOURCES, LOADOUT, GEAR };
+
+// run only from the command line (importing this file just reads the lists)
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  const ids = process.argv.slice(2);
+  if (!ids.length) { console.log(`usage: node tools/prep-model.mjs <id>...\nknown: ${Object.keys(SOURCES).join(', ')}`); process.exit(1); }
+  for (const id of ids) await prep(id);
+}

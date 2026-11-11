@@ -1,0 +1,150 @@
+enemy_id,enemy,faction,model,role,unit_hash,unit_path,bone,hitzone,archive_ids
+alpha-commander,Alpha Commander,Terminids,models/alpha-commander.glb,body,,content/fac_bugs/cha_warrior_big/cha_warrior_big_tier2,,,
+alpha-warrior,Alpha Warrior,Terminids,models/alpha-warrior.glb,body,,content/fac_bugs/cha_warrior/cha_warrior_tier_1,,,3c5227a93c2382a1 [family]; 94d5c96412fdbbdb [family]
+bile-titan,Bile Titan,Terminids,models/bile-titan.glb,body,,content/fac_bugs/cha_strider/cha_strider,,,fac59cae01035deb
+brood-commander,Brood Commander,Terminids,models/brood-commander.glb,body,,content/fac_bugs/cha_warrior_big/cha_warrior_big,,,"647308cc007f32ae; 7f22b24a87dda46d (Also Contains Various Props, Triggerable Event?); cb1a080e107f3132"
+caustic-charger,Caustic Charger,Terminids,models/caustic-charger.glb,body,,content/fac_bugs/cha_charger_acid/cha_charger_acid,,,7197eda433731404
+caustic-spewer,Caustic Spewer,Terminids,models/caustic-spewer.glb,body,,content/fac_bugs/cha_boomer/cha_boomer,,,855b36a0321f7106; c7c05edbb2fe0b77; 78a1a2cc66b6dd09 (New Variant?)
+caustic-spitter,Caustic Spitter,Terminids,models/caustic-spitter.glb,body,,content/fac_bugs/cha_scavenger_spitter/cha_scavenger_spitter,,,93e4bd568ccd515d
+caustic-warrior,Caustic Warrior,Terminids,models/caustic-warrior.glb,body,,content/fac_bugs/cha_warrior_acid/cha_warrior_acid,,,cdc32c2d1b60aa9e
+charger,Charger,Terminids,models/charger.glb,body,,content/fac_bugs/cha_charger/cha_charger,,,ea2b289bb6c14cfe
+charger-behemoth,Charger Behemoth,Terminids,models/charger-behemoth.glb,body,,content/fac_bugs/cha_charger_bull/cha_charger_bull,,,578fd2bcda91ee2f
+dragonroach,Dragonroach,Terminids,models/dragonroach.glb,body,,content/fac_bugs/cha_dragon/cha_dragon,,,863dc0bbdb912c40
+hive-guard,Hive Guard,Terminids,models/hive-guard.glb,body,,content/fac_bugs/cha_warrior_plus/cha_warrior_plus,,,90aeefeb7184560c
+hunter,Hunter,Terminids,models/hunter.glb,body,,content/fac_bugs/cha_hunter/cha_hunter,,,6771d08d041deaf3
+impaler,Impaler,Terminids,models/impaler.glb,body,,content/fac_bugs/cha_impaler/cha_impaler,,,987b77ea5a7e5d9e
+noxious-scavenger,Noxious Scavenger,Terminids,models/noxious-scavenger.glb,body,,content/fac_bugs/cha_scavenger_defiler/cha_scavenger_defiler,,,4738d3010ed84415 [family]; e341318c4cdadcf0 [family]; fec1a70e17127170 (New Variant?) [family]
+noxious-spewer,Noxious Spewer,Terminids,models/noxious-spewer.glb,body,,content/fac_bugs/cha_boomer_defiler/cha_boomer_defiler,,,
+nursing-spewer,Nursing Spewer,Terminids,models/nursing-spewer.glb,body,,content/fac_bugs/cha_boomer_nurser/cha_boomer_nurser,,,214f30944d4c4cd7
+pouncer,Pouncer,Terminids,models/pouncer.glb,body,,content/fac_bugs/cha_scavenger_predator/cha_scavenger_predator,,,7a088b8e45e12ed6
+predator-hunter,Predator Hunter,Terminids,models/predator-hunter.glb,body,,content/fac_bugs/cha_hunter/cha_hunter_tier3,,,4a600305ecab1826
+predator-stalker,Predator Stalker,Terminids,models/predator-stalker.glb,body,,content/fac_bugs/cha_stalker/cha_stalker,,,c082febf2a0d29e6 [family]
+rupture-charger,Rupture Charger,Terminids,models/rupture-charger.glb,body,,content/fac_bugs/cha_charger_burrower/cha_charger_burrower,,,ea2b289bb6c14cfe [family]
+rupture-spewer,Rupture Spewer,Terminids,models/rupture-spewer.glb,body,,content/fac_bugs/cha_boomer_burrower/cha_boomer_burrower,,,
+rupture-warrior,Rupture Warrior,Terminids,models/rupture-warrior.glb,body,,content/fac_bugs/cha_warrior_burrower/cha_warrior_burrower,,,3c5227a93c2382a1 [family]; 94d5c96412fdbbdb [family]
+scavenger,Scavenger,Terminids,models/scavenger.glb,body,,content/fac_bugs/cha_scavenger/cha_scavenger,,,4738d3010ed84415; e341318c4cdadcf0; fec1a70e17127170 (New Variant?)
+shrieker,Shrieker,Terminids,models/shrieker.glb,body,,content/fac_bugs/cha_shrieker/cha_shrieker,,,58cc04e08a03076c
+spore-burst-bile-titan,Spore Burst Bile Titan,Terminids,models/spore-burst-bile-titan.glb,body,,content/fac_bugs/cha_strider/cha_strider_gloom,,,fac59cae01035deb [family]
+spore-burst-hunter,Spore Burst Hunter,Terminids,models/spore-burst-hunter.glb,body,,content/fac_bugs/cha_hunter/cha_hunter_gloom_tier1,,,758bc3cb581155e8
+spore-burst-scavenger,Spore Burst Scavenger,Terminids,models/spore-burst-scavenger.glb,body,,content/fac_bugs/cha_scavenger/cha_scavenger_gloom,,,23725ae5eea97a53
+spore-burst-warrior,Spore Burst Warrior,Terminids,models/spore-burst-warrior.glb,body,,content/fac_bugs/cha_warrior/cha_warrior_gloom_tier_1,,,7d4287cda3cd9e41
+stalker,Stalker,Terminids,models/stalker.glb,body,,content/fac_bugs/cha_stalker/cha_stalker,,,c082febf2a0d29e6
+warrior,Warrior,Terminids,models/warrior.glb,body,,content/fac_bugs/cha_warrior/cha_warrior,,,3c5227a93c2382a1; 94d5c96412fdbbdb
+agitator,Agitator,Automatons,models/agitator.glb,body,,content/fac_cyborgs/cha_cyborg_elite/cha_cyborg_elite_rusher,,,
+agitator,Agitator,Automatons,models/agitator.glb,gear,0x67381f685e9b69a8,,r_elbow_attach,Forearms (2),
+annihilator-tank,Annihilator Tank,Automatons,models/annihilator-tank.glb,body,,content/fac_cyborgs/vehicles/cyborg_tank/cyborg_tank,,,62ec9c912c88c15d
+annihilator-tank,Annihilator Tank,Automatons,models/annihilator-tank.glb,gear,,content/fac_cyborgs/turrets/cyborg_tank_turret_cannon/cyborg_tank_turret_cannon,attach_turret,Turret Front,
+annihilator-tank,Annihilator Tank,Automatons,models/annihilator-tank.glb,gear,,content/fac_cyborgs/turrets/cyborg_tank_hull_hmg/cyborg_tank_hull_mg,attach_mg,,
+assault-raider,Assault Raider,Automatons,models/assault-raider.glb,body,,content/fac_cyborgs/cha_conscript/cha_conscript,,,
+assault-raider,Assault Raider,Automatons,models/assault-raider.glb,gear,,content/fac_cyborgs/equipment/backpacks/conscript_jumppack/conscript_jumppack,attach_backpack,Jetpack,
+automaton-fabricator,Automaton Fabricator,Automatons,models/automaton-fabricator.glb,body,,content/env_cyborg/gameplay/spawner_factory/cyborg_spawner_factory,,,
+barrager-tank,Barrager Tank,Automatons,models/barrager-tank.glb,body,,content/fac_cyborgs/vehicles/cyborg_tank/cyborg_tank,,,1a3dc966179bd5a4
+barrager-tank,Barrager Tank,Automatons,models/barrager-tank.glb,gear,,content/fac_cyborgs/turrets/cyborg_tank_turret_rocketlauncher/cyborg_tank_turret_rocketlauncher,attach_turret,Turret Main,
+barrager-tank,Barrager Tank,Automatons,models/barrager-tank.glb,gear,,content/fac_cyborgs/turrets/cyborg_tank_hull_hmg/cyborg_tank_hull_mg,attach_mg,,
+berserker,Berserker,Automatons,models/berserker.glb,body,,content/fac_cyborgs/cha_berserker/cha_berserker,,,a96722adb4b2c43a (skull variant)
+berserker,Berserker,Automatons,models/berserker.glb,gear,,content/fac_cyborgs/equipment/weapons/soldier_chainsaw/soldier_chainsaw,attach_l_hand,Arm (2),
+berserker,Berserker,Automatons,models/berserker.glb,gear,,content/fac_cyborgs/equipment/weapons/soldier_chainsaw/soldier_chainsaw,attach_r_hand,Arm (2),
+bunker-turret,Bunker Turret,Automatons,models/bunker-turret.glb,body,,content/fac_cyborgs/turrets/cyborg_turret_small_autocannon/cyborg_turret_small_autocannon,,,
+cannon-turret,Cannon Turret,Automatons,models/cannon-turret.glb,body,,content/fac_cyborgs/turrets/cyborg_tank_turret_cannon/cyborg_tank_turret_cannon,,,
+commissar,Commissar,Automatons,models/commissar.glb,body,,content/fac_cyborgs/cha_conscript_commander/cha_conscript_commander,,,eada82fbe2b1a689; 88e51fafbe068536 (Jetpack Varient)
+conflagration-devastator,Conflagration Devastator,Automatons,models/conflagration-devastator.glb,body,,content/fac_cyborgs/cha_soldier/cha_soldier_heavy_weapon,,,1ff5cb1fc2fe055b [family]; 3cf45796343b36df (Missle Variant) [family]; eaa001bca299717e [family]
+conflagration-devastator,Conflagration Devastator,Automatons,models/conflagration-devastator.glb,gear,,content/fac_cyborgs/equipment/weapons/soldier_shield/soldier_shield,attach_shield,Shield,
+devastator,Devastator,Automatons,models/devastator.glb,body,,content/fac_cyborgs/cha_soldier/cha_soldier,,,1ff5cb1fc2fe055b; 3cf45796343b36df (Missle Variant); eaa001bca299717e
+devastator,Devastator,Automatons,models/devastator.glb,gear,,content/fac_cyborgs/equipment/weapons/soldier_standard_rifle/soldier_standard_rifle,attach_r_hand,,
+dropship,Dropship,Automatons,models/dropship.glb,body,,content/fac_cyborgs/vehicles/cyborg_dropship/cyborg_dropship,,,fdf011daecf24312
+factory-strider,Factory Strider,Automatons,models/factory-strider.glb,body,,content/fac_cyborgs/vehicles/cyborg_spawner/cyborg_spawner,,,a2a2eb28bc511575
+factory-strider,Factory Strider,Automatons,models/factory-strider.glb,gear,,content/fac_cyborgs/turrets/cyborg_big_walker_turret_cannon/cyborg_big_walker_turret_cannon,attach_turret,Cannon Turret,
+factory-strider,Factory Strider,Automatons,models/factory-strider.glb,gear,0x48c91e42b9f16512,,l_front_turret_attach,Fusion Gatling Guns (2),
+factory-strider,Factory Strider,Automatons,models/factory-strider.glb,gear,0x48c91e42b9f16512,,r_front_turret_attach,Fusion Gatling Guns (2),
+gunship,Gunship,Automatons,models/gunship.glb,body,,content/fac_cyborgs/vehicles/cyborg_gunship/cyborg_gunship,,,27cb3df21f6599fd
+heavy-devastator,Heavy Devastator,Automatons,models/heavy-devastator.glb,body,,content/fac_cyborgs/cha_soldier/cha_soldier_heavy_weapon,,,1ff5cb1fc2fe055b [family]; 3cf45796343b36df (Missle Variant) [family]; eaa001bca299717e [family]
+heavy-devastator,Heavy Devastator,Automatons,models/heavy-devastator.glb,gear,,content/fac_cyborgs/equipment/weapons/soldier_machinegun/soldier_machinegun,attach_r_hand,,
+heavy-devastator,Heavy Devastator,Automatons,models/heavy-devastator.glb,gear,,content/fac_cyborgs/equipment/weapons/soldier_shield/soldier_shield,attach_shield,Shield,
+hulk-bruiser,Hulk Bruiser,Automatons,models/hulk-bruiser.glb,body,,content/fac_cyborgs/cha_lieutenant/cha_lieutenant,,,086e54bc88865de2 [family]; 499591b12328acbd (variant) [family]; eda39e568ad5f302 [family]
+hulk-bruiser,Hulk Bruiser,Automatons,models/hulk-bruiser.glb,gear,,content/fac_cyborgs/equipment/weapons/lieutenant_cannon/lieutenant_cannon,r_hand_attach,Arms (2),
+hulk-bruiser,Hulk Bruiser,Automatons,models/hulk-bruiser.glb,gear,,content/fac_cyborgs/equipment/weapons/lieutenant_launcher/lieutenant_launcher,l_hand_attach,Arms (2),
+hulk-firebomber,Hulk Firebomber,Automatons,models/hulk-firebomber.glb,body,,content/fac_cyborgs/cha_lieutenant/cha_lieutenant,,,086e54bc88865de2 [family]; 499591b12328acbd (variant) [family]; eda39e568ad5f302 [family]
+hulk-firebomber,Hulk Firebomber,Automatons,models/hulk-firebomber.glb,gear,,content/fac_cyborgs/equipment/weapons/lieutenant_launcher/lieutenant_launcher,r_hand_attach,Arms (2),
+hulk-firebomber,Hulk Firebomber,Automatons,models/hulk-firebomber.glb,gear,0x08886d27a6f6db8c,,l_hand_attach,Arms (2),
+hulk-obliterator,Hulk Obliterator,Automatons,models/hulk-obliterator.glb,body,,content/fac_cyborgs/cha_lieutenant/cha_lieutenant,,,086e54bc88865de2 [family]; 499591b12328acbd (variant) [family]; eda39e568ad5f302 [family]
+hulk-obliterator,Hulk Obliterator,Automatons,models/hulk-obliterator.glb,gear,,content/fac_cyborgs/equipment/weapons/lieutenant_launcher/lieutenant_launcher,r_hand_attach,Arms (2),
+hulk-obliterator,Hulk Obliterator,Automatons,models/hulk-obliterator.glb,gear,,content/fac_cyborgs/equipment/weapons/lieutenant_launcher/lieutenant_launcher,l_hand_attach,Arms (2),
+hulk-scorcher,Hulk Scorcher,Automatons,models/hulk-scorcher.glb,body,,content/fac_cyborgs/cha_lieutenant_assault/cha_lieutenant_assault,,,086e54bc88865de2 [family]; 499591b12328acbd (variant) [family]; eda39e568ad5f302 [family]
+hulk-scorcher,Hulk Scorcher,Automatons,models/hulk-scorcher.glb,gear,,content/fac_cyborgs/equipment/weapons/lieutenant_saw/lieutenant_saw,l_hand_attach,Arms (2),
+hulk-scorcher,Hulk Scorcher,Automatons,models/hulk-scorcher.glb,gear,0x08886d27a6f6db8c,,r_hand_attach,Arms (2),
+incendiary-mg-devastator,Incendiary MG Devastator,Automatons,models/incendiary-mg-devastator.glb,body,,content/fac_cyborgs/cha_soldier/cha_soldier_heavy_weapon,,,1ff5cb1fc2fe055b [family]; 3cf45796343b36df (Missle Variant) [family]; eaa001bca299717e [family]
+incendiary-mg-devastator,Incendiary MG Devastator,Automatons,models/incendiary-mg-devastator.glb,gear,,content/fac_cyborgs/equipment/weapons/soldier_machinegun/soldier_machinegun,attach_r_hand,,
+incendiary-mg-devastator,Incendiary MG Devastator,Automatons,models/incendiary-mg-devastator.glb,gear,,content/fac_cyborgs/equipment/weapons/soldier_shield/soldier_shield,attach_shield,Shield,
+incendiary-rocket-raider,Incendiary Rocket Raider,Automatons,models/incendiary-rocket-raider.glb,body,,content/fac_cyborgs/cha_conscript/cha_conscript,,,
+incendiary-rocket-raider,Incendiary Rocket Raider,Automatons,models/incendiary-rocket-raider.glb,gear,,content/fac_cyborgs/equipment/weapons/conscript_cannon/conscript_cannon,attach_r_hand,,
+jet-brigade-commissar,Jet Brigade Commissar,Automatons,models/jet-brigade-commissar.glb,body,,content/fac_cyborgs/cha_conscript_commander/cha_conscript_commander,,,eada82fbe2b1a689 [family]; 88e51fafbe068536 (Jetpack Varient) [family]
+jet-brigade-commissar,Jet Brigade Commissar,Automatons,models/jet-brigade-commissar.glb,gear,,content/fac_cyborgs/equipment/backpacks/conscript_jumppack/conscript_jumppack,attach_backpack,Jetpack,
+jet-brigade-devastator,Jet Brigade Devastator,Automatons,models/jet-brigade-devastator.glb,body,,content/fac_cyborgs/cha_soldier/cha_soldier,,,1ff5cb1fc2fe055b [family]; 3cf45796343b36df (Missle Variant) [family]; eaa001bca299717e [family]
+jet-brigade-devastator,Jet Brigade Devastator,Automatons,models/jet-brigade-devastator.glb,gear,,content/fac_cyborgs/equipment/weapons/soldier_standard_rifle/soldier_standard_rifle,attach_r_hand,,
+jet-brigade-devastator,Jet Brigade Devastator,Automatons,models/jet-brigade-devastator.glb,gear,,content/fac_cyborgs/equipment/backpacks/soldier_jumppack/soldier_jumppack,attach_backpack,Jetpack,
+jet-brigade-hulk-bruiser,Jet Brigade Hulk Bruiser,Automatons,models/jet-brigade-hulk-bruiser.glb,body,,content/fac_cyborgs/cha_lieutenant/cha_lieutenant,,,086e54bc88865de2 [family]; 499591b12328acbd (variant) [family]; eda39e568ad5f302 [family]
+jet-brigade-hulk-bruiser,Jet Brigade Hulk Bruiser,Automatons,models/jet-brigade-hulk-bruiser.glb,gear,,content/fac_cyborgs/equipment/weapons/lieutenant_cannon/lieutenant_cannon,r_hand_attach,Arms (2),
+jet-brigade-hulk-bruiser,Jet Brigade Hulk Bruiser,Automatons,models/jet-brigade-hulk-bruiser.glb,gear,,content/fac_cyborgs/equipment/weapons/lieutenant_launcher/lieutenant_launcher,l_hand_attach,Arms (2),
+jet-brigade-hulk-bruiser,Jet Brigade Hulk Bruiser,Automatons,models/jet-brigade-hulk-bruiser.glb,gear,,content/fac_cyborgs/equipment/backpacks/lieutenant_jetpack/lieutenant_jetpack,attach_backpack_socket,Jetpack,
+jet-brigade-hulk-scorcher,Jet Brigade Hulk Scorcher,Automatons,models/jet-brigade-hulk-scorcher.glb,body,,content/fac_cyborgs/cha_lieutenant_assault/cha_lieutenant_assault,,,086e54bc88865de2 [family]; 499591b12328acbd (variant) [family]; eda39e568ad5f302 [family]
+jet-brigade-hulk-scorcher,Jet Brigade Hulk Scorcher,Automatons,models/jet-brigade-hulk-scorcher.glb,gear,,content/fac_cyborgs/equipment/weapons/lieutenant_saw/lieutenant_saw,l_hand_attach,Arms (2),
+jet-brigade-hulk-scorcher,Jet Brigade Hulk Scorcher,Automatons,models/jet-brigade-hulk-scorcher.glb,gear,0x08886d27a6f6db8c,,r_hand_attach,Arms (2),
+jet-brigade-hulk-scorcher,Jet Brigade Hulk Scorcher,Automatons,models/jet-brigade-hulk-scorcher.glb,gear,,content/fac_cyborgs/equipment/backpacks/lieutenant_jetpack/lieutenant_jetpack,attach_backpack_socket,Jetpack,
+jet-brigade-mg-raider,Jet Brigade MG Raider,Automatons,models/jet-brigade-mg-raider.glb,body,,content/fac_cyborgs/cha_conscript/cha_conscript,,,
+jet-brigade-mg-raider,Jet Brigade MG Raider,Automatons,models/jet-brigade-mg-raider.glb,gear,,content/fac_cyborgs/equipment/weapons/conscript_lmg/conscript_lmg,attach_r_hand,,
+jet-brigade-mg-raider,Jet Brigade MG Raider,Automatons,models/jet-brigade-mg-raider.glb,gear,,content/fac_cyborgs/equipment/backpacks/conscript_jumppack/conscript_jumppack,attach_backpack,Jetpack,
+jet-brigade-trooper,Jet Brigade Trooper,Automatons,models/jet-brigade-trooper.glb,body,,content/fac_cyborgs/cha_conscript/cha_conscript,,,"079529fe7dd7c0cb [family]; 387a99b22d643bb1 [family]; 69c66efe95decaf0 [family]; 769ee339c8ca621b [family]; 77b1dfa352e8cbed (Trooper with launcher of some kind, anti-tank?) [family]; 7a8ede61a5d379fd (Trooper with flamethrower) [family]; 9dedbfc1b397d535 [family]; b7aedfc7bff6956c [family]; bb2633ec2b4e2f86 [family]; c5f8c8cd5e25dcb1 [family]; f042cba420e65b59 [family]"
+jet-brigade-trooper,Jet Brigade Trooper,Automatons,models/jet-brigade-trooper.glb,gear,,content/fac_cyborgs/equipment/backpacks/conscript_jumppack/conscript_jumppack,attach_backpack,Jetpack,
+marauder,Marauder,Automatons,models/marauder.glb,body,,content/fac_cyborgs/cha_conscript/cha_conscript_tier_2,,,
+mg-emplacement-heavy-fusion-repeater,MG Emplacement (Heavy Fusion Repeater),Automatons,models/mg-emplacement-heavy-fusion-repeater.glb,body,,content/fac_cyborgs/emplacements/cyborg_emplacement_hmg/cyborg_emplacement_hmg,,,
+mg-emplacement-light-fusion-cycler,MG Emplacement (Light Fusion Cycler),Automatons,models/mg-emplacement-light-fusion-cycler.glb,body,,content/fac_cyborgs/emplacements/cyborg_emplacement_mg/cyborg_emplacement_mg,,,
+mg-raider,MG Raider,Automatons,models/mg-raider.glb,body,,content/fac_cyborgs/cha_conscript/cha_conscript,,,
+mg-raider,MG Raider,Automatons,models/mg-raider.glb,gear,,content/fac_cyborgs/equipment/weapons/conscript_lmg/conscript_lmg,attach_r_hand,,
+mg-raider,MG Raider,Automatons,models/mg-raider.glb,gear,,content/fac_cyborgs/equipment/backpacks/conscript_backpack_lmg/conscript_backpack_lmg,attach_backpack,Backpack,
+pyro-trooper,Pyro Trooper,Automatons,models/pyro-trooper.glb,body,,content/fac_cyborgs/cha_conscript/cha_conscript,,,"079529fe7dd7c0cb [family]; 387a99b22d643bb1 [family]; 69c66efe95decaf0 [family]; 769ee339c8ca621b [family]; 77b1dfa352e8cbed (Trooper with launcher of some kind, anti-tank?) [family]; 7a8ede61a5d379fd (Trooper with flamethrower) [family]; 9dedbfc1b397d535 [family]; b7aedfc7bff6956c [family]; bb2633ec2b4e2f86 [family]; c5f8c8cd5e25dcb1 [family]; f042cba420e65b59 [family]"
+pyro-trooper,Pyro Trooper,Automatons,models/pyro-trooper.glb,gear,,content/fac_cyborgs/equipment/weapons/conscript_flamer/conscript_flamer,attach_r_hand,,
+radical,Radical,Automatons,models/radical.glb,body,,content/fac_cyborgs/cha_cyborg_elite/cha_elite_female,,,
+radical,Radical,Automatons,models/radical.glb,gear,0x1338b552afe68f0a,,r_elbow_attach,Forearms (2),
+reinforced-scout-strider,Reinforced Scout Strider,Automatons,models/reinforced-scout-strider.glb,body,,content/fac_cyborgs/vehicles/cyborg_walker_scout/cyborg_walker_scout,,,2c8d8cc831d0c732
+reinforced-scout-strider,Reinforced Scout Strider,Automatons,models/reinforced-scout-strider.glb,gear,0xd3cd6f0ca83bb51e,,turret,Faceplate,
+reinforced-scout-strider,Reinforced Scout Strider,Automatons,models/reinforced-scout-strider.glb,gear,0x2a346bf4552997e2,,gun_pitch,HMG,
+reinforced-scout-strider,Reinforced Scout Strider,Automatons,models/reinforced-scout-strider.glb,gear,0xe5b14182b25f7f7d,,turret,Rocket Rails (2),
+reinforced-scout-strider,Reinforced Scout Strider,Automatons,models/reinforced-scout-strider.glb,gear,0xe5b14182b25f7f7d,,turret,Rocket Rails (2),
+rocket-devastator,Rocket Devastator,Automatons,models/rocket-devastator.glb,body,,content/fac_cyborgs/cha_soldier/cha_soldier_rocket,,,1ff5cb1fc2fe055b [family]; 3cf45796343b36df (Missle Variant) [family]; eaa001bca299717e [family]
+rocket-devastator,Rocket Devastator,Automatons,models/rocket-devastator.glb,gear,,content/fac_cyborgs/equipment/weapons/soldier_standard_rifle/soldier_standard_rifle,attach_r_hand,Arms (2),
+rocket-raider,Rocket Raider,Automatons,models/rocket-raider.glb,body,,content/fac_cyborgs/cha_conscript/cha_conscript,,,
+rocket-raider,Rocket Raider,Automatons,models/rocket-raider.glb,gear,,content/fac_cyborgs/equipment/weapons/conscript_cannon/conscript_cannon,attach_r_hand,Right Arm,
+scout-strider,Scout Strider,Automatons,models/scout-strider.glb,body,,content/fac_cyborgs/vehicles/cyborg_walker_scout/cyborg_walker_scout,,,094394c2a2c22f36 (This archive has both a trooper and the strider)
+scout-strider,Scout Strider,Automatons,models/scout-strider.glb,gear,0xee00bfe8ff769f70,,turret,Front Plate,
+scout-strider,Scout Strider,Automatons,models/scout-strider.glb,gear,0x2a346bf4552997e2,,gun_pitch,HMG,
+scout-strider,Scout Strider,Automatons,models/scout-strider.glb,gear,,content/fac_cyborgs/cha_conscript_commander/cha_conscript_commander,attach_pilot,Pilot,
+shredder-tank,Shredder Tank,Automatons,models/shredder-tank.glb,body,,content/fac_cyborgs/vehicles/cyborg_tank/cyborg_tank,,,063a5b895ed482e6
+shredder-tank,Shredder Tank,Automatons,models/shredder-tank.glb,gear,,content/fac_cyborgs/turrets/cyborg_tank_turret_autocannons/cyborg_tank_turret_autocannons,attach_turret,Turret Front and Sides,
+shredder-tank,Shredder Tank,Automatons,models/shredder-tank.glb,gear,,content/fac_cyborgs/turrets/cyborg_tank_hull_hmg/cyborg_tank_hull_mg,attach_mg,,
+trooper,Trooper,Automatons,models/trooper.glb,body,,content/fac_cyborgs/cha_conscript/cha_conscript,,,"079529fe7dd7c0cb; 387a99b22d643bb1; 69c66efe95decaf0; 769ee339c8ca621b; 77b1dfa352e8cbed (Trooper with launcher of some kind, anti-tank?); 7a8ede61a5d379fd (Trooper with flamethrower); 9dedbfc1b397d535; b7aedfc7bff6956c; bb2633ec2b4e2f86; c5f8c8cd5e25dcb1; f042cba420e65b59"
+vox-engine,Vox Engine,Automatons,models/vox-engine.glb,body,,content/fac_cyborgs/vehicles/cyborg_siege_engine/cyborg_siege_engine,,,b9a08b6ab841d83e
+vox-engine,Vox Engine,Automatons,models/vox-engine.glb,gear,,content/fac_cyborgs/turrets/cyborg_big_walker_turret_cannon/cyborg_big_walker_turret_cannon,l_cannon_socket,Cannons (2),
+vox-engine,Vox Engine,Automatons,models/vox-engine.glb,gear,,content/fac_cyborgs/turrets/cyborg_big_walker_turret_cannon/cyborg_big_walker_turret_cannon,r_cannon_socket,Cannons (2),
+vox-engine,Vox Engine,Automatons,models/vox-engine.glb,gear,0x48c91e42b9f16512,,l_gattling_socket,Miniguns (2),
+vox-engine,Vox Engine,Automatons,models/vox-engine.glb,gear,0x48c91e42b9f16512,,r_gattling_socket,Miniguns (2),
+war-strider,War Strider,Automatons,models/war-strider.glb,body,,content/fac_cyborgs/vehicles/cyborg_assault_walker/cyborg_assault_walker,,,031c90406564341b
+war-strider,War Strider,Automatons,models/war-strider.glb,gear,0x8372619b2702d743,,attach_left_gun,Fusion Cannons (2),
+war-strider,War Strider,Automatons,models/war-strider.glb,gear,0x9ab036439f74c115,,attach_right_gun,Fusion Cannons (2),
+crescent-overseer,Crescent Overseer,Illuminate,models/crescent-overseer.glb,body,,content/fac_illuminate/cha_beamer_champion/cha_beamer_champion,,,2defbee4485f3ce0
+crusher,Crusher,Illuminate,models/crusher.glb,body,,content/fac_illuminate/cha_bodyhorror_helmetguy/cha_bodyhorror_helmetguy,,,6a9745893ec68156
+elevated-overseer,Elevated Overseer,Illuminate,models/elevated-overseer.glb,body,,content/fac_illuminate/cha_jet_champion/cha_jet_champion,,,71b78f82c6d9fce5 (Grenade + Weapon)
+fleshmob,Fleshmob,Illuminate,models/fleshmob.glb,body,,content/fac_illuminate/cha_meatglue/cha_meatglue,,,e7765eef5f60acea
+gatekeeper,Gatekeeper,Illuminate,models/gatekeeper.glb,body,,content/fac_illuminate/cha_exomech_ranged/cha_exomech_ranged,,,b97df541a966620a
+harvester,Harvester,Illuminate,models/harvester.glb,body,,content/fac_illuminate/cha_tripod/cha_tripod,,,af77305e19308f7b
+heavy-voteless,Heavy Voteless,Illuminate,models/heavy-voteless.glb,body,,content/fac_illuminate/cha_corrupted/cha_corrupted_v3,,,6502c77f9595fbc2 [family]
+illuminate-overship,Illuminate Overship,Illuminate,models/illuminate-overship.glb,body,0xe7074f10233cd0b8,,,,70b4860e8169622e
+leviathan,Leviathan,Illuminate,models/leviathan.glb,body,,content/fac_illuminate/vehicles/illuminate_war_machine/illuminate_war_machine,,,dd43ebba60a66968
+light-voteless,Light Voteless,Illuminate,models/light-voteless.glb,body,,content/fac_illuminate/cha_corrupted/cha_corrupted,,,6502c77f9595fbc2 [family]
+medium-voteless,Medium Voteless,Illuminate,models/medium-voteless.glb,body,,content/fac_illuminate/cha_corrupted/cha_corrupted_v2,,,6502c77f9595fbc2 [family]
+obtruder,Obtruder,Illuminate,models/obtruder.glb,body,,content/fac_illuminate/cha_observer/cha_observer,,,864114866d6b24eb
+overseer,Overseer,Illuminate,models/overseer.glb,body,,content/fac_illuminate/cha_illuminate_guy_staff/cha_illuminate_guy_staff,,,cd552726e679d434 (Armored Overseer + Staff); 9230ae99f0ee6c03 (Overseer Only)
+stingray,Stingray,Illuminate,models/stingray.glb,body,,content/fac_illuminate/vehicles/illuminate_attack_ship/illuminate_attack_ship,,,9c42c3028d67fb2a
+veracitor,Veracitor,Illuminate,models/veracitor.glb,body,,content/fac_illuminate/cha_exomech_melee/cha_exomech_melee,,,687d548654b91be6
+warp-ship,Warp Ship,Illuminate,models/warp-ship.glb,body,0x43cca7488df95ad2,,,,046d4441a6dae0a9 (8422338628769435505)
+watcher,Watcher,Illuminate,models/watcher.glb,body,,content/fac_illuminate/cha_observer/cha_observer,,,046d4441a6dae0a9 (12421182327299345565)
+wretch,Wretch,Illuminate,models/wretch.glb,body,,content/fac_illuminate/cha_bodyhorror_bladed/cha_bodyhorror_bladed,,,8cc398a6c1e8c051

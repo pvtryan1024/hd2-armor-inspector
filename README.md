@@ -33,6 +33,8 @@ Enemy hitzones and weapon stats come from https://helldivers.wiki.gg/.
 3. Save it as `models/<enemy-id>.glb`. The id is shown in the 3D view's empty state and in the URL (`#e=charger`). You can also use **Load .glb** in the 3D view; with `serve.js` running it is copied into `models/` for you.
 4. Click **Edit hitzones**, click each mesh, and choose its wiki part from the dropdown. Hide LOD/shadow meshes with the checkbox. **Save mapping** writes `models/<enemy-id>.map.json`.
 
+**Which game files the site's models came from:** [models/SOURCES.md](models/SOURCES.md) (and `models/sources.csv`) lists, for every enemy, the body unit (a `content/…` path or a `0x…` unit hash), the gear units hung on its bones with the hitzone each counts as, and the matching archive IDs. Regenerate it with `node tools/list-sources.mjs` after changing `tools/prep-model.mjs`.
+
 `node tools/make-test-glb.js` writes a box-built test Charger to `models/charger.glb`. It's tagged as a test model, so `build-data.js` never publishes it; overwrite it with a real model.
 
 Extracted game assets belong to Arrowhead. Keep them local and don't redistribute them.
