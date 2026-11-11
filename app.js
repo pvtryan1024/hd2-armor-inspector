@@ -295,6 +295,20 @@
     out.broke = out.broke || o2.broke;
     return out;
   }
+  /** Flame and gas weapons in fire mode: a click is one second of spraying. The spray's own hit lands on the
+   *  part clicked (applied like a shot), and a second of the burn / gas (dot.dps) goes to Main, as the
+   *  time-to-kill numbers count it, if its AP gets through Main's armor. Returns the log text. */
+  const DOT_CLICK = 1;
+  function dotSecond(sim, enemy, mode) {
+    const dot = mode.dot, main = mainPart(enemy), mi = enemy.parts.indexOf(main);
+    if (!dot || sim.dead || mi < 0 || typeof main.health !== 'number') return '';
+    const pen = penMult(dot.ap, main.av) || 0;
+    if (!pen) return ` · ${dot.label} can't get through Main's armor (AP ${dot.ap} vs AV ${main.av})`;
+    const dmg = Math.floor(dot.dps * DOT_CLICK * pen);
+    applyShot(sim, enemy, mi, { proj: 0, partEx: 0, mainEx: 0, total: dmg }, true);
+    return ` + ${DOT_CLICK} s ${dot.label.toLowerCase()}: ${fmt(dmg)} to Main`;
+  }
+
   /** Log text for the explosion that went on into the part under a broken plate. */
   const underNote = (enemy, o) => (o.under ? ` → explosion on the ${enemy.parts[o.under.idx].name} beneath: ${fmt(o.under.dealt)} dmg${o.under.broke ? ', destroyed' : ''}` : '');
 
@@ -889,8 +903,9 @@
     const sim = state.sim, w = weapon();
     const key = `${w.id}:${state.mode}`;
     const fm = fireModel(w, w.modes[state.mode] || w.modes[0]);
-    if (sim.last === key) sim.time += fm && fm.kind === 'shot' && fm.interval ? fm.interval : 0;
-    else if (sim.last) sim.swaps++;
+    if (fm?.kind === 'dot') sim.time += DOT_CLICK; // a flame / gas click is a second of spraying
+    else if (sim.last === key) sim.time += fm && fm.kind === 'shot' && fm.interval ? fm.interval : 0;
+    if (sim.last && sim.last !== key) sim.swaps++;
     sim.last = key;
     sim.weapons.add(w.id);
     return sim.weapons.size > 1 ? `[${w.name.replace(/^\S+-\d+\S*\s+/, '')}] ` : '';
@@ -956,8 +971,9 @@
     const o = applyHit(state.sim, e, i, s, mode, { ...opts(), band }, false, k);
     const thru = !state.sim.dead ? overpen(mode, e, i, s, { ...opts(), band }) : null;
     const o2 = thru ? applyShot(state.sim, e, thru.idx, thru.s, true) : null;
+    const dotNote = dotSecond(state.sim, e, mode);
     const label = k != null && (part.count || 1) > 1 ? `${part.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${part.count}` : part.name;
-    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${underNote(e, o)}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
+    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : 'ricochet'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${underNote(e, o)}${dotNote}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
     state.sim.log.length = Math.min(state.sim.log.length, 8);
     render();
   }
@@ -1170,6 +1186,8 @@
           notes.push(`through into ${pieceName(e.parts[res.thru.idx], res.thru.k)} (AP ${res.thru.ap}): ${fmt(res.thru.s.total)} dmg${o2.broke ? ', destroyed' : ''}`);
         }
       });
+      const dotNote = dotSecond(state.sim, e, res.mode);
+      if (dotNote) notes.push(dotNote.replace(/^ [+·] /, ''));
       const d = res.rows[0];
       state.sim.log.unshift(`#${state.sim.shots} ${tag}${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : 'ricochet'}${(() => { const n = res.rows.slice(1).filter((r) => r.s.partEx > 0 || r.s.mainEx > 0).length; return n ? ` + blast on ${n} part${n > 1 ? 's' : ''}` : ''; })()}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}`);
       state.sim.log.length = Math.min(state.sim.log.length, 8);

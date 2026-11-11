@@ -596,12 +596,12 @@
       },
       {
         "name": "Flamethrower",
-        "damage": 150,
-        "durable": null,
+        "damage": 2,
+        "durable": 2,
         "ap": 4,
         "pellets": 1,
         "explosion": null,
-        "note": "Fire DPS as listed by wiki; durable not listed"
+        "note": "Flame spray per-hit 2/2 at AP 4; burning 150 DPS once the target is lit"
       }
     ]
   },
