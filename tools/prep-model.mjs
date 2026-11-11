@@ -669,9 +669,15 @@ const SOURCES = {
     cuts: [
       { mesh: 'body_whole', name: 'body_eye', box: [[0.5, 3.84, -1.86], [0.87, 4.24, -1.58]] },
       { mesh: 'body_whole', name: 'body_visor', box: [[-0.47, 4.47, -0.79], [0.47, 5.21, -0.21]] },
+      // the hip joints (the slab between the crotch and the thigh, and its axle) and the greaves (the plate on
+      // the back of the shin), by bone; the heat sink grille on the back of the crotch (+z is the rear)
+      ...['left', 'right'].flatMap((s) => [{ mesh: `${s}_leg_whole`, name: `${s}_hip`, bone: new RegExp(`^${s[0]}_hip(_adjust)?$`) },
+        { mesh: `${s}_leg_whole`, name: `${s}_greave`, bone: new RegExp(`^${s[0]}_leg_shield$`) }]),
+      { mesh: 'platform_whole', name: 'heatsink', tris: true, box: [[-0.65, 2.78, 1.58], [0.65, 3.3, 1.8]] },
     ],
     src: CY + 'vehicles/cyborg_assault_walker/cyborg_assault_walker.unit.glb',
-    rules: [[/^body(_whole)?$/, 'Torso'], [/^(left|right)_leg(_whole)?$/, 'Legs (2)'], [/^(left|right)_rocketpod(_whole)?$/, 'Grenade Launchers (2)'], [/^platform(_whole)?$/, 'Crotch']],
+    rules: [[/^body(_whole)?$/, 'Torso'], [/^(left|right)_leg(_whole)?$/, 'Legs (2)'], [/^(left|right)_rocketpod(_whole)?$/, 'Grenade Launchers (2)'], [/^platform(_whole)?$/, 'Crotch'],
+      [/^(left|right)_hip$/, 'Hip Joints (2)'], [/^(left|right)_greave$/, 'Greaves (2)'], [/^heatsink$/, 'Heatsink'], [/^body_(eye|visor)$/, 'Eyes (2)']],
   },
   // the body: the turret system (the platform the pilot kneels on and the HMG mechanism, on the turret bone) over the
   // waist (the hip section, on boss)

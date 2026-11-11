@@ -10,7 +10,12 @@
     "cannon_left": "Fusion Cannons (2)",
     "cannon_right": "Fusion Cannons (2)",
     "body_eye": "Eyes (2)",
-    "body_visor": "Eyes (2)"
+    "body_visor": "Eyes (2)",
+    "left_hip": "Hip Joints (2)",
+    "left_greave": "Greaves (2)",
+    "right_hip": "Hip Joints (2)",
+    "right_greave": "Greaves (2)",
+    "heatsink": "Heatsink"
   },
   "hidden": [
     "platform_damaged",
