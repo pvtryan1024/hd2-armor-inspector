@@ -3003,7 +3003,8 @@
         "exdr": 0,
         "location": "Top",
         "demolition": 20,
-        "demolitionBlast": true
+        "demolitionBlast": true,
+        "demolitionInside": true
       }
     ]
   },

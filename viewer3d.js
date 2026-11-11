@@ -771,10 +771,19 @@ function hover(ev) {
   if (i >= 0) HD2.tip(i, ev.clientX, ev.clientY, { deg: h.deg });
 }
 renderer.domElement.addEventListener('pointerleave', () => HD2.hideTip());
+/** Parts whose inside the explosion goes off in (map "inside": [{ part, centre, size }] boxes, model space):
+ *  the Fabricator's vents only fall to a blast inside the duct, not one on its lid or outer wall. The blast
+ *  centre is the impact point, a few cm off the surface it hit. */
+function insideParts(h) {
+  const boxes = current?.map?.inside;
+  if (!boxes?.length) return [];
+  const at = h.point.clone().addScaledVector(h.normal, 0.05);
+  return [...new Set(boxes.filter((b) => [0, 1, 2].every((k) => Math.abs(at.getComponent(k) - b.centre[k]) <= b.size[k] / 2)).map((b) => b.part))];
+}
 function shoot(h) {
   if (h.ground) { // only the explosion (and shrapnel) reaches the enemy
     const blast = blastHits(h, lastDetail?.radii?.outer);
-    const said = HD2.hit({ ground: true, idx: -1, k: null, blastHits: blast, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), deg: h.deg, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+    const said = HD2.hit({ ground: true, idx: -1, k: null, blastHits: blast, inside: insideParts(h), shrapHits: shrapnelHits(h, lastDetail?.shrapnel), deg: h.deg, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
     if (said) status(said);
     return;
   }
@@ -793,7 +802,7 @@ function shoot(h) {
   for (const m of bv.revealed) { const ri = partIndexFor(current, m.userData.key); if (ri >= 0 && !(ri in revealedK)) revealedK[ri] = instanceFor(current, m.userData.key, ri); }
   const parts = {};
   for (const b of blast) if (parts[b.idx] == null || b.d < parts[b.idx]) parts[b.idx] = b.d;
-  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), thru: thruAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, inside: insideParts(h), revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), thru: thruAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
   if (said) status(said);
 }
 
@@ -921,7 +930,7 @@ $('#v3Save').addEventListener('click', async () => {
   // inner hitboxes are saved too (the auto-placed ones become fixed once saved)
   const colliders = (current.colliders || []).map(({ def }) => (def.shape === 'box' ? { part: def.part, shape: 'box', centre: def.centre, size: def.size, ...(def.direct ? { direct: true } : {}) }
     : { part: def.part, from: def.from.map((v) => +(+v).toFixed(4)), to: def.to.map((v) => +(+v).toFixed(4)), radius: def.radius, ...(def.direct ? { direct: true } : {}) }));
-  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(current.map.vanish ? { vanish: current.map.vanish } : {}), ...(colliders.length ? { colliders } : {}) }, null, 2);
+  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(current.map.vanish ? { vanish: current.map.vanish } : {}), ...(colliders.length ? { colliders } : {}), ...(current.map.inside ? { inside: current.map.inside } : {}) }, null, 2);
   if (SERVED) {
     try {
       const r = await fetch(`api/map/${encodeURIComponent(currentId)}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });

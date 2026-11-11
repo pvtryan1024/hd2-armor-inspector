@@ -185,7 +185,11 @@
     let demo = false;
     if (part.demolition && !ricochet) {
       if (!part.demolitionBlast && !opts.noProj && !mode.explosionOnly && m != null && (mode.demolition || 0) >= part.demolition) demo = true;
-      if (opts.explosion) for (const ex of exList(mode)) if ((ex.demolition || 0) >= part.demolition && blastAt(ex, opts.exDist || 0).mult > 0) demo = true;
+      // demolitionInside (the vents): the explosion has to go off inside the part. The 3D view says which parts
+      // the blast centre is inside (opts.inside); without a position (body map, tables) aiming at the part
+      // means getting the explosive in, so a direct hit counts
+      const inside = !part.demolitionInside || (opts.inside ? opts.inside.includes(part.name) : !opts.noProj && !opts.exDist);
+      if (opts.explosion && inside) for (const ex of exList(mode)) if ((ex.demolition || 0) >= part.demolition && blastAt(ex, opts.exDist || 0).mult > 0) demo = true;
     }
     let shrap = 0;
     if (mode.shrapnel && opts.allShrap && !opts.noProj && !opts.noShrap && !ricochet && opts.explosion !== false) {
@@ -1074,7 +1078,7 @@
     if (!e || !w || !hit) return null;
     const mode = w.modes[state.mode] || w.modes[0];
     const band = bandOf(hit.deg);
-    const o = { ...opts(), band };
+    const o = { ...opts(), band, ...(hit.inside ? { inside: hit.inside } : {}) };
     if (hit.ground) return resolveGround(hit, mode, band, o);
     const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0, noShrap: true }) }];
     // 3D shots: the next piece along the shot's path (hit.thru from the viewer), if the cleave rule lets it through
