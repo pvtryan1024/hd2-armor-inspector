@@ -299,6 +299,20 @@ if (fs.existsSync(forcesPath)) {
   });
 }
 
+// Charge weapons (data/charge.json): the weapon card gets a charge-time slider instead of the mode list.
+const chargePath = path.join(dir, 'charge.json');
+if (fs.existsSync(chargePath)) {
+  const charge = JSON.parse(fs.readFileSync(chargePath, 'utf8'));
+  for (const [id, c] of Object.entries(charge)) {
+    if (id.startsWith('_')) continue;
+    const w = weapons.find((x) => x.id === id);
+    if (!w) { console.warn(`charge.json: no weapon ${id}`); continue; }
+    const bad = c.steps.filter((s) => !w.modes.some((m) => m.name === s.mode));
+    if (bad.length) { console.warn(`charge.json: ${id} has no mode ${bad.map((s) => s.mode).join(', ')}`); continue; }
+    w.charge = c;
+  }
+}
+
 // Shrapnel (wiki: AC-8 P2, shared by the Autocannon's flak shell and the Eruptor's explosion): 30 fragments
 // of 110 / 35 durable, AP 3/3/2/0 by angle. The flak shell itself is 150/150 AP2 with a proximity fuse
 // (it bursts even when the shell would glance off); the Eruptor's fragments fly "in a 180-ish arc in the

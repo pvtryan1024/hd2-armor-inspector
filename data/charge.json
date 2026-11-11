@@ -1,0 +1,27 @@
+{
+  "_doc": "Charge weapons: the weapon card shows a charge-time slider from min to max seconds. points = [seconds, damage multiplier] from each wiki page's Detailed Weapon Statistics (linear between points). steps = which mode (projectile and explosion) fires from that charge time on; ref = the multiplier the mode's listed damage / durable already include. Only the projectile's damage scales; explosions switch with the step.",
+  "plas-45-epoch": {
+    "min": 1.0, "max": 2.6,
+    "points": [[1.0, 1.0], [2.5, 1.94], [2.6, 2.0]],
+    "steps": [{ "at": 1.0, "mode": "Uncharged", "ref": 1.0 }, { "at": 2.5, "mode": "Full charge (2.6s)", "ref": 2.0 }],
+    "note": "Wiki charge table: P at 1.00 s ×1.00, P3 at 2.50 s ×1.94, P3 at 2.60 s ×2.00. Holding past full charge overcharges and the gun explodes."
+  },
+  "plas-101-purifier": {
+    "min": 0.1, "max": 1.0,
+    "points": [[0.1, 0.5], [1.0, 1.0]],
+    "steps": [{ "at": 0.1, "mode": "Uncharged", "ref": 0.5 }, { "at": 1.0, "mode": "Charged", "ref": 1.0 }],
+    "note": "Wiki: projectile damage ×0.50 at minimum charge (0.1 s) to ×1.00 at full charge (1 s). The explosion doesn't scale; only a full charge fires the big explosion."
+  },
+  "rs-422-railgun": {
+    "min": 0.45, "max": 3.0,
+    "points": [[0.45, 1.0], [0.5, 1.03], [3.0, 2.5]],
+    "steps": [{ "at": 0.45, "mode": "Minimum charge (0.45s)", "ref": 1.0 }, { "at": 3.0, "mode": "Max charge (Unsafe, 3.0s)", "ref": 2.5 }],
+    "note": "Wiki charge table: ×1.00 at 0.45 s, ×1.03 at 0.50 s, ×2.50 at 3.00 s; AP stays the same. Unsafe mode explodes when the meter hits 100% (3 s); Safe mode holds at 60%."
+  },
+  "plas-15-loyalist": {
+    "min": 0.01, "max": 3.0,
+    "points": [[0.01, 0.5], [0.75, 0.62], [3.0, 1.0]],
+    "steps": [{ "at": 0.01, "mode": "Uncharged", "ref": 1.0 }, { "at": 0.75, "mode": "Charged", "ref": 1.0 }],
+    "note": "Wiki charge table: P1 at 0.01 s ×0.50, P2 at 0.75 s ×0.62, P2 at 3.00 s ×1.00 (base 150 / 75). P2 carries the big 225 explosion."
+  }
+}

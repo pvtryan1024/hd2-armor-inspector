@@ -60,7 +60,36 @@
     rankCat: null, // ranking tabs: only this weapon category (null = all)
     slot: null, // highlighted loadout slot
     loadout: loadLoadout(), // { Primary: weaponId, Secondary, Throwable, Support }
+    charge: {}, // charge weapons: { weaponId: seconds } (missing = full charge)
   };
+
+  /* ---------- charge weapons (Epoch, Purifier, Railgun, Loyalist): a charge-time slider replaces the mode list ---------- */
+  // w.charge (data/charge.json): { min, max, points: [[s, mult]], steps: [{ at, mode, ref }] }. The weapon keeps its
+  // wiki modes in w.chargeModes; w.modes becomes one mode rebuilt for the chosen charge time, so every view uses it.
+  const chargeOf = (w) => (w && w.charge ? state.charge[w.id] ?? w.charge.max : null);
+  function chargeMult(c, t) {
+    const p = c.points;
+    if (t <= p[0][0]) return p[0][1];
+    for (let i = 1; i < p.length; i++) {
+      if (t <= p[i][0]) { const [t0, m0] = p[i - 1], [t1, m1] = p[i]; return m0 + (m1 - m0) * (t - t0) / (t1 - t0); }
+    }
+    return p[p.length - 1][1];
+  }
+  function chargeMode(w, t) {
+    const c = w.charge;
+    const step = c.steps.filter((x) => t >= x.at - 1e-9).pop() || c.steps[0];
+    const base = w.chargeModes.find((m) => m.name === step.mode);
+    const mult = chargeMult(c, t), k = mult / step.ref;
+    return { ...base, name: `${t.toFixed(2)} s`, damage: base.damage * k, durable: (base.durable ?? base.damage) * k, chargeTime: t, chargeMult: mult, chargeStep: step.mode };
+  }
+  function setCharge(w, t) {
+    if (!w || !w.charge) return;
+    t = Math.min(w.charge.max, Math.max(w.charge.min, Math.round(t * 100) / 100));
+    if (t === w.charge.max) delete state.charge[w.id]; else state.charge[w.id] = t;
+    w.modes = [chargeMode(w, t)];
+  }
+
+  DATA.weapons.forEach((w) => { if (w.charge) { w.chargeModes = w.modes; setCharge(w, w.charge.max); } });
 
   /* ---------- loadout: one weapon per slot, remembered in this browser ---------- */
   function loadLoadout() {
@@ -415,7 +444,8 @@
     if (mode.dot) return { kind: 'dot', ...mode.dot };
     if (mode.beam) return { kind: 'beam' };
     const rpm = mode.rpm ?? weapon.rpm;
-    return { kind: 'shot', interval: rpm ? 60 / rpm : null };
+    const t = (rpm ? 60 / rpm : 0) + (mode.chargeTime || 0); // a charged shot waits for its charge
+    return { kind: 'shot', interval: t || null };
   }
 
   function evalEnemy(weapon, modeIdx, enemy, opts) {
@@ -668,8 +698,8 @@
         ${w.url ? `<a class="src" style="margin:0" href="${esc(w.url)}" target="_blank" rel="noopener">wiki ↗</a>` : ''}
       </div>
       <div class="stats">
-        <div class="stat"><div class="k">Damage</div><div class="v">${fmt(m.damage)}</div></div>
-        <div class="stat"><div class="k">Durable</div><div class="v">${fmt(m.durable)}</div></div>
+        <div class="stat"><div class="k">Damage</div><div class="v" id="statDmg">${fmt(m.damage)}</div></div>
+        <div class="stat"><div class="k">Durable</div><div class="v" id="statDur">${fmt(m.durable)}</div></div>
         <div class="stat"><div class="k">AP</div><div class="v">${ap}</div></div>
         ${pellets > 1 ? `<div class="stat"><div class="k">Pellets</div><div class="v">${pellets}</div></div>` : ''}
         ${w.rpm ? `<div class="stat"><div class="k">RPM</div><div class="v">${fmt(w.rpm)}</div></div>` : ''}
@@ -692,6 +722,12 @@
         <input type="range" id="distSlider" min="0" max="200" step="5" value="${state.dist}">
         <div class="ap-caption">${m.ballistics?.drag ? `Projectile damage at ${state.dist} m: <b>${Math.round(rangeMult(m, state.dist) * 100)}%</b> (drag falloff)` : m.ballistics ? 'No drag: no falloff over range' : '<span class="muted">No ballistics data: range has no effect</span>'}</div>
       </div>
+      ${w.charge ? `<div class="range charge">
+        <label class="opt">Charge time <b id="chargeVal">${m.chargeTime.toFixed(2)} s</b></label>
+        <input type="range" id="chargeSlider" min="${w.charge.min}" max="${w.charge.max}" step="0.01" value="${m.chargeTime}">
+        <div class="ap-caption"><span>Projectile damage multiplier:</span> <b id="chargeMult">×${m.chargeMult.toFixed(2)}</b> · <span>Fires:</span> <b>${esc(m.chargeStep)}</b></div>
+        <p class="note">${esc(w.charge.note || '')}</p>
+      </div>` : ''}
       <div class="opts">
         ${w.modes.length > 1 ? `<label class="opt">Ammo / mode
           <select id="modeSel">${w.modes.map((mm, i) => `<option value="${i}" ${i === state.mode ? 'selected' : ''}>${esc(mm.name || 'Mode ' + (i + 1))}</option>`).join('')}</select></label>` : ''}
@@ -699,7 +735,7 @@
         ${pellets > 1 ? `<label class="opt">All ${pellets} pellets hit <input type="checkbox" id="pelChk" ${state.allPellets ? 'checked' : ''}></label>` : ''}
         ${m.shrapnel ? `<label class="opt" title="Body map and time to kill: count every fragment on the struck part (an upper bound). The 3D view traces each fragment instead.">All ${m.shrapnel.count} shrapnel hit the part <input type="checkbox" id="shrapChk" ${state.allShrap ? 'checked' : ''}></label>` : ''}
       </div>
-      ${m.note || w.note ? `<p class="note">${esc(m.note || w.note)}</p>` : ''}
+      ${!w.charge && (m.note || w.note) ? `<p class="note">${esc(m.note || w.note)}</p>` : ''}
     `;
   }
 
@@ -725,7 +761,7 @@
     publish3d(e, results);
     renderLegend();
     renderPartsTable(e, results);
-    const tabKey = JSON.stringify([state.tab, e.id, state.view, state.showInner, state.explosion, state.allPellets, state.band, state.dist, state.weaponId, state.rankCat]);
+    const tabKey = JSON.stringify([state.tab, e.id, state.view, state.showInner, state.explosion, state.allPellets, state.band, state.dist, state.weaponId, state.rankCat, state.charge]);
     if (tabKey !== lastTabKey) {
       lastTabKey = tabKey;
       if (state.tab === 'rank') renderRankTable(e);
@@ -969,13 +1005,13 @@
     const sim = state.sim;
     if (!state.fire || !sim || !sim.shots || sim.dead) { resetSim(); return; }
     const w = weapon();
-    sim.log.unshift(`— switched to ${w.name}${w.modes.length > 1 ? ` (${(w.modes[state.mode] || w.modes[0]).name})` : ''} —`);
+    sim.log.unshift(`— switched to ${w.name}${w.modes.length > 1 || w.charge ? ` (${(w.modes[state.mode] || w.modes[0]).name})` : ''} —`);
     sim.log.length = Math.min(sim.log.length, 8);
   }
   /** Before each fired shot: advance the clock by the weapon's fire interval and note which weapon fired. */
   function shotClock() {
     const sim = state.sim, w = weapon();
-    const key = `${w.id}:${state.mode}`;
+    const key = `${w.id}:${state.mode}:${chargeOf(w) ?? ''}`;
     const fm = fireModel(w, w.modes[state.mode] || w.modes[0]);
     if (fm?.kind === 'dot') sim.time += DOT_CLICK; // a flame / gas click is a second of spraying
     else if (sim.last === key) sim.time += fm && fm.kind === 'shot' && fm.interval ? fm.interval : 0;
@@ -1445,6 +1481,7 @@
     if (state.enemyId) p.set('e', state.enemyId);
     if (state.weaponId) p.set('w', state.weaponId);
     if (state.mode) p.set('m', state.mode);
+    if (weapon()?.charge && state.charge[state.weaponId] != null) p.set('ch', state.charge[state.weaponId]);
     if (!state.explosion) p.set('x', '0');
     if (!state.allPellets) p.set('p', '0');
     if (state.band) p.set('a', state.band);
@@ -1464,6 +1501,13 @@
     if (p.get('e') && enemyById(p.get('e'))) state.enemyId = p.get('e');
     if (p.get('w') && weaponById(p.get('w'))) state.weaponId = p.get('w');
     state.mode = +p.get('m') || 0;
+    const cw = weaponById(state.weaponId);
+    if (cw?.charge) {
+      const old = p.has('m') ? cw.chargeModes[state.mode] : null; // a link from before the slider: m picked a charge mode
+      const at = p.has('ch') ? +p.get('ch') : old ? cw.charge.steps.find((x) => x.mode === old.name)?.at : null;
+      if (at != null && Number.isFinite(at)) setCharge(cw, at);
+      state.mode = 0;
+    }
     state.explosion = p.get('x') !== '0';
     state.allPellets = p.get('p') !== '0';
     state.band = Math.min(3, Math.max(0, +p.get('a') || 0));
@@ -1582,6 +1626,19 @@
       state.band = +b.dataset.band; render();
     });
     $('#weaponCard').addEventListener('input', (ev) => {
+      if (ev.target.id === 'chargeSlider') {
+        const w = weapon();
+        const before = w.modes[0].chargeStep;
+        setCharge(w, +ev.target.value);
+        const m = w.modes[0];
+        $('#chargeVal').textContent = m.chargeTime.toFixed(2) + ' s';
+        $('#chargeMult').textContent = '×' + m.chargeMult.toFixed(2);
+        $('#statDmg').textContent = fmt(m.damage);
+        $('#statDur').textContent = fmt(m.durable);
+        clearTimeout(distTimer);
+        distTimer = setTimeout(() => { if (m.chargeStep !== before) renderWeaponCard(); render(true); }, 120);
+        return;
+      }
       if (ev.target.id !== 'distSlider') return;
       state.dist = +ev.target.value;
       $('#distVal').textContent = state.dist + ' m';
@@ -1590,6 +1647,7 @@
     });
     $('#weaponCard').addEventListener('change', (ev) => {
       const t = ev.target;
+      if (t.id === 'chargeSlider') { renderWeaponCard(); writeHash(); return; } // released: explosion stats may have switched
       if (t.id === 'modeSel') state.mode = +t.value;
       if (t.id === 'exChk') state.explosion = t.checked;
       if (t.id === 'pelChk') state.allPellets = t.checked;
