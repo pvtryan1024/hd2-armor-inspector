@@ -119,6 +119,13 @@ const norm = (s) => String(s || '').toLowerCase()
   .replace(/([._ -]?lod\d+)$/i, '').replace(/[._ -]\d+$/, '')
   .replace(/[^a-z0-9]/g, '');
 
+/** A mesh the map marks "not a hitzone" (null): drawn, but no hitbox at all, so shots, blasts and shrapnel
+ *  pass through it (the Caustic Charger's spores). Unassigned meshes (no entry) still block. */
+function noHitbox(entry, key) {
+  const m = entry?.map.meshes || {};
+  return (key in m ? m[key] : m[key.replace(/(_d+|#d+)$/, '')]) === null;
+}
+
 function partIndexFor(entry, key) {
   const parts = lastDetail?.enemy.parts || [];
   // a multi-material mesh loads as numbered sub-meshes ("wing_left_1"): fall back to its own name
@@ -523,7 +530,7 @@ function thruAlong(h) {
   thruRay.set(h.point.clone().addScaledVector(dir, 1e-3), dir);
   thruRay.far = Infinity;
   const i0 = partIndexFor(current, h.mesh.userData.key), k0 = instanceFor(current, h.mesh.userData.key, i0);
-  const live = current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains);
+  const live = current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key));
   const cols = (current.colliders || []).map((c) => c.mesh);
   const vis = cols.map((m) => m.visible);
   cols.forEach((m) => { m.visible = true; });
@@ -587,7 +594,7 @@ function shrapnelHits(h, spec) {
   if (spec.spread === 'surface') {
     dirs = fibDirs(spec.count * 2).filter((d) => d.dot(into) > 0).slice(0, spec.count);
   } else dirs = fibDirs(spec.count);
-  const targets = current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains);
+  const targets = current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key));
   const origin = h.point.clone().addScaledVector(h.normal, 0.02);
   const out = [];
   blastRay.far = spec.range || 7;
@@ -619,7 +626,7 @@ function blastHits(h, outer) {
   const out = new Map(); // "part:piece" -> { idx, k, d }
   if (!(outer > 0)) return [];
   const centre = h.point.clone().addScaledVector(h.normal, 0.01); // just off the surface that was struck
-  const live = (m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains; // destroyed pieces: no hitbox
+  const live = (m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key); // destroyed pieces: no hitbox
   const meshes = current.meshes.map((m) => m.mesh).filter(live); // what the blast can hit, and what blocks it
   const pieceOf = (m) => { const i = partIndexFor(current, m.userData.key); return i < 0 ? null : `${i}:${instanceFor(current, m.userData.key, i)}`; };
   const local = new THREE.Vector3(), hitAt = { point: new THREE.Vector3() }, dir = new THREE.Vector3(), v3 = new THREE.Vector3();
@@ -680,7 +687,7 @@ function pick(ev) {
   ray.setFromCamera(ptr, camera);
   const hits = ray.intersectObjects(current.meshes.map((m) => m.mesh).filter((m) => m.visible), false);
   // destroyed parts have no hitbox: the shot goes through to whatever is behind them
-  const hit = hits.find((h) => h.object.material.opacity > 0.2 && !h.object.userData.remains);
+  const hit = hits.find((h) => h.object.material.opacity > 0.2 && !h.object.userData.remains && !noHitbox(current, h.object.userData.key));
   if (groundActive()) {
     ground.updateMatrixWorld();
     const g = ray.intersectObject(groundDisc, false)[0];
