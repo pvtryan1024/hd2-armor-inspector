@@ -595,23 +595,41 @@ function shrapnelHits(h, spec) {
   return out;
 }
 
-function blastHits(h, outer) {
+/** Pieces an explosion reaches: every piece with any surface inside the outer radius, at the distance of
+ *  its closest point to the blast centre (each piece of a counted part once, at its nearest mesh). No
+ *  line of sight: a 500 kg under a Bile Titan's belly reaches all twelve leg plates, as it does in game.
+ *  opts.gone: meshes the impact destroyed (left out); opts.revealed: meshes that destroying them uncovers. */
+function blastHits(h, outer, opts = {}) {
   const out = new Map(); // "part:piece" -> { idx, k, d }
   if (!(outer > 0)) return [];
-  const targets = current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains);
-  const origin = h.point.clone().addScaledVector(h.normal, 0.01); // just off the surface that was struck
-  blastRay.far = outer;
-  for (const dir of DODECA) {
-    blastRay.set(origin, dir);
-    const first = blastRay.intersectObjects(targets, false)[0];
-    if (!first) continue; // this line hit nothing
-    const idx = partIndexFor(current, first.object.userData.key);
-    if (idx < 0) continue; // a mesh that isn't a hitzone still stops the line
-    const k = instanceFor(current, first.object.userData.key, idx);
+  const centre = h.point.clone().addScaledVector(h.normal, 0.01); // just off the surface that was struck
+  const live = (m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains; // destroyed pieces: no hitbox
+  const meshes = current.meshes.map((m) => m.mesh).filter((m) => (live(m) && !opts.gone?.has(m)) || opts.revealed?.includes(m));
+  const local = new THREE.Vector3(), hitAt = { point: new THREE.Vector3() };
+  for (const mesh of meshes) {
+    const idx = partIndexFor(current, mesh.userData.key);
+    if (idx < 0) continue; // not a hitzone
+    mesh.updateMatrixWorld();
+    local.copy(centre);
+    mesh.worldToLocal(local);
+    if (!mesh.geometry.boundsTree?.closestPointToPoint(local, hitAt)) continue;
+    const d = mesh.localToWorld(hitAt.point.clone()).distanceTo(centre);
+    if (d > outer) continue;
+    const k = instanceFor(current, mesh.userData.key, idx);
     const id = `${idx}:${k}`;
-    if (!out.has(id) || first.distance < out.get(id).d) out.set(id, { idx, k, d: first.distance });
+    if (!out.has(id) || d < out.get(id).d) out.set(id, { idx, k, d });
   }
   return [...out.values()];
+}
+
+/** The struck piece's meshes, and what destroying it uncovers (its "_damaged" flesh): to measure the blast
+ *  again for the case the impact breaks it (the explosion comes after the impact). */
+function brokenView(h) {
+  const i = partIndexFor(current, h.mesh.userData.key), k = instanceFor(current, h.mesh.userData.key, i);
+  const gone = new Set(current.meshes.filter(({ key }) => partIndexFor(current, key) === i && instanceFor(current, key, i) === k).map((m) => m.mesh));
+  const bases = new Set([...gone].map((m) => baseOf(m.userData.key)));
+  const revealed = current.meshes.filter(({ key }) => stageOf(key) === 1 && bases.has(baseOf(key)) && partIndexFor(current, key) >= 0).map((m) => m.mesh);
+  return { gone, revealed };
 }
 
 /* ---------- picking ---------- */
@@ -702,9 +720,14 @@ function shoot(h) {
   if (i < 0) { status(`"${h.mesh.userData.key}" isn't linked to a hitzone yet (grey). Assign it in "Edit hitzones".`); return; }
   // blast rays from the impact point (the result of every press shows in the status line)
   const blast = blastHits(h, lastDetail?.radii?.outer);
+  const bv = brokenView(h);
+  const blastBroken = lastDetail?.radii ? blastHits(h, lastDetail.radii.outer, bv) : null;
+  // which piece of each part breaking the struck piece uncovers (the leg flesh under this leg's plate)
+  const revealedK = {};
+  for (const m of bv.revealed) { const ri = partIndexFor(current, m.userData.key); if (ri >= 0 && !(ri in revealedK)) revealedK[ri] = instanceFor(current, m.userData.key, ri); }
   const parts = {};
   for (const b of blast) if (parts[b.idx] == null || b.d < parts[b.idx]) parts[b.idx] = b.d;
-  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), thru: innerAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, blastHitsBroken: blastBroken, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), thru: innerAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
   if (said) status(said);
 }
 

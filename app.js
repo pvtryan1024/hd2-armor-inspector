@@ -281,11 +281,12 @@
     if (sim.dead) return out;
     // 2. explosion, against what is there now
     const stripped = inst && k >= 0 && instGone(part, inst[k]);
+    out.stripped = !!stripped; // the impact alone destroyed it: the blast is measured without it
     const under = stripped ? enemy.parts.findIndex((q) => q.coveredBy === part.name) : -1;
     let o2;
     if (under >= 0) {
       const sx = shotDamage(mode, enemy.parts[under], enemy, { ...o, noProj: true, exDist: 0 });
-      o2 = applyShot(sim, enemy, under, sx, true);
+      o2 = applyShot(sim, enemy, under, sx, true, o.revealedK?.[under] ?? undefined); // the piece under this plate (3D)
       out.under = { idx: under, dealt: sx.total, broke: o2.broke, toMain: o2.toMain };
     } else {
       o2 = applyShot(sim, enemy, idx, { ...s, proj: 0, total: s.partEx }, true, k >= 0 ? k : want);
@@ -1034,6 +1035,14 @@
         else r.s = { ...r.s, mainEx: 0 };
       });
     }
+    // the blast measured again with the struck piece gone (used when the impact breaks it): neither it nor the
+    // part it covered (that one takes the blast directly, see applyHit), and Main's share comes from there too
+    let rowsBroken = null;
+    if (radii && hit.blastHitsBroken) {
+      const p = e.parts[hit.idx], under = e.parts.findIndex((q) => q.coveredBy === p.name);
+      rowsBroken = hit.blastHitsBroken.filter((b) => b.d <= radii.outer && !(b.idx === hit.idx && (b.k == null || b.k === hit.k)) && b.idx !== under)
+        .map((b) => { const sx = shotDamage(mode, e.parts[b.idx], e, { ...o, noProj: true, exDist: b.d }); return { idx: b.idx, k: b.k, dist: b.d, s: { ...sx, mainEx: 0 } }; });
+    }
     // shrapnel: each fragment ray hits one piece at its own angle; fragments on the same piece add up
     let shrap = null;
     if (mode.shrapnel && state.explosion && !rows[0].s.ricochet && hit.shrapHits) {
@@ -1047,7 +1056,7 @@
       }
       shrap = { count: mode.shrapnel.count, hit: hit.shrapHits.length, rows: [...by.values()] };
     }
-    return { mode, band, rows, radii, thru, shrap };
+    return { mode, band, rows, rowsBroken, radii, thru, shrap };
   }
 
   /** A shot into the ground next to the enemy (3D view): no part is struck, so only the explosion counts:
@@ -1143,12 +1152,23 @@
       const e = enemy();
       const notes = [];
       const tag = shotClock();
-      res.rows.forEach((r, k) => {
+      let rows = res.rows;
+      rows.forEach((r, k) => {
+        if (k > 0 && rows !== res.rows) return;
         const piece = k === 0 ? hit.k : r.k;
-        const o = k === 0 ? applyHit(state.sim, e, r.idx, r.s, res.mode, { ...opts(), band: res.band }, false, piece ?? undefined)
+        const o = k === 0 ? applyHit(state.sim, e, r.idx, r.s, res.mode, { ...opts(), band: res.band, revealedK: hit.revealedK }, false, piece ?? undefined)
           : applyShot(state.sim, e, r.idx, r.s, true, piece ?? undefined);
         if (o.broke) notes.push(`${pieceName(e.parts[r.idx], piece)} destroyed`);
         if (o.under) notes.push(underNote(e, o).replace(/^ → /, ''));
+        // the impact broke the struck piece: the rest of the blast is the one measured without it
+        if (k === 0 && res.rowsBroken && o.stripped) {
+          rows = res.rowsBroken;
+          for (const b of rows) {
+            if (state.sim.dead) break;
+            const ob = applyShot(state.sim, e, b.idx, b.s, true, b.k ?? undefined);
+            if (ob.broke) notes.push(`${pieceName(e.parts[b.idx], b.k)} destroyed`);
+          }
+        }
         if (k === 0 && res.shrap && !state.sim.dead) { // shrapnel fragments, each piece once with its total
           for (const f of res.shrap.rows) {
             if (state.sim.dead || !(f.s.total > 0)) continue;
