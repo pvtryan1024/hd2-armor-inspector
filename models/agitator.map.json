@@ -8,7 +8,8 @@
     "left_arm_whole": "Upper Arms (2)",
     "body_whole": "Torso",
     "head_whole": "Head",
-    "right_arm_whole": "Upper Arms (2)"
+    "right_arm_whole": "Upper Arms (2)",
+    "right_forearm": "Forearms (2)"
   },
   "hidden": [
     "torso_gib",

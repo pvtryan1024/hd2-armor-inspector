@@ -7,7 +7,8 @@
     "head_whole": "Head",
     "left_shoulderpad": "Pauldron",
     "right_shoulderpad": "Pauldron",
-    "armor_torso": "Torso Circuits"
+    "armor_torso": "Torso Circuits",
+    "right_forearm": "Forearms (2)"
   },
   "hidden": [
     "head_damaged",

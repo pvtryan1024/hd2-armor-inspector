@@ -180,6 +180,10 @@ const LOADOUT = {
   // the rocket turret: its base (default) and the launcher pod (gun) are the turret armor; the tubes inside the pod
   // are cut out of it (see barrager-tank's cuts)
   'barrager-tank': [{ src: GEAR.tankRockets, bone: 'attach_turret', name: 'turret', part: 'Turret Main', parts: { gun: 'pod' } }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
+  // the elites' right forearm is the gun, on the elbow mount: the Agitator's plasma charger (g_elite_weapon),
+  // the Radical's plasma scattergun (g_elite_shotgun)
+  agitator: [{ src: 'extra/0x67381f685e9b69a8.unit.glb', bone: 'r_elbow_attach', name: 'right_forearm', part: 'Forearms (2)' }],
+  radical: [{ src: 'extra/0x1338b552afe68f0a.unit.glb', bone: 'r_elbow_attach', name: 'right_forearm', part: 'Forearms (2)' }],
   'war-strider': [{ src: 'extra/0x8372619b2702d743.unit.glb', bone: 'attach_left_gun', name: 'cannon_left', part: 'Fusion Cannons (2)' }, { src: 'extra/0x9ab036439f74c115.unit.glb', bone: 'attach_right_gun', name: 'cannon_right', part: 'Fusion Cannons (2)' }],
   devastator: [{ src: GEAR.rifle, bone: 'attach_r_hand', name: 'weapon_right' }],
   // the gun arm: the body only has the left forearm; the right hand holds the Devastator's gun
