@@ -4,12 +4,13 @@
     "r_hip": "Waist",
     "l_hip": "Waist",
     "body": "Waist",
-    "legs": "Legs (2)",
     "hull": "Faceplate",
     "hmg": "HMG",
     "rail_left": "Rocket Rails (2)",
     "rail_right": "Rocket Rails (2)",
-    "turret_system": "Turret System"
+    "turret_system": "Turret System",
+    "leg_left": "Legs (2)",
+    "leg_right": "Legs (2)"
   },
   "hidden": [
     "body_damaged",

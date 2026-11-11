@@ -118,7 +118,8 @@ Object.assign(GEAR, {
   walkerCannon: 'content/fac_cyborgs/turrets/cyborg_big_walker_turret_cannon/cyborg_big_walker_turret_cannon.unit.glb',
 });
 // Scout Strider upper hulls and HMG: unnamed models from its archive (exported by hash into extra/)
-const SCOUT_TURRET = [{ mesh: 'body', name: 'turret_system', bone: /^turret$/ }];
+// the body's turret system, and the two legs apart (one mesh in the export; each leg has its own health)
+const SCOUT_TURRET = [{ mesh: 'body', name: 'turret_system', bone: /^turret$/ }, { mesh: 'legs', name: 'leg_left', rest: 'leg_right', bone: /^l_/ }];
 // the pilot (the Commissar body) at its seat on the turret platform
 const SCOUT_PILOT = { src: 'content/fac_cyborgs/cha_conscript_commander/cha_conscript_commander.unit.glb', bone: 'attach_pilot', name: 'pilot', part: 'Pilot',
   // kneeling on the platform, hands forward on the controls (as in game): lowered 0.3 m, thighs forward, knees folded
@@ -642,8 +643,8 @@ const SOURCES = {
   },
   // the body: the turret system (the platform the pilot kneels on and the HMG mechanism, on the turret bone) over the
   // waist (the hip section, on boss)
-  'scout-strider': { src: CY + 'vehicles/cyborg_walker_scout/cyborg_walker_scout.unit.glb', cuts: SCOUT_TURRET, rules: [[/^[lr]_hip$/, 'Waist'], [/^legs$/, 'Legs (2)'], [/^turret_system$/, 'Turret System'], [/^body$/, 'Waist']] },
-  'reinforced-scout-strider': { src: CY + 'vehicles/cyborg_walker_scout/cyborg_walker_scout.unit.glb', cuts: SCOUT_TURRET, rules: [[/^[lr]_hip$/, 'Waist'], [/^legs$/, 'Legs (2)'], [/^turret_system$/, 'Turret System'], [/^body$/, 'Waist']] },
+  'scout-strider': { src: CY + 'vehicles/cyborg_walker_scout/cyborg_walker_scout.unit.glb', cuts: SCOUT_TURRET, rules: [[/^[lr]_hip$/, 'Waist'], [/^leg_(left|right)$/, 'Legs (2)'], [/^turret_system$/, 'Turret System'], [/^body$/, 'Waist']] },
+  'reinforced-scout-strider': { src: CY + 'vehicles/cyborg_walker_scout/cyborg_walker_scout.unit.glb', cuts: SCOUT_TURRET, rules: [[/^[lr]_hip$/, 'Waist'], [/^leg_(left|right)$/, 'Legs (2)'], [/^turret_system$/, 'Turret System'], [/^body$/, 'Waist']] },
   gunship: { src: CY + 'vehicles/cyborg_gunship/cyborg_gunship.unit.glb', rules: [[/^body$/, 'Fuselage'], [/^[lr]_front_engine$/, 'Front Thrusters (2)'], [/^[lr]_back_engine$/, 'Rear Thrusters (2)']] },
   dropship: { src: CY + 'vehicles/cyborg_dropship/cyborg_dropship.unit.glb', rules: [[/^body$/, 'Fuselage'], [/thruster$/, 'Thruster (4)']] },
   'vox-engine': {
