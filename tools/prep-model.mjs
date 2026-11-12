@@ -216,6 +216,8 @@ const LOADOUT = {
   // the Radical's plasma scattergun (g_elite_shotgun)
   agitator: [{ src: 'extra/0x67381f685e9b69a8.unit.glb', bone: 'r_elbow_attach', name: 'right_forearm', part: 'Forearms (2)' }],
   radical: [{ src: 'extra/0x1338b552afe68f0a.unit.glb', bone: 'r_elbow_attach', name: 'right_forearm', part: 'Forearms (2)' }],
+  // the four belly turrets of the front segment (wiki: Turrets (4)); the skeleton has mounts on every segment
+  leviathan: [['lft', 'left'], ['rgt', 'right']].flatMap(([b, side]) => [1, 2].map((i) => ({ src: 'content/fac_illuminate/vehicles/armaments/illuminate_turret_warmachine/illuminate_turret_wm_cannon.unit.glb', bone: `attach_turret_seg0_${b}_${i}`, name: `turret_${side}_${i}`, part: 'Turrets (4)' }))),
   'war-strider': [{ src: 'extra/0x8372619b2702d743.unit.glb', bone: 'attach_left_gun', name: 'cannon_left', part: 'Fusion Cannons (2)' }, { src: 'extra/0x9ab036439f74c115.unit.glb', bone: 'attach_right_gun', name: 'cannon_right', part: 'Fusion Cannons (2)' }],
   devastator: [{ src: GEAR.rifle, bone: 'attach_r_hand', name: 'weapon_right' }],
   // the gun arm: the body only has the left forearm; the right hand holds the Devastator's gun
@@ -1054,7 +1056,15 @@ const SOURCES = {
   },
   leviathan: {
     src: IL + 'vehicles/illuminate_war_machine/illuminate_war_machine.unit.glb',
+    // wiki hitzone images (Leviathan and its Broken entry on one page): the fins of each segment, left / right, with
+    // their broken copies (the heavier mesh); a destroyed vertebra opens onto the Internals, except the
+    // rearward-middle one, which stays as the Damaged Rearward-Middle Vertebra
+    names: { seg0_center_destroyed: 'seg0_center_damaged', seg1_center_destroyed: 'seg1_center_damaged', seg2_center_destroyed: 'seg2_center_damaged', seg3_center_destroyed: 'seg3_center_damaged', seg4_destroyed: 'seg4_damaged', // (a live part under it, not remains)
+      '0xe95b40f4':'seg0_fin_right', '0xef867ea0':'seg0_fin_right_damaged', '0x9f20a334':'seg0_fin_left', '0xb9ba4ea8':'seg0_fin_left_damaged', '0x115eb697':'seg1_fin_right', '0x76128a85':'seg1_fin_right_damaged', '0x621da880':'seg1_fin_left', '0xcf945e07':'seg1_fin_left_damaged', '0x7f80ce0c':'seg2_fin_right', '0x9f4d89f1':'seg2_fin_right_damaged', '0x7f693b79':'seg2_fin_left', '0x5bdbdcc3':'seg2_fin_left_damaged', '0xa7ee024b':'seg3_fin_right', '0x21e0714e':'seg3_fin_right_damaged', '0xd412dfce':'seg3_fin_left', '0xb7a69389':'seg3_fin_left_damaged'},
     rules: [
+      [/^seg0_fin_(left|right)$/, 'Front Fins (2)'], [/^seg1_fin_(left|right)$/, 'Forward-Middle Fins (2)'],
+      [/^seg2_fin_(left|right)$/, 'Rearward-Middle Fins (2)'], [/^seg3_fin_(left|right)$/, 'Rear Fins (2)'],
+      [/^seg[013]_center_damaged$/, 'Internals'], [/^seg4_damaged$/, 'Internals'], [/^seg2_center_damaged$/, 'Damaged Rearward-Middle Vertebra'],
       [/^seg0_center(_whole)?$/, 'Front Vertebra'], [/^seg1_center(_whole)?$/, 'Forward-Middle Vertebra'],
       [/^seg2_center(_whole)?$/, 'Rearward-Middle Vertebra'], [/^seg3_center(_whole)?$/, 'Rear Vertebra'],
       [/^seg4(_whole)?$/, 'Tail'], [/^rotator(_whole)?$/, 'Warp Disc'],
