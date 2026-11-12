@@ -683,7 +683,7 @@ function shrapnelHits(h, spec) {
  *  A plate the impact breaks is not measured again: the model is a hollow shell, and in game the flesh
  *  under the plate fills that spot (it takes the explosion itself, see applyHit in app.js). */
 const BLAST_SAMPLES = 24; // surface points tried per mesh besides its closest point
-function blastHits(h, outer) {
+function blastHits(h, outer, inner = 0) {
   const out = new Map(); // "part:piece" -> { idx, k, d }
   if (!(outer > 0)) return [];
   const centre = h.point.clone().addScaledVector(h.normal, 0.01); // just off the surface that was struck
@@ -729,7 +729,11 @@ function blastHits(h, outer) {
       for (let i = 0; i < pos.count; i += step) { v3.fromBufferAttribute(pos, i); mesh.localToWorld(v3); if (v3.distanceTo(centre) <= outer) pts.push(v3.clone()); }
     }
     pts.sort((p, q) => p.distanceTo(centre) - q.distanceTo(centre));
-    const seen = pts.find((p) => sees(p, id));
+    // explosion verification (lastDetail.exvm): 'outer' lets the inner radius reach a piece without line of sight,
+    // 'none' both radii; 'all' (default) needs it everywhere
+    const exvm = lastDetail?.exvm || 'all';
+    const free = (p) => exvm === 'none' || (exvm === 'outer' && p.distanceTo(centre) <= inner);
+    const seen = pts.find((p) => free(p) || sees(p, id));
     if (!seen) continue;
     const d = seen.distanceTo(centre);
     const k = instanceFor(current, mesh.userData.key, idx);
@@ -832,7 +836,7 @@ function insideParts(h) {
 }
 function shoot(h) {
   if (h.ground) { // only the explosion (and shrapnel) reaches the enemy
-    const blast = blastHits(h, lastDetail?.radii?.outer);
+    const blast = blastHits(h, lastDetail?.radii?.outer, lastDetail?.radii?.inner);
     const said = HD2.hit({ ground: true, idx: -1, k: null, blastHits: blast, inside: insideParts(h), shrapHits: shrapnelHits(h, lastDetail?.shrapnel), deg: h.deg, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
     if (said) status(said);
     return;
@@ -845,7 +849,7 @@ function shoot(h) {
   const i = partIndexFor(current, h.mesh.userData.key);
   if (i < 0) { status(`"${h.mesh.userData.key}" isn't linked to a hitzone yet (grey). Assign it in "Edit hitzones".`); return; }
   // blast rays from the impact point (the result of every press shows in the status line)
-  const blast = blastHits(h, lastDetail?.radii?.outer);
+  const blast = blastHits(h, lastDetail?.radii?.outer, lastDetail?.radii?.inner);
   const bv = brokenView(h);
   // which piece of each part breaking the struck piece uncovers (the leg flesh under this leg's plate)
   const revealedK = {};

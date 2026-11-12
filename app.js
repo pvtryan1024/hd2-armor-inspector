@@ -1314,6 +1314,7 @@
       const reached = hit.blastHits || Object.entries(hit.parts || {}).map(([k, d]) => ({ idx: +k, k: null, d }));
       for (const b of reached) {
         if ((b.idx === hit.idx && (b.k == null || b.k === hit.k)) || b.d > radii.outer) continue;
+        if (!blastReaches(e, b)) continue; // still under its plate
         const sx = shotDamage(mode, e.parts[b.idx], e, { ...o, noProj: true, exDist: b.d });
         rows.push({ idx: b.idx, k: b.k, dist: b.d, s: sx }); // listed even when the armor stops it
       }
@@ -1335,6 +1336,10 @@
     return { mode, band, rows, radii, thru, shrap };
   }
 
+  /** A blast that reaches through the body (explosion verification 'outer' / 'none') could touch a part still under
+   *  an unbroken plate: in fire mode such a part is left out. */
+  const blastReaches = (e, b) => !state.fire || !state.sim || isExposed(e, b.idx, state.sim, b.k);
+
   /** A shot into the ground next to the enemy (3D view): no part is struck, so only the explosion counts:
    *  every piece the blast rays reach takes falloff damage (Main's share once per blast), plus shrapnel. */
   function resolveGround(hit, mode, band, o) {
@@ -1343,7 +1348,7 @@
     const rows = [];
     if (radii) {
       for (const b of hit.blastHits || []) {
-        if (b.d > radii.outer) continue;
+        if (b.d > radii.outer || !blastReaches(e, b)) continue;
         rows.push({ idx: b.idx, k: b.k, dist: b.d, s: shotDamage(mode, e.parts[b.idx], e, { ...o, noProj: true, exDist: b.d }) });
       }
       rows.sort((a, b) => a.dist - b.dist);
@@ -1557,7 +1562,7 @@
       brokenInst: e.parts.map((p, i) => (state.fire && consOf(p) && state.sim?.hp[i] ? state.sim.hp[i].map((h) => h <= 0 && !instGone(p, h)) : null)),
       enemy: e, colors, gone, goneInst, hitHp, fire: state.fire, stageView: state.stageView,
       colorMode: state.color, ap4, avs: e.parts.map((p) => p.av), bands: ANGLE_BANDS,
-      hit: state.hit, blast: state.hit?.blast || null, radii: blastRadii(m), explosive: !!(blastRadii(m) || (m?.shrapnel && state.explosion)),
+      hit: state.hit, blast: state.hit?.blast || null, radii: blastRadii(m), exvm: e.exvm || 'all', explosive: !!(blastRadii(m) || (m?.shrapnel && state.explosion)),
     } }));
   }
 

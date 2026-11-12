@@ -90,6 +90,10 @@ const COVERS = [
 const BEHIND = [{ enemy: /charger/i, parts: { 'Butt': 'Inner Flesh' } }];
 
 // Wiki location fixes: where a hitzone really faces when the wiki table disagrees with the game
+// Explosion verification (wiki: part-dependent; explosions are raycasts): 'all' = inner and outer radius need line
+// of sight (the default: Chargers, Hulks, Bile Titans, Harvesters…), 'outer' = the inner radius ignores it (reaches
+// every part in range through the body), 'none' = neither needs it. Set per enemy from in-game results.
+const EXVM = [{ enemy: /^(factory strider|vox engine)$/i, mode: 'outer' }];
 const LOCATION_FIX = [{ enemy: /hulk/i, part: /^heatsink$/i, location: 'Rear, Side' }];
 
 // Armor that never breaks: still passes its % to Main, but never exposes anything
@@ -136,6 +140,7 @@ const THROW_KILL = [{ enemy: /^vox engine$/i, part: /^Hatches/ }];
 const ALSO_COVERED = [{ enemy: /^Rupture Charger$/, parts: { 'Leg Flesh (4)': 'Frontal Tarsal Plate Armor (2)' } }];
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
+  for (const c of EXVM) if (c.enemy.test(e.name)) e.exvm = c.mode;
   for (const c of PIECE_COUNT) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.count = c.count; });
   for (const c of DOWNS) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = 'downs'; if (c.allBroken) p.downsAllBroken = true; } });
   for (const c of MAIN_TO_ON_GONE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = false; p.mainToOnGone = c.value; if (c.killAllBroken) p.killAllBroken = true; } });
