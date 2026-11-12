@@ -217,7 +217,7 @@ const LOADOUT = {
   agitator: [{ src: 'extra/0x67381f685e9b69a8.unit.glb', bone: 'r_elbow_attach', name: 'right_forearm', part: 'Forearms (2)' }],
   radical: [{ src: 'extra/0x1338b552afe68f0a.unit.glb', bone: 'r_elbow_attach', name: 'right_forearm', part: 'Forearms (2)' }],
   // the four belly turrets of the front segment (wiki: Turrets (4)); the skeleton has mounts on every segment
-  leviathan: [['lft', 'left'], ['rgt', 'right']].flatMap(([b, side]) => [1, 2].map((i) => ({ src: 'content/fac_illuminate/vehicles/armaments/illuminate_turret_warmachine/illuminate_turret_wm_cannon.unit.glb', bone: `attach_turret_seg0_${b}_${i}`, name: `turret_${side}_${i}`, part: 'Turrets (4)' }))),
+  leviathan: [['lft', 'left'], ['rgt', 'right']].flatMap(([b, side]) => [1, 2].map((i) => ({ src: 'content/fac_illuminate/vehicles/armaments/illuminate_turret_warmachine/illuminate_turret_wm_cannon.unit.glb', bone: `attach_turret_seg0_${b}_${i}`, name: `turret_${side}_${i === 1 ? 'front' : 'back'}`, part: 'Turrets (4)' }))), // (no trailing number: the viewer reads it as a sub-mesh),
   'war-strider': [{ src: 'extra/0x8372619b2702d743.unit.glb', bone: 'attach_left_gun', name: 'cannon_left', part: 'Fusion Cannons (2)' }, { src: 'extra/0x9ab036439f74c115.unit.glb', bone: 'attach_right_gun', name: 'cannon_right', part: 'Fusion Cannons (2)' }],
   devastator: [{ src: GEAR.rifle, bone: 'attach_r_hand', name: 'weapon_right' }],
   // the gun arm: the body only has the left forearm; the right hand holds the Devastator's gun

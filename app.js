@@ -309,16 +309,16 @@
         if (part.mainToOnGone != null && out.gone) out.clampTo = part.mainToOnGone;
         // goneWith: parts whose hitbox goes with this piece (a Devastator's shoulder with its arm, the shield with
         // the arm holding it), without taking any damage
-        if (out.gone) enemy.parts.forEach((q, qi) => {
-          const gw = q.goneWith;
-          if (!gw || gw.part !== part.name || !sim.hp[qi] || (gw.inst != null && gw.inst !== k)) return;
+        // (goneWith may be a list: the Leviathan's turrets go with whichever front fin carries them)
+        if (out.gone) enemy.parts.forEach((q, qi) => [].concat(q.goneWith || []).forEach((gw) => {
+          if (gw.part !== part.name || !sim.hp[qi] || (gw.inst != null && gw.inst !== k)) return;
           // pieces: those pieces of it (the Overseer's left-arm plates); else the same piece, or its only one
           for (const j of gw.pieces || [gw.inst != null ? 0 : k]) {
             if (j >= sim.hp[qi].length || instGone(q, sim.hp[qi][j])) continue;
             sim.hp[qi][j] = -consOf(q) - 1;
             (out.alsoGone ||= []).push(pieceName(q, gw.inst != null && !gw.pieces ? undefined : j));
           }
-        });
+        }));
         if (wasUp && inst[k] <= 0) out.broke = true;
         // fatal parts: with a bleed rate the enemy is done once the part breaks (it bleeds out);
         // with constitution that doesn't drain, it has to be shot through the constitution too

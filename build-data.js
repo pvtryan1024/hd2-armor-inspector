@@ -123,6 +123,9 @@ const GONE_WITH = [
   { enemy: /^radical$/i, part: /^Pauldron$/, with: 'Upper Arms (2)', inst: 0 },
   // the Overseer's left arm (not fatal) takes its two limb plates with it
   { enemy: /overseer/i, part: /^Limb Armor( \(8\))?$/, with: 'Left Arm', pieces: [0, 1] },
+  // Leviathan: the turrets hang on the front fins (two each, left fin first); a fin breaking off takes them with it
+  { enemy: /^leviathan$/i, part: /^Turrets \(4\)$/, with: 'Front Fins (2)', inst: 0, pieces: [0, 1] },
+  { enemy: /^leviathan$/i, part: /^Turrets \(4\)$/, with: 'Front Fins (2)', inst: 1, pieces: [2, 3] },
   // Vox Engine: a destroyed track takes the latch on its pod with it
   { enemy: /^vox engine$/i, part: /^Trackpod Latches \(4\)$/, with: 'Tracks (4)' },
 ];
@@ -144,7 +147,7 @@ enemies.forEach((e) => {
   for (const c of PIECE_COUNT) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.count = c.count; });
   for (const c of DOWNS) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = 'downs'; if (c.allBroken) p.downsAllBroken = true; } });
   for (const c of MAIN_TO_ON_GONE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = false; p.mainToOnGone = c.value; if (c.killAllBroken) p.killAllBroken = true; } });
-  for (const c of GONE_WITH) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name) && e.parts.some((q) => q.name === c.with)) p.goneWith = { part: c.with, ...(c.inst != null ? { inst: c.inst } : {}), ...(c.pieces ? { pieces: c.pieces } : {}) }; });
+  for (const c of GONE_WITH) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name) && e.parts.some((q) => q.name === c.with)) { const gw = { part: c.with, ...(c.inst != null ? { inst: c.inst } : {}), ...(c.pieces ? { pieces: c.pieces } : {}) }; p.goneWith = p.goneWith ? [].concat(p.goneWith, gw) : gw; } });
   for (const c of COVER_PIECES) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) { p.coverPieces = c.parts[p.name]; if (c.all) p.coverAll = true; if (c.cover) p.coveredBy = c.cover; } });
   for (const c of THROW_KILL) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.throwKill = true; });
   for (const c of ALSO_COVERED) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.alsoCoveredBy = c.parts[p.name]; });
