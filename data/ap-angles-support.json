@@ -474,5 +474,51 @@
       6,
       3
     ]
+  },
+  "seaf-artillery": {
+    "High-Yield Explosive": [
+      8,
+      7,
+      6,
+      6
+    ],
+    "Explosive": [
+      8,
+      7,
+      6,
+      6
+    ],
+    "Mini-Nuke": [
+      8,
+      7,
+      6,
+      6
+    ],
+    "Napalm": [
+      8,
+      7,
+      6,
+      6
+    ],
+    "Static Field": [
+      8,
+      7,
+      6,
+      6
+    ],
+    "Smoke": [
+      8,
+      7,
+      6,
+      6
+    ]
+  },
+  "hellpod": {
+    "Impact": [
+      10,
+      10,
+      10,
+      10
+    ]
   }
 }

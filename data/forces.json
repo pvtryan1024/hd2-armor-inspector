@@ -2181,5 +2181,71 @@
    }
   },
   "note": ""
+ },
+ "seaf-artillery": {
+  "modes": {
+   "High-Yield Explosive": {
+    "stagger": 50,
+    "push": 20,
+    "demolition": 50,
+    "exStagger": 70,
+    "exPush": 60,
+    "exDemolition": 50
+   },
+   "Explosive": {
+    "stagger": 50,
+    "push": 20,
+    "demolition": 50,
+    "exStagger": 100,
+    "exPush": 40,
+    "exDemolition": 50
+   },
+   "Mini-Nuke": {
+    "stagger": 50,
+    "push": 20,
+    "demolition": 50,
+    "exStagger": 50,
+    "exPush": 100,
+    "exDemolition": 60
+   },
+   "Napalm": {
+    "stagger": 50,
+    "push": 20,
+    "demolition": 50,
+    "exStagger": 50,
+    "exPush": 40,
+    "exDemolition": 30
+   },
+   "Static Field": {
+    "stagger": 50,
+    "push": 20,
+    "demolition": 50,
+    "exStagger": 50,
+    "exPush": 0,
+    "exDemolition": 30
+   },
+   "Smoke": {
+    "stagger": 50,
+    "push": 20,
+    "demolition": 50,
+    "exStagger": null,
+    "exPush": null,
+    "exDemolition": null
+   }
+  },
+  "note": ""
+ },
+ "hellpod": {
+  "modes": {
+   "Impact": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 80,
+    "exPush": 40,
+    "exDemolition": 40
+   }
+  },
+  "note": ""
  }
 }

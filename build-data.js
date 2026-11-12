@@ -365,7 +365,8 @@ if (fs.existsSync(chargePath)) {
 
 // Weapons that fire several rounds per trigger pull: one mode per way of firing (the VG-70 Variable: Total fires
 // all 49 rounds, Volley 7). The rounds don't spread: each trigger pull is one bullet with the damage of all of them
-const SPLIT_MODES = { 'vg-70-variable': [{ name: 'Total', rounds: 49 }, { name: 'Volley', rounds: 7 }] };
+// (Auto: one round per click, like most weapons; listed last so older links keep their mode)
+const SPLIT_MODES = { 'vg-70-variable': [{ name: 'Total', rounds: 49 }, { name: 'Volley', rounds: 7 }, { name: 'Auto', rounds: 1 }] };
 weapons.forEach((w) => {
   const sp = SPLIT_MODES[w.id];
   if (sp && w.modes?.length === 1) {

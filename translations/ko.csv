@@ -269,6 +269,7 @@ category,Throwable,투척무기,weapon categories,,投掷物,check,投擲物,che
 category,Support,지원무기,weapon categories,,支援武器,check,支援武器,check,サポート,check,Unterstützung,check,Soutien,check,Apoyo,check,Supporto,check,Поддержка,check,Підтримка,check
 category,Eagle,이글,weapon categories,,飞鹰,check,飛鷹,check,イーグル,check,Eagle,check,Eagle,check,Águila,check,Eagle,check,«Орёл»,check,Орел,check
 category,Orbital,궤도 폭격,weapon categories,,轨道,check,軌道,check,軌道,check,Orbital,check,Orbital,check,Orbital,check,Orbitale,check,Орбитальный,check,Орбітальні,check
+category,Orbital & Specials,궤도 & 특수,weapon categories,check,轨道与特殊,check,軌道與特殊,check,軌道・特殊,check,Orbital & Spezial,check,Orbital & spéciaux,check,Orbital y especiales,check,Orbitale e speciali,check,Орбитальные и особые,check,Орбітальні та спеціальні,check
 category,Sentry,센트리,weapon categories,,哨戒炮,check,哨戒炮,check,セントリー,check,Geschütz,check,Tourelle,check,Torreta,check,Torretta,check,Турель,check,Турелі,check
 category,Emplacement,거치포,weapon categories,check,阵地,check,陣地,check,設置兵器,check,Stellung,check,Emplacement,check,Emplazamiento,check,Postazione,check,Установка,check,Укріплення,check
 weapon type,Assault Rifle,돌격소총,weapon card,,突击步枪,check,突擊步槍,check,アサルトライフル,check,Sturmgewehr,check,Fusil d'assaut,check,Fusil de asalto,check,Fucile d'assalto,check,Штурмовая винтовка,check,Штурмова гвинтівка,check
@@ -737,6 +738,8 @@ weapon,Orbital 120mm HE Barrage,궤도 120mm 고폭 폭격,weapon list,,轨道 1
 weapon,Orbital Gatling Barrage,궤도 개틀링 폭격,weapon list,,轨道加特林火力网,check,軌道加特林火力網,check,軌道ガトリング砲撃,check,Orbitales Gatling-Sperrfeuer,check,Barrage orbital Gatling,check,Bombardeo orbital Gatling,check,Orbital Gatling Barrage,check,Орбитальный обстрел из гатлинга,check,Orbital Gatling Barrage,check
 weapon,Orbital Airburst Strike,궤도 공중폭발 타격,weapon list,,轨道空爆攻击,check,軌道空爆攻擊,check,軌道エアバースト攻撃,check,Orbitaler Airburst-Schlag,check,Frappe orbitale à fragmentation aérienne,check,Ataque orbital de explosión aérea,check,Orbital Airburst Strike,check,Орбитальный удар с подрывом в воздухе,check,Orbital Airburst Strike,check
 weapon,Orbital Laser,궤도 레이저,weapon list,,轨道激光,check,軌道激光,check,軌道レーザー,check,Orbitallaser,check,Laser orbital,check,Láser orbital,check,Orbital Laser,check,Орбитальный лазер,check,Orbital Laser,check
+weapon,SEAF Artillery,SEAF 포병,weapon list,check,SEAF 火炮,check,SEAF 火砲,check,SEAF砲兵,check,SEAF-Artillerie,check,Artillerie SEAF,check,Artillería SEAF,check,Artiglieria SEAF,check,Артиллерия SEAF,check,Артилерія SEAF,check
+weapon,Hellpod,헬포드,weapon list,check,地狱舱,check,地獄艙,check,ヘルポッド,check,Höllenkapsel,check,Hellpod,check,Cápsula infernal,check,Hellpod,check,Адская капсула,check,Пекельна капсула,check
 weapon,MG-43 Machine Gun Sentry,A/MG-43 기관총 센트리,weapon list,,MG-43 机枪哨戒炮,check,MG-43 機槍哨戒炮,check,MG-43 マシンガン・セントリー,check,MG-43 Maschinengewehr-Geschütz,check,MG-43 Tourelle mitrailleuse,check,MG-43 Torreta de ametralladora,check,MG-43 Machine Gun Sentry,check,MG-43 Пулемётная турель,check,MG-43 Machine Gun Sentry,check
 weapon,G-16 Gatling Sentry,A/G-16 개틀링 센트리,weapon list,,G-16 加特林哨戒炮,check,G-16 加特林哨戒炮,check,G-16 ガトリング・セントリー,check,G-16 Gatling-Geschütz,check,G-16 Tourelle Gatling,check,G-16 Torreta Gatling,check,G-16 Gatling Sentry,check,G-16 Гатлинг-турель,check,G-16 Gatling Sentry,check
 weapon,AC-8 Autocannon Sentry,A/AC-8 오토캐넌 센트리,weapon list,,AC-8 机炮哨戒炮,check,AC-8 機炮哨戒炮,check,AC-8 オートキャノン・セントリー,check,AC-8 Autokanonen-Geschütz,check,AC-8 Tourelle à canon automatique,check,AC-8 Torreta de autocañón,check,AC-8 Autocannon Sentry,check,AC-8 Автопушечная турель,check,AC-8 Autocannon Sentry,check
@@ -787,6 +790,15 @@ mode,Bomb (x6),폭탄 (x6),firing mode,check,炸弹（x6）,check,炸彈（x6）
 mode,Bomb casing,폭탄 외피,firing mode,check,炸弹外壳,check,炸彈外殼,check,爆弾ケース,check,Bombenhülle,check,Enveloppe de bombe,check,Carcasa de bomba,check,Involucro della bomba,check,Корпус бомбы,check,Корпус бомби,check
 mode,Cannon round,기관포탄,firing mode,check,加农炮弹,check,加農炮彈,check,機関砲弾,check,Kanonengeschoss,check,Obus de canon,check,Proyectil de cañón,check,Proiettile di cannone,check,Пушечный снаряд,check,Гарматний снаряд,check
 mode,Shell,포탄,firing mode,check,炮弹,check,炮彈,check,砲弾,check,Artilleriegranate,check,Obus,check,Obús,check,Proietto,check,Артиллерийский снаряд,check,Снаряд,check
+mode,High-Yield Explosive,고위력 폭발탄,firing mode,check,高当量爆炸弹,check,高當量爆炸彈,check,高威力榴弾,check,Hochexplosiv,check,Explosif à haut rendement,check,Explosivo de alto rendimiento,check,Esplosivo ad alto potenziale,check,Мощный фугас,check,Потужний фугас,check
+mode,Mini-Nuke,소형 핵탄,firing mode,check,迷你核弹,check,迷你核彈,check,小型核弾,check,Mini-Atombombe,check,Mini-bombe nucléaire,check,Mininuclear,check,Mini-atomica,check,Мини-ядерный,check,Міні-ядерний,check
+mode,Napalm,네이팜,firing mode,check,凝固汽油弹,check,凝固汽油彈,check,ナパーム,check,Napalm,check,Napalm,check,Napalm,check,Napalm,check,Напалм,check,Напалм,check
+mode,Static Field,정전기장,firing mode,check,静电场,check,靜電場,check,静電フィールド,check,Statisches Feld,check,Champ statique,check,Campo estático,check,Campo statico,check,Статическое поле,check,Статичне поле,check
+mode,Smoke,연막,firing mode,check,烟雾,check,煙霧,check,スモーク,check,Rauch,check,Fumigène,check,Humo,check,Fumogeno,check,Дым,check,Дим,check
+mode,Impact,충돌,firing mode,check,撞击,check,撞擊,check,衝突,check,Aufprall,check,Impact,check,Impacto,check,Impatto,check,Удар,check,Удар,check
+mode,Total,전탄 발사,firing mode,check,全弹齐射,check,全彈齊射,check,全弾発射,check,Gesamt,check,Total,check,Total,check,Totale,check,Залп всем,check,Усі набої,check
+mode,Volley,일제 사격,firing mode,check,齐射,check,齊射,check,斉射,check,Salve,check,Salve,check,Andanada,check,Salva,check,Залп,check,Залп,check
+mode,Auto,자동,firing mode,check,自动,check,自動,check,オート,check,Auto,check,Auto,check,Automático,check,Automatico,check,Авто,check,Авто,check
 mode,Round,탄,firing mode,check,弹丸,check,彈丸,check,弾,check,Geschoss,check,Projectile,check,Proyectil,check,Colpo,check,Снаряд,check,Набій,check
 mode,APHE 75mm,철갑유탄 75mm,firing mode,,穿甲高爆弹 75mm,check,穿甲高爆彈 75mm,check,APHE 75mm,check,APHE 75mm,check,APHE 75 mm,check,APHE 75mm,check,APHE 75mm,check,APHE 75mm,check,APHE 75 мм,check
 ui,Loadout,로드아웃,loadout box,check,配装,check,配裝,check,ロードアウト,check,Ausrüstung,check,Équipement,check,Equipamiento,check,Equipaggiamento,check,Снаряжение,check,Спорядження,check

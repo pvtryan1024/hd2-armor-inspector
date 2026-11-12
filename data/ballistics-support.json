@@ -934,5 +934,58 @@
         "falloff": null
       }
     }
+  },
+  "seaf-artillery": {
+    "High-Yield Explosive": {
+      "explosion": {
+        "inner": 4,
+        "outer": 12,
+        "shockwave": 18,
+        "ap": 6,
+        "apOuter": 5,
+        "falloff": "quick"
+      }
+    },
+    "Explosive": {
+      "explosion": {
+        "inner": 6.7,
+        "outer": 20,
+        "shockwave": 30,
+        "ap": 6,
+        "apOuter": 5,
+        "falloff": "quick"
+      }
+    },
+    "Mini-Nuke": {
+      "explosion": {
+        "inner": 17,
+        "outer": 25,
+        "shockwave": 45,
+        "ap": 10,
+        "apOuter": 9,
+        "falloff": "slow"
+      }
+    },
+    "Napalm": {
+      "explosion": {
+        "inner": 1.6,
+        "outer": 13,
+        "shockwave": 20,
+        "ap": 3,
+        "apOuter": 2,
+        "falloff": "quick"
+      }
+    }
+  },
+  "hellpod": {
+    "Impact": {
+      "explosion": {
+        "inner": 0.5,
+        "outer": 0.5,
+        "shockwave": 3,
+        "ap": 10,
+        "apOuter": 9
+      }
+    }
   }
 }

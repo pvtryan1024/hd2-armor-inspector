@@ -1217,6 +1217,119 @@
     "note": "Damage per second (25s duration); also applies 100 Fire (AP4)."
   },
   {
+    "id": "seaf-artillery",
+    "name": "SEAF Artillery",
+    "category": "Orbital",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/SEAF_Artillery",
+    "rpm": null,
+    "mag": null,
+    "modes": [
+      {
+        "name": "High-Yield Explosive",
+        "damage": 4000,
+        "durable": 4000,
+        "ap": 8,
+        "pellets": 1,
+        "explosion": {
+          "damage": 1500,
+          "durable": 1500,
+          "ap": 6,
+          "innerRadius": 4,
+          "outerRadius": 12
+        }
+      },
+      {
+        "name": "Explosive",
+        "damage": 4000,
+        "durable": 4000,
+        "ap": 8,
+        "pellets": 1,
+        "explosion": {
+          "damage": 1500,
+          "durable": 1500,
+          "ap": 6,
+          "innerRadius": 6.7,
+          "outerRadius": 20
+        }
+      },
+      {
+        "name": "Mini-Nuke",
+        "damage": 4000,
+        "durable": 4000,
+        "ap": 8,
+        "pellets": 1,
+        "explosion": {
+          "damage": 10000,
+          "durable": 10000,
+          "ap": 10,
+          "innerRadius": 17,
+          "outerRadius": 25
+        }
+      },
+      {
+        "name": "Napalm",
+        "damage": 4000,
+        "durable": 4000,
+        "ap": 8,
+        "pellets": 1,
+        "explosion": {
+          "damage": 250,
+          "durable": 250,
+          "ap": 3,
+          "innerRadius": 1.6,
+          "outerRadius": 13
+        },
+        "note": "Also sets Fire (100 Fire, 3 s) and Burning Heavy (200 Fire, 1 s); the burn is not simulated"
+      },
+      {
+        "name": "Static Field",
+        "damage": 4000,
+        "durable": 4000,
+        "ap": 8,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Explosion does no damage: a stun field (Stun Medium, 3 s) for 15 s; stun is not simulated (no enemy stun thresholds on the wiki)"
+      },
+      {
+        "name": "Smoke",
+        "damage": 4000,
+        "durable": 4000,
+        "ap": 8,
+        "pellets": 1,
+        "explosion": null,
+        "note": "Explosion does no damage: a smoke cloud for 30 s"
+      }
+    ],
+    "note": "Wiki shell IDs P7-P12 matched to shell names by description. Every shell: 4000 ballistic projectile, AP Anti-Tank IV direct (8), III slight (7), II large/extreme (6)."
+  },
+  {
+    "id": "hellpod",
+    "name": "Hellpod",
+    "category": "Orbital",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/Hellpod",
+    "rpm": null,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Impact",
+        "damage": 0,
+        "durable": 0,
+        "ap": 10,
+        "pellets": 1,
+        "explosion": {
+          "damage": 2500,
+          "durable": 2500,
+          "ap": 10,
+          "innerRadius": 0.5,
+          "outerRadius": 0.5
+        },
+        "note": "The pod landing: 2500 explosion, AP Anti-Tank VI (10) inside 0.5 m, Anti-Tank V (9) outer; 3 m shockwave (stagger / push only)"
+      }
+    ]
+  },
+  {
     "id": "a-mg-43-machine-gun-sentry",
     "name": "A/MG-43 Machine Gun Sentry",
     "category": "Sentry",

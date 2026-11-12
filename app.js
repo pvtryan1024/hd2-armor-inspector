@@ -720,10 +720,13 @@
     Throwable: { blurb: 'Grenades and throwables', icon: 'g-6-frag' },
     Support: { blurb: 'Support weapon stratagems', icon: 'gr-8-recoilless-rifle' },
     Eagle: { blurb: 'Eagle airstrikes', icon: 'eagle-500kg-bomb' },
-    Orbital: { blurb: 'Orbital strikes', icon: 'orbital-railcannon-strike' },
+    Orbital: { blurb: 'Orbital strikes, SEAF artillery, hellpod', icon: 'orbital-railcannon-strike', label: 'Orbital & Specials' },
     Sentry: { blurb: 'Automated sentries', icon: 'a-ac-8-autocannon-sentry' },
     Emplacement: { blurb: 'Manned emplacements', icon: 'e-mg-101-hmg-emplacement' },
   };
+
+  /** A category's display name (the data keeps the short key: "Orbital" shows as "Orbital & Specials"). */
+  const catName = (c) => CAT_INFO[c]?.label || c;
 
   function weaponThumbHtml(w, cls = 'wthumb') {
     const ext = DATA.wthumbs?.[w.id];
@@ -736,7 +739,7 @@
     if (!state.cat) { head.innerHTML = ''; head.classList.add('hidden'); return; }
     head.classList.remove('hidden');
     head.innerHTML = `<button class="back" data-c="" title="Back to categories">← Categories</button>
-      <span class="fac-chip cat-chip">${esc(state.cat)}</span>`;
+      <span class="fac-chip cat-chip">${esc(catName(state.cat))}</span>`;
   }
 
   function renderWeaponList() {
@@ -749,7 +752,7 @@
         const rep = weaponById(CAT_INFO[c]?.icon) || DATA.weapons.find((w) => w.category === c);
         return `<li class="cat-card" data-c="${esc(c)}">
           <span class="cat-icon">${weaponThumbHtml(rep, 'cat-img')}</span>
-          <span class="cat-name"><b>${esc(c)}</b><i>${DATA.weapons.filter((w) => w.category === c).length}</i></span>
+          <span class="cat-name"><b>${esc(catName(c))}</b><i>${DATA.weapons.filter((w) => w.category === c).length}</i></span>
         </li>`;
       }).join('');
       return;
@@ -759,7 +762,7 @@
       const aps = [...new Set(w.modes.map((m) => m.ap))].join('/');
       return `<li data-id="${esc(w.id)}" class="weapon ${w.id === state.weaponId ? 'on' : ''}">
         ${weaponThumbHtml(w)}
-        <span class="en-name">${esc(w.name)}${q && !state.cat ? ` <i class="muted">${esc(w.category)}</i>` : ''}</span>
+        <span class="en-name">${esc(w.name)}${q && !state.cat ? ` <i class="muted">${esc(catName(w.category))}</i>` : ''}</span>
         <span class="sub">AP${aps}</span>
       </li>`;
     }).join('') || '<li class="empty">No weapons match.</li>';
@@ -779,7 +782,7 @@
     const ex = m.explosion;
     el.innerHTML = `
       <div>
-        <div class="eyebrow">${esc(w.category)}${w.type ? ' · ' + esc(w.type) : ''}</div>
+        <div class="eyebrow">${esc(catName(w.category))}${w.type ? ' · ' + esc(w.type) : ''}</div>
         <h3>${esc(w.name)}</h3>
         ${w.url ? `<a class="src" style="margin:0" href="${esc(w.url)}" target="_blank" rel="noopener">wiki ↗</a>` : ''}
       </div>
@@ -985,7 +988,7 @@
     const el = $('#rankCats');
     el.classList.toggle('hidden', state.tab !== 'rank' && state.tab !== 'real');
     const cats = CAT_ORDER.filter((c) => DATA.weapons.some((w) => w.category === c));
-    el.innerHTML = [null, ...cats].map((c) => `<button type="button" data-rc="${esc(c || '')}" class="${(state.rankCat || null) === c ? 'on' : ''}">${esc(c || 'All')}</button>`).join('');
+    el.innerHTML = [null, ...cats].map((c) => `<button type="button" data-rc="${esc(c || '')}" class="${(state.rankCat || null) === c ? 'on' : ''}">${esc(c ? catName(c) : 'All')}</button>`).join('');
   }
   const rankWeapons = () => DATA.weapons.filter((w) => !state.rankCat || w.category === state.rankCat);
 
@@ -1020,7 +1023,7 @@
       rows
         .map(({ w, best, any }, i) => `<tr class="click ${w.id === state.weaponId ? 'hl' : ''}" data-w="${esc(w.id)}" data-m="${best ? best.mi : any ? any.mi : 0}">
           <td class="num muted">${best ? i + 1 : ''}</td>
-          <td>${esc(w.name)}</td><td class="muted">${esc(w.category)}</td>
+          <td>${esc(w.name)}</td><td class="muted">${esc(catName(w.category))}</td>
           <td class="muted">${best && w.modes.length > 1 ? esc(w.modes[best.mi].name) : ''}</td>
           <td>${best ? esc(best.b.part.name) : any ? `<span class="muted">Can’t kill from the front</span> · ${esc(any.b.part.name)} <span class="muted">${isOneShot(any.b.r) ? ONE_SHOT : any.b.r.ttk != null ? fmtTime(any.b.r.ttk) : shotsLabel(any.b.r)}</span>` : '<span class="muted">Can’t kill</span>'}</td>
           <td class="num">${best ? fmt(best.b.r.total) : '—'}</td>
@@ -1096,7 +1099,7 @@
         <th>Fastest</th><th class="num">TTK</th><th>Slowest</th><th class="num">TTK</th><th class="num">Real life</th></tr></thead><tbody>` +
       rows.map(({ w, best: sp, any }, i) => `<tr class="click ${w.id === state.weaponId ? 'hl' : ''}" data-w="${esc(w.id)}" data-m="${sp ? sp.mi : any ? any.mi : 0}">
           <td class="num muted">${sp ? i + 1 : ''}</td>
-          <td>${esc(w.name)}</td><td class="muted">${esc(w.category)}</td>
+          <td>${esc(w.name)}</td><td class="muted">${esc(catName(w.category))}</td>
           <td class="muted">${sp && w.modes.length > 1 ? esc(w.modes[sp.mi].name) : ''}</td>
           ${sp ? `<td>${esc(sp.lo.part.name)}</td><td class="num">${val(sp, sp.lo)}</td>
             <td>${esc(sp.hi.part.name)}${sp.hi.x3 ? ` <span class="muted" title="This weapon can’t damage it: worst case = ${WORST_X}× the best case">(no damage: ${WORST_X}×)</span>` : ''}</td><td class="num">${val(sp, sp.hi)}</td>
