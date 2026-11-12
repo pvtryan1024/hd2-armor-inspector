@@ -1281,21 +1281,13 @@
     return best;
   }
 
-  /** Main takes each explosion's redirected share once: per explosion, only the row with the biggest share
-   *  keeps it (ties: the first row, the struck piece or the nearest). */
-  function onceMain(rows) {
-    const n = Math.max(0, ...rows.map((r) => r.s.mainExBy?.length || 0));
-    const keep = rows.map(() => []);
-    for (let j = 0; j < n; j++) {
-      const top = Math.max(0, ...rows.map((r) => r.s.mainExBy?.[j] || 0));
-      const at = top > 0 ? rows.findIndex((r) => (r.s.mainExBy?.[j] || 0) === top) : -1;
-      rows.forEach((r, i) => { keep[i][j] = i === at ? top : 0; });
-    }
-    rows.forEach((r, i) => { r.s = { ...r.s, mainExBy: keep[i], mainEx: keep[i].reduce((x, y) => x + y, 0) }; });
-  }
+  /** Main's redirected share of an explosion: every part the blast reaches sends its own resisted (ExDR) share
+   *  to Main, so one blast over several parts feeds Main several times (owner's in-game knowledge). Kept as a
+   *  hook: nothing is dropped. */
+  function onceMain(rows) { return rows; }
 
   /** Damage from one shot at a 3D impact point: the struck part takes projectile + full blast, other parts
-   *  inside the outer radius take falloff blast, and Main gets the redirected share only once per blast. */
+   *  inside the outer radius take falloff blast, and each of them sends Main its redirected share. */
   function resolveHit(hit) {
     const e = enemy(), w = weapon();
     if (!e || !w || !hit) return null;
@@ -1336,7 +1328,7 @@
   }
 
   /** A shot into the ground next to the enemy (3D view): no part is struck, so only the explosion counts:
-   *  every piece the blast rays reach takes falloff damage (Main's share once per blast), plus shrapnel. */
+   *  every piece the blast rays reach takes falloff damage (each sends Main its share), plus shrapnel. */
   function resolveGround(hit, mode, band, o) {
     const e = enemy();
     const radii = blastRadii(mode);
@@ -1424,17 +1416,13 @@
       const e = enemy();
       const notes = [];
       const tag = shotClock();
-      let mainShared = false; // Main's redirected share comes once per blast
       res.rows.forEach((r, k) => {
         const piece = k === 0 ? hit.k : r.k;
-        if (k > 0 && mainShared && r.s.mainEx) r = { ...r, s: { ...r.s, mainEx: 0 } };
         const o = k === 0 ? applyHit(state.sim, e, r.idx, r.s, res.mode, { ...opts(), band: res.band, revealedK: hit.revealedK }, false, piece ?? undefined)
           : applyShot(state.sim, e, r.idx, r.s, true, piece ?? undefined);
         if (o.broke || o.gone) notes.push(brokeNote(e.parts[r.idx], piece, o));
         if (state.sim.hanging) notes.push(hangNote(state.sim).replace(/^ — /, ''));
         if (o.under) notes.push(underNote(e, o).replace(/^ → /, ''));
-        // the impact broke a plate and the flesh under it took the explosion: that already sent Main its share
-        if (k === 0 && o.under) mainShared = true;
         if (k === 0 && res.shrap && !state.sim.dead) { // shrapnel fragments, each piece once with its total
           for (const f of res.shrap.rows) {
             if (state.sim.dead || !(f.s.total > 0)) continue;
@@ -1481,7 +1469,7 @@
         <div class="sp-sub">Impact on the ground: only the explosion reaches the enemy</div>
         ${res.radii ? `<div class="sp-blast"><b>Blast</b> ${res.radii.inner}m inner / ${res.radii.outer}m outer
           ${res.rows.length ? '<ul>' + res.rows.map((r) => `<li><span>${esc(pieceName(e.parts[r.idx], r.k))} <i>${r.dist.toFixed(1)}m</i></span><span>${r.s.partEx > 0 ? fmt(r.s.partEx) : '<span class="muted" title="The blast AP does not beat this armor">0 · armor holds</span>'}</span></li>`).join('') + '</ul>' : '<div class="muted">No hitzone reached by the blast</div>'}
-          ${res.rows.some((r) => r.s.mainEx) ? `<div class="muted">+${fmt(res.rows.reduce((a, r) => a + r.s.mainEx, 0))} redirected to Main (once per blast)</div>` : ''}</div>` : '<div class="muted">This weapon has no explosion: a ground hit does nothing</div>'}
+          ${res.rows.some((r) => r.s.mainEx) ? `<div class="muted">+${fmt(res.rows.reduce((a, r) => a + r.s.mainEx, 0))} redirected to Main (each part's share)</div>` : ''}</div>` : '<div class="muted">This weapon has no explosion: a ground hit does nothing</div>'}
         ${res.shrap ? `<div class="sp-blast"><b>Shrapnel</b> ${res.shrap.hit} of ${res.shrap.count} fragments hit${res.shrap.rows.length ? '<ul>' + res.shrap.rows.map((r) => `<li><span>${esc(pieceName(e.parts[r.idx], r.k))} <i>×${r.n}</i></span><span>${r.s.total > 0 ? fmt(r.s.total) : '<span class="muted">0 · armor holds</span>'}</span></li>`).join('') + '</ul>' : ''}</div>` : ''}
         ${state.fire ? '' : '<div class="sp-hint">Turn on Fire mode to apply shots.</div>'}`;
       return;
@@ -1508,7 +1496,7 @@
       ${res.shrap ? `<div class="sp-blast"><b>Shrapnel</b> ${res.shrap.hit} of ${res.shrap.count} fragments hit${res.shrap.rows.length ? '<ul>' + res.shrap.rows.map((r) => `<li><span>${esc(pieceName(e.parts[r.idx], r.k))} <i>×${r.n}</i></span><span>${r.s.total > 0 ? fmt(r.s.total) : '<span class="muted">0 · armor holds</span>'}</span></li>`).join('') + '</ul>' : ''}</div>` : ''}
       ${res.radii ? `<div class="sp-blast"><b>Blast</b> ${res.radii.inner}m inner / ${res.radii.outer}m outer
         ${blastRows.length ? '<ul>' + blastRows.map((r) => `<li><span>${esc(pieceName(e.parts[r.idx], r.k))} <i>${r.dist.toFixed(1)}m</i></span><span>${r.s.partEx > 0 ? fmt(r.s.partEx) : '<span class="muted" title="The blast AP does not beat this armor">0 · armor holds</span>'}</span></li>`).join('') + '</ul>' : '<div class="muted">No other hitzone reached by the blast</div>'}
-        ${mainOnce ? `<div class="muted">+${fmt(mainOnce)} redirected to Main (once per blast)</div>` : ''}</div>` : ''}
+        ${mainOnce ? `<div class="muted">+${fmt(mainOnce)} redirected to Main (each part's share)</div>` : ''}</div>` : ''}
       ${state.fire ? '' : '<div class="sp-hint">Turn on Fire mode to apply shots. Change weapon or range to compare on this spot.</div>'}`;
   }
 
