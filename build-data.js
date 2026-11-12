@@ -111,7 +111,7 @@ const MAIN_TO_ON_GONE = [{ enemy: /hulk/i, part: /^legs\b/i, value: 1, killAllBr
 // arm's piece, the left one; pieces count left before right)
 const GONE_WITH = [
   { enemy: /devastator/i, part: /^Shoulders \(2\)$/, with: 'Arms (2)' },
-  { enemy: /^heavy devastator$/i, part: /^Shield$/, with: 'Arms (2)', inst: 0 },
+  { enemy: /^(heavy|conflagration|incendiary mg) devastator$/i, part: /^Shield$/, with: 'Arms (2)', inst: 0 },
 ];
 const ALSO_COVERED = [{ enemy: /^Rupture Charger$/, parts: { 'Leg Flesh (4)': 'Frontal Tarsal Plate Armor (2)' } }];
 enemies.forEach((e) => {

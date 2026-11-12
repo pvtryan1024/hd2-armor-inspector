@@ -9,7 +9,12 @@
     "head_whole": "Head",
     "torso_whole": "Torso",
     "leg_left_whole": "Legs (2)",
-    "shield": "Shield"
+    "shield": "Shield",
+    "arm_left_upper": "Arms (2)",
+    "arm_left_joint": "Arms (2)",
+    "arm_left_lower": "Arms (2)",
+    "arm_right_upper": "Arms (2)",
+    "arm_right_joint": "Arms (2)"
   },
   "hidden": [
     "torso_destroyed",
