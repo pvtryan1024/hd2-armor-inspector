@@ -118,6 +118,8 @@ const GONE_WITH = [
   { enemy: /^radical$/i, part: /^Pauldron$/, with: 'Upper Arms (2)', inst: 0 },
   // the Overseer's left arm (not fatal) takes its two limb plates with it
   { enemy: /overseer/i, part: /^Limb Armor( \(8\))?$/, with: 'Left Arm', pieces: [0, 1] },
+  // Vox Engine: a destroyed track takes the latch on its pod with it
+  { enemy: /^vox engine$/i, part: /^Trackpod Latches \(4\)$/, with: 'Tracks (4)' },
 ];
 // which pieces of the covering part sit over each piece of this one (the Overseer's 8 limb plates, in the 3D
 // model's piece order: arm L lower/upper, arm R lower/upper, leg L lower/upper, leg R lower/upper)
