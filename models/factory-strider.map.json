@@ -43,7 +43,16 @@
     "leg_assembly_right_front": "Leg Assembly (4)",
     "leg_assembly_right_back": "Leg Assembly (4)",
     "belly_right": "Belly Panels (2)",
-    "belly_right_plate": "Belly Panels (2)"
+    "belly_right_plate": "Belly Panels (2)",
+    "armor_head_damaged": "Head Body",
+    "leg_upper_right_front_damaged": "Leg Assembly (4)",
+    "leg_lower_right_back_damaged": "Leg Assembly (4)",
+    "leg_lower_left_back_damaged": "Leg Assembly (4)",
+    "leg_lower_left_front_damaged": "Leg Assembly (4)",
+    "leg_upper_right_back_damaged": "Leg Assembly (4)",
+    "leg_lower_right_front_damaged": "Leg Assembly (4)",
+    "leg_upper_left_front_damaged": "Leg Assembly (4)",
+    "leg_upper_left_back_damaged": "Leg Assembly (4)"
   },
   "hidden": [
     "side_right_damaged",

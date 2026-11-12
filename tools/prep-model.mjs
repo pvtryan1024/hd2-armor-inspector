@@ -893,6 +893,8 @@ const SOURCES = {
       [/^armor_head(_whole)?$/, 'Head Armor'], [/^(head(_whole)?|head)$/, 'Head Body'], [/^neck(_whole)?$/, 'Neck Armor'], [/^neck_damaged$/, 'Neck'],
       [/^(top)_(left|right)$/, 'Front Engine Weakspot'], [/^side_(left|right)$/, 'Side Armor (2)'], [/^side_(left|right)_damaged$/, 'Side Circuits (2)'],
       [/^armor_front_damaged$/, 'Circuits Front'], [/^armor_rear_damaged$/, 'Rear Circuits'],
+      // broken armor shows what's under it (wiki's Armor Broken entry): the head body, the leg's assembly
+      [/^armor_head_damaged$/, 'Head Body'], [/^leg_(upper|lower)_(left|right)_(front|back)_damaged$/, 'Leg Assembly (4)'],
       [/^leg_assembly_(left|right)_(front|back)$/, 'Leg Assembly (4)'], [/^belly_(left|right)(_plate)?$/, 'Belly Panels (2)'],
       [/^armor_front(_whole)?$/, 'Front Armor'], [/^front(_whole)?$/, 'Front Top Armor'], [/^armor_rear(_whole)?$/, 'Rear Armor'],
       [/^engine_rear(_whole)?$/, 'Rear Engine Armor'], [/^body_static$/, 'Main'], [/^(top|side)_(left|right)$/, 'Main'],
