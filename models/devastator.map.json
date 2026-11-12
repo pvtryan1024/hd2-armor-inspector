@@ -7,7 +7,13 @@
     "leg_left_whole": "Legs (2)",
     "torso_whole": "Torso",
     "shoulder_right": "Shoulders (2)",
-    "shoulder_left": "Shoulders (2)"
+    "shoulder_left": "Shoulders (2)",
+    "arm_right_upper": "Arms (2)",
+    "weapon_right": "Arms (2)",
+    "arm_right_joint": "Arms (2)",
+    "arm_left_joint": "Arms (2)",
+    "arm_left_upper": "Arms (2)",
+    "arm_left_lower": "Arms (2)"
   },
   "hidden": [
     "leg_left_destroyed",

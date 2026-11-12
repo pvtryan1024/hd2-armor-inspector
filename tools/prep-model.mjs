@@ -61,6 +61,12 @@ const BILE_TITAN = [
 ];
 
 // Automaton "soldier" body shared by the Devastators (intact pieces end in _whole)
+// the unnamed arm meshes of every Devastator body: upper arms, shoulder joints, the left forearm with its hand
+// (left is -x, where shoulder_left sits)
+const DEVASTATOR_ARMS = {
+  'g_body 0x09be09cf': 'arm_left_upper', 'g_body 0x0fb1fef6': 'arm_right_upper',
+  'g_body 0x7d4e2117': 'arm_left_joint', 'g_body 0x1111bf60': 'arm_right_joint', 'g_body udim 0': 'arm_left_lower',
+};
 const DEVASTATOR = [
   [/^head(_whole)?$/, 'Head'],
   [/^torso(_whole)?$/, 'Torso'],
@@ -672,15 +678,12 @@ const SOURCES = {
       [/^tail_burst$/, 'Abdomen Innards'],
     ],
   },
-  devastator: { src: 'content/fac_cyborgs/cha_soldier/cha_soldier.unit.glb', rules: DEVASTATOR },
-  'heavy-devastator': { src: 'content/fac_cyborgs/cha_soldier/cha_soldier_heavy_weapon.unit.glb', rules: [[/^weapon_backpack(_whole)?$/, 'Backpack'], ...DEVASTATOR] },
+  devastator: { src: 'content/fac_cyborgs/cha_soldier/cha_soldier.unit.glb', names: DEVASTATOR_ARMS, rules: [[/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] },
+  'heavy-devastator': { src: 'content/fac_cyborgs/cha_soldier/cha_soldier_heavy_weapon.unit.glb', names: DEVASTATOR_ARMS, rules: [[/^weapon_backpack(_whole)?$/, 'Backpack'], [/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] },
   'rocket-devastator': {
     src: 'content/fac_cyborgs/cha_soldier/cha_soldier_rocket.unit.glb',
     // the unnamed arm meshes: upper arms, shoulder joints, the left forearm with its hand (left is -x)
-    names: {
-      'g_body 0x09be09cf': 'arm_left_upper', 'g_body 0x0fb1fef6': 'arm_right_upper',
-      'g_body 0x7d4e2117': 'arm_left_joint', 'g_body 0x1111bf60': 'arm_right_joint', 'g_body udim 0': 'arm_left_lower',
-    },
+    names: DEVASTATOR_ARMS,
     rules: [[/^backpack_rockets$/, 'Rockets'], [/^rocket_pods(_whole)?$/, 'Rocket Pods'], [/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR],
   },
   berserker: {
