@@ -131,6 +131,11 @@ function partIndexFor(entry, key) {
   // a multi-material mesh loads as numbered sub-meshes ("wing_left_1"): fall back to its own name
   const name = key in entry.map.meshes ? entry.map.meshes[key] : entry.map.meshes[key.replace(/(_\d+|#\d+)$/, '')];
   if (name === null) return -1; // explicitly marked "not a hitzone"
+  // an unmapped "_damaged" mesh is the same hitzone as its intact mesh ("leg_left_damaged" → "leg_left")
+  if (name === undefined && /_damaged?$/i.test(primOf(key))) {
+    const b = primOf(key).replace(/_damaged?$/i, '');
+    if (entry.map.meshes[b]) return parts.findIndex((p) => p.name === entry.map.meshes[b]);
+  }
   if (name) {
     const i = parts.findIndex((p) => p.name === name);
     if (i >= 0) return i;
@@ -270,6 +275,13 @@ function show(entry) {
  *         → destroyed ("<name>_gib" / "_destroyed": grey remains, no hitbox).
  *  Outside fire mode every piece shows intact; the editor shows the map's own hidden list. */
 const GIB = ['_gib', '_gibs', '_destroyed'];
+/** Health gone but constitution left (Hulk legs): still a hitbox, drawn as its damaged mesh. */
+function pieceBroken(key) {
+  const i = partIndexFor(current, key);
+  if (i < 0 || !lastDetail?.fire || !lastDetail.brokenInst?.[i]) return false;
+  const k = instanceFor(current, key, i);
+  return !!lastDetail.brokenInst[i][k ?? 0];
+}
 function pieceGone(key) {
   const i = partIndexFor(current, key);
   if (i < 0 || !lastDetail?.fire) return false;
@@ -308,9 +320,11 @@ function swapBroken() {
       const di = dmg.length ? partIndexFor(current, dmg[0].key) : -1;
       stage = dmg.length && di >= 0 && di !== i && !pieceGone(dmg[0].key) ? 1 : 2;
     }
+    // broken (health gone, constitution left): the damaged mesh takes over as the same live hitzone
+    const broken = stage === 0 && dmg.length && pieceBroken(mine[0].key) && partIndexFor(current, dmg[0].key) === i;
     const remains = stage === 2 ? (gib.length ? gib : dmg.length ? dmg : null) : null;
-    for (const m of mine) { m.mesh.visible = stage === 0 || (stage === 2 && !remains); m.mesh.userData.remains = stage === 2 && !remains; }
-    for (const m of dmg) { m.mesh.visible = stage === 1 || remains === dmg; m.mesh.userData.revealed = stage === 1; m.mesh.userData.remains = remains === dmg; }
+    for (const m of mine) { m.mesh.visible = (stage === 0 && !broken) || (stage === 2 && !remains); m.mesh.userData.remains = stage === 2 && !remains; }
+    for (const m of dmg) { m.mesh.visible = stage === 1 || broken || remains === dmg; m.mesh.userData.revealed = stage === 1; m.mesh.userData.remains = remains === dmg; }
     for (const m of gib) { m.mesh.visible = remains === gib; m.mesh.userData.remains = remains === gib; m.mesh.userData.revealed = false; }
     if (stage === 2) for (const m of attached) m.mesh.visible = false;
   }

@@ -1421,6 +1421,9 @@
     const ap4 = m ? ANGLE_BANDS.map((_, b) => Math.max(m.explosionOnly ? -1 : apFor(m, b), exAp)) : null;
     window.dispatchEvent(new CustomEvent('hd2:update', { detail: {
       shrapnel: m?.shrapnel && state.explosion ? { count: m.shrapnel.count, spread: m.shrapnel.spread, range: blastRadii(m)?.outer || 7 } : null,
+      // pieces with constitution whose health is gone but which still have a hitbox (Hulk legs): the 3D view
+      // swaps in their damaged mesh
+      brokenInst: e.parts.map((p, i) => (state.fire && consOf(p) && state.sim?.hp[i] ? state.sim.hp[i].map((h) => h <= 0 && !instGone(p, h)) : null)),
       enemy: e, colors, gone, goneInst, hitHp, fire: state.fire, stageView: state.stageView,
       colorMode: state.color, ap4, avs: e.parts.map((p) => p.av), bands: ANGLE_BANDS,
       hit: state.hit, blast: state.hit?.blast || null, radii: blastRadii(m), explosive: !!(blastRadii(m) || (m?.shrapnel && state.explosion)),
