@@ -456,7 +456,10 @@
     if (mode.beam) return { kind: 'beam' };
     const rpm = mode.rpm ?? weapon.rpm;
     const t = (rpm ? 60 / rpm : 0) + (mode.chargeTime || 0); // a charged shot waits for its charge
-    return { kind: 'shot', interval: t || null };
+    // a mode with its own magazine (an underbarrel launcher or shotgun) also has its own reload
+    const own = mode.mag != null;
+    return { kind: 'shot', interval: t || null, rpm, mag: own ? mode.mag : weapon.mag, reload: own ? mode.reload : weapon.reload,
+      reloadRound: own ? mode.reloadRound : weapon.reloadRound, ammoKey: own ? `${weapon.id}:${mode.name}` : weapon.id };
   }
 
   /** Time for n shots: (n − 1) × interval + reloads × reload time. Without a fire interval it is only known when
@@ -464,12 +467,12 @@
   function shotTime(weapon, fm, n) {
     if (n == null) return { t: null, reloads: 0 };
     if (n <= 1) return { t: 0, reloads: 0 };
-    if (weapon.reloadRound && weapon.mag) { // round-by-round loading: one round's reload per shot past the magazine
-      const rounds = Math.max(0, n - weapon.mag);
-      return fm.interval || !rounds ? { t: fm.interval ? (n - 1) * fm.interval + rounds * weapon.reloadRound : null, reloads: rounds, rounds: true } : { t: null, reloads: rounds, rounds: true };
+    if (fm.reloadRound && fm.mag) { // round-by-round loading: one round's reload per shot past the magazine
+      const rounds = Math.max(0, n - fm.mag);
+      return fm.interval || !rounds ? { t: fm.interval ? (n - 1) * fm.interval + rounds * fm.reloadRound : null, reloads: rounds, rounds: true } : { t: null, reloads: rounds, rounds: true };
     }
-    const reloads = weapon.mag ? Math.max(0, Math.ceil(n / weapon.mag) - 1) : 0;
-    const rl = weapon.reload;
+    const reloads = fm.mag ? Math.max(0, Math.ceil(n / fm.mag) - 1) : 0;
+    const rl = fm.reload;
     if (reloads && !rl) return { t: fm.interval ? (n - 1) * fm.interval : null, reloads, reloadUnknown: true };
     if (fm.interval) return { t: (n - 1) * fm.interval + reloads * (rl || 0), reloads };
     return { t: n - 1 === reloads ? reloads * rl : null, reloads };
@@ -733,8 +736,8 @@
         <div class="stat"><div class="k">Durable</div><div class="v" id="statDur">${fmt(m.durable)}</div></div>
         <div class="stat"><div class="k">AP</div><div class="v">${ap}</div></div>
         ${pellets > 1 ? `<div class="stat"><div class="k">Pellets</div><div class="v">${pellets}</div></div>` : ''}
-        ${w.rpm ? `<div class="stat"><div class="k">RPM</div><div class="v">${fmt(w.rpm)}</div></div>` : ''}
-        ${w.mag ? `<div class="stat"><div class="k">Mag</div><div class="v">${fmt(w.mag)}</div></div>` : ''}
+        ${m.rpm ?? w.rpm ? `<div class="stat"><div class="k">RPM</div><div class="v">${fmt(m.rpm ?? w.rpm)}</div></div>` : ''}
+        ${m.mag ?? w.mag ? `<div class="stat"><div class="k">Mag</div><div class="v">${fmt(m.mag ?? w.mag)}</div></div>` : ''}
         ${exList(m).map((x, j, all) => { const n = all.length > 1 ? ` ${j + 1}` : ''; return `
           ${(x.inner ?? x.innerRadius) != null ? `<div class="stat"><div class="k">Radius${n}</div><div class="v">${x.inner ?? x.innerRadius}/${x.outer ?? x.outerRadius ?? '?'}m</div></div>` : ''}
           <div class="stat"><div class="k">Expl.${n} dmg</div><div class="v">${fmt(x.durable ?? x.damage)}</div></div>
@@ -1062,14 +1065,15 @@
     const fm = fireModel(w, w.modes[state.mode] || w.modes[0]);
     if (fm?.kind === 'dot') sim.time += DOT_CLICK; // a flame / gas click is a second of spraying
     else if (sim.last === key) sim.time += fm && fm.kind === 'shot' && fm.interval ? fm.interval : 0;
-    if (fm?.kind === 'shot' && w.mag && (w.reload || w.reloadRound)) { // a reload once the magazine is empty (each weapon its own)
+    if (fm?.kind === 'shot' && fm.mag && (fm.reload || fm.reloadRound)) { // a reload once the magazine is empty (each magazine its own)
       sim.ammo ||= {};
-      if ((sim.ammo[w.id] || 0) >= w.mag) {
-        if (w.reloadRound) sim.time += w.reloadRound; // load just the one round for this shot
-        else { sim.time += w.reload; sim.ammo[w.id] = 0; }
+      const ak = fm.ammoKey;
+      if ((sim.ammo[ak] || 0) >= fm.mag) {
+        if (fm.reloadRound) sim.time += fm.reloadRound; // load just the one round for this shot
+        else { sim.time += fm.reload; sim.ammo[ak] = 0; }
         sim.reloads = (sim.reloads || 0) + 1;
       }
-      sim.ammo[w.id] = (sim.ammo[w.id] || 0) + 1;
+      sim.ammo[ak] = (sim.ammo[ak] || 0) + 1;
     }
     if (sim.last && sim.last !== key) sim.swaps++;
     sim.last = key;

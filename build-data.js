@@ -327,6 +327,12 @@ if (fs.existsSync(reloadPath)) {
     // weapons that load one round at a time: past the magazine, each round needed costs one round's reload
     // (clip loaders, the Autocannon, Veto and Constitution's empty clip, keep the full reload)
     if (r && r.perRound && r.perRoundTime > 0 && !CLIP_LOADERS.includes(w.id)) w.reloadRound = r.perRoundTime;
+    // underbarrel modes with their own fire rate, magazine and reload (One-Two 40mm, Arbitrator 10g)
+    for (const [name, o] of Object.entries(r?.modes || {})) {
+      const m = w.modes.find((x) => x.name === name);
+      if (!m) { console.warn(`reload.json: ${w.id} has no mode ${name}`); continue; }
+      for (const k of ['rpm', 'mag', 'reload', 'reloadRound']) if (o[k] != null) m[k] = o[k];
+    }
   }
   console.log(`reload: ${n} weapons with a reload time`);
 }

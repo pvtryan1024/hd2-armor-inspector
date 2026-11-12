@@ -43,7 +43,15 @@
   "perRound": false,
   "perRoundTime": null,
   "raw": "3.75s",
-  "note": "rifle magazine values. Capacity '45 (4mm)' + '4 (10g)': underslung shotgun reloads one shell at a time (Reload Time For One Round 1.5s, >1 Round 0.33s)"
+  "note": "rifle magazine values. Capacity '45 (4mm)' + '4 (10g)': underslung shotgun reloads one shell at a time (Reload Time For One Round 1.5s, >1 Round 0.33s)",
+  "modes": {
+   "10g Underbarrel Shotgun": {
+    "rpm": 80,
+    "mag": 4,
+    "reloadRound": 0.33,
+    "note": "wiki: 80 rpm, capacity 4, rounds reload one shell at a time (first round 1.5s, >1 round 0.33s, full 2.5s)"
+   }
+  }
  },
  "ar-2-coyote": {
   "reload": 3,
@@ -133,7 +141,15 @@
   "perRound": false,
   "perRoundTime": null,
   "raw": "3.33s (8mm) / 2.5s(40mm)",
-  "note": "rifle values; underslung 40mm grenade launcher reload 2.5s; Tactical Reload Time 1.95s (8mm)"
+  "note": "rifle values; underslung 40mm grenade launcher reload 2.5s; Tactical Reload Time 1.95s (8mm)",
+  "modes": {
+   "40mm Grenade": {
+    "rpm": 900,
+    "mag": 1,
+    "reload": 2.5,
+    "note": "wiki Detailed Weapon Statistics: 900 rpm, capacity 1, reload 2.5s (40mm); 3 starting + 5 spare grenades"
+   }
+  }
  },
  "b-flam-80-cremator": {
   "reload": null,
