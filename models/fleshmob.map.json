@@ -15,22 +15,30 @@
     "front_face_mask": "Head Chunks (6)",
     "upper_right_arm_mask": "Arms (4)",
     "lower_back_mask": "Stomach Chunks (2)",
-    "stomach_mask": "Stomach Chunks (2)"
+    "stomach_mask": "Stomach Chunks (2)",
+    "head_mask_damaged": "Main",
+    "front_face_mask_damaged": "Main",
+    "back_face_mask_damaged": "Main",
+    "left_front_face_mask_damaged": "Main",
+    "right_front_face_mask_damaged": "Main",
+    "back_chunk_mask_damaged": "Main",
+    "stomach_mask_damaged": "Main",
+    "lower_back_mask_damaged": "Main"
   },
   "hidden": [
-    "left_front_face_mask_gib",
+    "left_front_face_mask_damaged",
     "upper_right_arm_mask_gib",
-    "front_face_mask_gib",
+    "front_face_mask_damaged",
     "left_leg_mask_gib",
     "left_arm_mask_gib",
-    "lower_back_mask_gib",
+    "lower_back_mask_damaged",
     "upper_left_arm_mask_gib",
-    "right_front_face_mask_gib",
-    "stomach_mask_gib",
+    "right_front_face_mask_damaged",
+    "stomach_mask_damaged",
     "right_arm_mask_gib",
-    "back_face_mask_gib",
-    "back_chunk_mask_gib",
+    "back_face_mask_damaged",
+    "back_chunk_mask_damaged",
     "right_leg_mask_gib",
-    "head_mask_gib"
+    "head_mask_damaged"
   ]
 }
