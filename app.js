@@ -459,7 +459,8 @@
     // a mode with its own magazine (an underbarrel launcher or shotgun) also has its own reload
     const own = mode.mag != null;
     return { kind: 'shot', interval: t || null, rpm, mag: own ? mode.mag : weapon.mag, reload: own ? mode.reload : weapon.reload,
-      reloadRound: own ? mode.reloadRound : weapon.reloadRound, ammoKey: own ? `${weapon.id}:${mode.name}` : weapon.id };
+      reloadRound: own ? mode.reloadRound : weapon.reloadRound, ammoKey: own ? `${weapon.id}:${mode.name}` : weapon.id,
+      burst: !own && weapon.burst && rpm ? weapon.burst : null };
   }
 
   /** Time for n shots: (n − 1) × interval + reloads × reload time. Without a fire interval it is only known when
@@ -473,6 +474,11 @@
     }
     const reloads = fm.mag ? Math.max(0, Math.ceil(n / fm.mag) - 1) : 0;
     const rl = fm.reload;
+    if (fm.burst) { // bursts: shots 60/RPM apart inside a burst, a charge before every burst after the first
+      const g = 60 / fm.rpm, k = n - 1, b = Math.floor(k / fm.burst.size), j = k % fm.burst.size;
+      const t = b * ((fm.burst.size - 1) * g + fm.burst.charge) + j * g;
+      return reloads && !rl ? { t, reloads, reloadUnknown: true } : { t: t + reloads * (rl || 0), reloads };
+    }
     if (reloads && !rl) return { t: fm.interval ? (n - 1) * fm.interval : null, reloads, reloadUnknown: true };
     if (fm.interval) return { t: (n - 1) * fm.interval + reloads * (rl || 0), reloads };
     return { t: n - 1 === reloads ? reloads * rl : null, reloads };
@@ -1064,7 +1070,11 @@
     const key = `${w.id}:${state.mode}:${chargeOf(w) ?? ''}`;
     const fm = fireModel(w, w.modes[state.mode] || w.modes[0]);
     if (fm?.kind === 'dot') sim.time += DOT_CLICK; // a flame / gas click is a second of spraying
-    else if (sim.last === key) sim.time += fm && fm.kind === 'shot' && fm.interval ? fm.interval : 0;
+    else if (sim.last === key && fm?.burst) { // burst weapon: a charge before each new burst
+      sim.burstN = (sim.burstN || 0) + 1;
+      sim.time += sim.burstN % fm.burst.size === 0 ? fm.burst.charge : 60 / fm.rpm;
+    } else if (sim.last === key) sim.time += fm && fm.kind === 'shot' && fm.interval ? fm.interval : 0;
+    if (sim.last !== key) sim.burstN = 0;
     if (fm?.kind === 'shot' && fm.mag && (fm.reload || fm.reloadRound)) { // a reload once the magazine is empty (each magazine its own)
       sim.ammo ||= {};
       const ak = fm.ammoKey;
