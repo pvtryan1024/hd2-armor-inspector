@@ -14,7 +14,8 @@
     "leg_left_back": "Legs (4)",
     "leg_right_back": "Legs (4)",
     "leg_right_front": "Legs (4)",
-    "claw_right": "Claws (2)"
+    "claw_right": "Claws (2)",
+    "tail": "Main"
   },
   "hidden": [
     "tail_gore_extra",

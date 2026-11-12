@@ -2,12 +2,13 @@
   "enemy": "hive-guard",
   "meshes": {
     "body": "Main",
-    "leg_right_front": "Front Legs (2)",
-    "leg_left_front": "Front Legs (2)",
+    "leg_right_front": "Frontal Tarsal Plate Armor (2)",
+    "leg_left_front": "Frontal Tarsal Plate Armor (2)",
     "leg_left_back": "Rear Legs (2)",
     "claw_left": "Claws (2)",
     "leg_right_back": "Rear Legs (2)",
-    "claw_right": "Claws (2)"
+    "claw_right": "Claws (2)",
+    "tail_01": "Main"
   },
   "hidden": [
     "head_damaged"
