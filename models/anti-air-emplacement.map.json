@@ -2,7 +2,8 @@
   "enemy": "anti-air-emplacement",
   "meshes": {
     "body": "Main",
-    "turret_heatsink": "Heatsink"
+    "heatsink_left": "Heatsink",
+    "heatsink_right": "Heatsink"
   },
   "hidden": [
     "body_damaged"
