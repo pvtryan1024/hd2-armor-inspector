@@ -319,8 +319,9 @@ if (fs.existsSync(chargePath)) {
 const reloadPath = path.join(dir, 'reload.json');
 const CLIP_LOADERS = ['ac-8-autocannon', 'p-69-veto', 'r-2124-constitution'];
 // burst weapons that charge before each burst (wiki): PLAS-39 Accelerator Rifle fires 3-round bursts at 550 rpm
-// and "must be charged to fire"; its charge table starts at 0.45 s (damage ×1.00 at every charge)
-const BURST = { 'plas-39-accelerator-rifle': { size: 3, charge: 0.45 } };
+// and "must be charged to fire"; its charge table starts at 0.45 s (damage ×1.00 at every charge). 0.7 s is the
+// usual charge in play (the user's call), so that is used per burst.
+const BURST = { 'plas-39-accelerator-rifle': { size: 3, charge: 0.7 } };
 for (const [id, b] of Object.entries(BURST)) { const w = weapons.find((x) => x.id === id); if (w) w.burst = b; else console.warn(`burst: no weapon ${id}`); }
 if (fs.existsSync(reloadPath)) {
   const reload = JSON.parse(fs.readFileSync(reloadPath, 'utf8'));
