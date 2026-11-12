@@ -662,6 +662,8 @@ const SOURCES = {
       [/^body_(left|right)(_whole)?$/, 'Carapace (2)'],
       [/^leg_(left|right)_(front|back)(_upper|_middle)?$/, 'Leg Armor (12)'],
       [/^stomach_(left|right)_plates$/, 'Carapace (2)'],
+      // a destroyed leg plate shows the damaged leg, still hittable: no Leg Flesh on the wiki, so it is Main
+      [/^leg_\w+_damaged$/, 'Main'],
       [/^wing_(left|right)_(front|back)$/, 'Wings (4)'],
       [/^stomach$/, 'Thorax Sac'],
       [/^stomach_burst$/, 'Thorax Innards'],

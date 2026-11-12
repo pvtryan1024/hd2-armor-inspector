@@ -29,7 +29,19 @@
     "leg_right_back_middle": "Leg Armor (12)",
     "tail": "Abdomen Armor",
     "stomach_left_plates": "Carapace (2)",
-    "stomach_right_plates": "Carapace (2)"
+    "stomach_right_plates": "Carapace (2)",
+    "leg_right_back_damaged": "Main",
+    "leg_left_front_damaged": "Main",
+    "leg_right_front_damaged": "Main",
+    "leg_left_back_damaged": "Main",
+    "leg_left_front_upper_damaged": "Main",
+    "leg_left_front_middle_damaged": "Main",
+    "leg_right_front_upper_damaged": "Main",
+    "leg_right_front_middle_damaged": "Main",
+    "leg_left_back_upper_damaged": "Main",
+    "leg_left_back_middle_damaged": "Main",
+    "leg_right_back_upper_damaged": "Main",
+    "leg_right_back_middle_damaged": "Main"
   },
   "hidden": [
     "claw_left_damaged",
