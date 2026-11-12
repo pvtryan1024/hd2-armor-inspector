@@ -940,13 +940,15 @@ const SOURCES = {
       { mesh: 'body_static', classify: (c, n) => (n[1] < -0.5 && c[1] < 5.9 && Math.abs(c[0]) < 1.75 && c[2] > -3.9 && c[2] < 4.3 ? `belly_${c[0] < 0 ? 'left' : 'right'}_hull`
         : c[2] < -3.9 ? 'front_hull' : c[2] > 4.3 ? 'rear_hull' : `side_${c[0] < 0 ? 'left' : 'right'}_hull`) },
     ]),
+    // the hull under the front / side / rear plates: once a plate breaks, its stretch of hull is the circuits
+    copies: { front_hull: 'front_hull_damaged', rear_hull: 'rear_hull_damaged', side_left_hull: 'side_left_hull_damaged', side_right_hull: 'side_right_hull_damaged' },
     rules: [
       [/^armor_head(_whole)?$/, 'Head Armor'], [/^(head(_whole)?|head)$/, 'Head Body'], [/^neck(_whole)?$/, 'Neck Armor'], [/^neck_damaged$/, 'Neck'],
       [/^(top)_(left|right)$/, 'Front Engine Weakspot'], [/^side_(left|right)$/, 'Side Armor (2)'], [/^side_(left|right)_damaged$/, 'Side Circuits (2)'],
       [/^armor_front_damaged$/, 'Circuits Front'], [/^armor_rear_damaged$/, 'Rear Circuits'],
       // broken armor shows what's under it (wiki's Armor Broken entry): the head body, the leg's assembly
       [/^armor_head_damaged$/, 'Head Body'], [/^leg_(upper|lower)_(left|right)_(front|back)_damaged$/, 'Leg Assembly (4)'],
-      [/^leg_assembly_(left|right)_(front|back)$/, 'Leg Assembly (4)'], [/^belly_(left|right)(_plate|_hull)?$/, 'Belly Panels (2)'], [/^side_(left|right)_hull$/, 'Side Armor (2)'], [/^front_hull$/, 'Front Armor'], [/^rear_hull$/, 'Rear Armor'], [/^neck_mount$/, 'Neck'],
+      [/^leg_assembly_(left|right)_(front|back)$/, 'Leg Assembly (4)'], [/^belly_(left|right)(_plate|_hull)?$/, 'Belly Panels (2)'], [/^side_(left|right)_hull$/, 'Side Armor (2)'], [/^side_(left|right)_hull_damaged$/, 'Side Circuits (2)'], [/^front_hull_damaged$/, 'Circuits Front'], [/^rear_hull_damaged$/, 'Rear Circuits'], [/^front_hull$/, 'Front Armor'], [/^rear_hull$/, 'Rear Armor'], [/^neck_mount$/, 'Neck'],
       [/^armor_front(_whole)?$/, 'Front Armor'], [/^front(_whole)?$/, 'Front Top Armor'], [/^armor_rear(_whole)?$/, 'Rear Armor'],
       [/^engine_rear(_whole)?$/, 'Rear Engine Armor'], [/^body_static$/, 'Main'], [/^(top|side)_(left|right)$/, 'Main'],
       [/^knee_(armor|(left|right)_(front|back))$/, 'Knee Armor (4)'], [/^leg_(armor|(upper|lower)_(left|right)_(front|back))$/, 'Leg Armor (8)'], [/^leg_assembly$/, 'Leg Assembly (4)'], [/^neck$/, 'Neck'], [/^body$/, 'Main'],
@@ -1181,6 +1183,16 @@ async function prep(id) {
     const made = cutBox(doc, node, cut);
     if (cut.rest && made.length) names[names.indexOf(cut.mesh)] = cut.rest, made.pop();
     names.push(...made);
+  }
+  // copies: { mesh: copyName }: a second mesh with the same geometry (the Factory Strider's hull under its plates
+  // shows again as the circuits once the plate breaks: hull_x_damaged)
+  for (const [from, to] of Object.entries(cfg.copies || {})) {
+    const src = root.listNodes().find((x) => x.getMesh() && x.getName() === from);
+    if (!src) { console.warn(`${id}: no mesh ${from} to copy`); continue; }
+    const m = doc.createMesh(to);
+    src.getMesh().listPrimitives().forEach((p) => m.addPrimitive(p.clone()));
+    (src.getParentNode() || doc.getRoot().listScenes()[0]).addChild(doc.createNode(to).setMesh(m).setSkin(src.getSkin()).setMatrix(src.getMatrix()));
+    names.push(to);
   }
   // tails: armor plates and soft body apart (plates of a damage-state copy are dropped)
   if (cfg.shells) {

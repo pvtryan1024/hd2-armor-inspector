@@ -58,7 +58,11 @@
     "side_left_hull": "Side Armor (2)",
     "side_right_hull": "Side Armor (2)",
     "belly_left_hull": "Belly Panels (2)",
-    "belly_right_hull": "Belly Panels (2)"
+    "belly_right_hull": "Belly Panels (2)",
+    "front_hull_damaged": "Circuits Front",
+    "rear_hull_damaged": "Rear Circuits",
+    "side_left_hull_damaged": "Side Circuits (2)",
+    "side_right_hull_damaged": "Side Circuits (2)"
   },
   "hidden": [
     "side_right_damaged",
@@ -86,6 +90,10 @@
     "neck_damaged",
     "gatling_left_damaged",
     "gatling_right_damaged",
-    "cannon_turret_destroyed"
+    "cannon_turret_destroyed",
+    "front_hull_damaged",
+    "rear_hull_damaged",
+    "side_left_hull_damaged",
+    "side_right_hull_damaged"
   ]
 }
