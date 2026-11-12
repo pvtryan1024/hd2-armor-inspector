@@ -255,6 +255,9 @@
   const consOf = (p) => (p.indestructible ? 0 : p.cons || 0);
   /** Gone for good: health and constitution both used up, so the hitbox is gone too. */
   const instGone = (p, h) => h <= -consOf(p);
+  /** The piece repeated shots go to: the first one still standing. Where breaking every piece kills (Hulk legs),
+   *  move on to a piece that still has health once this one is broken, rather than shooting through its constitution. */
+  const nextPiece = (p, inst) => { const up = p.killAllBroken ? inst.findIndex((h) => h > 0) : -1; return up >= 0 ? up : inst.findIndex((h) => !instGone(p, h)); };
   const partGone = (sim, enemy, idx) => !!sim.hp[idx] && sim.hp[idx].every((h) => instGone(enemy.parts[idx], h));
   const bleedNote = (p) => (p.cons && p.bleed < 0 ? ` (bleeds out in ${fmtTime(p.cons / -p.bleed)})` : '');
 
@@ -287,7 +290,7 @@
     } else {
       const inst = sim.hp[idx];
       const cons = consOf(part);
-      const k = want != null ? (instGone(part, inst[want]) ? -1 : want) : inst.findIndex((h) => !instGone(part, h));
+      const k = want != null ? (instGone(part, inst[want]) ? -1 : want) : nextPiece(part, inst);
       if (k >= 0) {
         const wasUp = inst[k] > 0;
         const capped = part.overflow ? s.total : Math.min(s.total, inst[k] + cons);
@@ -300,7 +303,8 @@
         inst[k] -= s.total;
         if (s.total > 0) out.progress = true;
         // mainToOnGone (Hulk legs): shot through, the enemy is left hanging with Main at that much health
-        if (part.mainToOnGone != null && !wasGone && instGone(part, inst[k])) out.clampTo = part.mainToOnGone;
+        if (!wasGone && instGone(part, inst[k])) out.gone = true; // hitbox gone (constitution used up too)
+        if (part.mainToOnGone != null && out.gone) out.clampTo = part.mainToOnGone;
         if (wasUp && inst[k] <= 0) out.broke = true;
         // fatal parts: with a bleed rate the enemy is done once the part breaks (it bleeds out);
         // with constitution that doesn't drain, it has to be shot through the constitution too
@@ -311,9 +315,10 @@
             sim.dead = { how: part.fatal === 'downs' ? 'downed' : 'killed', why: `${part.name} destroyed${bleedNote(part)}`, idx };
           }
         }
-        // every piece broken (health gone, constitution or not) downs it too: both Hulk legs
-        if (!sim.dead && part.downsAllBroken && inst.every((h) => h <= 0)) {
-          sim.dead = { how: 'downed', why: `every ${part.name.replace(/\s*\(\d+\)$/, '')} piece broken`, idx };
+        // every piece broken (health gone, constitution or not) downs / kills it too: both Hulk legs kill
+        if (!sim.dead && (part.downsAllBroken || part.killAllBroken) && inst.every((h) => h <= 0)) {
+          const nm = part.name.replace(/\s*\(\d+\)$/, '');
+          sim.dead = { how: part.killAllBroken ? 'killed' : 'downed', why: inst.length === 2 ? `both ${nm} broken` : `every ${nm} piece broken`, idx };
         }
       } else {
         // this one (or every one) is gone: only overflow parts keep feeding Main
@@ -334,7 +339,7 @@
       // after this shot's own damage to Main: still alive, so Main drops to what's left hanging
       if (out.clampTo != null && !sim.dead && mi >= 0 && sim.pool[mi] != null && sim.pool[mi] > out.clampTo) {
         sim.pool[mi] = out.clampTo;
-        sim.hanging = `${part.name.replace(/\s*\(\d+\)$/, '')} shot through: Main left at ${fmt(out.clampTo)} HP`;
+        sim.hanging = `Main left at ${fmt(out.clampTo)} HP`;
         out.progress = true;
       }
       return out;
@@ -356,7 +361,7 @@
     if (!ex || o.combined) return applyShot(sim, enemy, idx, s, extra, want);
     const part = enemy.parts[idx];
     const inst = sim.hp[idx];
-    const k = inst ? (want != null ? want : inst.findIndex((h) => !instGone(part, h))) : -1;
+    const k = inst ? (want != null ? want : nextPiece(part, inst)) : -1;
     // 1. impact
     const out = applyShot(sim, enemy, idx, { ...s, partEx: 0, mainEx: 0, total: s.proj }, extra, k >= 0 ? k : want);
     if (sim.dead) return out;
@@ -374,6 +379,7 @@
     out.toMain += o2.toMain;
     out.progress = out.progress || o2.progress;
     out.broke = out.broke || o2.broke;
+    out.gone = out.gone || o2.gone;
     return out;
   }
   /** Flame and gas weapons in fire mode: a click is one second of spraying. The spray's own hit lands on the
@@ -390,6 +396,9 @@
     return ` + ${DOT_CLICK} s ${dot.label.toLowerCase()}: ${fmt(dmg)} to Main`;
   }
 
+  /** Log text for a piece this shot broke or destroyed: with constitution (Hulk legs) "broken" means its health
+   *  is gone but it can still be hit; "destroyed" means the constitution is gone too. */
+  const brokeNote = (p, k, o) => `${pieceName(p, k)} ${consOf(p) && !o.gone ? 'broken' : 'destroyed'}`;
   /** Log text for a part that left Main hanging (once, then cleared). */
   const hangNote = (sim) => { const t = sim.hanging; sim.hanging = null; return t ? ` — ${t}` : ''; };
   /** Log text for the explosion that went on into the part under a broken plate. */
@@ -819,7 +828,7 @@
               label: left.segs[inst] > 0 ? (part.indestructible ? 'Indestructible' : `${fmt(left.segs[inst] * part.health)} HP left`)
                 : c > 0 ? `Broken · ${fmt(c * part.cons)} constitution left` : 'Destroyed' };
           }
-          const fatal = part.fatal === true ? '<span class="fatal" title="Destroying this kills">☠ fatal</span>' : part.fatal === 'downs' ? '<span class="fatal" title="Destroying this downs the enemy">☠ downs</span>' : '';
+          const fatal = part.killAllBroken ? '<span class="fatal" title="Breaking every piece kills">☠ all broken</span>' : part.fatal === true ? '<span class="fatal" title="Destroying this kills">☠ fatal</span>' : part.fatal === 'downs' ? '<span class="fatal" title="Destroying this downs the enemy">☠ downs</span>' : '';
           const covered = !isExposed(e, i, state.fire ? state.sim : null, inst);
           return `<div class="tile ${vis ? '' : 'dim'} ${covered ? 'covered' : ''} ${left && (left.gone ?? left.frac <= 0) ? 'gone' : left?.csegs?.some((c) => c != null) && left.csegs.every((c, n) => c != null || left.gones?.[n]) ? 'on-cons' : ''}" data-i="${i}"${inst != null ? ` data-k="${inst}"` : ''} style="--c:${color};${size}" ${covered ? 'title="Behind armor: break the armor first"' : ''}>
               ${part.hidden ? `<span class="inner-tag">${hiddenTag(part, !covered)}</span>` : part.coveredBy ? `<span class="inner-tag">${coverTag(part, state.fire && isExposed(e, i, state.sim, inst))}</span>` : ''}
@@ -1083,7 +1092,7 @@
     const o2 = thru ? applyShot(state.sim, e, thru.idx, thru.s, true) : null;
     const dotNote = dotSecond(state.sim, e, mode);
     const label = k != null && (part.count || 1) > 1 ? `${part.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${part.count}` : part.name;
-    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : s.demo ? 'demolished' : s.ricochet ? 'ricochet' : 'no damage'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke ? ' — destroyed' : ''}${hangNote(state.sim)}${underNote(e, o)}${dotNote}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
+    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : s.demo ? 'demolished' : s.ricochet ? 'ricochet' : 'no damage'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke || o.gone ? ` — ${consOf(part) && !o.gone ? 'broken' : 'destroyed'}` : ''}${hangNote(state.sim)}${underNote(e, o)}${dotNote}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
     state.sim.log.length = Math.min(state.sim.log.length, 8);
     render();
   }
@@ -1238,7 +1247,7 @@
         if (state.sim.dead) break;
         if (r.s.total > 0 || r.s.mainEx > 0) n++;
         const o = applyShot(state.sim, e, r.idx, r.s, true, r.k ?? undefined);
-        if (o.broke) notes.push(`${pieceName(e.parts[r.idx], r.k)} destroyed`);
+        if (o.broke || o.gone) notes.push(brokeNote(e.parts[r.idx], r.k, o));
       }
       if (res.shrap) {
         for (const f of res.shrap.rows) {
@@ -1290,7 +1299,7 @@
         if (k > 0 && mainShared && r.s.mainEx) r = { ...r, s: { ...r.s, mainEx: 0 } };
         const o = k === 0 ? applyHit(state.sim, e, r.idx, r.s, res.mode, { ...opts(), band: res.band, revealedK: hit.revealedK }, false, piece ?? undefined)
           : applyShot(state.sim, e, r.idx, r.s, true, piece ?? undefined);
-        if (o.broke) notes.push(`${pieceName(e.parts[r.idx], piece)} destroyed`);
+        if (o.broke || o.gone) notes.push(brokeNote(e.parts[r.idx], piece, o));
         if (state.sim.hanging) notes.push(hangNote(state.sim).replace(/^ — /, ''));
         if (o.under) notes.push(underNote(e, o).replace(/^ → /, ''));
         // the impact broke a plate and the flesh under it took the explosion: that already sent Main its share

@@ -96,18 +96,19 @@ const INDESTRUCTIBLE = [{ enemy: /hive guard/i, part: /armou?r|plate/i }];
 // arm's Front Leg Armor and under the Frontal Tarsal Plate of the ground segment)
 // the wiki's "No (Downs)": destroying the part (constitution included) downs the enemy, and anything that
 // damages it after that finishes it. Verified in game:
-// - Hulk legs: one leg fully destroyed (constitution too), or both legs broken (health gone, constitution left):
-//   the Hulk lives on (no bleed) but a single shot to any part kills it
 // - Dropship: a single thruster destroyed brings it down
 // allBroken: every piece's health gone also downs it, constitution or not
 const DOWNS = [{ enemy: /^dropship$/i, part: /^thruster/i }];
-// a Hulk leg shot through (health and constitution gone) doesn't kill it: Main is left hanging at 1 HP
-const MAIN_TO_ON_GONE = [{ enemy: /hulk/i, part: /^legs\b/i, value: 1 }];
+// Hulk legs (verified in game): a leg whose 500 health is gone is "broken" (damaged-leg model, still hittable,
+// damage goes into its 500 constitution); with the constitution gone too it's "destroyed" (no hitbox, nothing
+// hurts it). One leg destroyed leaves Main at 1 HP (unless the overflow already emptied Main: Recoilless, Spear);
+// both legs broken kills the Hulk (killAllBroken).
+const MAIN_TO_ON_GONE = [{ enemy: /hulk/i, part: /^legs\b/i, value: 1, killAllBroken: true }];
 const ALSO_COVERED = [{ enemy: /^Rupture Charger$/, parts: { 'Leg Flesh (4)': 'Frontal Tarsal Plate Armor (2)' } }];
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
   for (const c of DOWNS) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = 'downs'; if (c.allBroken) p.downsAllBroken = true; } });
-  for (const c of MAIN_TO_ON_GONE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = false; p.mainToOnGone = c.value; } });
+  for (const c of MAIN_TO_ON_GONE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = false; p.mainToOnGone = c.value; if (c.killAllBroken) p.killAllBroken = true; } });
   for (const c of ALSO_COVERED) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.alsoCoveredBy = c.parts[p.name]; });
   for (const c of BEHIND) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.behind = c.parts[p.name]; });
   for (const c of LOCATION_FIX) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.location = c.location; });
