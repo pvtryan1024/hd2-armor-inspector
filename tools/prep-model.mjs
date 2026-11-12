@@ -464,6 +464,46 @@ function splitShells(doc, node, sp, likeBoxes) {
 /** Cut out the loose pieces that lie inside a box (posed model space): weak spots modelled into a bigger
  *  mesh (the Hulk's eye plate, the War Strider's eye and visor). { mesh, name, box: [lo, hi] }
  *  Or by bone: { mesh, name, bone: /re/ } takes the pieces most of whose vertices that bone drives. */
+/** Split a mesh per triangle by a classify(centre, normal) function returning a piece name (posed model
+ *  space; null keeps it): the Factory Strider's hull into front / side / rear / belly armor by facing. */
+function splitByFacing(doc, node, classify) {
+  const skin = node.getSkin(), m16 = [];
+  const mats = skin ? skin.listJoints().map((j, i) => mat4Mul(j.getWorldMatrix(), skin.getInverseBindMatrices().getElement(i, m16).slice())) : null;
+  const world = node.getWorldMatrix();
+  const buffer = doc.getRoot().listBuffers()[0];
+  const groups = new Map();
+  for (const prim of [...node.getMesh().listPrimitives()]) {
+    const P = prim.getAttribute('POSITION'), J = prim.getAttribute('JOINTS_0'), W = prim.getAttribute('WEIGHTS_0'), I = prim.getIndices();
+    const v = [0, 0, 0], j4 = [], w4 = [];
+    const posed = (i) => {
+      P.getElement(i, v);
+      if (!mats) return [0, 1, 2].map((r) => world[r] * v[0] + world[4 + r] * v[1] + world[8 + r] * v[2] + world[12 + r]);
+      J.getElement(i, j4); W.getElement(i, w4); const o = [0, 0, 0];
+      for (let k = 0; k < 4; k++) { if (!w4[k]) continue; const m = mats[j4[k]]; for (let r = 0; r < 3; r++) o[r] += w4[k] * (m[r] * v[0] + m[4 + r] * v[1] + m[8 + r] * v[2] + m[12 + r]); }
+      return o;
+    };
+    const lists = new Map(), keep = [];
+    for (let t = 0; t + 2 < I.getCount(); t += 3) {
+      const tri = [I.getScalar(t), I.getScalar(t + 1), I.getScalar(t + 2)], [a, b, c] = tri.map(posed);
+      const u = [0, 1, 2].map((k) => b[k] - a[k]), w = [0, 1, 2].map((k) => c[k] - a[k]);
+      const n = [u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]], len = Math.hypot(...n) || 1;
+      const name = classify([0, 1, 2].map((k) => (a[k] + b[k] + c[k]) / 3), n.map((x) => x / len));
+      if (!name) { keep.push(...tri); continue; }
+      if (!lists.has(name)) lists.set(name, []);
+      lists.get(name).push(...tri);
+    }
+    const idx = (list) => doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(list)).setBuffer(buffer);
+    for (const [name, list] of lists) { const p = prim.clone(); p.setIndices(idx(list)); if (!groups.has(name)) groups.set(name, []); groups.get(name).push(p); }
+    if (keep.length) prim.setIndices(idx(keep)); else node.getMesh().removePrimitive(prim);
+  }
+  for (const [name, prims] of groups) {
+    const m = doc.createMesh(name); prims.forEach((p) => m.addPrimitive(p));
+    (node.getParentNode() || doc.getRoot().listScenes()[0]).addChild(doc.createNode(name).setMesh(m).setSkin(skin).setMatrix(node.getMatrix()));
+  }
+  if (!node.getMesh().listPrimitives().length) node.dispose();
+  return [...groups.keys()];
+}
+
 function cutBox(doc, node, cut) {
   const skin = node.getSkin(), m16 = [];
   const mats = skin ? skin.listJoints().map((j, i) => mat4Mul(j.getWorldMatrix(), skin.getInverseBindMatrices().getElement(i, m16).slice())) : null;
@@ -888,14 +928,20 @@ const SOURCES = {
     ]).concat([
       { mesh: 'body_static', name: `belly_${side}`, tris: true, bone: new RegExp(`^${b}_clamp\\d_2$`) },
       { mesh: 'body_static', name: `belly_${side}_plate`, tris: true, box: b === 'l' ? [[-0.9, 5.6, -3.5], [0, 6.0, 4.1]] : [[0, 5.6, -3.5], [0.9, 6.0, 4.1]] },
-    ])),
+    ])).concat([
+      // the neck's mount sticking out at the front (Neck), then the hull: faces looking down are the belly (left /
+      // right), the front end the Front Armor, the rear end the Rear Armor, the rest between them the Side Armor
+      { mesh: 'body_static', name: 'neck_mount', tris: true, bone: /^neck/ },
+      { mesh: 'body_static', classify: (c, n) => (n[1] < -0.5 ? `belly_${c[0] < 0 ? 'left' : 'right'}_hull`
+        : c[2] < -3.9 ? 'front_hull' : c[2] > 4.3 ? 'rear_hull' : `side_${c[0] < 0 ? 'left' : 'right'}_hull`) },
+    ]),
     rules: [
       [/^armor_head(_whole)?$/, 'Head Armor'], [/^(head(_whole)?|head)$/, 'Head Body'], [/^neck(_whole)?$/, 'Neck Armor'], [/^neck_damaged$/, 'Neck'],
       [/^(top)_(left|right)$/, 'Front Engine Weakspot'], [/^side_(left|right)$/, 'Side Armor (2)'], [/^side_(left|right)_damaged$/, 'Side Circuits (2)'],
       [/^armor_front_damaged$/, 'Circuits Front'], [/^armor_rear_damaged$/, 'Rear Circuits'],
       // broken armor shows what's under it (wiki's Armor Broken entry): the head body, the leg's assembly
       [/^armor_head_damaged$/, 'Head Body'], [/^leg_(upper|lower)_(left|right)_(front|back)_damaged$/, 'Leg Assembly (4)'],
-      [/^leg_assembly_(left|right)_(front|back)$/, 'Leg Assembly (4)'], [/^belly_(left|right)(_plate)?$/, 'Belly Panels (2)'],
+      [/^leg_assembly_(left|right)_(front|back)$/, 'Leg Assembly (4)'], [/^belly_(left|right)(_plate|_hull)?$/, 'Belly Panels (2)'], [/^side_(left|right)_hull$/, 'Side Armor (2)'], [/^front_hull$/, 'Front Armor'], [/^rear_hull$/, 'Rear Armor'], [/^neck_mount$/, 'Neck'],
       [/^armor_front(_whole)?$/, 'Front Armor'], [/^front(_whole)?$/, 'Front Top Armor'], [/^armor_rear(_whole)?$/, 'Rear Armor'],
       [/^engine_rear(_whole)?$/, 'Rear Engine Armor'], [/^body_static$/, 'Main'], [/^(top|side)_(left|right)$/, 'Main'],
       [/^knee_(armor|(left|right)_(front|back))$/, 'Knee Armor (4)'], [/^leg_(armor|(upper|lower)_(left|right)_(front|back))$/, 'Leg Armor (8)'], [/^leg_assembly$/, 'Leg Assembly (4)'], [/^neck$/, 'Neck'], [/^body$/, 'Main'],
@@ -1121,6 +1167,12 @@ async function prep(id) {
     }
     const node = root.listNodes().find((x) => x.getMesh() && x.getName() === cut.mesh);
     if (!node) { console.warn(`${id}: no mesh ${cut.mesh} to cut`); continue; }
+    if (cut.classify) { // per triangle by facing (splitByFacing); what's left keeps the mesh's name
+      const made = splitByFacing(doc, node, cut.classify);
+      if (node.isDisposed?.() || !node.getMesh()) names.splice(names.indexOf(cut.mesh), 1);
+      names.push(...made);
+      continue;
+    }
     const made = cutBox(doc, node, cut);
     if (cut.rest && made.length) names[names.indexOf(cut.mesh)] = cut.rest, made.pop();
     names.push(...made);

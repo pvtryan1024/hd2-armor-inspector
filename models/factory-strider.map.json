@@ -3,7 +3,6 @@
   "meshes": {
     "head_whole": "Head Body",
     "leg_upper_left_front": "Leg Armor (8)",
-    "body_static": "Main",
     "knee_right_back": "Knee Armor (4)",
     "leg_upper_right_front": "Leg Armor (8)",
     "neck_whole": "Neck Armor",
@@ -52,7 +51,14 @@
     "leg_upper_right_back_damaged": "Leg Assembly (4)",
     "leg_lower_right_front_damaged": "Leg Assembly (4)",
     "leg_upper_left_front_damaged": "Leg Assembly (4)",
-    "leg_upper_left_back_damaged": "Leg Assembly (4)"
+    "leg_upper_left_back_damaged": "Leg Assembly (4)",
+    "neck_mount": "Neck",
+    "front_hull": "Front Armor",
+    "rear_hull": "Rear Armor",
+    "side_left_hull": "Side Armor (2)",
+    "side_right_hull": "Side Armor (2)",
+    "belly_left_hull": "Belly Panels (2)",
+    "belly_right_hull": "Belly Panels (2)"
   },
   "hidden": [
     "side_right_damaged",
