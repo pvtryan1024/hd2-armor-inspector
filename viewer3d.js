@@ -317,14 +317,19 @@ function swapBroken() {
     // stage 0 intact · 1 stripped (flesh of another hitzone showing) · 2 destroyed
     let stage = 0;
     if (pieceGone(mine[0].key)) {
-      const di = dmg.length ? partIndexFor(current, dmg[0].key) : -1;
-      stage = dmg.length && di >= 0 && di !== i && !pieceGone(dmg[0].key) ? 1 : 2;
+      // any damaged sub-mesh that is another live hitzone reveals it (the rest of them show as remains)
+      stage = dmg.some((d) => { const di = partIndexFor(current, d.key); return di >= 0 && di !== i && !pieceGone(d.key); }) ? 1 : 2;
     }
     // broken (health gone, constitution left): the damaged mesh takes over as the same live hitzone
     const broken = stage === 0 && dmg.length && pieceBroken(mine[0].key) && partIndexFor(current, dmg[0].key) === i;
     const remains = stage === 2 ? (gib.length ? gib : dmg.length ? dmg : null) : null;
     for (const m of mine) { m.mesh.visible = (stage === 0 && !broken) || (stage === 2 && !remains); m.mesh.userData.remains = stage === 2 && !remains; }
-    for (const m of dmg) { m.mesh.visible = stage === 1 || broken || remains === dmg; m.mesh.userData.revealed = stage === 1; m.mesh.userData.remains = remains === dmg; }
+    for (const m of dmg) {
+      const di = partIndexFor(current, m.key), live = di >= 0 && di !== i && !pieceGone(m.key);
+      m.mesh.visible = stage === 1 || broken || remains === dmg;
+      m.mesh.userData.revealed = stage === 1 && live;
+      m.mesh.userData.remains = remains === dmg || (stage === 1 && !live);
+    }
     for (const m of gib) { m.mesh.visible = remains === gib; m.mesh.userData.remains = remains === gib; m.mesh.userData.revealed = false; }
     if (stage === 2) for (const m of attached) m.mesh.visible = false;
   }

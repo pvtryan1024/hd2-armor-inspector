@@ -62,7 +62,8 @@
     "front_hull_damaged": "Circuits Front",
     "rear_hull_damaged": "Rear Circuits",
     "side_left_hull_damaged": "Side Circuits (2)",
-    "side_right_hull_damaged": "Side Circuits (2)"
+    "side_right_hull_damaged": "Side Circuits (2)",
+    "engine_rear_damaged_2": "Rear Circuits"
   },
   "hidden": [
     "side_right_damaged",
