@@ -339,8 +339,11 @@
           const nm = part.name.replace(/\s*\(\d+\)$/, '');
           sim.dead = { how: part.killAllBroken ? 'killed' : 'downed', why: inst.length === 2 ? `both ${nm} broken` : `every ${nm} piece broken`, idx };
         }
+      } else if (want != null) {
+        // that piece is destroyed: no hitbox, it takes nothing (a blast still sends Main its redirected share)
+        out.toMain = s.mainEx;
       } else {
-        // this one (or every one) is gone: only overflow parts keep feeding Main
+        // every piece is gone (time to kill shooting on): only overflow parts keep feeding Main
         out.toMain = (part.overflow ? s.total * toMain : 0) + s.mainEx;
       }
     }
@@ -392,6 +395,11 @@
       const sx = shotDamage(mode, enemy.parts[under], enemy, { ...o, noProj: true, exDist: 0 });
       o2 = applyShot(sim, enemy, under, sx, true, o.revealedK?.[under] ?? undefined); // the piece under this plate (3D)
       out.under = { idx: under, dealt: sx.total, broke: o2.broke, toMain: o2.toMain };
+    } else if (stripped) {
+      // the impact destroyed the piece (a Hulk leg shot through its constitution): its hitbox is gone, so the
+      // explosion can't damage it any more; only Main's redirected share of the blast still lands
+      const mi = mainIndexFor(enemy, idx);
+      o2 = mi >= 0 && s.mainEx > 0 ? applyShot(sim, enemy, mi, { proj: 0, partEx: 0, mainEx: 0, total: s.mainEx }, true) : { toMain: 0, progress: false, broke: false };
     } else {
       o2 = applyShot(sim, enemy, idx, { ...s, proj: 0, total: s.partEx }, true, k >= 0 ? k : want);
     }
