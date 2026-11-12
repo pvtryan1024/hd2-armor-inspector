@@ -346,7 +346,24 @@ function swapBroken() {
     const i = (lastDetail?.enemy.parts || []).findIndex((p) => p.name === o.part);
     const inst = lastDetail?.fire && i >= 0 ? lastDetail.goneInst?.[i] : null;
     const open = !!inst && o.pieces.every((k) => inst[k]);
-    for (const m of current.meshes) if (primOf(m.key) === o.mesh || m.key === o.mesh) m.mesh.visible = !open && !current.map.hidden.includes(m.key);
+    for (const m of current.meshes) {
+      if (primOf(m.key) !== o.mesh && m.key !== o.mesh) continue;
+      if (!o.hinge) { m.mesh.visible = !open && !current.map.hidden.includes(m.key); continue; }
+      // hinge: { at: [x, y, z], axis: [x, y, z], angle }: the lid swings open about that line (model space)
+      // instead of vanishing; swung up it no longer covers the hatch
+      const mesh = m.mesh;
+      mesh.userData.base ??= mesh.matrix.clone();
+      const M = mesh.userData.base.clone();
+      if (open) {
+        const [x, y, z] = o.hinge.at;
+        M.multiply(new THREE.Matrix4().makeTranslation(x, y, z))
+          .multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(...(o.hinge.axis || [1, 0, 0])).normalize(), THREE.MathUtils.degToRad(o.hinge.angle)))
+          .multiply(new THREE.Matrix4().makeTranslation(-x, -y, -z));
+      }
+      mesh.matrixAutoUpdate = false;
+      mesh.matrix.copy(M);
+      mesh.matrixWorldNeedsUpdate = true;
+    }
   }
   // map "after": { mesh: { part, replaces: [mesh…] } }: a mesh that takes over from others once a part dies
   // (Bile Titan: the burst-sac butt replaces the butt when the Lower Sac pops), while those still show intact
