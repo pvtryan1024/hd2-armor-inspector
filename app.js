@@ -619,6 +619,28 @@
   const enemyById = (id) => DATA.enemies.find((e) => e.id === id);
   const weaponById = (id) => DATA.weapons.find((w) => w.id === id);
   const enemy = () => enemyById(state.enemyId);
+
+  /* Difficulty variants: the wiki lists some enemies' stats per difficulty (Warrior / Hunter health from
+   * Challenging up, Caustic Spewer armor from Extreme up). Those enemies get e.variants [weaker, stronger];
+   * the stronger one is the default, and e.parts is whichever is picked. */
+  const VARIANT_FIELDS = [
+    { key: 'healthChallenging', field: 'health', weak: 'Weaker: Trivial–Medium', strong: 'Stronger: Challenging and up' },
+    { key: 'avExtreme', field: 'av', weak: 'Weaker: Medium–Hard', strong: 'Stronger: Extreme and up' },
+  ];
+  function setupVariants() {
+    for (const e of DATA.enemies) {
+      const vf = VARIANT_FIELDS.find((v) => e.parts.some((p) => p[v.key] != null));
+      if (!vf) continue;
+      const strong = e.parts.map((p) => (p[vf.key] != null ? { ...p, [vf.field]: p[vf.key] } : { ...p }));
+      e.variants = [{ label: vf.weak, parts: e.parts }, { label: vf.strong, parts: strong }];
+      setVariant(e, 1);
+    }
+  }
+  function setVariant(e, i) {
+    if (!e?.variants?.[i]) return;
+    e.variant = i;
+    e.parts = e.variants[i].parts;
+  }
   const weapon = () => weaponById(state.weaponId);
   const opts = () => ({ explosion: state.explosion, allPellets: state.allPellets, allShrap: state.allShrap, band: state.band, dist: state.dist, exposeAll: state.showInner });
 
@@ -788,6 +810,13 @@
     const w = weapon();
     if (!e) return;
     $('#enemyName').textContent = e.name;
+    const vsel = $('#enemyVariant');
+    vsel.hidden = !e.variants;
+    if (e.variants) {
+      const html = e.variants.map((v, i) => `<option value="${i}"${i === e.variant ? ' selected' : ''}>${esc(v.label)}</option>`).join('');
+      if (vsel.dataset.for !== e.id) { vsel.innerHTML = html; vsel.dataset.for = e.id; }
+      vsel.value = String(e.variant);
+    }
     $('#enemyFaction').textContent = e.faction;
     const link = $('#enemyLink');
     link.href = e.url || '#';
@@ -803,7 +832,7 @@
     publish3d(e, results);
     renderLegend();
     renderPartsTable(e, results);
-    const tabKey = JSON.stringify([state.tab, e.id, state.view, state.showInner, state.explosion, state.allPellets, state.band, state.dist, state.weaponId, state.rankCat, state.charge]);
+    const tabKey = JSON.stringify([state.tab, e.id, e.variant, state.view, state.showInner, state.explosion, state.allPellets, state.band, state.dist, state.weaponId, state.rankCat, state.charge]);
     if (tabKey !== lastTabKey) {
       lastTabKey = tabKey;
       if (state.tab === 'rank') renderRankTable(e);
@@ -1576,6 +1605,7 @@
     const p = new URLSearchParams();
     if (state.enemyId) p.set('e', state.enemyId);
     if (state.weaponId) p.set('w', state.weaponId);
+    if (enemy()?.variants && enemy().variant !== 1) p.set('ev', enemy().variant);
     if (state.mode) p.set('m', state.mode);
     if (weapon()?.charge && state.charge[state.weaponId] != null) p.set('ch', state.charge[state.weaponId]);
     if (!state.explosion) p.set('x', '0');
@@ -1596,6 +1626,7 @@
     const p = new URLSearchParams(location.hash.slice(1));
     if (p.get('e') && enemyById(p.get('e'))) state.enemyId = p.get('e');
     if (p.get('w') && weaponById(p.get('w'))) state.weaponId = p.get('w');
+    if (p.has('ev')) setVariant(enemyById(state.enemyId), +p.get('ev'));
     state.mode = +p.get('m') || 0;
     const cw = weaponById(state.weaponId);
     if (cw?.charge) {
@@ -1671,6 +1702,7 @@
       }, 3000);
     };
     $('#enemySearch').addEventListener('input', () => { clearTimeout(backTimer); renderEnemyList(); });
+    $('#enemyVariant').addEventListener('change', (ev) => { setVariant(enemy(), +ev.target.value); resetSim(); writeHash(); render(); });
     // the same for the weapon picker: back to the category cards 3 s after a weapon is picked
     let wBackTimer = 0;
     const backToCategories = () => {
@@ -1827,6 +1859,7 @@
       $('#v3Empty').classList.remove('hidden');
     }
     $('#buildInfo').textContent = `${DATA.enemies.length} enemies · ${DATA.weapons.length} weapons · data ${DATA.built || ''}`;
+    setupVariants();
     readHash();
     if (state.enemyId) state.faction = enemyById(state.enemyId).faction; // shared link: open its faction
     if (state.weaponId) state.cat = weaponById(state.weaponId).category;
