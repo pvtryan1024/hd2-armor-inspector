@@ -817,7 +817,9 @@ const SOURCES = {
     // cut per pod by bone, so each Tracks piece has its own tread, the static one shown when it breaks
     // (three cut out, what's left is the fourth: right back)
     cuts: [['tracks_whole', ''], ['tracks_static', '_damaged']].flatMap(([mesh, st]) => [['left', 'front'], ['left', 'back'], ['right', 'front']]
-      .map(([x, z], i) => ({ mesh, name: `${x}_${z}_tracks_tread${st}`, tris: true, bone: new RegExp(`^${x[0]}_${z}_tracks$`), ...(i === 2 ? { rest: `right_back_tracks_tread${st}` } : {}) }))),
+      .map(([x, z], i) => ({ mesh, name: `${x}_${z}_tracks_tread${st}`, tris: true, bone: new RegExp(`^${x[0]}_${z}_tracks$`), ...(i === 2 ? { rest: `right_back_tracks_tread${st}` } : {}) })))
+      // the undercarriage mesh (udim 0) also carries the four track pods (track, arm, cover): each to its Tracks piece
+      .concat([['left', 'front'], ['left', 'back'], ['right', 'front'], ['right', 'back']].map(([x, z]) => ({ mesh: 'udim 0', name: `${x}_${z}_tracks_pod`, tris: true, bone: new RegExp(`^${x[0]}_${z}_tracks?(_arm|_cover)?$`) }))),
     rules: [
       [/^sarcophagus$/, 'Sarcophagus'], [/^torso(_whole)?$/, 'Torso'], [/^(left|right)_rocket(_cap)?$/, 'Missile Launchers (2)'],
       [/^(left|right)_speaker$/, 'Speakers (2)'], [/^(left|right)_flap$/, 'Torso Flaps (2)'], [/^(left|right)_(front|back)_tracks(_whole)?$/, 'Tracks (4)'],

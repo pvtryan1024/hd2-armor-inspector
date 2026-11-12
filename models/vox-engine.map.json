@@ -38,7 +38,11 @@
     "left_front_tracks_tread": "Tracks (4)",
     "left_back_tracks_tread": "Tracks (4)",
     "right_front_tracks_tread": "Tracks (4)",
-    "right_back_tracks_tread": "Tracks (4)"
+    "right_back_tracks_tread": "Tracks (4)",
+    "left_front_tracks_pod": "Tracks (4)",
+    "left_back_tracks_pod": "Tracks (4)",
+    "right_front_tracks_pod": "Tracks (4)",
+    "right_back_tracks_pod": "Tracks (4)"
   },
   "hidden": [
     "torso_damaged",
