@@ -974,8 +974,11 @@ const SOURCES = {
   },
   fleshmob: {
     src: IL + 'cha_meatglue/cha_meatglue.unit.glb',
+    // wiki hitzone images: the sixth head chunk is the unnamed piece low on the back; the body (udim 0) is Main.
+    // Each chunk's gore copy is renamed <chunk>_mask_gib so it shows (no hitbox) when the chunk is destroyed.
+    names: {'head_gib_mask':'head_mask_gib', 'front_face_gib_mask':'front_face_mask_gib', 'back_face_gib_mask':'back_face_mask_gib', 'left_front_face_gib_mask':'left_front_face_mask_gib', 'right_front_face_gib_mask':'right_front_face_mask_gib', 'stomach_gib_mask':'stomach_mask_gib', 'lower_back_gib_mask':'lower_back_mask_gib', 'left_arm_gib_mask':'left_arm_mask_gib', 'right_arm_gib_mask':'right_arm_mask_gib', 'upper_left_arm_gib_mask':'upper_left_arm_mask_gib', 'upper_right_arm_gib_mask':'upper_right_arm_mask_gib', 'left_leg_gib_mask':'left_leg_mask_gib', 'right_leg_gib_mask':'right_leg_mask_gib', '0x65de70fe':'back_chunk_mask', '0x01334cc5':'back_chunk_mask_gib', 'udim 0':'body'},
     rules: [
-      [/^(head|front_face|back_face|left_front_face|right_front_face)_mask$/, 'Head Chunks (6)'],
+      [/^(head|front_face|back_face|left_front_face|right_front_face|back_chunk)_mask$/, 'Head Chunks (6)'], [/^body$/, 'Main'],
       [/^(stomach|lower_back)_mask$/, 'Stomach Chunks (2)'],
       [/^(left|right|upper_left|upper_right)_arm_mask$/, 'Arms (4)'],
       [/^(left|right)_leg_mask$/, 'Legs (2)'],
