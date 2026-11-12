@@ -542,7 +542,10 @@ const SCAVENGER = bugBody('Main', [[/^(claw|leg)_/, 'Limbs (6)'], [/^(wing_|butt
 // Warriors: the real body is a hash-named skinned mesh; split it too
 const warriorBody = (rules) => { const b = bugBody('Main', rules); b.split.skinnedHash = true; return b; };
 const WARRIOR = warriorBody([[/^claw_/, 'Claws (2)'], [/^leg_/, 'Legs (4)']]);
-const SPEWER = bugBody('Main', [[/^butt$/i, 'Butt'], [/^leg_\w+_front$/, 'Front Legs (2)'], [/^leg_\w+_back$/, 'Rear Legs (2)']]);
+// Spewers: the legs and the little front arms are one mesh, "default": split it by bone too
+// (the arms have no hitzone of their own)
+const SPEWER = bugBody('Main', [[/^butt$/i, 'Butt'], [/^leg_\w+_front$/, 'Front Legs (2)'], [/^leg_\w+_back$/, 'Rear Legs (2)'], [/^claw_/, 'Main']]);
+SPEWER.split.mesh = /^(g_body|default)$/;
 
 const CY = 'content/fac_cyborgs/';
 const TROOPER = { split: { mesh: /^body$/, bones: BOT_BONES }, rules: [[/^head$/, 'Head'], [/^arm_/, 'Arms (2)'], [/^leg_/, 'Legs (2)'], [/^(torso|collar_\w+)$/, 'Torso']] };

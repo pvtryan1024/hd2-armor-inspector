@@ -3,7 +3,13 @@
   "meshes": {
     "body": "Main",
     "head": "Head",
-    "butt": "Butt"
+    "butt": "Butt",
+    "leg_left_front": "Front Legs (2)",
+    "leg_right_front": "Front Legs (2)",
+    "leg_left_back": "Rear Legs (2)",
+    "leg_right_back": "Rear Legs (2)",
+    "claw_left": "Main",
+    "claw_right": "Main"
   },
   "hidden": [
     "butt_destroyed"
