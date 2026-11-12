@@ -116,13 +116,19 @@ const GONE_WITH = [
   // is on the left arm)
   { enemy: /^(agitator|radical)$/i, part: /^(Pauldrons \(2\)|Forearms \(2\))$/, with: 'Upper Arms (2)' },
   { enemy: /^radical$/i, part: /^Pauldron$/, with: 'Upper Arms (2)', inst: 0 },
+  // the Overseer's left arm (not fatal) takes its two limb plates with it
+  { enemy: /^overseer$/i, part: /^Limb Armor \(8\)$/, with: 'Left Arm', pieces: [0, 1] },
 ];
+// which pieces of the covering part sit over each piece of this one (the Overseer's 8 limb plates, in the 3D
+// model's piece order: arm L lower/upper, arm R lower/upper, leg L lower/upper, leg R lower/upper)
+const COVER_PIECES = [{ enemy: /^overseer$/i, parts: { 'Left Arm': [[0, 1]], 'Right Arm': [[2, 3]], 'Legs (2)': [[4, 5], [6, 7]] } }];
 const ALSO_COVERED = [{ enemy: /^Rupture Charger$/, parts: { 'Leg Flesh (4)': 'Frontal Tarsal Plate Armor (2)' } }];
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
   for (const c of DOWNS) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = 'downs'; if (c.allBroken) p.downsAllBroken = true; } });
   for (const c of MAIN_TO_ON_GONE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = false; p.mainToOnGone = c.value; if (c.killAllBroken) p.killAllBroken = true; } });
-  for (const c of GONE_WITH) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name) && e.parts.some((q) => q.name === c.with)) p.goneWith = { part: c.with, ...(c.inst != null ? { inst: c.inst } : {}) }; });
+  for (const c of GONE_WITH) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name) && e.parts.some((q) => q.name === c.with)) p.goneWith = { part: c.with, ...(c.inst != null ? { inst: c.inst } : {}), ...(c.pieces ? { pieces: c.pieces } : {}) }; });
+  for (const c of COVER_PIECES) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.coverPieces = c.parts[p.name]; });
   for (const c of ALSO_COVERED) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.alsoCoveredBy = c.parts[p.name]; });
   for (const c of BEHIND) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.behind = c.parts[p.name]; });
   for (const c of LOCATION_FIX) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.location = c.location; });

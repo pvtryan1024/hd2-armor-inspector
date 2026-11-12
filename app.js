@@ -310,10 +310,12 @@
         if (out.gone) enemy.parts.forEach((q, qi) => {
           const gw = q.goneWith;
           if (!gw || gw.part !== part.name || !sim.hp[qi] || (gw.inst != null && gw.inst !== k)) return;
-          const j = gw.inst != null ? 0 : k;
-          if (j >= sim.hp[qi].length || instGone(q, sim.hp[qi][j])) return;
-          sim.hp[qi][j] = -consOf(q) - 1;
-          (out.alsoGone ||= []).push(pieceName(q, gw.inst != null ? undefined : j));
+          // pieces: those pieces of it (the Overseer's left-arm plates); else the same piece, or its only one
+          for (const j of gw.pieces || [gw.inst != null ? 0 : k]) {
+            if (j >= sim.hp[qi].length || instGone(q, sim.hp[qi][j])) continue;
+            sim.hp[qi][j] = -consOf(q) - 1;
+            (out.alsoGone ||= []).push(pieceName(q, gw.inst != null && !gw.pieces ? undefined : j));
+          }
         });
         if (wasUp && inst[k] <= 0) out.broke = true;
         // fatal parts: with a bleed rate the enemy is done once the part breaks (it bleeds out);
@@ -569,6 +571,8 @@
       const ci = enemy.parts.findIndex((q) => q.name === p.coveredBy);
       const hp = sim.hp[ci];
       if (ci < 0 || !hp) return true;
+      // coverPieces: the plates over each piece, listed (the Overseer's limbs)
+      if (p.coverPieces) return (p.coverPieces[k ?? 0] || []).some((j) => hp[j] <= 0);
       const n = p.count || 1; // each piece has its own plates: 2 plates per piece when there are twice as many
       if (k != null && hp.length % n === 0) { const r = hp.length / n; return hp.slice(k * r, (k + 1) * r).some((h) => h <= 0); }
       return hp.some((h) => h <= 0);

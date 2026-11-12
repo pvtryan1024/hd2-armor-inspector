@@ -36,6 +36,7 @@
     "torso_damaged"
   ],
   "vanish": [
-    "Limb Armor"
+    "Limb Armor",
+    "Left Arm"
   ]
 }
