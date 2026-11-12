@@ -112,7 +112,9 @@ const DOWNS = [{ enemy: /^dropship$/i, part: /^thruster/i }];
 // damage goes into its 500 constitution); with the constitution gone too it's "destroyed" (no hitbox, nothing
 // hurts it). One leg destroyed leaves Main at 1 HP (unless the overflow already emptied Main: Recoilless, Spear);
 // both legs broken kills the Hulk (killAllBroken).
-const MAIN_TO_ON_GONE = [{ enemy: /hulk/i, part: /^legs\b/i, value: 1, killAllBroken: true }];
+// keepHitbox: a destroyed Hulk leg still has its hitbox in game: rounds hit it (doing nothing) and their explosion goes
+// off there, so a blast on the leg can't reach the heatsink on the back
+const MAIN_TO_ON_GONE = [{ enemy: /hulk/i, part: /^legs\b/i, value: 1, killAllBroken: true, keepHitbox: true }];
 // goneWith: the part's hitbox goes when another part's piece is destroyed (no damage dealt to it): a Devastator's
 // shoulder goes with its arm (same piece: left with left); the shield goes with the arm holding it (inst: that
 // arm's piece, the left one; pieces count left before right)
@@ -151,7 +153,7 @@ enemies.forEach((e) => {
   for (const c of EXVM) if (c.enemy.test(e.name)) e.exvm = c.mode;
   for (const c of PIECE_COUNT) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.count = c.count; });
   for (const c of DOWNS) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = 'downs'; if (c.allBroken) p.downsAllBroken = true; } });
-  for (const c of MAIN_TO_ON_GONE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = false; p.mainToOnGone = c.value; if (c.killAllBroken) p.killAllBroken = true; } });
+  for (const c of MAIN_TO_ON_GONE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = false; p.mainToOnGone = c.value; if (c.killAllBroken) p.killAllBroken = true; if (c.keepHitbox) p.keepsHitbox = true; } });
   for (const c of GONE_WITH) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name) && e.parts.some((q) => q.name === c.with)) { const gw = { part: c.with, ...(c.inst != null ? { inst: c.inst } : {}), ...(c.pieces ? { pieces: c.pieces } : {}) }; p.goneWith = p.goneWith ? [].concat(p.goneWith, gw) : gw; } });
   for (const c of COVER_PIECES) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) { p.coverPieces = c.parts[p.name]; if (c.all) p.coverAll = true; if (c.cover) p.coveredBy = c.cover; } });
   for (const c of THROW_KILL) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.throwKill = true; });

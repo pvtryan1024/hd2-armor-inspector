@@ -1334,6 +1334,22 @@
     const o = { ...opts(), band, ...(hit.inside ? { inside: hit.inside } : {}) };
     if (hit.ground) return resolveGround(hit, mode, band, o);
     // a round that went off on a trigger plane (inside the Fabricator's vents): no impact, only its explosion
+    // a destroyed piece that keeps its hitbox (Hulk leg): the round stops there and does nothing to it; only its
+    // explosion counts, on what the blast reaches from there
+    if (hit.dead) {
+      const s0 = shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0, noShrap: true });
+      const zero = (xs) => (xs || []).map(() => 0);
+      const rows = [{ idx: hit.idx, dist: 0, direct: true, s: { ...s0, proj: 0, partEx: 0, partExBy: zero(s0.partExBy), mainEx: 0, mainExBy: zero(s0.mainExBy), total: 0, shrap: 0, demo: false } }];
+      const radii = s0.ricochet ? null : blastRadii(mode);
+      if (radii) {
+        for (const b of hit.blastHits || []) {
+          if ((b.idx === hit.idx && b.k === hit.k) || b.d > radii.outer || !blastReaches(e, b)) continue;
+          rows.push({ idx: b.idx, k: b.k, dist: b.d, s: shotDamage(mode, e.parts[b.idx], e, { ...o, noProj: true, exDist: b.d }) });
+        }
+        onceMain(rows, e);
+      }
+      return { mode, band, rows, radii, thru: null, shrap: null, pel: null, dead: true };
+    }
     // pellets (3D): each pellet ray from the viewer lands on its own piece; the struck piece takes the ones that hit it
     const pl = pelletsOf(hit, mode);
     const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0, noShrap: true, ...(pl ? { pelletCount: 1 } : {}), ...(hit.detonate ? { noProj: true } : {}) }) }];
@@ -1468,7 +1484,12 @@
     const e0 = enemy();
     if (state.fire && state.sim && e0) {
       const l = partLeft(hit.idx); // that piece is destroyed: no hitbox (the viewer normally shoots past it)
-      if (l && !l.main && (hit.k != null && l.gones ? l.gones[hit.k] : l.gone)) return `Ignored: ${pieceName(e0.parts[hit.idx], hit.k)} is already destroyed`;
+      // destroyed: no hitbox (the viewer normally shoots past it); a part that keeps its hitbox (a Hulk leg) still
+      // stops the round, which does nothing to it, and its explosion goes off there
+      if (l && !l.main && (hit.k != null && l.gones ? l.gones[hit.k] : l.gone)) {
+        if (!e0.parts[hit.idx].keepsHitbox) return `Ignored: ${pieceName(e0.parts[hit.idx], hit.k)} is already destroyed`;
+        hit = { ...hit, dead: true };
+      }
     }
     if (e0 && !hit.revealed && !isExposed(e0, hit.idx, state.fire ? state.sim : null, hit.k)) hit = { ...hit, covered: true };
     state.hit = hit;
@@ -1567,7 +1588,7 @@
       <button class="sp-close" id="shotClose" title="Clear shot">×</button>
       <div class="sp-title">${esc(part.name)}</div>
       <div class="sp-sub">${Math.round(state.hit.deg)}° · ${ANGLE_BANDS[res.band].name} · AP ${d.s.ap} vs AV ${part.av}</div>
-      <div class="sp-verdict" style="--c:${PEN_VAR[pc]}">${PEN_LABEL[pc]}</div>
+      ${res.dead ? '<div class="sp-verdict" style="--c:var(--pen-immune)">Destroyed</div><div class="muted">What\'s left of it still stops the round, which does no damage to it; only the explosion counts, from there</div>' : `<div class="sp-verdict" style="--c:${PEN_VAR[pc]}">${PEN_LABEL[pc]}</div>`}
       <dl>
         <dt>Projectile</dt><dd>${fmt(d.s.proj)}${state.dist && d.s.range < 1 ? ` <span class="muted">(${Math.round(d.s.range * 100)}% at ${state.dist} m)</span>` : ''}</dd>
         ${res.radii || d.s.partEx ? `<dt>Explosion</dt><dd>${fmt(d.s.partEx)}</dd>` : ''}

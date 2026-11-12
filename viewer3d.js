@@ -331,6 +331,9 @@ function swapBroken() {
       m.mesh.userData.remains = remains === dmg || (stage === 1 && !live);
     }
     for (const m of gib) { m.mesh.visible = remains === gib; m.mesh.userData.remains = remains === gib; m.mesh.userData.revealed = false; }
+    // keepsHitbox (Hulk legs): what's left of a destroyed piece still stops rounds and blasts, taking no damage
+    const keep = !!lastDetail?.enemy.parts[i]?.keepsHitbox;
+    for (const m of [...mine, ...dmg, ...gib]) m.mesh.userData.deadHitbox = keep && !!m.mesh.userData.remains && m.mesh.visible;
     if (stage === 2) for (const m of attached) m.mesh.visible = false;
   }
   // map "vanish": [part…]: those parts leave nothing behind (Caustic Charger spore sacs): each piece disappears
@@ -591,7 +594,7 @@ function thruAlong(h) {
   thruRay.set(h.point.clone().addScaledVector(dir, 1e-3), dir);
   thruRay.far = Infinity;
   const i0 = partIndexFor(current, h.mesh.userData.key), k0 = instanceFor(current, h.mesh.userData.key, i0);
-  const live = current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key));
+  const live = current.meshes.map((m) => m.mesh).filter((m) => m.userData.deadHitbox || (m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key)));
   const cols = (current.colliders || []).filter((c) => !c.def.detonate).map((c) => c.mesh);
   const vis = cols.map((m) => m.visible);
   cols.forEach((m) => { m.visible = true; });
@@ -655,7 +658,7 @@ function shrapnelHits(h, spec) {
   if (spec.spread === 'surface') {
     dirs = fibDirs(spec.count * 2).filter((d) => d.dot(into) > 0).slice(0, spec.count);
   } else dirs = fibDirs(spec.count);
-  const targets = [...current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key)), ...directColliders()];
+  const targets = [...current.meshes.map((m) => m.mesh).filter((m) => m.userData.deadHitbox || (m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key))), ...directColliders()];
   const origin = h.point.clone().addScaledVector(h.normal, 0.02);
   const out = [];
   blastRay.far = spec.range || 7;
@@ -686,7 +689,7 @@ function pelletHits(h, spec) {
   // two directions across the shot
   const u = new THREE.Vector3().crossVectors(dir, Math.abs(dir.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0)).normalize();
   const v = new THREE.Vector3().crossVectors(dir, u);
-  const targets = [...current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key)), ...directColliders()];
+  const targets = [...current.meshes.map((m) => m.mesh).filter((m) => m.userData.deadHitbox || (m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key))), ...directColliders()];
   const parts = lastDetail?.enemy.parts || [];
   const out = [];
   blastRay.far = Infinity;
@@ -722,7 +725,8 @@ function blastHits(h, outer, inner = 0) {
   const out = new Map(); // "part:piece" -> { idx, k, d }
   if (!(outer > 0)) return [];
   const centre = h.point.clone().addScaledVector(h.normal, 0.01); // just off the surface that was struck
-  const live = (m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key); // destroyed pieces: no hitbox
+  // destroyed pieces: no hitbox (a dead hitbox, like a destroyed Hulk leg, still blocks the blast but isn't hurt)
+  const live = (m) => m.userData.deadHitbox || (m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key));
   // what the blast can hit, and what blocks it; direct colliders too (the Barrager's launch tubes)
   const meshes = [...current.meshes.map((m) => m.mesh).filter(live), ...directColliders()];
   const pieceOf = (m) => { const i = partIndexFor(current, m.userData.key); return i < 0 ? null : `${i}:${instanceFor(current, m.userData.key, i)}`; };
@@ -737,6 +741,7 @@ function blastHits(h, outer, inner = 0) {
     return !first || first.distance >= len - 0.02 || pieceOf(first.object) === id;
   };
   for (const mesh of meshes) {
+    if (mesh.userData.deadHitbox) continue;
     const idx = partIndexFor(current, mesh.userData.key);
     if (idx < 0) continue; // not a hitzone (still blocks)
     const id = pieceOf(mesh);
@@ -803,7 +808,7 @@ function pick(ev) {
   const direct = [...directColliders(), ...detonators()];
   const hits = ray.intersectObjects([...current.meshes.map((m) => m.mesh).filter((m) => m.visible), ...direct], false).sort((a, b) => a.distance - b.distance);
   // destroyed parts have no hitbox: the shot goes through to whatever is behind them
-  const hit = hits.find((h) => h.object.userData.collider || (h.object.material.opacity > 0.2 && !h.object.userData.remains && !noHitbox(current, h.object.userData.key)));
+  const hit = hits.find((h) => h.object.userData.collider || h.object.userData.deadHitbox || (h.object.material.opacity > 0.2 && !h.object.userData.remains && !noHitbox(current, h.object.userData.key)));
   if (groundActive()) {
     ground.updateMatrixWorld();
     const g = ray.intersectObject(groundDisc, false)[0];
@@ -891,7 +896,7 @@ function shoot(h) {
   for (const m of bv.revealed) { const ri = partIndexFor(current, m.userData.key); if (ri >= 0 && !(ri in revealedK)) revealedK[ri] = instanceFor(current, m.userData.key, ri); }
   const parts = {};
   for (const b of blast) if (parts[b.idx] == null || b.d < parts[b.idx]) parts[b.idx] = b.d;
-  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, inside: insideParts(h), detonate: !!h.mesh.userData.collider?.detonate, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), pelletHits: pelletHits(h, lastDetail?.pellets), thru: thruAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, inside: insideParts(h), detonate: !!h.mesh.userData.collider?.detonate, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), pelletHits: pelletHits(h, lastDetail?.pellets), thru: thruAlong(h), revealed: !!h.mesh.userData.revealed, dead: !!h.mesh.userData.deadHitbox, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
   if (said) status(said);
 }
 
