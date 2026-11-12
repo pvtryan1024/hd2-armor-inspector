@@ -359,11 +359,16 @@ if (fs.existsSync(chargePath)) {
 }
 
 // Weapons that fire several rounds per trigger pull: one mode per way of firing (the VG-70 Variable: Total fires
-// all 49 rounds, Volley 7), each a multi-round 'shot' like a shotgun's pellets
-const SPLIT_MODES = { 'vg-70-variable': [{ name: 'Total', pellets: 49 }, { name: 'Volley', pellets: 7 }] };
+// all 49 rounds, Volley 7). The rounds don't spread: each trigger pull is one bullet with the damage of all of them
+const SPLIT_MODES = { 'vg-70-variable': [{ name: 'Total', rounds: 49 }, { name: 'Volley', rounds: 7 }] };
 weapons.forEach((w) => {
   const sp = SPLIT_MODES[w.id];
-  if (sp && w.modes?.length === 1) w.modes = sp.map((x) => ({ ...w.modes[0], ...x }));
+  if (sp && w.modes?.length === 1) {
+    w.modes = sp.map((x) => {
+      const m = w.modes[0];
+      return { ...m, name: x.name, rounds: x.rounds, pellets: 1, damage: (m.damage || 0) * x.rounds, ...(m.durable != null ? { durable: m.durable * x.rounds } : {}) };
+    });
+  }
 });
 
 // Reload times (data/reload.json, from each weapon page's infobox): a full reload, used by time to kill once
