@@ -1,0 +1,18 @@
+{
+  "enemy": "brawler",
+  "meshes": {
+    "head": "Head",
+    "collar_right": "Torso",
+    "collar_left": "Torso",
+    "blade_left": "Left Arm",
+    "blade_right": "Right Arm",
+    "torso": "Torso",
+    "leg_left": "Leg (2)",
+    "arm_right": "Right Arm",
+    "arm_left": "Left Arm",
+    "leg_right": "Leg (2)"
+  },
+  "hidden": [
+    "head_destroyed"
+  ]
+}

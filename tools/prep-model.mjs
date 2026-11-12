@@ -141,6 +141,7 @@ Object.assign(GEAR, {
   cLmgPack: W + 'backpacks/conscript_backpack_lmg/conscript_backpack_lmg.unit.glb',
   cCannon: W + 'weapons/conscript_cannon/conscript_cannon.unit.glb',
   cFlamer: W + 'weapons/conscript_flamer/conscript_flamer.unit.glb',
+  cClaw: W + 'weapons/conscript_melee_claw/conscript_melee_claw.unit.glb', // the Brawler's heat blade
   cJump: W + 'backpacks/conscript_jumppack/conscript_jumppack.unit.glb',
   sJump: W + 'backpacks/soldier_jumppack/soldier_jumppack.unit.glb',
   tankCannon: 'content/fac_cyborgs/turrets/cyborg_tank_turret_cannon/cyborg_tank_turret_cannon.unit.glb',
@@ -201,6 +202,9 @@ const LOADOUT = {
   'rocket-raider': [{ src: GEAR.cCannon, bone: 'attach_r_hand', name: 'weapon_right', part: 'Right Arm' }],
   'incendiary-rocket-raider': [{ src: GEAR.cCannon, bone: 'attach_r_hand', name: 'weapon_right' }],
   'pyro-trooper': [{ src: GEAR.cFlamer, bone: 'attach_r_hand', name: 'weapon_right' }],
+  // the Brawler: a heat blade in each hand (the wiki's arm hitzones are the whole arm; the blade goes with its arm)
+  // (on the elbow attach bones: the blade model points along its -x, which runs down the forearm from there)
+  brawler: [{ src: GEAR.cClaw, bone: 'attach_l_elbow', name: 'blade_left', part: 'Left Arm' }, { src: GEAR.cClaw, bone: 'r_elbow_attach', name: 'blade_right', part: 'Right Arm' }],
   'assault-raider': [JUMP],
   'jet-brigade-trooper': [JUMP],
   'jet-brigade-commissar': [JUMP],
@@ -861,6 +865,8 @@ const SOURCES = {
   'assault-raider': trooper('cha_conscript.unit.glb'),
   'jet-brigade-trooper': trooper('cha_conscript.unit.glb'),
   'pyro-trooper': trooper('cha_conscript.unit.glb'),
+  // a light Automaton (the wiki reuses the Trooper's hitzone images) with a heat blade on each arm
+  brawler: trooper('cha_conscript.unit.glb', [[/^arm_left$/, 'Left Arm'], [/^arm_right$/, 'Right Arm'], [/^leg_(left|right)$/, 'Leg (2)']]),
   marauder: trooper('cha_conscript_tier_2.unit.glb'),
   'jet-brigade-commissar': { src: CY + 'cha_conscript_commander/cha_conscript_commander.unit.glb', ...TROOPER },
   // the Scout Strider's pilot is a Commissar body
