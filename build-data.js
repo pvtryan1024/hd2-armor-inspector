@@ -14,9 +14,9 @@ const enemies = [
   ...read('automatons.json'),
   ...read('illuminate.json'),
 ];
-// "Factory Strider (Armor Broken)" is the same strider with its plates off: fold the parts it adds
+// "Factory Strider (Armor Broken)" / "Harvester (Armor Broken)" are the same enemy with its plates off: fold the parts it adds
 // (the circuits under the front, side and rear armor) into the Factory Strider and drop the separate entry.
-for (const [into, from] of [['Factory Strider', 'Factory Strider (Armor Broken)']]) {
+for (const [into, from] of [['Factory Strider', 'Factory Strider (Armor Broken)'], ['Harvester', 'Harvester (Armor Broken)']]) {
   const a = enemies.find((e) => e.name === into), bi = enemies.findIndex((e) => e.name === from);
   if (!a || bi < 0) continue;
   for (const p of enemies[bi].parts) {

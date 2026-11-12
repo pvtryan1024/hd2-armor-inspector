@@ -982,8 +982,40 @@ const SOURCES = {
     ],
   },
   harvester: {
+    // wiki hitzone images (Harvester and its Armor Broken entry, folded into one page). Legs: left (-x), right (+x)
+    // and back (+z, the wiki's middle leg); each leg's plates come with a broken copy (the heavier mesh) that shows
+    // the internals under it. Pieces are named <segment>_<leg> so a plate and what it reveals are the same piece.
     src: IL + 'cha_tripod/cha_tripod.unit.glb',
-    rules: [[/^body_(left|right)(_whole)?$/, 'Carapace (2)'], [/^body_front(_whole)?$/, 'Chassis']],
+    names: {'0xafb1c75c':'hip_left', '0x51b24a7e':'hipcap_left', '0x38a6e6da':'thigh_left', '0xa97e9801':'thigh_left_damaged', '0x0a252bfd':'knee_left', '0x9d22e57c':'knee_left_damaged', '0x663569e1':'shin_left', '0x2b613d2e':'shin_left_damaged', '0x11d205da':'foot_left', '0xdc86bf77':'foot_left_damaged', '0x7d6dd0c5':'hip_right', '0x4434c001':'hipcap_right', '0xd9e878fd':'thigh_right', '0x42e8fd10':'thigh_right_damaged', '0x666d53b7':'knee_right', '0x054f4bca':'knee_right_damaged', '0x8b4f069a':'shin_right', '0x804b6bf0':'shin_right_damaged', '0x35deb462':'foot_right', '0x930c8597':'foot_right_damaged', '0xddecb905':'hip_back', '0x4f5d11f8':'hipcap_back', '0xc633f5be':'thigh_back', '0x9512b722':'thigh_back_damaged', '0xcfdedc04':'knee_back', '0x8a746a5a':'knee_back_damaged', '0xb36c4529':'shin_back', '0x7d0f655c':'shin_back_damaged', '0x03a2ce13':'foot_back', '0xa2e72e73':'foot_back_damaged', '0x61eb691b':'shield_back_whole', '0x5c380335':'shield_back_damaged'},
+    cuts: [
+      // the eye inside the face plate, then the band across the face around it (Main); the wedges above and below
+      // stay the Chassis
+      { mesh: 'body_front_whole', name: 'eye', centre: true, box: [[-0.2, 9.2, -1.2], [0.2, 9.7, -0.75]] },
+      { mesh: 'body_front_whole', name: 'face', tris: true, box: [[-0.9, 9.05, -1.6], [0.9, 9.95, 0.2]] },
+      // the weak panels on the back of each carapace half (loose pieces)
+      { mesh: 'body_left_whole', name: 'weakspot_left', centre: true, box: [[-0.8, 9.6, 1.8], [-0.4, 10.1, 2.2]] },
+      { mesh: 'body_right_whole', name: 'weakspot_right', centre: true, box: [[0.4, 9.6, 1.8], [0.8, 10.1, 2.2]] },
+      // the arms from the body to each leg (loose pieces in default)
+      { mesh: 'default', name: 'arm_left', centre: true, box: [[-1.6, 8.6, -0.1], [-0.5, 9.4, 0.8]] },
+      { mesh: 'default', name: 'arm_right', centre: true, box: [[0.5, 8.6, -0.1], [1.6, 9.4, 0.8]] },
+      { mesh: 'default', name: 'arm_back', centre: true, box: [[-0.2, 8.4, 0.7], [0.2, 9.0, 1.3]] },
+      // each thigh plate in two: the upper (above the hip arm's height) and lower thigh armor, and their broken copies
+      ...['left', 'right', 'back'].flatMap((leg) => ['', '_damaged'].map((st) => ({ mesh: `thigh_${leg}${st}`, name: `thighup_${leg}${st}`, rest: `thighlow_${leg}${st}`, tris: true, box: [[-9, 7.9, -9], [9, 12, 9]] }))),
+    ],
+    // default: the leg skeletons (knee joints, ankles, foot spikes) are the exposed leg internals, the rest is the body
+    split: { mesh: /^default$/, bones: (b) => (/^(l|r|b)_(leg|front_foot|foot)/.test(b) && !/leg1/.test(b) ? 'leg_internals' : 'core') },
+    rules: [
+      [/^body_(left|right)(_whole)?$/, 'Carapace (2)'], [/^body_(left|right)_damaged$/, 'Internals (2)'],
+      [/^body_front(_whole)?$/, 'Chassis'], [/^body_front_damaged$/, 'Damaged Chassis'], [/^eye$/, 'Eye'], [/^face$/, 'Main'],
+      [/^weakspot_(left|right)$/, 'Carapace Weakspots (2)'], [/^shield_(top|bottom|back)(_whole)?$/, 'Shield Generators (3)'],
+      [/^(hip|hipcap|arm)_left$/, 'Left Hip Joint'], [/^(hip|hipcap|arm)_(right|back)$/, 'Right & Middle Hip Joints (2)'],
+      [/^thighup_left$/, 'Left Upper Thigh Armor'], [/^thighup_(right|back)$/, 'Right & Middle Upper Thigh Armor (2)'],
+      [/^thighlow_(left|right|back)$/, 'Lower Thigh Armor (3)'],
+      [/^(thighup|thighlow)_(left|right)_damaged$/, 'Right & Left Upper Leg Internals (3)'], [/^(thighup|thighlow)_back_damaged$/, 'Middle Upper Leg Internals'],
+      [/^knee_(left|right|back)$/, 'Exposed Leg Internals'], [/^leg_internals$/, 'Exposed Leg Internals'],
+      [/^shin_(left|right|back)$/, 'Shin Armor (3)'], [/^foot_left$/, 'Left Foot Armor'], [/^foot_(right|back)$/, 'Right & Middle Foot Armor (2)'],
+      [/^(shin|foot)_(left|right|back)_damaged$/, 'Lower Leg Internals (3)'], [/^core$/, 'Main'],
+    ],
   },
   // the helmeted body-horror unit is the Crusher; the melee exomech is the Veracitor
   crusher: {
