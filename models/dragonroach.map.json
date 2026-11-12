@@ -2,20 +2,55 @@
   "enemy": "dragonroach",
   "meshes": {
     "claw_right_whole": "Claws (2)",
-    "stomach_whole": "Abdomen Armor",
+    "stomach": "Thorax Sac",
     "head_whole": "Head",
+    "tail_burst": "Abdomen Innards",
+    "tail_sac": "Abdomen Sac",
+    "wing_right_front": "Wings (4)",
+    "leg_left_front": "Leg Armor (12)",
+    "neck_whole": "Main",
+    "wing_left_back": "Wings (4)",
+    "leg_left_back": "Leg Armor (12)",
     "body_left_whole": "Carapace (2)",
+    "wing_right_back": "Wings (4)",
     "claw_left_whole": "Claws (2)",
     "body_right_whole": "Carapace (2)",
-    "stomach_damaged": "Abdomen Innards"
+    "stomach_burst": "Thorax Innards",
+    "leg_right_back": "Leg Armor (12)",
+    "leg_right_front": "Leg Armor (12)",
+    "wing_left_front": "Wings (4)",
+    "tail": "Abdomen Armor"
   },
   "hidden": [
     "claw_left_damaged",
-    "tail_damaged",
+    "tail_burst",
+    "body_left_damaged",
+    "leg_right_back_damaged",
+    "leg_left_front_damaged",
     "head_damaged",
+    "wing_right_back_damaged",
+    "wing_left_front_damaged",
+    "wing_left_back_damaged",
+    "wing_right_front_damaged",
+    "leg_right_front_damaged",
     "tail_gib",
     "claw_right_damaged",
     "body_right_damaged",
-    "stomach_damaged"
-  ]
+    "stomach_burst",
+    "leg_left_back_damaged"
+  ],
+  "after": {
+    "tail_burst": {
+      "part": "Abdomen Sac",
+      "replaces": [
+        "tail_sac"
+      ]
+    },
+    "stomach_burst": {
+      "part": "Thorax Sac",
+      "replaces": [
+        "stomach"
+      ]
+    }
+  }
 }

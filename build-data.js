@@ -80,6 +80,8 @@ const COVERS = [
   { enemy: /charger/i, parts: { 'Inner Flesh': ['Torso Armor (2)'], 'Leg Flesh (4)': ['Front Leg Armor (2)'] } },
   { enemy: /^impaler$/i, parts: { 'Inner Flesh': ['Torso Armor (2)'], 'Leg Flesh (4)': ['Leg Armor (4)'] } },
   { enemy: /bile titan/i, parts: { 'Inner Flesh': ['Torso Armor (2)'], 'Front Left Leg Flesh': ['Leg Armor (12)'], 'Leg Flesh (3)': ['Leg Armor (12)'] } },
+  // the innards are what's left when a sac bursts (the burst copy of the thorax / abdomen takes over in 3D)
+  { enemy: /^dragonroach$/i, parts: { 'Thorax Innards': ['Thorax Sac'], 'Abdomen Innards': ['Abdomen Sac'] } },
 ];
 
 // What a projectile reaches after over-penetrating a part (inner hitboxes aren't meshes in the models).

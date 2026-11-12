@@ -593,13 +593,31 @@ const SOURCES = {
     ],
   },
   dragonroach: {
+    // built like a Bile Titan (same abdomen material): the thorax (stomach) is the Thorax Sac, its burst copy the
+    // Thorax Innards; the abdomen (tail) is plates (Abdomen Armor) over the Abdomen Sac, its burst copy the
+    // Abdomen Innards. Legs and wings: the bigger mesh of each pair is the damaged one (torn, gored).
     src: 'content/fac_bugs/cha_dragon/cha_dragon.unit.glb',
+    names: {
+      stomach_whole: 'stomach', stomach_damaged: 'stomach_burst', tail_whole: 'tail', tail_damaged: 'tail_burst', '0xb5f03dae': 'body_left_damaged',
+      '0xc525058d': 'leg_left_front', '0x411e862a': 'leg_left_front_damaged', '0xc59cf497': 'leg_right_front', '0x03d0b617': 'leg_right_front_damaged',
+      '0xeb92860c': 'leg_left_back', '0x33609050': 'leg_left_back_damaged', '0xec4c112a': 'leg_right_back', '0xaef9acf0': 'leg_right_back_damaged',
+      '0x0127723c': 'wing_left_front', '0x82f77e51': 'wing_left_front_damaged', '0x18529aee': 'wing_right_front', '0x4578a72b': 'wing_right_front_damaged',
+      '0xe4963264': 'wing_left_back', '0xca52ab79': 'wing_left_back_damaged', '0xe49c435b': 'wing_right_back', '0x32c8740e': 'wing_right_back_damaged',
+    },
+    shells: [{ mesh: 'tail_burst', main: 'tail_burst', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail' }],
+    hide: ['tail_burst', 'stomach_burst'],
     rules: [
       [/^head(_whole)?$/, 'Head'],
+      [/^neck(_whole)?$/, 'Main'],
       [/^claw_(left|right)(_whole)?$/, 'Claws (2)'],
       [/^body_(left|right)(_whole)?$/, 'Carapace (2)'],
-      [/^stomach(_whole)?$/, 'Abdomen Armor'],
-      [/^stomach_damaged$/, 'Abdomen Innards'],
+      [/^leg_(left|right)_(front|back)$/, 'Leg Armor (12)'],
+      [/^wing_(left|right)_(front|back)$/, 'Wings (4)'],
+      [/^stomach$/, 'Thorax Sac'],
+      [/^stomach_burst$/, 'Thorax Innards'],
+      [/^tail$/, 'Abdomen Armor'],
+      [/^tail_sac$/, 'Abdomen Sac'],
+      [/^tail_burst$/, 'Abdomen Innards'],
     ],
   },
   devastator: { src: 'content/fac_cyborgs/cha_soldier/cha_soldier.unit.glb', rules: DEVASTATOR },
