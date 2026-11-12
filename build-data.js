@@ -112,6 +112,10 @@ const MAIN_TO_ON_GONE = [{ enemy: /hulk/i, part: /^legs\b/i, value: 1, killAllBr
 const GONE_WITH = [
   { enemy: /devastator/i, part: /^Shoulders \(2\)$/, with: 'Arms (2)' },
   { enemy: /^(heavy|conflagration|incendiary mg) devastator$/i, part: /^Shield$/, with: 'Arms (2)', inst: 0 },
+  // Agitator / Radical: a destroyed upper arm takes its pauldron and forearm with it (the Radical's one pauldron
+  // is on the left arm)
+  { enemy: /^(agitator|radical)$/i, part: /^(Pauldrons \(2\)|Forearms \(2\))$/, with: 'Upper Arms (2)' },
+  { enemy: /^radical$/i, part: /^Pauldron$/, with: 'Upper Arms (2)', inst: 0 },
 ];
 const ALSO_COVERED = [{ enemy: /^Rupture Charger$/, parts: { 'Leg Flesh (4)': 'Frontal Tarsal Plate Armor (2)' } }];
 enemies.forEach((e) => {
