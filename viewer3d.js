@@ -675,6 +675,41 @@ function shrapnelHits(h, spec) {
   return out;
 }
 
+/** Pellets (shotguns, the Variable's rounds): one ray per pellet, parallel to the shot. The first pellet goes where
+ *  the cursor is; the rest land uniformly inside the spread cone, 5 cm radius at 20 m (spec.dist = the range
+ *  setting), around it. Each pellet hits the first piece in its way at its own angle; one that hits nothing misses. */
+const PELLET_R20 = 0.05;
+function pelletHits(h, spec) {
+  if (!(spec?.count > 1) || h.ground) return null;
+  const dir = h.point.clone().sub(h.origin).normalize();
+  const rad = PELLET_R20 * Math.max(0, spec.dist || 0) / 20;
+  // two directions across the shot
+  const u = new THREE.Vector3().crossVectors(dir, Math.abs(dir.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0)).normalize();
+  const v = new THREE.Vector3().crossVectors(dir, u);
+  const targets = [...current.meshes.map((m) => m.mesh).filter((m) => m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key)), ...directColliders()];
+  const parts = lastDetail?.enemy.parts || [];
+  const out = [];
+  blastRay.far = Infinity;
+  for (let n = 0; n < spec.count; n++) {
+    const r = n === 0 ? 0 : rad * Math.sqrt(Math.random()), a = Math.random() * Math.PI * 2;
+    const off = u.clone().multiplyScalar(r * Math.cos(a)).addScaledVector(v, r * Math.sin(a));
+    blastRay.set(h.origin.clone().add(off), dir);
+    const first = blastRay.intersectObjects(targets, false).sort((x, y) => x.distance - y.distance)[0];
+    const at = h.point.clone().add(off).toArray();
+    if (!first) { out.push({ idx: -1, k: null, deg: 0, at }); continue; }
+    let idx, k = null;
+    if (first.object.userData.collider) idx = parts.findIndex((p) => p.name === first.object.userData.collider.part);
+    else { idx = partIndexFor(current, first.object.userData.key); if (idx >= 0) k = instanceFor(current, first.object.userData.key, idx); }
+    let deg = 0;
+    if (first.face) {
+      const fnrm = first.face.normal.clone().applyMatrix3(nm.getNormalMatrix(first.object.matrixWorld)).normalize();
+      deg = THREE.MathUtils.radToDeg(Math.acos(Math.min(1, Math.abs(fnrm.dot(dir)))));
+    }
+    out.push({ idx, k, deg, at: first.point.toArray(), revealed: !!first.object.userData.revealed });
+  }
+  return out;
+}
+
 /** Pieces an explosion reaches: every piece with surface inside the outer radius that the blast can see.
  *  A piece counts when a straight line from the blast centre reaches it (its closest point, or one of a
  *  spread of points on its surface) before any other mesh; it takes the blast at the distance of its
@@ -856,7 +891,7 @@ function shoot(h) {
   for (const m of bv.revealed) { const ri = partIndexFor(current, m.userData.key); if (ri >= 0 && !(ri in revealedK)) revealedK[ri] = instanceFor(current, m.userData.key, ri); }
   const parts = {};
   for (const b of blast) if (parts[b.idx] == null || b.d < parts[b.idx]) parts[b.idx] = b.d;
-  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, inside: insideParts(h), detonate: !!h.mesh.userData.collider?.detonate, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), thru: thruAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, inside: insideParts(h), detonate: !!h.mesh.userData.collider?.detonate, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), pelletHits: pelletHits(h, lastDetail?.pellets), thru: thruAlong(h), revealed: !!h.mesh.userData.revealed, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
   if (said) status(said);
 }
 

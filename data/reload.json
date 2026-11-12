@@ -887,6 +887,16 @@
   "perRound": false,
   "perRoundTime": null,
   "raw": "3.58s (Tactical 3.58s)",
-  "note": ""
+  "note": "",
+  "modes": {
+   "Total": {
+    "mag": 1,
+    "note": "one trigger pull fires the whole 49-round magazine"
+   },
+   "Volley": {
+    "mag": 7,
+    "note": "a volley is 7 rounds: 7 volleys per magazine"
+   }
+  }
  }
 }

@@ -358,6 +358,14 @@ if (fs.existsSync(chargePath)) {
   }
 }
 
+// Weapons that fire several rounds per trigger pull: one mode per way of firing (the VG-70 Variable: Total fires
+// all 49 rounds, Volley 7), each a multi-round 'shot' like a shotgun's pellets
+const SPLIT_MODES = { 'vg-70-variable': [{ name: 'Total', pellets: 49 }, { name: 'Volley', pellets: 7 }] };
+weapons.forEach((w) => {
+  const sp = SPLIT_MODES[w.id];
+  if (sp && w.modes?.length === 1) w.modes = sp.map((x) => ({ ...w.modes[0], ...x }));
+});
+
 // Reload times (data/reload.json, from each weapon page's infobox): a full reload, used by time to kill once
 // the shots needed run past one magazine.
 const reloadPath = path.join(dir, 'reload.json');

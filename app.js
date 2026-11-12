@@ -202,7 +202,7 @@
    *  noProj (part only caught in the blast). */
   function shotDamage(mode, part, enemy, opts) {
     const ap = apFor(mode, opts.band);
-    const pellets = opts.allPellets ? Math.max(1, mode.pellets || 1) : 1;
+    const pellets = opts.pelletCount ?? (opts.allPellets ? Math.max(1, mode.pellets || 1) : 1);
     const m = penMult(ap, part.av);
     const d = part.durable ?? 0;
     const raw = ((mode.damage || 0) * (1 - d) + (mode.durable ?? mode.damage ?? 0) * d) * rangeMult(mode, opts.dist);
@@ -1304,9 +1304,33 @@
     const o = { ...opts(), band, ...(hit.inside ? { inside: hit.inside } : {}) };
     if (hit.ground) return resolveGround(hit, mode, band, o);
     // a round that went off on a trigger plane (inside the Fabricator's vents): no impact, only its explosion
-    const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0, noShrap: true, ...(hit.detonate ? { noProj: true } : {}) }) }];
+    // pellets (3D): each pellet ray from the viewer lands on its own piece; the struck piece takes the ones that hit it
+    const pl = pelletsOf(hit, mode);
+    const rows = [{ idx: hit.idx, dist: 0, direct: true, s: shotDamage(mode, e.parts[hit.idx], e, { ...o, exDist: 0, noShrap: true, ...(pl ? { pelletCount: 1 } : {}), ...(hit.detonate ? { noProj: true } : {}) }) }];
+    let pel = null;
+    if (pl) {
+      const fm = { ...mode, pellets: 1, explosion: null, extraExplosions: null, shrapnel: null };
+      const by = new Map();
+      let onPiece = 1, missed = 0;
+      pl.slice(1).forEach((f) => {
+        if (f.idx < 0) { missed++; return; }
+        const same = f.idx === hit.idx && (f.k == null || hit.k == null || f.k === hit.k);
+        if (!same && !f.revealed && !isExposed(e, f.idx, state.fire ? state.sim : null, f.k)) { missed++; return; } // under a plate
+        const sf = shotDamage(fm, e.parts[f.idx], e, { ...o, band: bandOf(f.deg), explosion: false, noShrap: true, pelletCount: 1 });
+        if (same) {
+          onPiece++;
+          if (!hit.detonate) { rows[0].s.proj += sf.proj; rows[0].s.total += sf.proj; }
+          return;
+        }
+        const id = `${f.idx}:${f.k}`;
+        const acc = by.get(id) || { idx: f.idx, k: f.k, n: 0, s: { proj: 0, partEx: 0, mainEx: 0, total: 0 } };
+        acc.n++; acc.s.proj += sf.proj; acc.s.total += sf.total;
+        by.set(id, acc);
+      });
+      pel = { count: pl.length, onPiece, missed, rows: [...by.values()] };
+    }
     // 3D shots: the next piece along the shot's path (hit.thru from the viewer), if the cleave rule lets it through
-    const thru0 = hit.detonate ? null : overpen(mode, e, hit.idx, rows[0].s, o, 'thru' in hit ? hit.thru?.idx ?? null : undefined);
+    const thru0 = hit.detonate ? null : overpen(mode, e, hit.idx, rows[0].s, pel ? { ...o, pelletCount: pel.onPiece } : o, 'thru' in hit ? hit.thru?.idx ?? null : undefined);
     const thru = thru0 ? { ...thru0, k: hit.thru?.k ?? null } : null;
     const radii = rows[0].s.ricochet ? null : blastRadii(mode); // a ricochet means no blast at all
     if (radii) {
@@ -1333,8 +1357,11 @@
       }
       shrap = { count: mode.shrapnel.count, hit: hit.shrapHits.length, rows: [...by.values()] };
     }
-    return { mode, band, rows, radii, thru, shrap };
+    return { mode, band, rows, radii, thru, shrap, pel };
   }
+
+  /** The viewer's pellet rays for this shot, when they match the mode's pellet count (all pellets on). */
+  const pelletsOf = (hit, mode) => (state.allPellets && (mode.pellets || 1) > 1 && hit.pelletHits?.length === mode.pellets ? hit.pelletHits : null);
 
   /** A blast that reaches through the body (explosion verification 'outer' / 'none') could touch a part still under
    *  an unbroken plate: in fire mode such a part is left out. */
@@ -1448,6 +1475,14 @@
           }
           notes.push(`shrapnel ${res.shrap.hit}/${res.shrap.count} hit`);
         }
+        if (k === 0 && res.pel && !state.sim.dead) { // pellets that landed on other pieces, each piece once with its total
+          for (const f of res.pel.rows) {
+            if (state.sim.dead || !(f.s.total > 0)) continue;
+            const of = applyShot(state.sim, e, f.idx, f.s, true, f.k ?? undefined);
+            if (of.broke || of.gone) notes.push(`${pieceName(e.parts[f.idx], f.k)} destroyed by pellets`);
+          }
+          notes.push(`pellets ${res.pel.onPiece}/${res.pel.count} on target${res.pel.rows.length ? `, ${res.pel.rows.reduce((x, r) => x + r.n, 0)} on other parts` : ''}${res.pel.missed ? `, ${res.pel.missed} missed` : ''}`);
+        }
         if (k === 0 && res.thru && !state.sim.dead) { // over-penetration into the part behind
           const o2 = applyShot(state.sim, e, res.thru.idx, res.thru.s, true, res.thru.k ?? undefined);
           notes.push(`through into ${pieceName(e.parts[res.thru.idx], res.thru.k)} (AP ${res.thru.ap}): ${fmt(res.thru.s.total)} dmg${o2.broke ? ', destroyed' : ''}`);
@@ -1495,7 +1530,7 @@
     const d = res.rows[0];
     const part = e.parts[d.idx];
     const pc = penClass(d.s, part);
-    const main = d.s.proj > 0 || d.s.partEx > 0 ? simulate(res.mode, e, d.idx, { ...opts(), band: res.band }).perMain : 0;
+    const main = d.s.proj > 0 || d.s.partEx > 0 ? simulate(res.mode, e, d.idx, { ...opts(), band: res.band, ...(res.pel ? { pelletCount: res.pel.onPiece } : {}) }).perMain : 0;
     const blastRows = res.rows.slice(1);
     const mainOnce = res.rows.reduce((a, r) => a + r.s.mainEx, 0);
     el.innerHTML = `
@@ -1510,6 +1545,10 @@
         <dt>To Main</dt><dd>${fmt(main)}</dd>
       </dl>
       ${d.s.ricochet && res.mode.explosion && state.explosion ? '<div class="muted">Ricocheted: the round did not explode</div>' : ''}
+      ${res.pel ? `<div class="sp-blast"><b>Pellets</b> ${res.pel.count} fired, spread 5 cm per 20 m (${(5 * (state.dist || 0) / 20).toFixed(1)} cm radius at ${state.dist || 0} m)<ul>
+        <li><span>${esc(pieceName(part, state.hit.k))} <i>×${res.pel.onPiece}</i></span><span>${d.s.proj > 0 ? fmt(d.s.proj) : '<span class="muted">0 · armor holds</span>'}</span></li>
+        ${res.pel.rows.map((r) => `<li><span>${esc(pieceName(e.parts[r.idx], r.k))} <i>×${r.n}</i></span><span>${r.s.total > 0 ? fmt(r.s.total) : '<span class="muted">0 · armor holds</span>'}</span></li>`).join('')}
+        ${res.pel.missed ? `<li><span class="muted">missed <i>×${res.pel.missed}</i></span><span></span></li>` : ''}</ul></div>` : ''}
       ${res.shrap ? `<div class="sp-blast"><b>Shrapnel</b> ${res.shrap.hit} of ${res.shrap.count} fragments hit${res.shrap.rows.length ? '<ul>' + res.shrap.rows.map((r) => `<li><span>${esc(pieceName(e.parts[r.idx], r.k))} <i>×${r.n}</i></span><span>${r.s.total > 0 ? fmt(r.s.total) : '<span class="muted">0 · armor holds</span>'}</span></li>`).join('') + '</ul>' : ''}</div>` : ''}
       ${res.radii ? `<div class="sp-blast"><b>Blast</b> ${res.radii.inner}m inner / ${res.radii.outer}m outer
         ${blastRows.length ? '<ul>' + blastRows.map((r) => `<li><span>${esc(pieceName(e.parts[r.idx], r.k))} <i>${r.dist.toFixed(1)}m</i></span><span>${r.s.partEx > 0 ? fmt(r.s.partEx) : '<span class="muted" title="The blast AP does not beat this armor">0 · armor holds</span>'}</span></li>`).join('') + '</ul>' : '<div class="muted">No other hitzone reached by the blast</div>'}
@@ -1556,6 +1595,7 @@
     const exAp = state.explosion && m?.explosion ? m.explosion.ap ?? -1 : -1;
     const ap4 = m ? ANGLE_BANDS.map((_, b) => Math.max(m.explosionOnly ? -1 : apFor(m, b), exAp)) : null;
     window.dispatchEvent(new CustomEvent('hd2:update', { detail: {
+      pellets: (m?.pellets || 1) > 1 && state.allPellets ? { count: m.pellets, dist: state.dist || 0 } : null,
       shrapnel: m?.shrapnel && state.explosion ? { count: m.shrapnel.count, spread: m.shrapnel.spread, range: blastRadii(m)?.outer || 7 } : null,
       // pieces with constitution whose health is gone but which still have a hitbox (Hulk legs): the 3D view
       // swaps in their damaged mesh
