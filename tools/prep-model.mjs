@@ -69,7 +69,9 @@ const DEVASTATOR_ARMS = {
 };
 // the shield Devastators hold the shield up in front of the body, upright, the notch at its top showing the head
 // (the export's arm hangs at its side; fitted with a small pose search on the shield's attach bone)
-const SHIELD_ARM_UP = { l_shoulder: [-3.75, -40, 20], l_elbow: [-25, -10, 87.5] };
+const SHIELD_ARM_UP = { l_shoulder: [0, -56.25, 18.75], l_elbow: [-8.75, -10, 86.25] };
+// the upper arm a bit longer, so the shield stands clear of the body and legs
+const SHIELD_ARM_REACH = { l_elbow: 1.5 };
 const DEVASTATOR = [
   [/^head(_whole)?$/, 'Head'],
   [/^torso(_whole)?$/, 'Torso'],
@@ -688,7 +690,7 @@ const SOURCES = {
     ],
   },
   devastator: { src: 'content/fac_cyborgs/cha_soldier/cha_soldier.unit.glb', names: DEVASTATOR_ARMS, rules: [[/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] },
-  'heavy-devastator': { src: 'content/fac_cyborgs/cha_soldier/cha_soldier_heavy_weapon.unit.glb', pose: SHIELD_ARM_UP, names: DEVASTATOR_ARMS, rules: [[/^weapon_backpack(_whole)?$/, 'Backpack'], [/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] },
+  'heavy-devastator': { src: 'content/fac_cyborgs/cha_soldier/cha_soldier_heavy_weapon.unit.glb', pose: SHIELD_ARM_UP, stretch: SHIELD_ARM_REACH, names: DEVASTATOR_ARMS, rules: [[/^weapon_backpack(_whole)?$/, 'Backpack'], [/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] },
   'rocket-devastator': {
     src: 'content/fac_cyborgs/cha_soldier/cha_soldier_rocket.unit.glb',
     // the unnamed arm meshes: upper arms, shoulder joints, the left forearm with its hand (left is -x)
@@ -749,8 +751,8 @@ const SOURCES = {
     rules: [[/^head(_whole)?$/, 'Head'], [/^armor_torso$/, 'Torso Circuits'], [/^(left|right)_shoulderpad$/, 'Pauldron'], [/^(left|right)_arm(_whole)?$/, 'Upper Arms (2)'], [/^body(_whole)?$/, 'Main']],
   },
   'jet-brigade-devastator': { src: CY + 'cha_soldier/cha_soldier.unit.glb', rules: DEVASTATOR },
-  'conflagration-devastator': { src: CY + 'cha_soldier/cha_soldier_heavy_weapon.unit.glb', pose: SHIELD_ARM_UP, names: DEVASTATOR_ARMS, rules: [[/^weapon_backpack(_whole)?$/, 'Main'], [/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] }, // the shield body
-  'incendiary-mg-devastator': { src: CY + 'cha_soldier/cha_soldier_heavy_weapon.unit.glb', pose: SHIELD_ARM_UP, names: DEVASTATOR_ARMS, rules: [[/^weapon_backpack(_whole)?$/, 'Main'], [/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] }, // the shield body
+  'conflagration-devastator': { src: CY + 'cha_soldier/cha_soldier_heavy_weapon.unit.glb', pose: SHIELD_ARM_UP, stretch: SHIELD_ARM_REACH, names: DEVASTATOR_ARMS, rules: [[/^weapon_backpack(_whole)?$/, 'Main'], [/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] }, // the shield body
+  'incendiary-mg-devastator': { src: CY + 'cha_soldier/cha_soldier_heavy_weapon.unit.glb', pose: SHIELD_ARM_UP, stretch: SHIELD_ARM_REACH, names: DEVASTATOR_ARMS, rules: [[/^weapon_backpack(_whole)?$/, 'Main'], [/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] }, // the shield body
   'annihilator-tank': tank('Hull Sides (2)', ANNIHILATOR_HEATSINK),
   'shredder-tank': tank('Hull Side (2)', SHREDDER_HEATSINK),
   // the Launch Tubes: inside the pod's armor frame (the tube faces front and back, open at both ends), per triangle
@@ -945,6 +947,11 @@ async function prep(id) {
   const root = doc.getRoot();
   // pose: { bone: [x, y, z] degrees } turns the body's bones in their own frame (the exports carry no
   // animations: the Heavy Devastator's shield arm raised in front of it, as it walks in game)
+  // stretch: { bone: factor } moves that joint further from its parent (longer limb: the skin stretches)
+  for (const [bone, k] of Object.entries(cfg.stretch || {})) {
+    const n = root.listNodes().find((x) => x.getName() === bone);
+    if (n) n.setTranslation(n.getTranslation().map((v) => v * k)); else console.warn(`${id}: stretch bone ${bone} not found`);
+  }
   for (const [bone, deg] of Object.entries(cfg.pose || {})) {
     const n = root.listNodes().find((x) => x.getName() === bone);
     if (!n) { console.warn(`${id}: pose bone ${bone} not found`); continue; }
