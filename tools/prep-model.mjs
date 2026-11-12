@@ -67,6 +67,8 @@ const DEVASTATOR_ARMS = {
   'g_body 0x09be09cf': 'arm_left_upper', 'g_body 0x0fb1fef6': 'arm_right_upper',
   'g_body 0x7d4e2117': 'arm_left_joint', 'g_body 0x1111bf60': 'arm_right_joint', 'g_body udim 0': 'arm_left_lower',
 };
+// the shield Devastators carry the shield raised in front of the body (the export's arm hangs at its side)
+const SHIELD_ARM_UP = { l_shoulder: [-30, -60, 30], l_elbow: [0, 0, 70] };
 const DEVASTATOR = [
   [/^head(_whole)?$/, 'Head'],
   [/^torso(_whole)?$/, 'Torso'],
@@ -685,7 +687,7 @@ const SOURCES = {
     ],
   },
   devastator: { src: 'content/fac_cyborgs/cha_soldier/cha_soldier.unit.glb', names: DEVASTATOR_ARMS, rules: [[/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] },
-  'heavy-devastator': { src: 'content/fac_cyborgs/cha_soldier/cha_soldier_heavy_weapon.unit.glb', names: DEVASTATOR_ARMS, rules: [[/^weapon_backpack(_whole)?$/, 'Backpack'], [/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] },
+  'heavy-devastator': { src: 'content/fac_cyborgs/cha_soldier/cha_soldier_heavy_weapon.unit.glb', pose: SHIELD_ARM_UP, names: DEVASTATOR_ARMS, rules: [[/^weapon_backpack(_whole)?$/, 'Backpack'], [/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] },
   'rocket-devastator': {
     src: 'content/fac_cyborgs/cha_soldier/cha_soldier_rocket.unit.glb',
     // the unnamed arm meshes: upper arms, shoulder joints, the left forearm with its hand (left is -x)
@@ -940,6 +942,17 @@ async function prep(id) {
   const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
   const doc = await io.read(src);
   const root = doc.getRoot();
+  // pose: { bone: [x, y, z] degrees } turns the body's bones in their own frame (the exports carry no
+  // animations: the Heavy Devastator's shield arm raised in front of it, as it walks in game)
+  for (const [bone, deg] of Object.entries(cfg.pose || {})) {
+    const n = root.listNodes().find((x) => x.getName() === bone);
+    if (!n) { console.warn(`${id}: pose bone ${bone} not found`); continue; }
+    const q = (ax, d) => { const h = (d * Math.PI) / 360, v = [0, 0, 0, Math.cos(h)]; v[ax] = Math.sin(h); return v; };
+    const mul = (p, r) => [
+      p[3] * r[0] + p[0] * r[3] + p[1] * r[2] - p[2] * r[1], p[3] * r[1] - p[0] * r[2] + p[1] * r[3] + p[2] * r[0],
+      p[3] * r[2] + p[0] * r[1] - p[1] * r[0] + p[2] * r[3], p[3] * r[3] - p[0] * r[0] - p[1] * r[1] - p[2] * r[2]];
+    n.setRotation(mul(n.getRotation(), mul(q(2, deg[2] || 0), mul(q(1, deg[1] || 0), q(0, deg[0] || 0)))));
+  }
 
   // gear: merge each attachment model in and hang its content on the body's attachment bone
   const gearNames = [];

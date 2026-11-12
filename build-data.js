@@ -106,11 +106,19 @@ const DOWNS = [{ enemy: /^dropship$/i, part: /^thruster/i }];
 // hurts it). One leg destroyed leaves Main at 1 HP (unless the overflow already emptied Main: Recoilless, Spear);
 // both legs broken kills the Hulk (killAllBroken).
 const MAIN_TO_ON_GONE = [{ enemy: /hulk/i, part: /^legs\b/i, value: 1, killAllBroken: true }];
+// goneWith: the part's hitbox goes when another part's piece is destroyed (no damage dealt to it): a Devastator's
+// shoulder goes with its arm (same piece: left with left); the shield goes with the arm holding it (inst: that
+// arm's piece, the left one; pieces count left before right)
+const GONE_WITH = [
+  { enemy: /devastator/i, part: /^Shoulders \(2\)$/, with: 'Arms (2)' },
+  { enemy: /^heavy devastator$/i, part: /^Shield$/, with: 'Arms (2)', inst: 0 },
+];
 const ALSO_COVERED = [{ enemy: /^Rupture Charger$/, parts: { 'Leg Flesh (4)': 'Frontal Tarsal Plate Armor (2)' } }];
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
   for (const c of DOWNS) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = 'downs'; if (c.allBroken) p.downsAllBroken = true; } });
   for (const c of MAIN_TO_ON_GONE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = false; p.mainToOnGone = c.value; if (c.killAllBroken) p.killAllBroken = true; } });
+  for (const c of GONE_WITH) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name) && e.parts.some((q) => q.name === c.with)) p.goneWith = { part: c.with, ...(c.inst != null ? { inst: c.inst } : {}) }; });
   for (const c of ALSO_COVERED) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.alsoCoveredBy = c.parts[p.name]; });
   for (const c of BEHIND) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.behind = c.parts[p.name]; });
   for (const c of LOCATION_FIX) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.location = c.location; });

@@ -305,6 +305,16 @@
         // mainToOnGone (Hulk legs): shot through, the enemy is left hanging with Main at that much health
         if (!wasGone && instGone(part, inst[k])) out.gone = true; // hitbox gone (constitution used up too)
         if (part.mainToOnGone != null && out.gone) out.clampTo = part.mainToOnGone;
+        // goneWith: parts whose hitbox goes with this piece (a Devastator's shoulder with its arm, the shield with
+        // the arm holding it), without taking any damage
+        if (out.gone) enemy.parts.forEach((q, qi) => {
+          const gw = q.goneWith;
+          if (!gw || gw.part !== part.name || !sim.hp[qi] || (gw.inst != null && gw.inst !== k)) return;
+          const j = gw.inst != null ? 0 : k;
+          if (j >= sim.hp[qi].length || instGone(q, sim.hp[qi][j])) return;
+          sim.hp[qi][j] = -consOf(q) - 1;
+          (out.alsoGone ||= []).push(pieceName(q, gw.inst != null ? undefined : j));
+        });
         if (wasUp && inst[k] <= 0) out.broke = true;
         // fatal parts: with a bleed rate the enemy is done once the part breaks (it bleeds out);
         // with constitution that doesn't drain, it has to be shot through the constitution too
@@ -380,6 +390,7 @@
     out.progress = out.progress || o2.progress;
     out.broke = out.broke || o2.broke;
     out.gone = out.gone || o2.gone;
+    if (o2.alsoGone) out.alsoGone = [...(out.alsoGone || []), ...o2.alsoGone];
     return out;
   }
   /** Flame and gas weapons in fire mode: a click is one second of spraying. The spray's own hit lands on the
@@ -398,7 +409,7 @@
 
   /** Log text for a piece this shot broke or destroyed: with constitution (Hulk legs) "broken" means its health
    *  is gone but it can still be hit; "destroyed" means the constitution is gone too. */
-  const brokeNote = (p, k, o) => `${pieceName(p, k)} ${consOf(p) && !o.gone ? 'broken' : 'destroyed'}`;
+  const brokeNote = (p, k, o) => `${pieceName(p, k)} ${consOf(p) && !o.gone ? 'broken' : 'destroyed'}${o.alsoGone?.length ? ` (${o.alsoGone.join(', ')} gone with it)` : ''}`;
   /** Log text for a part that left Main hanging (once, then cleared). */
   const hangNote = (sim) => { const t = sim.hanging; sim.hanging = null; return t ? ` — ${t}` : ''; };
   /** Log text for the explosion that went on into the part under a broken plate. */
@@ -1205,7 +1216,7 @@
     const o2 = thru ? applyShot(state.sim, e, thru.idx, thru.s, true) : null;
     const dotNote = dotSecond(state.sim, e, mode);
     const label = k != null && (part.count || 1) > 1 ? `${part.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${part.count}` : part.name;
-    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : s.demo ? 'demolished' : s.ricochet ? 'ricochet' : 'no damage'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke || o.gone ? ` — ${consOf(part) && !o.gone ? 'broken' : 'destroyed'}` : ''}${hangNote(state.sim)}${underNote(e, o)}${dotNote}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
+    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : s.demo ? 'demolished' : s.ricochet ? 'ricochet' : 'no damage'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke || o.gone ? ` — ${consOf(part) && !o.gone ? 'broken' : 'destroyed'}` : ''}${o.alsoGone?.length ? ` (${o.alsoGone.join(', ')} gone with it)` : ''}${hangNote(state.sim)}${underNote(e, o)}${dotNote}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
     state.sim.log.length = Math.min(state.sim.log.length, 8);
     render();
   }
