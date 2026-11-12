@@ -1,0 +1,10 @@
+{
+  "enemy": "mortar-emplacement",
+  "meshes": {
+    "body": "Main",
+    "turret_heatsink": "Heatsink"
+  },
+  "hidden": [
+    "body_damaged"
+  ]
+}

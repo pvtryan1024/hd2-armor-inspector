@@ -1019,6 +1019,10 @@ const SOURCES = {
   },
   // the Annihilator's turret on its own: the turret is Turret Front, the heat sink on its back cut out (Heatsink)
   'cannon-turret': { src: GEAR.tankCannon, cuts: [{ mesh: 'body', name: 'turret_heatsink', box: [[-2, -0.15, 1.24], [2, 0.95, 2.14]] }], rules: [[/^body$/, 'Turret Front'], [/^turret_heatsink$/, 'Heatsink']] },
+  // the Anti-Air Emplacement is the Shredder's twin-autocannon turret, the Mortar Emplacement a mortar turret (the crate
+  // they sit on is level scenery, not a hitzone); the Heatsink is the turret's whole rear block (wiki vent images)
+  'anti-air-emplacement': { src: GEAR.tankAuto, cuts: [{ mesh: 'body', name: 'turret_heatsink', tris: true, box: [[-2.5, -0.5, 1.0], [2.5, 2.5, 2.5]] }], rules: [[/^turret_heatsink$/, 'Heatsink'], [/^body$/, 'Main']] },
+  'mortar-emplacement': { src: CY + 'turrets/cyborg_tank_turret_mortar/cyborg_tank_turret_mortar.unit.glb', cuts: [{ mesh: 'body', name: 'turret_heatsink', tris: true, box: [[-2.5, -0.5, 1.0], [2.5, 2.5, 2.5]] }], rules: [[/^turret_heatsink$/, 'Heatsink'], [/^body$/, 'Main']] },
   // the heat sink: the two fin banks on the back face, either side of the centre column (like the Shredder's)
   'bunker-turret': { src: CY + 'turrets/cyborg_turret_small_autocannon/cyborg_turret_small_autocannon.unit.glb',
     cuts: [[-0.7, -0.2], [0.2, 0.7]].map(([x0, x1], i) => ({ mesh: 'body', name: `heatsink_${i ? 'right' : 'left'}`, box: [[x0, 0.28, 0.65], [x1, 0.72, 0.95]] })),
