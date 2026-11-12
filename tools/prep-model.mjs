@@ -306,7 +306,7 @@ function splitShells(doc, node, sp, likeBoxes) {
     if (sp.prim && !sp.prim.test(prim.getMaterial()?.getName() || '')) continue;
     const sh = shellsOf(prim);
     const total = sh.reduce((a, x) => a + x.n, 0);
-    // platesAbove: only pieces whose bottom is above that height are plates (the Rupture Spewer's belly plates stay)
+    // platesAbove: only pieces whose bottom is above that height are plates (unused now)
     const isPlate = (x, i) => (likeBoxes ? likeBoxes.some((b) => sameBox(b, x.box)) : i > 0 && x.n >= total * 0.02 && !(sp.platesAbove != null && x.box[0][1] < sp.platesAbove));
     let body = sh.filter((x, i) => !isPlate(x, i)).flatMap((x) => x.tris);
     let plates = sh.filter(isPlate).flatMap((x) => x.tris);
@@ -435,7 +435,9 @@ function cutBox(doc, node, cut) {
       for (let t = 0; t + 2 < (prim.getIndices()?.getCount() || 0); t += 3) {
         const I = prim.getIndices(), tri = [I.getScalar(t), I.getScalar(t + 1), I.getScalar(t + 2)], c = [0, 0, 0];
         for (const i of tri) posed(i).forEach((v, k) => { c[k] += v / 3; });
-        (c.every((v, k) => v >= cut.box[0][k] && v <= cut.box[1][k]) ? inside : rest).push(...tri);
+        // with bone: the triangle goes when that bone drives most of its corners (a jaw welded to the head)
+        const ok = cut.bone ? tri.filter(byBone).length >= 2 : c.every((v, k) => v >= cut.box[0][k] && v <= cut.box[1][k]);
+        (ok ? inside : rest).push(...tri);
       }
     } else for (const sh of shellsOf(prim)) {
       const vs = [...new Set(sh.tris)];
@@ -550,6 +552,9 @@ SPEWER.split.mesh = /^(g_body|default)$/;
 // the armor on top of the butt (Spinal Plates), split off like a Charger's butt plates; the Nursing Spewer's is
 // welded to the sac: its upper half (by height along the body) is the plates
 const SPEWER_PLATES = [{ mesh: 'butt', main: 'butt', rest: 'butt_plates' }];
+// the Mouth (the weak spot): the jaw ("yaw") and fang pieces of the head
+SPEWER.cuts = [{ mesh: 'head', name: 'mouth', tris: true, bone: /^(yaw|yaw_tip|[lr]_(upper|lower)_fang\d)$/ }];
+SPEWER.rules.unshift([/^mouth$/, 'Mouth']);
 const NURSER_PLATES = [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', tipBones: /^(lower_spine|boss)/ }];
 
 const CY = 'content/fac_cyborgs/';
@@ -672,7 +677,7 @@ const SOURCES = {
   'nursing-spewer': { src: BG + 'cha_boomer_nurser/cha_boomer_nurser.unit.glb', ...SPEWER, shells: NURSER_PLATES },
   'caustic-spewer': { src: BG + 'cha_boomer/cha_boomer.unit.glb', ...SPEWER, shells: SPEWER_PLATES },
   'noxious-spewer': { src: BG + 'cha_boomer_defiler/cha_boomer_defiler.unit.glb', ...SPEWER, shells: SPEWER_PLATES },
-  'rupture-spewer': { src: BG + 'cha_boomer_burrower/cha_boomer_burrower.unit.glb', ...SPEWER, shells: [{ ...SPEWER_PLATES[0], platesAbove: 1.25 }] },
+  'rupture-spewer': { src: BG + 'cha_boomer_burrower/cha_boomer_burrower.unit.glb', ...SPEWER, shells: SPEWER_PLATES },
   // automatons
   trooper: trooper('cha_conscript.unit.glb'),
   'mg-raider': trooper('cha_conscript.unit.glb'),
