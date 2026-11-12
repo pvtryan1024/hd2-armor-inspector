@@ -132,11 +132,11 @@
       </div>
       <div class="table-wrap" id="partsTableWrap"><table class="data" id="partsTable"></table></div>
       <div class="table-wrap hidden" id="rankTableWrap">
-        <p class="hint">One-shot kills come first, sorted by damage (highest first); everything else is ranked by time to kill on its best hitzone in the current view. Time comes from RPM with the first shot at 0 s; reloads are not included (* = needs more than one magazine). Weapons without an RPM are ranked by shot count after timed kills.</p>
+        <p class="hint">One-shot kills come first, sorted by damage (highest first); everything else is ranked by time to kill on its best hitzone in the current view. Time comes from RPM with the first shot at 0 s, plus a full reload for every magazine emptied (* = needs more than one magazine, reload time unknown). Weapons without an RPM are ranked by shot count after timed kills.</p>
         <table class="data" id="rankTable"></table>
       </div>
       <div class="table-wrap hidden" id="realTableWrap">
-        <p class="hint">You won't always hit the weak spot. For each weapon this takes every reachable hitzone in the current view that can kill, then uses the midpoint between the fastest and the slowest time to kill. Weapons are ranked by that midpoint.</p>
+        <p class="hint">You won't always hit the weak spot. For each weapon this takes the fastest kill (best case: you can reach the weak points) and the slowest kill (worst case: you miss them) among the reachable hitzones in the current view. If the weapon can't damage some of those hitzones at all, the worst case is 3× the best case's shots. Weapons are ranked by the midpoint.</p>
         <table class="data" id="realTable"></table>
       </div>
     </section>

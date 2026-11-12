@@ -314,6 +314,19 @@ if (fs.existsSync(chargePath)) {
   }
 }
 
+// Reload times (data/reload.json, from each weapon page's infobox): a full reload, used by time to kill once
+// the shots needed run past one magazine.
+const reloadPath = path.join(dir, 'reload.json');
+if (fs.existsSync(reloadPath)) {
+  const reload = JSON.parse(fs.readFileSync(reloadPath, 'utf8'));
+  let n = 0;
+  for (const w of weapons) {
+    const r = reload[w.id];
+    if (r && typeof r.reload === 'number' && r.reload > 0) { w.reload = r.reload; n++; }
+  }
+  console.log(`reload: ${n} weapons with a reload time`);
+}
+
 // Shrapnel (wiki: AC-8 P2, shared by the Autocannon's flak shell and the Eruptor's explosion): 30 fragments
 // of 110 / 35 durable, AP 3/3/2/0 by angle. The flak shell itself is 150/150 AP2 with a proximity fuse
 // (it bursts even when the shell would glance off). Both send their fragments out in every direction
