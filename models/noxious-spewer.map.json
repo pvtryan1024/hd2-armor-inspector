@@ -15,7 +15,8 @@
     "leg_left_back": "Rear Legs (2)",
     "leg_right_back": "Rear Legs (2)",
     "claw_left": "Main",
-    "claw_right": "Main"
+    "claw_right": "Main",
+    "butt_plates": "Spinal Plates"
   },
   "hidden": [
     "butt_destroyed",

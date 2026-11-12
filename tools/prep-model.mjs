@@ -306,7 +306,8 @@ function splitShells(doc, node, sp, likeBoxes) {
     if (sp.prim && !sp.prim.test(prim.getMaterial()?.getName() || '')) continue;
     const sh = shellsOf(prim);
     const total = sh.reduce((a, x) => a + x.n, 0);
-    const isPlate = (x, i) => (likeBoxes ? likeBoxes.some((b) => sameBox(b, x.box)) : i > 0 && x.n >= total * 0.02);
+    // platesAbove: only pieces whose bottom is above that height are plates (the Rupture Spewer's belly plates stay)
+    const isPlate = (x, i) => (likeBoxes ? likeBoxes.some((b) => sameBox(b, x.box)) : i > 0 && x.n >= total * 0.02 && !(sp.platesAbove != null && x.box[0][1] < sp.platesAbove));
     let body = sh.filter((x, i) => !isPlate(x, i)).flatMap((x) => x.tris);
     let plates = sh.filter(isPlate).flatMap((x) => x.tris);
     // keepPieces: the loose pieces are part of what stays (gore blobs); the box below only trims the main piece
@@ -546,6 +547,10 @@ const WARRIOR = warriorBody([[/^claw_/, 'Claws (2)'], [/^leg_/, 'Legs (4)']]);
 // (the arms have no hitzone of their own)
 const SPEWER = bugBody('Main', [[/^butt$/i, 'Butt'], [/^leg_\w+_front$/, 'Front Legs (2)'], [/^leg_\w+_back$/, 'Rear Legs (2)'], [/^claw_/, 'Main']]);
 SPEWER.split.mesh = /^(g_body|default)$/;
+// the armor on top of the butt (Spinal Plates), split off like a Charger's butt plates; the Nursing Spewer's is
+// welded to the sac: its upper half (by height along the body) is the plates
+const SPEWER_PLATES = [{ mesh: 'butt', main: 'butt', rest: 'butt_plates' }];
+const NURSER_PLATES = [{ mesh: 'butt', main: 'butt', rest: 'butt_plates', tipBones: /^(lower_spine|boss)/ }];
 
 const CY = 'content/fac_cyborgs/';
 const TROOPER = { split: { mesh: /^body$/, bones: BOT_BONES }, rules: [[/^head$/, 'Head'], [/^arm_/, 'Arms (2)'], [/^leg_/, 'Legs (2)'], [/^(torso|collar_\w+)$/, 'Torso']] };
@@ -664,10 +669,10 @@ const SOURCES = {
   'hive-guard': { src: BG + 'cha_warrior_plus/cha_warrior_plus.unit.glb', ...warriorBody( [[/^claw_/, 'Claws (2)'], [/^leg_\w+_front(_socket)?$/, 'Front Legs (2)'], [/^leg_\w+_back(_socket)?$/, 'Rear Legs (2)']]) },
   'alpha-commander': { src: BG + 'cha_warrior_big/cha_warrior_big_tier2.unit.glb', ...WARRIOR },
   'brood-commander': { src: BG + 'cha_warrior_big/cha_warrior_big.unit.glb', ...WARRIOR },
-  'nursing-spewer': { src: BG + 'cha_boomer_nurser/cha_boomer_nurser.unit.glb', ...SPEWER },
-  'caustic-spewer': { src: BG + 'cha_boomer/cha_boomer.unit.glb', ...SPEWER },
-  'noxious-spewer': { src: BG + 'cha_boomer_defiler/cha_boomer_defiler.unit.glb', ...SPEWER },
-  'rupture-spewer': { src: BG + 'cha_boomer_burrower/cha_boomer_burrower.unit.glb', ...SPEWER },
+  'nursing-spewer': { src: BG + 'cha_boomer_nurser/cha_boomer_nurser.unit.glb', ...SPEWER, shells: NURSER_PLATES },
+  'caustic-spewer': { src: BG + 'cha_boomer/cha_boomer.unit.glb', ...SPEWER, shells: SPEWER_PLATES },
+  'noxious-spewer': { src: BG + 'cha_boomer_defiler/cha_boomer_defiler.unit.glb', ...SPEWER, shells: SPEWER_PLATES },
+  'rupture-spewer': { src: BG + 'cha_boomer_burrower/cha_boomer_burrower.unit.glb', ...SPEWER, shells: [{ ...SPEWER_PLATES[0], platesAbove: 1.25 }] },
   // automatons
   trooper: trooper('cha_conscript.unit.glb'),
   'mg-raider': trooper('cha_conscript.unit.glb'),
