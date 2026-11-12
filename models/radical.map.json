@@ -1,14 +1,25 @@
 {
   "enemy": "radical",
   "meshes": {
-    "body_whole": "Main",
     "right_arm_whole": "Upper Arms (2)",
     "left_arm_whole": "Upper Arms (2)",
     "head_whole": "Head",
     "left_shoulderpad": "Pauldron",
     "right_shoulderpad": "Pauldron",
     "armor_torso": "Torso Circuits",
-    "right_forearm": "Forearms (2)"
+    "right_forearm": "Forearms (2)",
+    "skin_leg_left": "Pelvis and Left Leg",
+    "skin_pelvis": "Pelvis and Left Leg",
+    "skin_leg_right": "Right Leg",
+    "skin_forearm_left": "Forearms (2)",
+    "skin_forearm_right": "Forearms (2)",
+    "skin_arm_left": "Upper Arms (2)",
+    "skin_arm_right": "Upper Arms (2)",
+    "skin_head": "Head",
+    "skin_chest": "Torso Circuits",
+    "skin_body": "Main",
+    "skin_side_left": "Main",
+    "skin_side_right": "Main"
   },
   "hidden": [
     "head_damaged",

@@ -6,10 +6,19 @@
     "armor_head": "Helmet",
     "left_shoulderpad": "Pauldrons (2)",
     "left_arm_whole": "Upper Arms (2)",
-    "body_whole": "Torso",
     "head_whole": "Head",
     "right_arm_whole": "Upper Arms (2)",
-    "right_forearm": "Forearms (2)"
+    "right_forearm": "Forearms (2)",
+    "skin_leg_left": "Pelvis and Left Leg",
+    "skin_pelvis": "Pelvis and Left Leg",
+    "skin_leg_right": "Right Leg",
+    "skin_forearm_left": "Forearms (2)",
+    "skin_forearm_right": "Forearms (2)",
+    "skin_arm_left": "Upper Arms (2)",
+    "skin_arm_right": "Upper Arms (2)",
+    "skin_head": "Head",
+    "skin_chest": "Torso",
+    "skin_body": "Main"
   },
   "hidden": [
     "torso_gib",

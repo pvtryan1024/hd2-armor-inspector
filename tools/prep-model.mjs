@@ -72,6 +72,23 @@ const DEVASTATOR_ARMS = {
 const SHIELD_ARM_UP = { l_shoulder: [0, -56.25, 18.75], l_elbow: [-8.75, -10, 86.25] };
 // the upper arm a bit longer, so the shield stands clear of the body and legs
 const SHIELD_ARM_REACH = { l_elbow: 1.5 };
+// Agitator / Radical: body_whole is the whole skin. Split by bone (wiki images): the legs (the left one with the
+// pelvis below the belt is "Pelvis and Left Leg"), the left forearm and hand (the right one is the gun), the upper
+// arms, the head, the chest (spine3 up) and the rest (belly: Main); then the pelvis cut off the rest by height
+const ELITE_BONES = (bone) => {
+  const b = bone.toLowerCase(), side = /^l_/.test(b) ? 'left' : /^r_/.test(b) ? 'right' : '';
+  if (side && /(thigh|knee|foot|toe|ball)/.test(b)) return `skin_leg_${side}`;
+  if (side && /(elbow|hand|finger|wrist)/.test(b)) return `skin_forearm_${side}`;
+  if (side && /shoulder/.test(b)) return `skin_arm_${side}`;
+  if (/^(head|neck)/.test(b)) return 'skin_head';
+  if (/^(chest|spine3)$|clavicle/.test(b)) return 'skin_chest';
+  return 'skin_body';
+};
+const ELITE_BODY = { split: { mesh: /^body_whole$/, bones: ELITE_BONES }, cutsAfterSplit: [{ mesh: 'skin_body', name: 'skin_pelvis', tris: true, box: [[-1, 0, -1], [1, 1.5, 1]] }] };
+const ELITE_SKIN = (chest) => [
+  [/^skin_(leg_left|pelvis)$/, 'Pelvis and Left Leg'], [/^skin_leg_right$/, 'Right Leg'], [/^skin_forearm_(left|right)$/, 'Forearms (2)'],
+  [/^skin_arm_(left|right)$/, 'Upper Arms (2)'], [/^skin_head$/, 'Head'], [/^skin_chest$/, chest], [/^skin_body$/, 'Main'],
+];
 const DEVASTATOR = [
   [/^head(_whole)?$/, 'Head'],
   [/^torso(_whole)?$/, 'Torso'],
@@ -747,8 +764,12 @@ const SOURCES = {
   'jet-brigade-commissar': { src: CY + 'cha_conscript_commander/cha_conscript_commander.unit.glb', ...TROOPER },
   // the Scout Strider's pilot is a Commissar body
   radical: {
-    src: CY + 'cha_cyborg_elite/cha_elite_female.unit.glb',
-    rules: [[/^head(_whole)?$/, 'Head'], [/^armor_torso$/, 'Torso Circuits'], [/^(left|right)_shoulderpad$/, 'Pauldron'], [/^(left|right)_arm(_whole)?$/, 'Upper Arms (2)'], [/^body(_whole)?$/, 'Main']],
+    src: CY + 'cha_cyborg_elite/cha_elite_female.unit.glb', ...ELITE_BODY,
+    // the harness on the chest skin is the Torso Circuits; the strips at the chest's sides under the arms are Main
+    cutsAfterSplit: [...ELITE_BODY.cutsAfterSplit,
+      { mesh: 'skin_chest', name: 'skin_side_left', tris: true, box: [[-1, 1.9, -1], [-0.24, 2.4, 1]] },
+      { mesh: 'skin_chest', name: 'skin_side_right', tris: true, box: [[0.24, 1.9, -1], [1, 2.4, 1]] }],
+    rules: [[/^head(_whole)?$/, 'Head'], [/^armor_torso$/, 'Torso Circuits'], [/^(left|right)_shoulderpad$/, 'Pauldron'], [/^(left|right)_arm(_whole)?$/, 'Upper Arms (2)'], [/^skin_side_(left|right)$/, 'Main'], ...ELITE_SKIN('Torso Circuits')],
   },
   'jet-brigade-devastator': { src: CY + 'cha_soldier/cha_soldier.unit.glb', rules: DEVASTATOR },
   'conflagration-devastator': { src: CY + 'cha_soldier/cha_soldier_heavy_weapon.unit.glb', pose: SHIELD_ARM_UP, stretch: SHIELD_ARM_REACH, names: DEVASTATOR_ARMS, rules: [[/^weapon_backpack(_whole)?$/, 'Main'], [/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] }, // the shield body
@@ -921,12 +942,12 @@ const SOURCES = {
   },
   stingray: { src: IL + 'vehicles/illuminate_attack_ship/illuminate_attack_ship.unit.glb', rules: [[/^g_ias$/, 'Main'], [/^ias$/, 'Main']] },
   agitator: {
-    src: 'content/fac_cyborgs/cha_cyborg_elite/cha_cyborg_elite_rusher.unit.glb',
+    src: 'content/fac_cyborgs/cha_cyborg_elite/cha_cyborg_elite_rusher.unit.glb', ...ELITE_BODY,
     rules: [
       [/^armor_head$/, 'Helmet'],
       [/^armor_torso$/, 'Torso Armor'],
       [/^head(_whole)?$/, 'Head'],
-      [/^body(_whole)?$/, 'Torso'],
+      ...ELITE_SKIN('Torso'), // the chest under the Torso Armor is the Torso (circuits); the belly is Main
       [/^(left|right)_shoulderpad$/, 'Pauldrons (2)'],
       [/^(left|right)_arm(_whole)?$/, 'Upper Arms (2)'],
     ],
@@ -1093,6 +1114,12 @@ async function prep(id) {
       if (at >= 0) names.splice(at, 1);
       names.push(...splitByBone(doc, node, cfg.split.bones));
     }
+  }
+  // cuts on the pieces the bone split made (the elites' pelvis: the lower part of the "body" piece)
+  for (const cut of cfg.cutsAfterSplit || []) {
+    const node = root.listNodes().find((x) => x.getMesh() && x.getName() === cut.mesh);
+    if (!node) { console.warn(`${id}: no mesh ${cut.mesh} to cut`); continue; }
+    names.push(...cutBox(doc, node, cut));
   }
   // hash-named meshes (new maps only, so saved maps keep their keys): name them after their main bone
   const mapExists = fs.existsSync(path.join(ROOT, 'models', `${id}.map.json`));
