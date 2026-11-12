@@ -141,7 +141,9 @@ Object.assign(GEAR, {
   cLmgPack: W + 'backpacks/conscript_backpack_lmg/conscript_backpack_lmg.unit.glb',
   cCannon: W + 'weapons/conscript_cannon/conscript_cannon.unit.glb',
   cFlamer: W + 'weapons/conscript_flamer/conscript_flamer.unit.glb',
-  cClaw: W + 'weapons/conscript_melee_claw/conscript_melee_claw.unit.glb', // the Brawler's heat blade
+  cClaw: W + 'weapons/conscript_melee_claw/conscript_melee_claw.unit.glb', // the heat blade (Brawler, Commissar, Assault Raider)
+  // the Pyro Trooper's fuel tank backpack (unnamed in the export; its root node is backpack_flamer, archive 7a8ede61a5d379fd)
+  cFlamerPack: 'extra/0x57f11209295752b5.unit.glb',
   cJump: W + 'backpacks/conscript_jumppack/conscript_jumppack.unit.glb',
   sJump: W + 'backpacks/soldier_jumppack/soldier_jumppack.unit.glb',
   tankCannon: 'content/fac_cyborgs/turrets/cyborg_tank_turret_cannon/cyborg_tank_turret_cannon.unit.glb',
@@ -178,6 +180,8 @@ const FS_BONES = (bone) => {
   return 'body';
 };
 const JUMP = { src: GEAR.cJump, bone: 'attach_backpack', name: 'jetpack', part: 'Jetpack' };
+// a heat blade on the left forearm (Commissar, Assault Raider): it goes with the arm
+const LEFT_BLADE = { src: GEAR.cClaw, bone: 'attach_l_elbow', name: 'blade_left', part: 'Arms (2)' };
 const LOADOUT = {
   'factory-strider': [
     { src: GEAR.walkerCannon, bone: 'attach_turret', name: 'cannon_turret', part: 'Cannon Turret' },
@@ -201,13 +205,14 @@ const LOADOUT = {
   'jet-brigade-mg-raider': [{ src: GEAR.cLmg, bone: 'attach_r_hand', name: 'weapon_right' }, JUMP],
   'rocket-raider': [{ src: GEAR.cCannon, bone: 'attach_r_hand', name: 'weapon_right', part: 'Right Arm' }],
   'incendiary-rocket-raider': [{ src: GEAR.cCannon, bone: 'attach_r_hand', name: 'weapon_right' }],
-  'pyro-trooper': [{ src: GEAR.cFlamer, bone: 'attach_r_hand', name: 'weapon_right' }],
+  'pyro-trooper': [{ src: GEAR.cFlamer, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.cFlamerPack, bone: 'attach_backpack', name: 'fuel_tanks', part: 'Fuel Tanks' }],
   // the Brawler: a heat blade in each hand (the wiki's arm hitzones are the whole arm; the blade goes with its arm)
   // (on the elbow attach bones: the blade model points along its -x, which runs down the forearm from there)
   brawler: [{ src: GEAR.cClaw, bone: 'attach_l_elbow', name: 'blade_left', part: 'Left Arm' }, { src: GEAR.cClaw, bone: 'r_elbow_attach', name: 'blade_right', part: 'Right Arm' }],
-  'assault-raider': [JUMP],
+  'assault-raider': [JUMP, LEFT_BLADE],
   'jet-brigade-trooper': [JUMP],
-  'jet-brigade-commissar': [JUMP],
+  'jet-brigade-commissar': [JUMP, LEFT_BLADE],
+  commissar: [LEFT_BLADE],
   'jet-brigade-devastator': [{ src: GEAR.rifle, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.sJump, bone: 'attach_backpack', name: 'jetpack', part: 'Jetpack' }],
   'conflagration-devastator': [{ src: GEAR.shield, bone: 'attach_shield', name: 'shield', part: 'Shield' }],
   'incendiary-mg-devastator': [{ src: GEAR.machinegun, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.shield, bone: 'attach_shield', name: 'shield', part: 'Shield' }],
@@ -824,7 +829,7 @@ const SOURCES = {
     rules: [[/^head(_whole)?$/, 'Head'], [/^torso(_whole)?$/, 'Chest'], [/^hip(_whole)?$/, 'Pelvis'], [/^leg_(left|right)(_whole)?$/, 'Leg (2)']],
   },
   // 'lieutenant' is the game's internal name for the Hulk; the Commissar is the conscript commander
-  commissar: { src: 'content/fac_cyborgs/cha_conscript_commander/cha_conscript_commander.unit.glb', rules: [[/^head$/, 'Head'], [/^body$/, 'Torso']] },
+  commissar: { src: 'content/fac_cyborgs/cha_conscript_commander/cha_conscript_commander.unit.glb', ...TROOPER },
   'hulk-bruiser': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
   'hulk-obliterator': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
   'hulk-firebomber': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },

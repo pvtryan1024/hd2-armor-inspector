@@ -8,7 +8,8 @@
     "leg_left": "Legs (2)",
     "arm_right": "Arms (2)",
     "arm_left": "Arms (2)",
-    "leg_right": "Legs (2)"
+    "leg_right": "Legs (2)",
+    "fuel_tanks": "Fuel Tanks"
   },
   "hidden": [
     "head_destroyed"
