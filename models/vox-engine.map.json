@@ -13,7 +13,7 @@
     "vent_under": "Vents (6)",
     "sarcophagus": "Sarcophagus",
     "right_back_knee": "Trackpod Latches (4)",
-    "vent_sarcophagus": "Vents (6)",
+    "vent_sarcophagus": "Sarcophagus",
     "vent_back_bar": "Vents (6)",
     "right_speaker": "Speakers (2)",
     "left_front_tracks_whole": "Tracks (4)",
@@ -42,7 +42,9 @@
     "left_front_tracks_pod": "Tracks (4)",
     "left_back_tracks_pod": "Tracks (4)",
     "right_front_tracks_pod": "Tracks (4)",
-    "right_back_tracks_pod": "Tracks (4)"
+    "right_back_tracks_pod": "Tracks (4)",
+    "0x896c960c": "Fog Lights (2)",
+    "0x0922e9dd": "Fog Lights (2)"
   },
   "hidden": [
     "torso_damaged",
