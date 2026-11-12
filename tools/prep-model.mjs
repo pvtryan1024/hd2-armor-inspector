@@ -313,7 +313,8 @@ function splitShells(doc, node, sp, likeBoxes) {
     const extra = sp.keepPieces ? plates : [];
     if (sp.keepPieces) plates = [];
     // tipBones: the tail tip is welded to the body; its upper half is armored, its underside soft.
-    // Tip triangles (by bone) above the tip's mid-height, per slice along the body, go to the plates.
+    // Tip triangles (by bone) above the tip's mid-height, per slice along the body, go to the plates;
+    // tipAll: those bones' triangles all go to the plates (the Impaler's curled tail tip).
     if (sp.tipBones && !likeBoxes) {
       const skin = node.getSkin(), joints = skin.listJoints(), ibm = skin.getInverseBindMatrices(), m16 = [];
       const mats = joints.map((j, i) => mat4Mul(j.getWorldMatrix(), ibm.getElement(i, m16).slice()));
@@ -328,13 +329,14 @@ function splitShells(doc, node, sp, likeBoxes) {
           const m = mats[j4[k]];
           for (let r = 0; r < 3; r++) o[r] += w4[k] * (m[r] * v[0] + m[4 + r] * v[1] + m[8 + r] * v[2] + m[12 + r]);
         }
-        return { p: o, tip: sp.tipBones.test(joints[j4[b]].getName()) };
+        const bn = joints[j4[b]].getName();
+        return { p: o, tip: sp.tipBones.test(bn), all: !!sp.tipAll?.test(bn) };
       };
       const V = new Map(); const at = (i) => { if (!V.has(i)) V.set(i, info(i)); return V.get(i); };
       const tris = [];
       for (let t = 0; t < body.length; t += 3) {
         const tri = body.slice(t, t + 3).map(at);
-        tris.push({ idx: body.slice(t, t + 3), tip: tri.filter((x) => x.tip).length >= 2, c: [0, 1, 2].map((k) => (tri[0].p[k] + tri[1].p[k] + tri[2].p[k]) / 3) });
+        tris.push({ idx: body.slice(t, t + 3), tip: tri.filter((x) => x.tip).length >= 2, all: tri.filter((x) => x.all).length >= 2, c: [0, 1, 2].map((k) => (tri[0].p[k] + tri[1].p[k] + tri[2].p[k]) / 3) });
       }
       // height range of the tip in slices along z (the body's long axis)
       const slice = (z) => Math.round(z / 0.1), lo = new Map(), hi = new Map();
@@ -342,7 +344,7 @@ function splitShells(doc, node, sp, likeBoxes) {
       const keep = [];
       for (const t of tris) {
         const k = slice(t.c[2]);
-        const upper = t.tip && t.c[1] > lo.get(k) + (sp.tipSplit ?? 0.5) * (hi.get(k) - lo.get(k));
+        const upper = t.all || t.tip && t.c[1] > lo.get(k) + (sp.tipSplit ?? 0.5) * (hi.get(k) - lo.get(k));
         (upper ? plates : keep).push(...t.idx);
       }
       body = keep;
@@ -575,7 +577,7 @@ const SOURCES = {
   'spore-burst-bile-titan': { src: 'content/fac_bugs/cha_strider/cha_strider_gloom.unit.glb', ...BT_BODY, rules: BILE_TITAN },
   impaler: {
     src: 'content/fac_bugs/cha_impaler/cha_impaler.unit.glb',
-    shells: [{ mesh: 'tail', main: 'tail', rest: 'tail_plates', tipBones: /^spine[56]$/ }],
+    shells: [{ mesh: 'tail', main: 'tail', rest: 'tail_plates', tipBones: /^spine[56]$/, tipAll: /^spine[56]$/ }], // the plates run to the tail tip (the last two segments are all armor)
     rules: [
       [/^head$/, 'Head'],
       [/^head_shield$/, 'Crest Armor'],
