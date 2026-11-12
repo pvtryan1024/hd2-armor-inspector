@@ -317,12 +317,16 @@ if (fs.existsSync(chargePath)) {
 // Reload times (data/reload.json, from each weapon page's infobox): a full reload, used by time to kill once
 // the shots needed run past one magazine.
 const reloadPath = path.join(dir, 'reload.json');
+const CLIP_LOADERS = ['ac-8-autocannon', 'p-69-veto', 'r-2124-constitution'];
 if (fs.existsSync(reloadPath)) {
   const reload = JSON.parse(fs.readFileSync(reloadPath, 'utf8'));
   let n = 0;
   for (const w of weapons) {
     const r = reload[w.id];
     if (r && typeof r.reload === 'number' && r.reload > 0) { w.reload = r.reload; n++; }
+    // weapons that load one round at a time: past the magazine, each round needed costs one round's reload
+    // (clip loaders, the Autocannon, Veto and Constitution's empty clip, keep the full reload)
+    if (r && r.perRound && r.perRoundTime > 0 && !CLIP_LOADERS.includes(w.id)) w.reloadRound = r.perRoundTime;
   }
   console.log(`reload: ${n} weapons with a reload time`);
 }

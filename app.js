@@ -13,7 +13,7 @@
   // Model loading/mapping tools only show when running locally (node serve.js) or with ?edit in the URL.
   const EDITOR = ['localhost', '127.0.0.1'].includes(location.hostname) || /[?&]edit\b/.test(location.search);
   const MAX_SHOTS = 999;
-  const DEFAULT_RANGE = 30; // metres; a typical engagement distance
+  const DEFAULT_RANGE = 20; // metres; the baseline engagement distance for drag falloff
   const AV_NAMES = ['Unarmored', 'Very Light', 'Light', 'Medium', 'Heavy', 'Tank I', 'Tank II', 'Tank III', 'Tank IV', 'Tank V', 'Tank VI', 'Indestructible'];
   // Impact angle bands from the wiki's Damage page; weapons list one AP per band.
   const ANGLE_BANDS = [
@@ -446,7 +446,8 @@
 
   /* Time to kill.
    *  shot: (shots − 1) × 60 / RPM, first shot at t = 0, plus a full reload for every magazine emptied
- *        (reloads = ceil(shots / mag) − 1, reload time from the weapon's wiki page)
+ *        (reloads = ceil(shots / mag) − 1, reload time from the weapon's wiki page); weapons that load one round
+ *        at a time instead add one round's reload for every shot past the magazine
    *  beam: damage listed per second, applied in 0.1 s ticks
    *  dot:  flame / gas sprays; the burn or gas cloud hits Main only and must beat Main's AV */
   const BEAM_TICK = 0.1;
@@ -462,8 +463,12 @@
    *  every gap is a reload (single-shot launchers). reloadUnknown: it needs a reload we have no time for. */
   function shotTime(weapon, fm, n) {
     if (n == null) return { t: null, reloads: 0 };
-    const reloads = weapon.mag ? Math.max(0, Math.ceil(n / weapon.mag) - 1) : 0;
     if (n <= 1) return { t: 0, reloads: 0 };
+    if (weapon.reloadRound && weapon.mag) { // round-by-round loading: one round's reload per shot past the magazine
+      const rounds = Math.max(0, n - weapon.mag);
+      return fm.interval || !rounds ? { t: fm.interval ? (n - 1) * fm.interval + rounds * weapon.reloadRound : null, reloads: rounds, rounds: true } : { t: null, reloads: rounds, rounds: true };
+    }
+    const reloads = weapon.mag ? Math.max(0, Math.ceil(n / weapon.mag) - 1) : 0;
     const rl = weapon.reload;
     if (reloads && !rl) return { t: fm.interval ? (n - 1) * fm.interval : null, reloads, reloadUnknown: true };
     if (fm.interval) return { t: (n - 1) * fm.interval + reloads * (rl || 0), reloads };
@@ -484,6 +489,7 @@
         const st = shotTime(weapon, fm, r.killAt);
         r.ttk = r.killAt == null ? null : st.t;
         r.reloads = st.reloads;
+        r.roundReload = !!st.rounds;
         r.reload = !!st.reloadUnknown; // needs more than one magazine and the reload time is unknown (*)
       } else if (fm.kind === 'beam') {
         const t = simulate(tickMode, enemy, i, opts);
@@ -506,7 +512,7 @@
   const ONE_SHOT = '<span class="one-shot">One shot</span>';
   const ttkHtml = (r) => (isOneShot(r) ? ONE_SHOT : fmtTime(r.ttk));
   const fmtTime = (t) => (t == null ? '—' : t < 10 ? `${t.toFixed(2)} s` : `${t.toFixed(1)} s`);
-  const reloadsLabel = (r) => (r.reload ? ' +reload' : r.reloads ? ` · ${r.reloads} reload${r.reloads > 1 ? 's' : ''}` : '');
+  const reloadsLabel = (r) => (r.reload ? ' +reload' : !r.reloads ? '' : r.roundReload ? ` · ${r.reloads} round${r.reloads > 1 ? 's' : ''} loaded` : ` · ${r.reloads} reload${r.reloads > 1 ? 's' : ''}`);
   const shotsLabel = (r) => (r.kind === 'beam' ? 'beam' : r.kind === 'dot' ? 'burn' : r.killAt != null ? `${r.killAt} shot${r.killAt > 1 ? 's' : ''}` : '');
 
 
@@ -952,6 +958,7 @@
 
   /** Fastest and slowest kill over every reachable, killing hitzone in view, and their midpoint.
    *  Times when the weapon has them; otherwise shot counts (ranked after timed weapons). */
+  const WORST_X = 4; // real-life worst case when some reachable hitzone can't be damaged: this many × the best case
   function spreadOf(results, view, w, mode) {
     const reach = results.filter((x) => visible(x.part, view) && (!x.part.hidden || state.showInner));
     const ok = reach.filter((x) => killKey(x.r) != null);
@@ -966,15 +973,15 @@
       if (val(x) > val(hi)) hi = x;
     }
     // worst case: a reachable hitzone this weapon can't damage at all (you miss the weak points); a made-up rule:
-    // it then takes 3× the best case's shots (3× its time for beams and sprays)
+    // it then takes WORST_X × the best case's shots (× its time for beams and sprays)
     const blocked = reach.filter((x) => !isMainRow(x.part) && x.part.av >= 0 && x.part.av < 11 && !(x.r.total > 0) && !(x.r.mainEx > 0));
     if (blocked.length && w && mode) {
       const big = blocked.reduce((a, x) => ((typeof x.part.health === 'number' ? x.part.health : 0) > (typeof a.part.health === 'number' ? a.part.health : 0) ? x : a));
       const fm = fireModel(w, mode);
-      const shots = lo.r.killAt != null ? lo.r.killAt * 3 : null;
+      const shots = lo.r.killAt != null ? lo.r.killAt * WORST_X : null;
       const st = shots != null ? shotTime(w, fm, shots) : null;
-      const ttk = shots != null ? st.t : lo.r.ttk != null ? lo.r.ttk * 3 : null;
-      const worst = { part: big.part, r: { kind: lo.r.kind, killAt: shots, ttk, total: 0, reloads: st?.reloads || 0, reload: !!st?.reloadUnknown }, x3: true };
+      const ttk = shots != null ? st.t : lo.r.ttk != null ? lo.r.ttk * WORST_X : null;
+      const worst = { part: big.part, r: { kind: lo.r.kind, killAt: shots, ttk, total: 0, reloads: st?.reloads || 0, roundReload: !!st?.rounds, reload: !!st?.reloadUnknown }, x3: true };
       const t2 = timed && ttk != null;
       const v = (x) => (t2 ? x.r.ttk : x.r.killAt);
       if (t2 || (shots != null && lo.r.killAt != null)) return { lo, hi: worst, mid: (v(lo) + v(worst)) / 2, timed: t2, n: zones.length };
@@ -1009,7 +1016,7 @@
           <td>${esc(w.name)}</td><td class="muted">${esc(w.category)}</td>
           <td class="muted">${sp && w.modes.length > 1 ? esc(w.modes[sp.mi].name) : ''}</td>
           ${sp ? `<td>${esc(sp.lo.part.name)}</td><td class="num">${val(sp, sp.lo)}</td>
-            <td>${esc(sp.hi.part.name)}${sp.hi.x3 ? ' <span class="muted" title="This weapon can’t damage it: worst case = 3× the best case">(no damage: 3×)</span>' : ''}</td><td class="num">${val(sp, sp.hi)}</td>
+            <td>${esc(sp.hi.part.name)}${sp.hi.x3 ? ` <span class="muted" title="This weapon can’t damage it: worst case = ${WORST_X}× the best case">(no damage: ${WORST_X}×)</span>` : ''}</td><td class="num">${val(sp, sp.hi)}</td>
             <td class="num"><b style="color:${ttkColor(sp.key)}">${mid(sp)}</b></td>`
           : '<td colspan="5" class="muted">Can’t kill</td>'}
         </tr>`).join('') + '</tbody>';
@@ -1055,9 +1062,13 @@
     const fm = fireModel(w, w.modes[state.mode] || w.modes[0]);
     if (fm?.kind === 'dot') sim.time += DOT_CLICK; // a flame / gas click is a second of spraying
     else if (sim.last === key) sim.time += fm && fm.kind === 'shot' && fm.interval ? fm.interval : 0;
-    if (fm?.kind === 'shot' && w.mag && w.reload) { // a reload once the magazine is empty (each weapon its own)
+    if (fm?.kind === 'shot' && w.mag && (w.reload || w.reloadRound)) { // a reload once the magazine is empty (each weapon its own)
       sim.ammo ||= {};
-      if ((sim.ammo[w.id] || 0) >= w.mag) { sim.time += w.reload; sim.ammo[w.id] = 0; sim.reloads = (sim.reloads || 0) + 1; }
+      if ((sim.ammo[w.id] || 0) >= w.mag) {
+        if (w.reloadRound) sim.time += w.reloadRound; // load just the one round for this shot
+        else { sim.time += w.reload; sim.ammo[w.id] = 0; }
+        sim.reloads = (sim.reloads || 0) + 1;
+      }
       sim.ammo[w.id] = (sim.ammo[w.id] || 0) + 1;
     }
     if (sim.last && sim.last !== key) sim.swaps++;
