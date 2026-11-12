@@ -31,5 +31,8 @@
     "right_shoulderpad",
     "armor_head_1",
     "armor_head_2"
+  ],
+  "vanish": [
+    "Pauldron"
   ]
 }
