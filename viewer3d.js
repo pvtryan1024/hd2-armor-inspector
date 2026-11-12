@@ -340,6 +340,14 @@ function swapBroken() {
       if (k != null && inst ? inst[k] : lastDetail.gone[i]) m.mesh.visible = false;
     }
   }
+  // map "opens": [{ mesh, part, pieces }]: a lid that opens (disappears, letting shots through) once all those
+  // pieces of that part are gone: the Vox Engine's hatch lids, each over its three vents
+  for (const o of current.map.opens || []) {
+    const i = (lastDetail?.enemy.parts || []).findIndex((p) => p.name === o.part);
+    const inst = lastDetail?.fire && i >= 0 ? lastDetail.goneInst?.[i] : null;
+    const open = !!inst && o.pieces.every((k) => inst[k]);
+    for (const m of current.meshes) if (primOf(m.key) === o.mesh || m.key === o.mesh) m.mesh.visible = !open && !current.map.hidden.includes(m.key);
+  }
   // map "after": { mesh: { part, replaces: [mesh…] } }: a mesh that takes over from others once a part dies
   // (Bile Titan: the burst-sac butt replaces the butt when the Lower Sac pops), while those still show intact
   const parts = lastDetail?.enemy.parts || [];
@@ -948,7 +956,7 @@ $('#v3Save').addEventListener('click', async () => {
   // inner hitboxes are saved too (the auto-placed ones become fixed once saved)
   const colliders = (current.colliders || []).map(({ def }) => (def.shape === 'box' ? { part: def.part, shape: 'box', centre: def.centre, size: def.size, ...(def.direct ? { direct: true } : {}), ...(def.detonate ? { detonate: true } : {}) }
     : { part: def.part, from: def.from.map((v) => +(+v).toFixed(4)), to: def.to.map((v) => +(+v).toFixed(4)), radius: def.radius, ...(def.direct ? { direct: true } : {}) }));
-  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(current.map.vanish ? { vanish: current.map.vanish } : {}), ...(colliders.length ? { colliders } : {}), ...(current.map.inside ? { inside: current.map.inside } : {}) }, null, 2);
+  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(current.map.vanish ? { vanish: current.map.vanish } : {}), ...(current.map.opens ? { opens: current.map.opens } : {}), ...(colliders.length ? { colliders } : {}), ...(current.map.inside ? { inside: current.map.inside } : {}) }, null, 2);
   if (SERVED) {
     try {
       const r = await fetch(`api/map/${encodeURIComponent(currentId)}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });

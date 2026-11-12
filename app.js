@@ -237,6 +237,8 @@
       const inside = !part.demolitionInside || (opts.inside ? opts.inside.includes(part.name) : !opts.noProj && !opts.exDist);
       if (opts.explosion && inside) for (const ex of exList(mode)) if ((ex.demolition || 0) >= part.demolition && blastAt(ex, opts.exDist || 0).mult > 0) demo = true;
     }
+    // throwKill (the Vox Engine's open hatches): any throwable landing on it or going off inside it kills
+    if (part.throwKill && mode.throwable && (opts.inside ? opts.inside.includes(part.name) : true)) demo = 'throw';
     let shrap = 0;
     if (mode.shrapnel && opts.allShrap && !opts.noProj && !opts.noShrap && !ricochet && opts.explosion !== false) {
       const f = shotDamage(shrapnelMode(mode), part, enemy, { ...opts, noShrap: true, explosion: false });
@@ -277,7 +279,7 @@
     if (sim.dead || part.av < 0 || part.av >= 11) return out;
     if (!extra) sim.shots++; // blast damage to other parts belongs to the same shot
     if (s.demo && part.fatal) {
-      sim.dead = { how: 'killed', why: `${part.name} destroyed by demolition force`, idx };
+      sim.dead = { how: 'killed', why: s.demo === 'throw' ? 'a throwable went off inside an open hatch' : `${part.name} destroyed by demolition force`, idx };
       return Object.assign(out, { progress: true, broke: true });
     }
     const mi = mainIndexFor(enemy, idx);
@@ -572,7 +574,8 @@
       const hp = sim.hp[ci];
       if (ci < 0 || !hp) return true;
       // coverPieces: the plates over each piece, listed (the Overseer's limbs)
-      if (p.coverPieces) return (p.coverPieces[k ?? 0] || []).some((j) => hp[j] <= 0);
+      // (coverAll: every one of them has to be gone: the Vox Engine's hatch lid opens once all its vents are)
+      if (p.coverPieces) { const list = p.coverPieces[k ?? 0] || []; return p.coverAll ? list.every((j) => instGone(enemy.parts[ci], hp[j])) : list.some((j) => hp[j] <= 0); }
       const n = p.count || 1; // each piece has its own plates: 2 plates per piece when there are twice as many
       if (k != null && hp.length % n === 0) { const r = hp.length / n; return hp.slice(k * r, (k + 1) * r).some((h) => h <= 0); }
       return hp.some((h) => h <= 0);

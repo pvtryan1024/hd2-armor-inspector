@@ -126,7 +126,12 @@ const GONE_WITH = [
 // the Elevated / Crescent Overseer's wiki lists its limb plates as one "Limb Armor": they break one by one in
 // game like the Overseer's 8 (100 health each)
 const PIECE_COUNT = [{ enemy: /^(elevated|crescent) overseer$/i, part: /^Limb Armor$/, count: 8 }];
-const COVER_PIECES = [{ enemy: /overseer/i, parts: { 'Left Arm': [[0, 1]], 'Right Arm': [[2, 3]], 'Legs (2)': [[4, 5], [6, 7]] } }];
+const COVER_PIECES = [{ enemy: /overseer/i, parts: { 'Left Arm': [[0, 1]], 'Right Arm': [[2, 3]], 'Legs (2)': [[4, 5], [6, 7]] } },
+  // Vox Engine: each hatch opens when all three vents on its level are destroyed (the top one: the body's back bar
+  // and upper vents; the bottom one: the carriage's lower and under vents); Vents (6) pieces in the 3D model's order
+  { enemy: /^vox engine$/i, all: true, cover: 'Vents (6)', parts: { 'Hatches (2)': [[0, 4, 5], [1, 2, 3]] } }];
+// throwKill: any throwable that hits it or goes off inside it kills outright (the Vox Engine's open hatches)
+const THROW_KILL = [{ enemy: /^vox engine$/i, part: /^Hatches/ }];
 const ALSO_COVERED = [{ enemy: /^Rupture Charger$/, parts: { 'Leg Flesh (4)': 'Frontal Tarsal Plate Armor (2)' } }];
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
@@ -134,7 +139,8 @@ enemies.forEach((e) => {
   for (const c of DOWNS) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = 'downs'; if (c.allBroken) p.downsAllBroken = true; } });
   for (const c of MAIN_TO_ON_GONE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = false; p.mainToOnGone = c.value; if (c.killAllBroken) p.killAllBroken = true; } });
   for (const c of GONE_WITH) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name) && e.parts.some((q) => q.name === c.with)) p.goneWith = { part: c.with, ...(c.inst != null ? { inst: c.inst } : {}), ...(c.pieces ? { pieces: c.pieces } : {}) }; });
-  for (const c of COVER_PIECES) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.coverPieces = c.parts[p.name]; });
+  for (const c of COVER_PIECES) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) { p.coverPieces = c.parts[p.name]; if (c.all) p.coverAll = true; if (c.cover) p.coveredBy = c.cover; } });
+  for (const c of THROW_KILL) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.throwKill = true; });
   for (const c of ALSO_COVERED) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.alsoCoveredBy = c.parts[p.name]; });
   for (const c of BEHIND) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.behind = c.parts[p.name]; });
   for (const c of LOCATION_FIX) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.location = c.location; });
@@ -325,6 +331,9 @@ if (fs.existsSync(forcesPath)) {
     });
   });
 }
+
+// throwables: what a Vox Engine's open hatch dies to
+weapons.forEach((w) => { if (w.category === 'Throwable') (w.modes || []).forEach((m) => { m.throwable = true; }); });
 
 // Charge weapons (data/charge.json): the weapon card gets a charge-time slider instead of the mode list.
 const chargePath = path.join(dir, 'charge.json');

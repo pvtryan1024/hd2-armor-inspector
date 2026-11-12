@@ -4,7 +4,6 @@
     "right_rocket": "Missile Launchers (2)",
     "left_rocket": "Missile Launchers (2)",
     "right_back_tracks_whole": "Tracks (4)",
-    "boss_lid": "Hatches (2)",
     "left_back_knee": "Trackpod Latches (4)",
     "body_whole": "Undercarriage",
     "left_flap": "Torso Flaps (2)",
@@ -44,7 +43,9 @@
     "right_front_tracks_pod": "Tracks (4)",
     "right_back_tracks_pod": "Tracks (4)",
     "0x896c960c": "Fog Lights (2)",
-    "0x0922e9dd": "Fog Lights (2)"
+    "0x0922e9dd": "Fog Lights (2)",
+    "0x21672db8": "Hatches (2)",
+    "boss_lid_top": "Main"
   },
   "hidden": [
     "torso_damaged",
@@ -71,5 +72,53 @@
     "left_back_tracks_tread_damaged",
     "right_front_tracks_tread_damaged",
     "right_back_tracks_tread_damaged"
+  ],
+  "opens": [
+    {
+      "mesh": "boss_lid_top",
+      "part": "Vents (6)",
+      "pieces": [
+        0,
+        4,
+        5
+      ]
+    },
+    {
+      "mesh": "boss_lid_1",
+      "part": "Vents (6)",
+      "pieces": [
+        1,
+        2,
+        3
+      ]
+    }
+  ],
+  "inside": [
+    {
+      "part": "Hatches (2)",
+      "centre": [
+        0,
+        9.82,
+        2.69
+      ],
+      "size": [
+        2.3,
+        0.9,
+        1.9
+      ]
+    },
+    {
+      "part": "Hatches (2)",
+      "centre": [
+        0,
+        4.48,
+        2.29
+      ],
+      "size": [
+        1.2,
+        1,
+        0.8
+      ]
+    }
   ]
 }
