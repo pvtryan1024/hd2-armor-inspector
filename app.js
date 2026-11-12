@@ -455,7 +455,8 @@
     if (mode.dot) return { kind: 'dot', ...mode.dot };
     if (mode.beam) return { kind: 'beam' };
     const rpm = mode.rpm ?? weapon.rpm;
-    const t = (rpm ? 60 / rpm : 0) + (mode.chargeTime || 0); // a charged shot waits for its charge
+    // a charged shot waits for its charge; a heat weapon (Quasar) waits out its cooldown between shots
+    const t = weapon.cooldown || (rpm ? 60 / rpm : 0) + (mode.chargeTime || 0);
     // a mode with its own magazine (an underbarrel launcher or shotgun) also has its own reload
     const own = mode.mag != null;
     return { kind: 'shot', interval: t || null, rpm, mag: own ? mode.mag : weapon.mag, reload: own ? mode.reload : weapon.reload,
@@ -743,6 +744,7 @@
         <div class="stat"><div class="k">AP</div><div class="v">${ap}</div></div>
         ${pellets > 1 ? `<div class="stat"><div class="k">Pellets</div><div class="v">${pellets}</div></div>` : ''}
         ${m.rpm ?? w.rpm ? `<div class="stat"><div class="k">RPM</div><div class="v">${fmt(m.rpm ?? w.rpm)}</div></div>` : ''}
+        ${w.cooldown ? `<div class="stat"><div class="k">Cooldown</div><div class="v">${w.cooldown} s</div></div>` : ''}
         ${m.mag ?? w.mag ? `<div class="stat"><div class="k">Mag</div><div class="v">${fmt(m.mag ?? w.mag)}</div></div>` : ''}
         ${exList(m).map((x, j, all) => { const n = all.length > 1 ? ` ${j + 1}` : ''; return `
           ${(x.inner ?? x.innerRadius) != null ? `<div class="stat"><div class="k">Radius${n}</div><div class="v">${x.inner ?? x.innerRadius}/${x.outer ?? x.outerRadius ?? '?'}m</div></div>` : ''}
