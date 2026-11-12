@@ -289,14 +289,16 @@ function splitByBone(doc, node, groupOf) {
   }
   const parent = node.getParentNode();
   const scene = doc.getRoot().listScenes()[0];
+  // a damaged copy split the same way: its pieces keep the stage (hull_damaged goes with hull)
+  const sfx = /_damaged$/.test(node.getName()) ? '_damaged' : '';
   for (const [g, prims] of parts) {
-    const m = doc.createMesh(g);
+    const m = doc.createMesh(g + sfx);
     prims.forEach((p) => m.addPrimitive(p));
-    const n = doc.createNode(g).setMesh(m).setSkin(skin).setMatrix(node.getMatrix());
+    const n = doc.createNode(g + sfx).setMesh(m).setSkin(skin).setMatrix(node.getMatrix());
     (parent || scene).addChild(n);
   }
   node.dispose();
-  return [...parts.keys()];
+  return [...parts.keys()].map((g) => g + sfx);
 }
 
 /** Loose pieces of a primitive (triangles joined by shared vertices or shared positions):
@@ -643,13 +645,13 @@ const IL = 'content/fac_illuminate/';
 // Gatekeeper (ranged exomech) bones: the gun (its three power cells are the Gun Weakspots), the arm (shoulder joint and
 // upper arm), the legs and feet, the hips, the cockpit seat and its arms, the pilot; the rest is the body
 // the exomechs (Gatekeeper, Veracitor) share their hash-named meshes (wiki hitzone images): the top shell (Chassis), the
-// carapace plates either side of it and the internals under them, the spine at the front (the Gatekeeper's shield
-// generator, the Veracitor's head), the cockpit weak spot under the seat and the casing round it, and the leg armor
-// (an upper plate with the hip bar it hangs from, and a lower plate, per leg); each but the casing with a damaged copy
+// carapace plates either side of it (their damaged copies are the Internals, shown once the plate breaks), the spine at
+// the front (the Gatekeeper's shield generator, the Veracitor's head), the cockpit weak spot under the seat, and the leg
+// armor (an upper plate with the hip bar it hangs from, and a lower plate, per leg); each with a damaged copy
 const EXO_NAMES = {
   '0x5f33decf': 'chassis_top', '0x3fe04455': 'chassis_top_damaged', '0x9a7fe8aa': 'carapace_left', '0x56621e5b': 'carapace_right',
-  '0xcfa4901f': 'internals_left', '0xfa94cb4a': 'internals_right', '0x2ff60211': 'shield_generator', '0xf8af7b9b': 'shield_generator_damaged',
-  '0xa4819eb1': 'cockpit_weakspot', '0xfe66fd53': 'cockpit_back',
+  '0xcfa4901f': 'carapace_left_damaged', '0xfa94cb4a': 'carapace_right_damaged', '0x2ff60211': 'shield_generator', '0xf8af7b9b': 'shield_generator_damaged',
+  '0xa4819eb1': 'cockpit_weakspot', '0xfe66fd53': 'cockpit_weakspot_damaged',
   '0xa7768531': 'legarmor_upper_left', '0x715d932e': 'legarmor_upper_left_damaged', '0x922e9c51': 'legarmor_upper_right', '0x6ce67702': 'legarmor_upper_right_damaged',
   '0x77e2d756': 'legarmor_upper_back', '0x4ef4c920': 'legarmor_upper_back_damaged',
   '0x1bf0bf6a': 'legarmor_lower_left', '0xab38c89f': 'legarmor_lower_left_damaged', '0x43e4c37a': 'legarmor_lower_right', '0x1877da17': 'legarmor_lower_right_damaged',
@@ -1077,7 +1079,8 @@ const SOURCES = {
   gatekeeper: {
     src: IL + 'cha_exomech_ranged/cha_exomech_ranged.unit.glb',
     // wiki hitzone images; a broken leg plate (upper or lower) opens the leg under it, a broken arm plate the arm
-    names: EXO_NAMES,
+    // the damaged arm meshes are the guns (the arm_*_whole meshes are split into gun, cells and arm)
+    names: { ...EXO_NAMES, arm_left_damaged: 'gun_left_damaged', arm_right_damaged: 'gun_right_damaged' },
     cuts: [
       ...EXO_HIPS,
       // the Rear Weakspot: the rear end of the shell under the top lid, between the carapace plates
@@ -1087,9 +1090,9 @@ const SOURCES = {
     // the body, the guns and the arms: split by bone
     split: { mesh: /^(generic_whole|arm_(left|right)_whole)$/, bones: GK_BONES },
     rules: [
-      [/^cockpit(_whole)?$/, 'Cockpit'], [/^cockpit_(frame|back)$/, 'Cockpit'], [/^cockpit_weakspot$/, 'Cockpit Weakspot'],
+      [/^cockpit(_whole|_frame)?$/, 'Cockpit'], [/^cockpit_weakspot$/, 'Cockpit Weakspot'],
       [/^pilot(_whole|_body)?$/, 'Pilot'], [/^shield(_whole)?$/, 'Shield'], [/^shield_generator$/, 'Shield Generator'],
-      [/^chassis_top$/, 'Chassis'], [/^rear_weakspot$/, 'Rear Weakspot'], [/^carapace_(left|right)$/, 'Carapace (2)'], [/^internals_(left|right)$/, 'Internals (2)'],
+      [/^chassis_top$/, 'Chassis'], [/^rear_weakspot$/, 'Rear Weakspot'], [/^carapace_(left|right)$/, 'Carapace (2)'], [/^carapace_(left|right)_damaged$/, 'Internals (2)'],
       [/^shoulder_(left|right)(_whole)?$/, 'Shoulder Armor (2)'], [/^bicep_(left|right)(_whole)?$/, 'Arm Armor (2)'],
       [/^bicep_(left|right)_damaged$/, 'Arms (Broken Armor) (2)'], [/^arm_(left|right)$/, 'Arms (2)'],
       [/^gun_(left|right)$/, 'Guns (2)'], [/^gunweak_(left|right)$/, 'Gun Weakspots (2)'],
@@ -1119,9 +1122,9 @@ const SOURCES = {
       { mesh: 'forearm_right', name: 'armvent_right', tris: true, box: [[1.8, 2.9, -2.3], [2.9, 3.8, -0.7]] },
     ],
     rules: [
-      [/^cockpit(_whole|_frame|_back)?$/, 'Cockpit'], [/^cockpit_weakspot$/, 'Cockpit Weakspot'],
+      [/^cockpit(_whole|_frame)?$/, 'Cockpit'], [/^cockpit_weakspot$/, 'Cockpit Weakspot'],
       [/^pilot(_whole|_body|_bit)?$/, 'Pilot'], [/^shield(_whole)?$/, 'Shield'], [/^head$/, 'Head'],
-      [/^(chassis_top|body)$/, 'Chassis'], [/^carapace_(left|right)$/, 'Carapace (2)'], [/^internals_(left|right)$/, 'Internals (2)'],
+      [/^(chassis_top|body)$/, 'Chassis'], [/^carapace_(left|right)$/, 'Carapace (2)'], [/^carapace_(left|right)_damaged$/, 'Internals (2)'],
       [/^(shoulder|collar)_(left|right)(_whole)?$/, 'Shoulders (2)'], [/^(bicep|upperarm)_(left|right)(_whole)?$/, 'Upper Arms (2)'],
       [/^(arm|forearm)_(left|right)(_whole)?$/, 'Lower Arms (2)'], [/^arm(weak|vent)_(left|right)$/, 'Arm Weakspots (2)'],
       [/^(legarmor_upper|legup)_(left|right)$/, 'Upper Legs (2)'], [/^(legarmor_lower|leglow)_(left|right)$/, 'Lower Legs (2)'],
@@ -1154,7 +1157,7 @@ const SOURCES = {
   // hatches); the fuselage, wings, wing tips and tail spikes are Main
   stingray: {
     src: IL + 'vehicles/illuminate_attack_ship/illuminate_attack_ship.unit.glb',
-    split: { mesh: /^g_ias$/, bones: (b) => { const m = b.match(/^(l|r)_weapon_/); return m ? `gunport_${m[1] === 'l' ? 'left' : 'right'}` : 'hull'; } },
+    split: { mesh: /^g_ias(_damaged)?$/, bones: (b) => { const m = b.match(/^(l|r)_weapon_/); return m ? `gunport_${m[1] === 'l' ? 'left' : 'right'}` : 'hull'; } },
     rules: [[/^gunport_(left|right)$/, 'Gun Ports'], [/^hull$/, 'Main']],
   },
   agitator: {

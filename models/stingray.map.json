@@ -6,6 +6,8 @@
     "gunport_left": "Gun Ports"
   },
   "hidden": [
-    "g_ias_damaged"
+    "gunport_right_damaged",
+    "hull_damaged",
+    "gunport_left_damaged"
   ]
 }
