@@ -147,6 +147,9 @@ const COVER_PIECES = [{ enemy: /overseer/i, parts: { 'Left Arm': [[0, 1]], 'Righ
   { enemy: /^gatekeeper$/i, parts: { 'Legs (Broken Armor) (3)': [[0, 3], [1, 4], [2, 5]] } }];
 // throwKill: any throwable that hits it or goes off inside it kills outright (the Vox Engine's open hatches)
 const THROW_KILL = [{ enemy: /^vox engine$/i, part: /^Hatches/ }];
+// gaps: covered parts the 3D view lets you hit wherever a shot gets between the plates (the Overseers' limbs: the
+// limb armor covers them for the tables and body map, but aiming for the gaps reaches the arm or leg)
+const GAPS = [{ enemy: /overseer/i, part: /^(Right Arm|Left Arm|Legs \(2\))$/ }];
 const ALSO_COVERED = [{ enemy: /^Rupture Charger$/, parts: { 'Leg Flesh (4)': 'Frontal Tarsal Plate Armor (2)' } }];
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
@@ -157,6 +160,7 @@ enemies.forEach((e) => {
   for (const c of GONE_WITH) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name) && e.parts.some((q) => q.name === c.with)) { const gw = { part: c.with, ...(c.inst != null ? { inst: c.inst } : {}), ...(c.pieces ? { pieces: c.pieces } : {}) }; p.goneWith = p.goneWith ? [].concat(p.goneWith, gw) : gw; } });
   for (const c of COVER_PIECES) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) { p.coverPieces = c.parts[p.name]; if (c.all) p.coverAll = true; if (c.cover) p.coveredBy = c.cover; } });
   for (const c of THROW_KILL) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.throwKill = true; });
+  for (const c of GAPS) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.gaps = true; });
   for (const c of ALSO_COVERED) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.alsoCoveredBy = c.parts[p.name]; });
   for (const c of BEHIND) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.behind = c.parts[p.name]; });
   for (const c of LOCATION_FIX) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.location = c.location; });

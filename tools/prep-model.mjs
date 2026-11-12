@@ -632,14 +632,17 @@ const OVERSEER = [
   [/^torso$/, 'Chest Armor'],
   [/^hip$/, 'Crotch Armor'],
   [/^(arm|leg)_(left|right)_(upper|lower)_armor$/, 'Limb Armor (8)'],
-  [/^arm_right(_(upper|lower|whole))?$/, 'Right Arm'],
-  [/^arm_left(_(upper|lower|whole))?$/, 'Left Arm'],
-  [/^leg_(left|right)(_(upper|lower|whole))?$/, 'Legs (2)'],
+  [/^arm_right(_whole)?$/, 'Right Arm'],
+  [/^arm_left(_whole)?$/, 'Left Arm'],
+  [/^leg_(left|right)(_whole)?$/, 'Legs (2)'],
   [/^jetpack$/, 'Jetpack'],
 ];
 // the Elevated / Crescent Overseer list their limb plates as one "Limb Armor" hitzone
 // the body under the chest and crotch armor: shown (and shot) once the armor breaks, like the Agitator's
-const OVERSEER_INSIDE = { torso_gib: 'torso_damaged', hip_gib: 'hip_damaged' };
+// the arm_* / leg_* _upper / _lower meshes are the torn stumps of a severed limb (spiky flesh at the elbow and knee): remains,
+// shown only once that limb is destroyed
+const OVERSEER_INSIDE = { torso_gib: 'torso_damaged', hip_gib: 'hip_damaged',
+  ...Object.fromEntries(['arm', 'leg'].flatMap((l) => ['left', 'right'].flatMap((s) => ['upper', 'lower'].map((p) => [`${l}_${s}_${p}`, `${l}_${s}_${p === 'upper' ? 'gib' : 'gibs'}`])))) };
 const OVERSEER_1 = OVERSEER.map(([re, p]) => [re, p === 'Limb Armor (8)' ? 'Limb Armor' : p]);
 const IL = 'content/fac_illuminate/';
 // Gatekeeper (ranged exomech) bones: the gun (its three power cells are the Gun Weakspots), the arm (shoulder joint and

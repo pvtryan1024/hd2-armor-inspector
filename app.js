@@ -577,6 +577,8 @@
   function isExposed(enemy, idx, sim = null, k = null) {
     const p = enemy.parts[idx];
     if ((!p.hidden && !p.coveredBy) || state.showInner) return true;
+    // gaps (Overseer limbs): in 3D the geometry decides: a shot that gets between the plates reaches the part
+    if (p.gaps && state.stageView === '3d') return true;
     if (p.hidden === 'angle') return !!sim; // a shot you actually placed reached it
     if (p.coveredBy && !p.hidden) {
       if (!sim) return true; // time to kill already includes stripping the plate
