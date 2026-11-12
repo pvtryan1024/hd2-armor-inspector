@@ -25,5 +25,9 @@
     "right_arm_damaged",
     "left_arm_damaged",
     "head_damaged"
+  ],
+  "vanish": [
+    "Helmet",
+    "Torso Armor"
   ]
 }
