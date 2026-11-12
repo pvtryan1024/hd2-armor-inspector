@@ -640,6 +640,51 @@ const OVERSEER = [
 const OVERSEER_INSIDE = { torso_gib: 'torso_damaged', hip_gib: 'hip_damaged' };
 const OVERSEER_1 = OVERSEER.map(([re, p]) => [re, p === 'Limb Armor (8)' ? 'Limb Armor' : p]);
 const IL = 'content/fac_illuminate/';
+// Gatekeeper (ranged exomech) bones: the gun (its three power cells are the Gun Weakspots), the arm (shoulder joint and
+// upper arm), the legs and feet, the hips, the cockpit seat and its arms, the pilot; the rest is the body
+// the exomechs (Gatekeeper, Veracitor) share their hash-named meshes (wiki hitzone images): the top shell (Chassis), the
+// carapace plates either side of it and the internals under them, the spine at the front (the Gatekeeper's shield
+// generator, the Veracitor's head), the cockpit weak spot under the seat and the casing round it, and the leg armor
+// (an upper plate with the hip bar it hangs from, and a lower plate, per leg); each but the casing with a damaged copy
+const EXO_NAMES = {
+  '0x5f33decf': 'chassis_top', '0x3fe04455': 'chassis_top_damaged', '0x9a7fe8aa': 'carapace_left', '0x56621e5b': 'carapace_right',
+  '0xcfa4901f': 'internals_left', '0xfa94cb4a': 'internals_right', '0x2ff60211': 'shield_generator', '0xf8af7b9b': 'shield_generator_damaged',
+  '0xa4819eb1': 'cockpit_weakspot', '0xfe66fd53': 'cockpit_back',
+  '0xa7768531': 'legarmor_upper_left', '0x715d932e': 'legarmor_upper_left_damaged', '0x922e9c51': 'legarmor_upper_right', '0x6ce67702': 'legarmor_upper_right_damaged',
+  '0x77e2d756': 'legarmor_upper_back', '0x4ef4c920': 'legarmor_upper_back_damaged',
+  '0x1bf0bf6a': 'legarmor_lower_left', '0xab38c89f': 'legarmor_lower_left_damaged', '0x43e4c37a': 'legarmor_lower_right', '0x1877da17': 'legarmor_lower_right_damaged',
+  '0xb92d4db2': 'legarmor_lower_back', '0x5293aa9c': 'legarmor_lower_back_damaged',
+};
+// the hip bars off the upper leg plates (the bar between the body and the top of the leg)
+const EXO_HIPS = ['', '_damaged'].flatMap((d) => [
+  { mesh: `legarmor_upper_left${d}`, name: `hipbar_left${d}`, tris: true, box: [[-2.3, 3, -2], [0, 7, 2]] },
+  { mesh: `legarmor_upper_right${d}`, name: `hipbar_right${d}`, tris: true, box: [[0, 3, -2], [2.3, 7, 2]] },
+  { mesh: `legarmor_upper_back${d}`, name: `hipbar_back${d}`, tris: true, box: [[-2, 3, 0], [2, 7, 2.3]] },
+]);
+// Veracitor (melee exomech) bones: shoulder joint, upper arm, forearm and claw, upper and lower legs, hips, cockpit, pilot
+const VR_BONES = (bone) => {
+  const side = (bone.match(/(left|right|back)/) || [])[1];
+  if (/^collar_(left|right)/.test(bone)) return `collar_${side}`;
+  if (/^arm_(left|right)_1$/.test(bone)) return `upperarm_${side}`;
+  if (/^(arm_(left|right)_[23]|hand_|aim_arm_)/.test(bone)) return `forearm_${side}`;
+  if (/^leg_(left|right|back)_1$/.test(bone)) return `legup_${side}`;
+  if (/^(leg|foot)_(left|right|back)/.test(bone)) return `leglow_${side}`;
+  if (/^hip_(left|right|back)$/.test(bone)) return `hip_${side}`;
+  if (/^(seat_|throne_)/.test(bone)) return 'cockpit_frame';
+  if (/^pilot_/.test(bone)) return 'pilot_body';
+  return 'body';
+};
+const GK_BONES = (bone) => {
+  const side = (bone.match(/(left|right|back)/) || [])[1];
+  if (/^gun_(left|right)_cell/.test(bone)) return `gunweak_${side}`;
+  if (/^(gun_|attach_gun_|aim_arm_|hand_)/.test(bone) || /^arm_(left|right)_[23]$/.test(bone)) return `gun_${side}`;
+  if (/^(collar|arm)_(left|right)/.test(bone)) return `arm_${side}`;
+  if (/^(leg|foot)_(left|right|back)/.test(bone)) return `leg_${side}`;
+  if (/^hip_(left|right|back)$/.test(bone)) return `hip_${side}`;
+  if (/^(seat_|throne_)/.test(bone)) return 'cockpit_frame';
+  if (/^pilot_/.test(bone)) return 'pilot_body';
+  return 'body';
+};
 
 // Bugs split / named by bone: pieces head, claw_left/right, leg_<side>_front/back, wing_left/right, body
 const BG = 'content/fac_bugs/';
@@ -1031,10 +1076,25 @@ const SOURCES = {
   // archive clues: the ranged exomech is the Gatekeeper; the Obtruder shares the Watcher's body
   gatekeeper: {
     src: IL + 'cha_exomech_ranged/cha_exomech_ranged.unit.glb',
+    // wiki hitzone images; a broken leg plate (upper or lower) opens the leg under it, a broken arm plate the arm
+    names: EXO_NAMES,
+    cuts: [
+      ...EXO_HIPS,
+      // the Rear Weakspot: the rear end of the shell under the top lid, between the carapace plates
+      { mesh: 'chassis_top', name: 'rear_weakspot', tris: true, box: [[-0.55, 5.7, 1.3], [0.55, 6.9, 2.4]] },
+      { mesh: 'chassis_top_damaged', name: 'rear_weakspot_damaged', tris: true, box: [[-0.55, 5.7, 1.3], [0.55, 6.9, 2.4]] },
+    ],
+    // the body, the guns and the arms: split by bone
+    split: { mesh: /^(generic_whole|arm_(left|right)_whole)$/, bones: GK_BONES },
     rules: [
-      [/^cockpit(_whole)?$/, 'Cockpit'], [/^pilot(_whole)?$/, 'Pilot'], [/^shield(_whole)?$/, 'Shield'],
+      [/^cockpit(_whole)?$/, 'Cockpit'], [/^cockpit_(frame|back)$/, 'Cockpit'], [/^cockpit_weakspot$/, 'Cockpit Weakspot'],
+      [/^pilot(_whole|_body)?$/, 'Pilot'], [/^shield(_whole)?$/, 'Shield'], [/^shield_generator$/, 'Shield Generator'],
+      [/^chassis_top$/, 'Chassis'], [/^rear_weakspot$/, 'Rear Weakspot'], [/^carapace_(left|right)$/, 'Carapace (2)'], [/^internals_(left|right)$/, 'Internals (2)'],
       [/^shoulder_(left|right)(_whole)?$/, 'Shoulder Armor (2)'], [/^bicep_(left|right)(_whole)?$/, 'Arm Armor (2)'],
-      [/^arm_(left|right)(_whole)?$/, 'Arms (2)'], [/^generic(_whole)?$/, 'Chassis'],
+      [/^bicep_(left|right)_damaged$/, 'Arms (Broken Armor) (2)'], [/^arm_(left|right)$/, 'Arms (2)'],
+      [/^gun_(left|right)$/, 'Guns (2)'], [/^gunweak_(left|right)$/, 'Gun Weakspots (2)'],
+      [/^legarmor_(upper|lower)_(left|right|back)$/, 'Leg Armor (6)'], [/^legarmor_(upper|lower)_(left|right|back)_damaged$/, 'Legs (Broken Armor) (3)'],
+      [/^hip(bar)?_(left|right|back)$/, 'Hips (3)'], [/^leg_(left|right|back)$/, 'Legs (3)'], [/^body$/, 'Chassis'],
     ],
   },
   obtruder: {
@@ -1045,10 +1105,27 @@ const SOURCES = {
   'illuminate-overship': { src: 'extra/0xe7074f10233cd0b8.unit.glb', boneNames: false, rules: MAIN_ONLY },
   veracitor: {
     src: IL + 'cha_exomech_melee/cha_exomech_melee.unit.glb',
+    names: { ...EXO_NAMES, '0x2ff60211': 'head', '0xf8af7b9b': 'head_damaged', 'udim 64': 'pilot_bit' },
+    cuts: [
+      ...EXO_HIPS,
+      // the Arm Weakspots: the oval cell on the outer side of each forearm, by the elbow
+      { mesh: 'arm_left_whole', name: 'armweak_left', tris: true, box: [[-2.9, 2.9, -2.3], [-1.8, 3.8, -0.7]] },
+      { mesh: 'arm_right_whole', name: 'armweak_right', tris: true, box: [[1.8, 2.9, -2.3], [2.9, 3.8, -0.7]] },
+    ],
+    split: { mesh: /^generic_whole$/, bones: VR_BONES },
+    // the cell's grill inside the oval is on the body's forearm piece
+    cutsAfterSplit: [
+      { mesh: 'forearm_left', name: 'armvent_left', tris: true, box: [[-2.9, 2.9, -2.3], [-1.8, 3.8, -0.7]] },
+      { mesh: 'forearm_right', name: 'armvent_right', tris: true, box: [[1.8, 2.9, -2.3], [2.9, 3.8, -0.7]] },
+    ],
     rules: [
-      [/^cockpit(_whole)?$/, 'Cockpit'], [/^pilot(_whole)?$/, 'Pilot'], [/^shield(_whole)?$/, 'Shield'],
-      [/^shoulder_(left|right)(_whole)?$/, 'Shoulders (2)'], [/^bicep_(left|right)(_whole)?$/, 'Upper Arms (2)'],
-      [/^arm_(left|right)(_whole)?$/, 'Lower Arms (2)'], [/^generic(_whole)?$/, 'Chassis'],
+      [/^cockpit(_whole|_frame|_back)?$/, 'Cockpit'], [/^cockpit_weakspot$/, 'Cockpit Weakspot'],
+      [/^pilot(_whole|_body|_bit)?$/, 'Pilot'], [/^shield(_whole)?$/, 'Shield'], [/^head$/, 'Head'],
+      [/^(chassis_top|body)$/, 'Chassis'], [/^carapace_(left|right)$/, 'Carapace (2)'], [/^internals_(left|right)$/, 'Internals (2)'],
+      [/^(shoulder|collar)_(left|right)(_whole)?$/, 'Shoulders (2)'], [/^(bicep|upperarm)_(left|right)(_whole)?$/, 'Upper Arms (2)'],
+      [/^(arm|forearm)_(left|right)(_whole)?$/, 'Lower Arms (2)'], [/^arm(weak|vent)_(left|right)$/, 'Arm Weakspots (2)'],
+      [/^(legarmor_upper|legup)_(left|right)$/, 'Upper Legs (2)'], [/^(legarmor_lower|leglow)_(left|right)$/, 'Lower Legs (2)'],
+      [/^(legarmor_(upper|lower)|legup|leglow)_back$/, 'Rear Leg'], [/^hip(bar)?_(left|right)$/, 'Hips (2)'], [/^hip(bar)?_back$/, 'Rear Hip'],
     ],
   },
   wretch: {

@@ -16,7 +16,7 @@ const enemies = [
 ];
 // "Factory Strider (Armor Broken)" / "Harvester (Armor Broken)" are the same enemy with its plates off: fold the parts it adds
 // (the circuits under the front, side and rear armor) into the Factory Strider and drop the separate entry.
-for (const [into, from] of [['Factory Strider', 'Factory Strider (Armor Broken)'], ['Harvester', 'Harvester (Armor Broken)'], ['Leviathan', 'Leviathan (Broken)']]) {
+for (const [into, from] of [['Factory Strider', 'Factory Strider (Armor Broken)'], ['Harvester', 'Harvester (Armor Broken)'], ['Leviathan', 'Leviathan (Broken)'], ['Gatekeeper', 'Gatekeeper (Broken)']]) {
   const a = enemies.find((e) => e.name === into), bi = enemies.findIndex((e) => e.name === from);
   if (!a || bi < 0) continue;
   for (const p of enemies[bi].parts) {
@@ -83,6 +83,8 @@ const COVERS = [
   { enemy: /bile titan/i, parts: { 'Inner Flesh': ['Torso Armor (2)'], 'Front Left Leg Flesh': ['Leg Armor (12)'], 'Leg Flesh (3)': ['Leg Armor (12)'] } },
   // the innards are what's left when a sac bursts (the burst copy of the thorax / abdomen takes over in 3D)
   { enemy: /^dragonroach$/i, parts: { 'Thorax Innards': ['Thorax Sac'], 'Abdomen Innards': ['Abdomen Sac'] } },
+  // Gatekeeper: a broken arm plate opens that arm, a broken leg plate (upper or lower) that leg
+  { enemy: /^gatekeeper$/i, parts: { 'Arms (Broken Armor) (2)': ['Arm Armor (2)'], 'Legs (Broken Armor) (3)': ['Leg Armor (6)'] } },
 ];
 
 // What a projectile reaches after over-penetrating a part (inner hitboxes aren't meshes in the models).
@@ -137,7 +139,10 @@ const PIECE_COUNT = [{ enemy: /^(elevated|crescent) overseer$/i, part: /^Limb Ar
 const COVER_PIECES = [{ enemy: /overseer/i, parts: { 'Left Arm': [[0, 1]], 'Right Arm': [[2, 3]], 'Legs (2)': [[4, 5], [6, 7]] } },
   // Vox Engine: each hatch opens when all three vents on its level are destroyed (the top one: the body's back bar
   // and upper vents; the bottom one: the carriage's lower and under vents); Vents (6) pieces in the 3D model's order
-  { enemy: /^vox engine$/i, all: true, cover: 'Vents (6)', parts: { 'Hatches (2)': [[0, 4, 5], [1, 2, 3]] } }];
+  { enemy: /^vox engine$/i, all: true, cover: 'Vents (6)', parts: { 'Hatches (2)': [[0, 4, 5], [1, 2, 3]] } },
+  // Gatekeeper legs (back, left, right) under their lower and upper plates (Leg Armor pieces: lower back / left / right,
+  // then upper back / left / right, in the 3D model's order)
+  { enemy: /^gatekeeper$/i, parts: { 'Legs (Broken Armor) (3)': [[0, 3], [1, 4], [2, 5]] } }];
 // throwKill: any throwable that hits it or goes off inside it kills outright (the Vox Engine's open hatches)
 const THROW_KILL = [{ enemy: /^vox engine$/i, part: /^Hatches/ }];
 const ALSO_COVERED = [{ enemy: /^Rupture Charger$/, parts: { 'Leg Flesh (4)': 'Frontal Tarsal Plate Armor (2)' } }];
