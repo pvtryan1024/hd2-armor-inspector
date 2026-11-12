@@ -1065,6 +1065,8 @@ const SOURCES = {
     rules: [
       [/^seg0_fin_(left|right)$/, 'Front Fins (2)'], [/^seg1_fin_(left|right)$/, 'Forward-Middle Fins (2)'],
       [/^seg2_fin_(left|right)$/, 'Rearward-Middle Fins (2)'], [/^seg3_fin_(left|right)$/, 'Rear Fins (2)'],
+      // a broken-off fin's stump (its cross section) is the Internals too
+      [/^seg[0-3]_fin_(left|right)_damaged$/, 'Internals'],
       [/^seg[013]_center_damaged$/, 'Internals'], [/^seg4_damaged$/, 'Internals'], [/^seg2_center_damaged$/, 'Damaged Rearward-Middle Vertebra'],
       [/^seg0_center(_whole)?$/, 'Front Vertebra'], [/^seg1_center(_whole)?$/, 'Forward-Middle Vertebra'],
       [/^seg2_center(_whole)?$/, 'Rearward-Middle Vertebra'], [/^seg3_center(_whole)?$/, 'Rear Vertebra'],

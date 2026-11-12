@@ -23,7 +23,15 @@
     "turret_left_1": "Turrets (4)",
     "turret_left_2": "Turrets (4)",
     "turret_right_1": "Turrets (4)",
-    "turret_right_2": "Turrets (4)"
+    "turret_right_2": "Turrets (4)",
+    "seg0_fin_right_damaged": "Internals",
+    "seg2_fin_right_damaged": "Internals",
+    "seg2_fin_left_damaged": "Internals",
+    "seg1_fin_left_damaged": "Internals",
+    "seg3_fin_left_damaged": "Internals",
+    "seg3_fin_right_damaged": "Internals",
+    "seg1_fin_right_damaged": "Internals",
+    "seg0_fin_left_damaged": "Internals"
   },
   "hidden": [
     "seg0_fin_right_damaged",
