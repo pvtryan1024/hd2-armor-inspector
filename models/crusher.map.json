@@ -4,10 +4,11 @@
     "helmet_whole": "Helmet",
     "arm_left_whole": "Arms (2)",
     "head_whole": "Head",
-    "generic_whole": "Torso",
     "leg_right_whole": "Legs (2)",
     "arm_right_whole": "Arms (2)",
-    "leg_left_whole": "Legs (2)"
+    "leg_left_whole": "Legs (2)",
+    "body_pelvis": "Pelvis",
+    "body_torso": "Torso"
   },
   "hidden": [
     "arm_right_damaged",
@@ -15,7 +16,6 @@
     "leg_left_damaged",
     "head_damaged",
     "leg_right_damaged",
-    "helmet_damaged",
-    "0x09561b7e"
+    "helmet_damaged"
   ]
 }

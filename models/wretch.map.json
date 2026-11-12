@@ -6,7 +6,11 @@
     "arm_left_whole": "Arms (4)",
     "leg_right_whole": "Legs (2)",
     "head_whole": "Head",
-    "leg_left_whole": "Legs (2)"
+    "leg_left_whole": "Legs (2)",
+    "bladearm_right": "Arms (4)",
+    "claw_right": "Claws (2)",
+    "bladearm_left": "Arms (4)",
+    "claw_left": "Claws (2)"
   },
   "hidden": [
     "arm_left_damaged",
@@ -14,11 +18,9 @@
     "arm_right_damaged",
     "leg_right_damaged",
     "leg_left_damaged",
-    "0x6b533a40",
-    "0x7ac2c6f3",
-    "0xf76d276e",
-    "0x50acf268",
-    "0x55183cb3",
-    "0x01f3ac76"
+    "bladearm_right_damaged",
+    "claw_right_damaged",
+    "bladearm_left_damaged",
+    "claw_left_damaged"
   ]
 }

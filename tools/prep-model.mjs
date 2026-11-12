@@ -1076,7 +1076,10 @@ const SOURCES = {
   // the helmeted body-horror unit is the Crusher; the melee exomech is the Veracitor
   crusher: {
     src: IL + 'cha_bodyhorror_helmetguy/cha_bodyhorror_helmetguy.unit.glb',
-    rules: [[/^helmet(_whole)?$/, 'Helmet'], [/^head(_whole)?$/, 'Head'], [/^arm_(left|right)(_whole)?$/, 'Arms (2)'], [/^leg_(left|right)(_whole)?$/, 'Legs (2)'], [/^generic(_whole)?$/, 'Torso']],
+    // the wiki's anatomy images are placeholders: the body (generic_whole) split by bone into the Torso (chest, spine,
+    // shoulders) and the Pelvis (pelvis, belly, tops of the thighs)
+    split: { mesh: /^generic_whole$/, bones: (b) => (/^(pelvis|boss|[lr]_thigh)$/.test(b) ? 'body_pelvis' : 'body_torso') }, // (not 'pelvis': a bone has that name)
+    rules: [[/^helmet(_whole)?$/, 'Helmet'], [/^head(_whole)?$/, 'Head'], [/^arm_(left|right)(_whole)?$/, 'Arms (2)'], [/^leg_(left|right)(_whole)?$/, 'Legs (2)'], [/^body_torso$/, 'Torso'], [/^body_pelvis$/, 'Pelvis']],
   },
   // archive clues: the ranged exomech is the Gatekeeper; the Obtruder shares the Watcher's body
   gatekeeper: {
@@ -1136,7 +1139,11 @@ const SOURCES = {
   },
   wretch: {
     src: IL + 'cha_bodyhorror_bladed/cha_bodyhorror_bladed.unit.glb',
-    rules: [[/^head(_whole)?$/, 'Head'], [/^arm_(left|right)(_whole)?$/, 'Arms (4)'], [/^leg_(left|right)(_whole)?$/, 'Legs (2)'], [/^generic(_whole)?$/, 'Main']],
+    // the wiki's anatomy images are placeholders. Arms (4): the two hands it swipes with and the two bladed limbs on its
+    // shoulders (hash meshes, each with a damaged copy); Claws (2): the blades themselves (the wrist_blade bones)
+    names: { '0x5341c901': 'blade_left', '0x411eedcf': 'blade_left_damaged', '0x8ad96508': 'blade_right', '0x5fbff03a': 'blade_right_damaged' },
+    split: { mesh: /^blade_(left|right)(_damaged)?$/, bones: (b) => { const s = /^l_/.test(b) ? 'left' : 'right'; return /wrist_blade/.test(b) ? `claw_${s}` : `bladearm_${s}`; } },
+    rules: [[/^head(_whole)?$/, 'Head'], [/^(arm|bladearm)_(left|right)(_whole)?$/, 'Arms (4)'], [/^claw_(left|right)$/, 'Claws (2)'], [/^leg_(left|right)(_whole)?$/, 'Legs (2)'], [/^generic(_whole)?$/, 'Main']],
   },
   leviathan: {
     src: IL + 'vehicles/illuminate_war_machine/illuminate_war_machine.unit.glb',
