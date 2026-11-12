@@ -30,12 +30,15 @@
     "vent_upper_right": "Vents (6)",
     "right_rocket_cap": "Missile Launchers (2)",
     "0xb4fff892": "Hatches (2)",
-    "tracks_whole": "Tracks (4)",
     "udim_0_1": "Undercarriage",
     "udim_0_2": "Undercarriage",
     "boss_lid_1": "Main",
     "minigun_left": "Miniguns (2)",
-    "minigun_right": "Miniguns (2)"
+    "minigun_right": "Miniguns (2)",
+    "left_front_tracks_tread": "Tracks (4)",
+    "left_back_tracks_tread": "Tracks (4)",
+    "right_front_tracks_tread": "Tracks (4)",
+    "right_back_tracks_tread": "Tracks (4)"
   },
   "hidden": [
     "torso_damaged",
@@ -56,8 +59,11 @@
     "vent_lower_right_damaged",
     "vent_upper_left_damaged",
     "vent_upper_right_damaged",
-    "tracks_static",
     "minigun_left_damaged",
-    "minigun_right_damaged"
+    "minigun_right_damaged",
+    "left_front_tracks_tread_damaged",
+    "left_back_tracks_tread_damaged",
+    "right_front_tracks_tread_damaged",
+    "right_back_tracks_tread_damaged"
   ]
 }

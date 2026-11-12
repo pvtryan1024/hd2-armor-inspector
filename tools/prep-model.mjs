@@ -813,7 +813,11 @@ const SOURCES = {
       'g_siege_engine 0x8dc6adf9': 'vent_upper_right', 'g_siege_engine 0xc6f4b828': 'vent_upper_right_damaged',
       'g_rockets 0x8dc6adf9': 'right_rocket_cap',
     },
-    hide: ['tracks_static'], // in the damaged group: the broken tracks
+    // the tread belts of all four track pods are one mesh (tracks_whole; tracks_static is the broken version):
+    // cut per pod by bone, so each Tracks piece has its own tread, the static one shown when it breaks
+    // (three cut out, what's left is the fourth: right back)
+    cuts: [['tracks_whole', ''], ['tracks_static', '_damaged']].flatMap(([mesh, st]) => [['left', 'front'], ['left', 'back'], ['right', 'front']]
+      .map(([x, z], i) => ({ mesh, name: `${x}_${z}_tracks_tread${st}`, tris: true, bone: new RegExp(`^${x[0]}_${z}_tracks$`), ...(i === 2 ? { rest: `right_back_tracks_tread${st}` } : {}) }))),
     rules: [
       [/^sarcophagus$/, 'Sarcophagus'], [/^torso(_whole)?$/, 'Torso'], [/^(left|right)_rocket(_cap)?$/, 'Missile Launchers (2)'],
       [/^(left|right)_speaker$/, 'Speakers (2)'], [/^(left|right)_flap$/, 'Torso Flaps (2)'], [/^(left|right)_(front|back)_tracks(_whole)?$/, 'Tracks (4)'],
