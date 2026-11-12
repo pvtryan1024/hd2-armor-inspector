@@ -19,7 +19,17 @@
     "leg_right_back": "Leg Armor (12)",
     "leg_right_front": "Leg Armor (12)",
     "wing_left_front": "Wings (4)",
-    "tail": "Abdomen Armor"
+    "leg_left_front_upper": "Leg Armor (12)",
+    "leg_left_front_middle": "Leg Armor (12)",
+    "leg_right_front_upper": "Leg Armor (12)",
+    "leg_right_front_middle": "Leg Armor (12)",
+    "leg_left_back_upper": "Leg Armor (12)",
+    "leg_left_back_middle": "Leg Armor (12)",
+    "leg_right_back_upper": "Leg Armor (12)",
+    "leg_right_back_middle": "Leg Armor (12)",
+    "tail": "Abdomen Armor",
+    "stomach_left_plates": "Carapace (2)",
+    "stomach_right_plates": "Carapace (2)"
   },
   "hidden": [
     "claw_left_damaged",
@@ -37,7 +47,15 @@
     "claw_right_damaged",
     "body_right_damaged",
     "stomach_burst",
-    "leg_left_back_damaged"
+    "leg_left_back_damaged",
+    "leg_left_front_upper_damaged",
+    "leg_left_front_middle_damaged",
+    "leg_right_front_upper_damaged",
+    "leg_right_front_middle_damaged",
+    "leg_left_back_upper_damaged",
+    "leg_left_back_middle_damaged",
+    "leg_right_back_upper_damaged",
+    "leg_right_back_middle_damaged"
   ],
   "after": {
     "tail_burst": {

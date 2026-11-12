@@ -50,6 +50,7 @@ const BT_BODY = {
     { mesh: 'torso_burst', main: 'torso_burst', keepPieces: true, softBox: BT_SAC },
   ],
 };
+const DR_BELLY = [[-0.9, 3.9, -3.1], [0.9, 5.2, 2.2]]; // Dragonroach: the soft belly under the thorax
 const BILE_TITAN = [
   [/^head$/, 'Head'],
   [/^torso$/, 'Torso Armor (2)'],
@@ -350,6 +351,29 @@ function splitShells(doc, node, sp, likeBoxes) {
       }
       body = keep;
     }
+    // dorsal: { bones, axis, sign, split }: a curled tail (Dragonroach) has no single "up": each triangle is
+    // judged in its own bone's frame (bind pose); the back side of that bone's axis goes to the plates
+    if (sp.dorsal && !likeBoxes) {
+      const skin = node.getSkin(), joints = skin.listJoints(), ibm = skin.getInverseBindMatrices();
+      const P = prim.getAttribute('POSITION'), J = prim.getAttribute('JOINTS_0'), W = prim.getAttribute('WEIGHTS_0');
+      const v = [0, 0, 0], j4 = [], w4 = [], m = [];
+      const boneOf = (i) => { J.getElement(i, j4); W.getElement(i, w4); let b = 0; for (let k = 1; k < 4; k++) if (w4[k] > w4[b]) b = k; return j4[b]; };
+      const local = (i, bj) => { P.getElement(i, v); ibm.getElement(bj, m); const a = sp.dorsal.axis; return m[a] * v[0] + m[4 + a] * v[1] + m[8 + a] * v[2] + m[12 + a]; };
+      const tris = [];
+      for (let t = 0; t < body.length; t += 3) {
+        const idx = body.slice(t, t + 3), bj = boneOf(idx[0]);
+        const on = sp.dorsal.bones.test(joints[bj].getName()) ? bj : -1;
+        tris.push({ idx, bj: on, h: on < 0 ? 0 : sp.dorsal.sign * (local(idx[0], on) + local(idx[1], on) + local(idx[2], on)) / 3 });
+      }
+      const lo = new Map(), hi = new Map();
+      for (const t of tris) if (t.bj >= 0) { lo.set(t.bj, Math.min(lo.get(t.bj) ?? Infinity, t.h)); hi.set(t.bj, Math.max(hi.get(t.bj) ?? -Infinity, t.h)); }
+      const keep = [];
+      for (const t of tris) {
+        const up = t.bj >= 0 && t.h > lo.get(t.bj) + (sp.dorsal.split ?? 0.5) * (hi.get(t.bj) - lo.get(t.bj));
+        (up ? plates : keep).push(...t.idx);
+      }
+      body = keep;
+    }
     if (!plates.length && !sp.softBox) continue;
     // softBox: the armor is welded to the soft body (Bile Titan torso: everything but the small belly between
     // the legs is armored, leg sockets too): only body triangles centred inside the box stay soft
@@ -614,14 +638,30 @@ const SOURCES = {
       '0x0127723c': 'wing_left_front', '0x82f77e51': 'wing_left_front_damaged', '0x18529aee': 'wing_right_front', '0x4578a72b': 'wing_right_front_damaged',
       '0xe4963264': 'wing_left_back', '0xca52ab79': 'wing_left_back_damaged', '0xe49c435b': 'wing_right_back', '0x32c8740e': 'wing_right_back_damaged',
     },
-    shells: [{ mesh: 'tail_burst', main: 'tail_burst', dropLike: 'tail' }, { mesh: 'tail', main: 'tail_sac', rest: 'tail' }],
+    // each leg in 3 segments like a Bile Titan's 3 plates: thigh (upper), first knee (middle), the rest (lower)
+    cuts: ['left_front:fl', 'right_front:fr', 'left_back:bl', 'right_back:br'].flatMap((x) => {
+      const [leg, b] = x.split(':');
+      return ['', '_damaged'].flatMap((st) => [
+        { mesh: `leg_${leg}${st}`, name: `leg_${leg}_upper${st}`, tris: true, bone: new RegExp(`^${b}_thigh$`) },
+        { mesh: `leg_${leg}${st}`, name: `leg_${leg}_middle${st}`, tris: true, bone: new RegExp(`^${b}_knee_01$`) },
+      ]);
+    }),
+    shells: [
+      { mesh: 'tail_burst', main: 'tail_burst', dropLike: 'tail' },
+      // the abdomen: armored to the tip; only its underside (lower half along the body) is the soft sac
+      { mesh: 'tail', main: 'tail_sac', rest: 'tail', dorsal: { bones: /^tail0[1-5]$/, axis: 1, sign: 1, split: 0.5 } },
+      // the thorax: armor and leg sockets all round (Carapace halves); the belly between the legs is the Thorax Sac
+      { mesh: 'stomach', main: 'stomach', rest: 'stomach_{side}_plates', halves: true, softBox: DR_BELLY },
+      { mesh: 'stomach_burst', main: 'stomach_burst', keepPieces: true, softBox: DR_BELLY },
+    ],
     hide: ['tail_burst', 'stomach_burst'],
     rules: [
       [/^head(_whole)?$/, 'Head'],
       [/^neck(_whole)?$/, 'Main'],
       [/^claw_(left|right)(_whole)?$/, 'Claws (2)'],
       [/^body_(left|right)(_whole)?$/, 'Carapace (2)'],
-      [/^leg_(left|right)_(front|back)$/, 'Leg Armor (12)'],
+      [/^leg_(left|right)_(front|back)(_upper|_middle)?$/, 'Leg Armor (12)'],
+      [/^stomach_(left|right)_plates$/, 'Carapace (2)'],
       [/^wing_(left|right)_(front|back)$/, 'Wings (4)'],
       [/^stomach$/, 'Thorax Sac'],
       [/^stomach_burst$/, 'Thorax Innards'],
