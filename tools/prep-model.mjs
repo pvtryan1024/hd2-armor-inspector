@@ -868,7 +868,10 @@ const SOURCES = {
       // the undercarriage mesh (udim 0) also carries the four track pods (track, arm, cover): each to its Tracks piece
       .concat([['left', 'front'], ['left', 'back'], ['right', 'front'], ['right', 'back']].map(([x, z]) => ({ mesh: 'udim 0', name: `${x}_${z}_tracks_pod`, tris: true, bone: new RegExp(`^${x[0]}_${z}_tracks?(_arm|_cover)?$`) })))
       // the top hatch (0x21672db8) sits under the body's back plating: that plating is its lid (opens with the vents)
-      .concat([{ mesh: 'torso_whole', name: 'boss_lid_top', tris: true, box: [[-1.05, 10.0, 1.75], [1.05, 11.0, 3.45]] }]), // up to the latch on the body behind it
+      // the top lid: the sloped plate on the rear (one loose piece, picked by its centre; the latch on it is separate
+      // pieces and stays on the body) and the top surface over the hatch
+      .concat([{ mesh: 'torso_whole', name: 'boss_lid_top', centre: true, box: [[-0.1, 9.9, 2.6], [0.1, 10.1, 3.0]] },
+        { mesh: 'torso_whole', into: 'boss_lid_top', tris: true, box: [[-1.05, 10.0, 1.75], [1.05, 11.0, 3.45]] }]),
     rules: [
       [/^sarcophagus$/, 'Sarcophagus'], [/^torso(_whole)?$/, 'Torso'], [/^(left|right)_rocket(_cap)?$/, 'Missile Launchers (2)'],
       [/^(left|right)_speaker$/, 'Speakers (2)'], [/^(left|right)_flap$/, 'Torso Flaps (2)'], [/^(left|right)_(front|back)_tracks(_whole)?$/, 'Tracks (4)'],
