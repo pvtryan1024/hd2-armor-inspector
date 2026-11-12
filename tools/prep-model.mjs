@@ -80,6 +80,9 @@ const DEVASTATOR = [
 const HULK_EYE = [{ mesh: 'chest', name: 'chest_eye', box: [[-0.17, 2.57, -0.74], [0.17, 2.89, -0.39]] },
   // the heat sink: only the 3x3 grid of vent squares on the back; the frame around it is armor (Main)
   { mesh: 'back', name: 'back', rest: 'back_plates', box: [[-0.48, 2.2, 0.5], [0.48, 3.32, 1.16]] }];
+// the Scorcher Hulk's chest carries decorations on top (banners, spikes, trophies): the pieces the plain Hulk's
+// chest doesn't have, above chest height, are cut off as chest_deco (no hitbox)
+const HULK_DECO = [...HULK_EYE, { mesh: 'chest', name: 'chest_deco', prim: /m_lieutenant_assault/, unlike: { src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', mesh: 'chest' }, minY: 2.8 }];
 const HULK = [
   [/^arm_(left|right)$/, 'Arms (2)'],
   [/^leg_(left|right)$/, 'Legs (2)'],
@@ -477,6 +480,9 @@ function cutBox(doc, node, cut) {
       else if (cut.centre) { // the piece's centre in the box, and not longer than maxLen (rail-length strips stay)
         const pts = vs.map(posed), lo = [0, 1, 2].map((k) => Math.min(...pts.map((q) => q[k]))), hi = [0, 1, 2].map((k) => Math.max(...pts.map((q) => q[k])));
         ok = inBox(lo.map((l, k) => (l + hi[k]) / 2)) && !(cut.maxLen && Math.max(...hi.map((h, k) => h - lo[k])) > cut.maxLen);
+      } else if (cut.unlikeBoxes) { // pieces another model's same mesh doesn't have (added decorations), above minY
+        const near = (a, b) => a[0].every((v, k) => Math.abs(v - b[0][k]) < 0.02 && Math.abs(a[1][k] - b[1][k]) < 0.02);
+        ok = sh.box[0][1] >= (cut.minY ?? -Infinity) && !cut.unlikeBoxes.some((b) => near(b, sh.box));
       } else ok = vs.every((i) => inBox(posed(i)));
       (ok ? inside : rest).push(...sh.tris);
     }
@@ -695,10 +701,10 @@ const SOURCES = {
   'hulk-bruiser': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
   'hulk-obliterator': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
   'hulk-firebomber': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
-  'hulk-scorcher': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant_assault/cha_lieutenant_assault.unit.glb', rules: HULK },
+  'hulk-scorcher': { cuts: HULK_DECO, src: 'content/fac_cyborgs/cha_lieutenant_assault/cha_lieutenant_assault.unit.glb', rules: HULK },
   'jet-brigade-hulk-bruiser': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant/cha_lieutenant.unit.glb', rules: HULK },
   // the Scorcher body: its right arm is the flamethrower (the Bruiser body has a plain hand there)
-  'jet-brigade-hulk-scorcher': { cuts: HULK_EYE, src: 'content/fac_cyborgs/cha_lieutenant_assault/cha_lieutenant_assault.unit.glb', rules: HULK },
+  'jet-brigade-hulk-scorcher': { cuts: HULK_DECO, src: 'content/fac_cyborgs/cha_lieutenant_assault/cha_lieutenant_assault.unit.glb', rules: HULK },
   // bugs: one-mesh bodies split by bone; hash-named legs and claws named by bone
   scavenger: { src: BG + 'cha_scavenger/cha_scavenger.unit.glb', ...SCAVENGER },
   'spore-burst-scavenger': { src: BG + 'cha_scavenger/cha_scavenger_gloom.unit.glb', ...SCAVENGER },
@@ -1033,6 +1039,12 @@ async function prep(id) {
   }
   // weak spots inside a bigger mesh, cut out by box
   for (const cut of cfg.cuts || []) {
+    // unlike: { src, mesh }: the loose pieces of that mesh in another unit (the plain version), to cut what's extra
+    if (cut.unlike && !cut.unlikeBoxes) {
+      const odoc = await io.read(path.join(EXPORTS, cut.unlike.src));
+      const on = odoc.getRoot().listNodes().find((x) => x.getMesh() && clean(x.getName()) === cut.unlike.mesh && !/LOD[1-9]/.test(x.getName()));
+      cut.unlikeBoxes = on ? on.getMesh().listPrimitives().flatMap((p) => shellsOf(p).map((x) => x.box)) : [];
+    }
     const node = root.listNodes().find((x) => x.getMesh() && x.getName() === cut.mesh);
     if (!node) { console.warn(`${id}: no mesh ${cut.mesh} to cut`); continue; }
     const made = cutBox(doc, node, cut);

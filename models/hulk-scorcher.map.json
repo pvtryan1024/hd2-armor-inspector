@@ -16,7 +16,8 @@
     "shoulderpad_left": null,
     "shoulder_left": "Arms (2)",
     "base": "Main",
-    "chest_2": null
+    "chest_2": null,
+    "chest_deco": null
   },
   "hidden": [
     "leg_left_damaged",

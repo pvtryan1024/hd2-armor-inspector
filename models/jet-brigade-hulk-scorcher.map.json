@@ -12,7 +12,8 @@
     "weapon_right": "Arms (2)",
     "shoulder_right": "Arms (2)",
     "shoulder_left": "Arms (2)",
-    "base": "Main"
+    "base": "Main",
+    "chest_deco": null
   },
   "hidden": [
     "chest_damaged",
