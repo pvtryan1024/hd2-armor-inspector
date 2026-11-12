@@ -13,7 +13,8 @@
     "shoulder_right": "Arms (2)",
     "shoulder_left": "Arms (2)",
     "base": "Main",
-    "chest_deco": null
+    "chest_deco": null,
+    "chest_2": null
   },
   "hidden": [
     "chest_damaged",
