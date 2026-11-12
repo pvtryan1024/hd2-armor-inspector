@@ -223,9 +223,12 @@
       const exdr = part.exdr ?? 0;
       partExBy[j] = pm == null ? 0 : Math.floor(e * (1 - exdr) * pm);
       partEx += partExBy[j];
-      // redirected share skips Main's ExDR but still needs AP ≥ Main's AV
+      // redirected share skips Main's ExDR but goes through Main's armor: full when the blast AP beats Main's AV, 65%
+      // when it equals it, nothing below (in game the G-16 Impact's AP 4 blast takes 6-7 grenades on a Hulk, AV 4 Main
+      // 1800: 260 a grenade, not 400; 2 on a Brood Commander, AV 2 Main 800)
       const main = mainPart(enemy);
-      if (blast.mult > 0 && !isMainRow(part) && (!main || blast.ap >= main.av)) mainExBy[j] = Math.floor(e * exdr);
+      const mpm = main ? penMult(blast.ap, main.av) ?? 0 : 1;
+      if (blast.mult > 0 && !isMainRow(part) && mpm > 0) mainExBy[j] = Math.floor(e * exdr * mpm);
     });
     const mainEx = mainExBy.reduce((x, y) => x + y, 0);
     // demolition: a structure part (the Fabricator) is destroyed outright by enough demolition force, from the
