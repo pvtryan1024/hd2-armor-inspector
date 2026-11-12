@@ -1150,7 +1150,13 @@ const SOURCES = {
       [/^seg4(_whole)?$/, 'Tail'], [/^rotator(_whole)?$/, 'Warp Disc'],
     ],
   },
-  stingray: { src: IL + 'vehicles/illuminate_attack_ship/illuminate_attack_ship.unit.glb', rules: [[/^g_ias$/, 'Main'], [/^ias$/, 'Main']] },
+  // wiki hitzone images: the Gun Ports are the weapon bays at the front of each wing (bay, top and bottom covers,
+  // hatches); the fuselage, wings, wing tips and tail spikes are Main
+  stingray: {
+    src: IL + 'vehicles/illuminate_attack_ship/illuminate_attack_ship.unit.glb',
+    split: { mesh: /^g_ias$/, bones: (b) => { const m = b.match(/^(l|r)_weapon_/); return m ? `gunport_${m[1] === 'l' ? 'left' : 'right'}` : 'hull'; } },
+    rules: [[/^gunport_(left|right)$/, 'Gun Ports'], [/^hull$/, 'Main']],
+  },
   agitator: {
     src: 'content/fac_cyborgs/cha_cyborg_elite/cha_cyborg_elite_rusher.unit.glb', ...ELITE_BODY,
     rules: [

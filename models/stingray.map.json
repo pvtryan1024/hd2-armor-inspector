@@ -1,7 +1,9 @@
 {
   "enemy": "stingray",
   "meshes": {
-    "g_ias": "Main"
+    "gunport_right": "Gun Ports",
+    "hull": "Main",
+    "gunport_left": "Gun Ports"
   },
   "hidden": [
     "g_ias_damaged"
