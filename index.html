@@ -132,11 +132,11 @@
       </div>
       <div class="table-wrap" id="partsTableWrap"><table class="data" id="partsTable"></table></div>
       <div class="table-wrap hidden" id="rankTableWrap">
-        <p class="hint">One-shot kills come first, sorted by damage (highest first); everything else is ranked by time to kill on its best hitzone in the current view. Time comes from RPM with the first shot at 0 s, plus a full reload for every magazine emptied (* = needs more than one magazine, reload time unknown). Weapons without an RPM are ranked by shot count after timed kills.</p>
+        <p class="hint">Facing the enemy from the front: rear and hard-to-reach hitzones don't count. One-shot kills come first, sorted by damage (highest first); everything else is ranked by time to kill on its best frontal hitzone. Time comes from RPM with the first shot at 0 s, plus reloads (* = needs more than one magazine, reload time unknown). Weapons without an RPM are ranked by shot count after timed kills. Weapons that can't kill from the front go last, by their best time from any side.</p>
         <table class="data" id="rankTable"></table>
       </div>
       <div class="table-wrap hidden" id="realTableWrap">
-        <p class="hint">You won't always hit the weak spot. For each weapon this takes the fastest kill (best case: you can reach the weak points) and the slowest kill (worst case: you miss them) among the reachable hitzones in the current view. If the weapon can't damage some of those hitzones at all, the worst case is 4× the best case's shots. Weapons are ranked by the midpoint.</p>
+        <p class="hint">You won't always hit the weak spot. Facing the enemy from the front (rear and hard-to-reach hitzones don't count), this takes the fastest kill (best case: you can reach the weak points) and the slowest kill (worst case: you miss them). If the weapon can't damage some of those hitzones at all, the worst case is 4× the best case's shots. Real life leans to the worst case: 75% of the way from the best to the worst. Weapons that can't kill from the front are almost impossible and go last, by their best time from any side.</p>
         <table class="data" id="realTable"></table>
       </div>
     </section>

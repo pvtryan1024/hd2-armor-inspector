@@ -24,8 +24,8 @@ Enemy hitzones and weapon stats come from https://helldivers.wiki.gg/.
 - **Charge weapons** (Epoch, Purifier, Railgun, Loyalist): a charge-time slider runs from the minimum charge to full charge. Projectile damage follows the wiki's charge multipliers (linear between the listed points), and the projectile and explosion switch at the wiki's charge thresholds. Time to kill includes the charge time of every shot. Settings are in `data/charge.json`.
 - **Explosions**: a click with an explosive weapon draws the inner radius (translucent red) and the outer radius (orange, fading toward the edge). Every hitzone inside the blast takes falloff damage (quick `1 − x`, slow `1 − x²` for the 500kg), with AP −1 in the outer ring, and Main takes the redirected share only once per blast.
 - **Fire mode**: click hitzones to shoot one at a time; HP bars drop, and a KILLED / DOWNED banner shows when Main runs out or a fatal part is destroyed.
-- **Best weapons vs target**: every weapon ranked for the selected enemy on its best hitzone (best case).
-- **Real life case**: for each weapon, the midpoint between the best case (fastest kill, weak points in reach) and the worst case (slowest kill, weak points missed). If the weapon can't damage some reachable hitzones at all, the worst case is 4× the best case's shots, timed with the same RPM and reload rule.
+- **Best weapons vs target**: every weapon ranked for the selected enemy on its best hitzone facing it from the front (rear and hard-to-reach hitzones don't count). Weapons that can't kill from the front go last, by their best time from any side.
+- **Real life case**: facing the enemy from the front, each weapon's best case (fastest kill, weak points in reach) and worst case (slowest kill, weak points missed; 4× the best case's shots if it can't damage some frontal hitzones at all). Real life sits 75% of the way toward the worst case. Weapons that can't kill from the front are marked almost impossible and go last, by their best time from any side.
 - **Copy link**: the URL stores enemy, weapon, mode and options.
 
 ## Adding your own 3D models

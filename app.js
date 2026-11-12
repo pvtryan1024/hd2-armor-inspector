@@ -935,29 +935,40 @@
   }
   const rankWeapons = () => DATA.weapons.filter((w) => !state.rankCat || w.category === state.rankCat);
 
+  /** Both ranking tables face the enemy from the front: rear-only and hard-to-reach hitzones don't count. */
+  const frontal = (results) => results.filter((x) => visible(x.part, 'front') && x.part.hidden !== 'angle');
+  /** Best kill from any side (hard-to-reach parts included): how weapons that can't kill from the front are ordered. */
+  const anySide = (results) => bestOf(results.map((x) => (x.part.hidden === 'angle' ? { ...x, part: { ...x.part, hidden: false } } : x)), 'all');
+  const better = (b, best) => b && (!best || killKey(b.r) < killKey(best.b.r) || (killKey(b.r) === killKey(best.b.r) && b.r.total > best.b.r.total));
+
   function renderRankTable(e) {
     const o = opts();
     const rows = [];
     for (const w of rankWeapons()) {
-      let best = null;
+      let best = null, any = null;
       w.modes.forEach((m, mi) => {
-        const b = bestOf(evalEnemy(w, mi, e, o), state.view);
-        if (b && (!best || killKey(b.r) < killKey(best.b.r) || (killKey(b.r) === killKey(best.b.r) && b.r.total > best.b.r.total))) best = { b, mi };
+        const res = evalEnemy(w, mi, e, o);
+        const b = bestOf(frontal(res), 'front');
+        if (better(b, best)) best = { b, mi };
+        const a = anySide(res);
+        if (better(a, any)) any = { b: a, mi };
       });
-      rows.push({ w, best });
+      rows.push({ w, best, any: best ? null : any });
     }
     const one = (x) => (x.best && isOneShot(x.best.b.r) ? 0 : 1);
-    rows.sort((a, b) => one(a) - one(b)
+    rows.sort((a, b) => (a.best ? 0 : 1) - (b.best ? 0 : 1)
+      || (!a.best ? (a.any ? killKey(a.any.b.r) : 1e9) - (b.any ? killKey(b.any.b.r) : 1e9) : 0)
+      || one(a) - one(b)
       || (one(a) === 0 ? b.best.b.r.total - a.best.b.r.total : 0)
       || (a.best ? killKey(a.best.b.r) : 1e9) - (b.best ? killKey(b.best.b.r) : 1e9)
       || (b.best?.b.r.total ?? 0) - (a.best?.b.r.total ?? 0));
     $('#rankTable').innerHTML = `<thead><tr><th>#</th><th>Weapon</th><th>Category</th><th>Mode</th><th>Best hitzone</th><th class="num">Dmg/shot</th><th class="num">Shots</th><th class="num">Time to kill</th></tr></thead><tbody>` +
       rows
-        .map(({ w, best }, i) => `<tr class="click ${w.id === state.weaponId ? 'hl' : ''}" data-w="${esc(w.id)}" data-m="${best ? best.mi : 0}">
+        .map(({ w, best, any }, i) => `<tr class="click ${w.id === state.weaponId ? 'hl' : ''}" data-w="${esc(w.id)}" data-m="${best ? best.mi : any ? any.mi : 0}">
           <td class="num muted">${best ? i + 1 : ''}</td>
           <td>${esc(w.name)}</td><td class="muted">${esc(w.category)}</td>
           <td class="muted">${best && w.modes.length > 1 ? esc(w.modes[best.mi].name) : ''}</td>
-          <td>${best ? esc(best.b.part.name) : '<span class="muted">Can’t kill</span>'}</td>
+          <td>${best ? esc(best.b.part.name) : any ? `<span class="muted">Can’t kill from the front</span> · ${esc(any.b.part.name)} <span class="muted">${isOneShot(any.b.r) ? ONE_SHOT : any.b.r.ttk != null ? fmtTime(any.b.r.ttk) : shotsLabel(any.b.r)}</span>` : '<span class="muted">Can’t kill</span>'}</td>
           <td class="num">${best ? fmt(best.b.r.total) : '—'}</td>
           <td class="num">${best ? shotsLabel(best.b.r) : '—'}</td>
           <td class="num"><b style="color:${best ? ttkColor(killKey(best.b.r)) : 'var(--dim)'}">${best ? ttkHtml(best.b.r) : '—'}${best?.b.r.reload ? '*' : ''}</b></td>
@@ -968,8 +979,10 @@
   /** Fastest and slowest kill over every reachable, killing hitzone in view, and their midpoint.
    *  Times when the weapon has them; otherwise shot counts (ranked after timed weapons). */
   const WORST_X = 4; // real-life worst case when some reachable hitzone can't be damaged: this many × the best case
+  const LEAN = 0.75; // real life sits this far from the best case toward the worst
+  const lean = (a, b) => a + (b - a) * LEAN;
   function spreadOf(results, view, w, mode) {
-    const reach = results.filter((x) => visible(x.part, view) && (!x.part.hidden || state.showInner));
+    const reach = frontal(results).filter((x) => !x.part.hidden || state.showInner);
     const ok = reach.filter((x) => killKey(x.r) != null);
     const aim = ok.filter((x) => !isMainRow(x.part));
     const zones = aim.length ? aim : ok;
@@ -993,26 +1006,33 @@
       const worst = { part: big.part, r: { kind: lo.r.kind, killAt: shots, ttk, total: 0, reloads: st?.reloads || 0, roundReload: !!st?.rounds, reload: !!st?.reloadUnknown }, x3: true };
       const t2 = timed && ttk != null;
       const v = (x) => (t2 ? x.r.ttk : x.r.killAt);
-      if (t2 || (shots != null && lo.r.killAt != null)) return { lo, hi: worst, mid: (v(lo) + v(worst)) / 2, timed: t2, n: zones.length };
+      if (t2 || (shots != null && lo.r.killAt != null)) return { lo, hi: worst, mid: lean(v(lo), v(worst)), timed: t2, n: zones.length };
     }
-    return { lo, hi, mid: (val(lo) + val(hi)) / 2, timed, n: zones.length };
+    return { lo, hi, mid: lean(val(lo), val(hi)), timed, n: zones.length };
   }
 
   function renderRealTable(e) {
     const o = opts();
     const rows = [];
     for (const w of rankWeapons()) {
-      let best = null;
+      let best = null, any = null;
       w.modes.forEach((m, mi) => {
-        const sp = spreadOf(evalEnemy(w, mi, e, o), state.view, w, m);
+        const res = evalEnemy(w, mi, e, o);
+        const a = anySide(res);
+        if (better(a, any)) any = { b: a, mi };
+        const sp = spreadOf(res, 'front', w, m);
         if (!sp) return;
         const key = sp.timed ? sp.mid : 1e4 + sp.mid;
         if (!best || key < best.key) best = { ...sp, mi, key };
       });
-      rows.push({ w, best });
+      rows.push({ w, best, any: best ? null : any });
     }
+    // can't kill from the front: "almost impossible", last, by their best time from any side;
     // ties (e.g. one-shots everywhere) go to the harder-hitting weapon
-    rows.sort((a, b) => (a.best ? a.best.key : Infinity) - (b.best ? b.best.key : Infinity) || (b.best?.hi.r.total ?? 0) - (a.best?.hi.r.total ?? 0));
+    const impKey = (x) => (x.any ? killKey(x.any.b.r) : 1e9);
+    rows.sort((a, b) => (a.best ? 0 : 1) - (b.best ? 0 : 1)
+      || (a.best ? a.best.key - b.best.key : impKey(a) - impKey(b))
+      || (b.best?.hi.r.total ?? 0) - (a.best?.hi.r.total ?? 0));
     const val = (sp, x) => (isOneShot(x.r) ? ONE_SHOT : sp.timed ? fmtTime(x.r.ttk) : shotsLabel(x.r));
     const mid = (sp) => {
       if (isOneShot(sp.lo.r) && isOneShot(sp.hi.r)) return ONE_SHOT;
@@ -1020,13 +1040,14 @@
     };
     $('#realTable').innerHTML = `<thead><tr><th>#</th><th>Weapon</th><th>Category</th><th>Mode</th>
         <th>Fastest</th><th class="num">TTK</th><th>Slowest</th><th class="num">TTK</th><th class="num">Real life</th></tr></thead><tbody>` +
-      rows.map(({ w, best: sp }, i) => `<tr class="click ${w.id === state.weaponId ? 'hl' : ''}" data-w="${esc(w.id)}" data-m="${sp ? sp.mi : 0}">
+      rows.map(({ w, best: sp, any }, i) => `<tr class="click ${w.id === state.weaponId ? 'hl' : ''}" data-w="${esc(w.id)}" data-m="${sp ? sp.mi : any ? any.mi : 0}">
           <td class="num muted">${sp ? i + 1 : ''}</td>
           <td>${esc(w.name)}</td><td class="muted">${esc(w.category)}</td>
           <td class="muted">${sp && w.modes.length > 1 ? esc(w.modes[sp.mi].name) : ''}</td>
           ${sp ? `<td>${esc(sp.lo.part.name)}</td><td class="num">${val(sp, sp.lo)}</td>
             <td>${esc(sp.hi.part.name)}${sp.hi.x3 ? ` <span class="muted" title="This weapon can’t damage it: worst case = ${WORST_X}× the best case">(no damage: ${WORST_X}×)</span>` : ''}</td><td class="num">${val(sp, sp.hi)}</td>
             <td class="num"><b style="color:${ttkColor(sp.key)}">${mid(sp)}</b></td>`
+          : any ? `<td>${esc(any.b.part.name)} <span class="muted">(not from the front)</span></td><td class="num">${isOneShot(any.b.r) ? ONE_SHOT : any.b.r.ttk != null ? fmtTime(any.b.r.ttk) : shotsLabel(any.b.r)}</td><td></td><td></td><td class="num"><b style="color:var(--dim)">Almost impossible</b></td>`
           : '<td colspan="5" class="muted">Can’t kill</td>'}
         </tr>`).join('') + '</tbody>';
   }
