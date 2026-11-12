@@ -932,10 +932,11 @@ const SOURCES = {
       { mesh: 'body_static', name: `belly_${side}`, tris: true, bone: new RegExp(`^${b}_clamp\\d_2$`) },
       { mesh: 'body_static', name: `belly_${side}_plate`, tris: true, box: b === 'l' ? [[-0.9, 5.6, -3.5], [0, 6.0, 4.1]] : [[0, 5.6, -3.5], [0.9, 6.0, 4.1]] },
     ])).concat([
-      // the neck's mount sticking out at the front (Neck), then the hull: faces looking down are the belly (left /
-      // right), the front end the Front Armor, the rear end the Rear Armor, the rest between them the Side Armor
+      // the neck's mount sticking out at the front (Neck), then the hull: the underside between the legs (faces looking
+      // down, only seen from below) is the belly (left / right), the front end the Front Armor, the rear end the Rear
+      // Armor, the rest between them (overhangs seen from the side too) the Side Armor
       { mesh: 'body_static', name: 'neck_mount', tris: true, bone: /^neck/ },
-      { mesh: 'body_static', classify: (c, n) => (n[1] < -0.5 ? `belly_${c[0] < 0 ? 'left' : 'right'}_hull`
+      { mesh: 'body_static', classify: (c, n) => (n[1] < -0.5 && c[1] < 5.9 && Math.abs(c[0]) < 1.75 && c[2] > -3.9 && c[2] < 4.3 ? `belly_${c[0] < 0 ? 'left' : 'right'}_hull`
         : c[2] < -3.9 ? 'front_hull' : c[2] > 4.3 ? 'rear_hull' : `side_${c[0] < 0 ? 'left' : 'right'}_hull`) },
     ]),
     rules: [
