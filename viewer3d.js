@@ -692,18 +692,13 @@ function blastHits(h, outer) {
   const meshes = [...current.meshes.map((m) => m.mesh).filter(live), ...directColliders()];
   const pieceOf = (m) => { const i = partIndexFor(current, m.userData.key); return i < 0 ? null : `${i}:${instanceFor(current, m.userData.key, i)}`; };
   const local = new THREE.Vector3(), hitAt = { point: new THREE.Vector3() }, dir = new THREE.Vector3(), v3 = new THREE.Vector3();
-  // can the blast reach point p of this piece? The enemy's own body doesn't shield its other parts (the game checks
-  // its hitzones, not the drawn plating: a big blast on one side still reaches the far side); only a shield in the
-  // way stops it (a Devastator's, the Harvester's bubble)
-  const parts = lastDetail?.enemy.parts || [];
-  const blockers = meshes.filter((m) => /shield/i.test(parts[partIndexFor(current, m.userData.key)]?.name || '') && !/generator/i.test(parts[partIndexFor(current, m.userData.key)]?.name || ''));
+  // can the blast see point p of this piece? (nothing else in the way; non-hitzone meshes block too)
   const sees = (p, id) => {
-    if (!blockers.length) return true;
     const len = dir.copy(p).sub(centre).length();
     if (len < 1e-4) return true;
     blastRay.set(centre, dir.divideScalar(len));
     blastRay.far = len + 1e-3;
-    const first = blastRay.intersectObjects(blockers, false)[0];
+    const first = blastRay.intersectObjects(meshes, false)[0];
     return !first || first.distance >= len - 0.02 || pieceOf(first.object) === id;
   };
   for (const mesh of meshes) {

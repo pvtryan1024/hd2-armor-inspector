@@ -1314,7 +1314,6 @@
       const reached = hit.blastHits || Object.entries(hit.parts || {}).map(([k, d]) => ({ idx: +k, k: null, d }));
       for (const b of reached) {
         if ((b.idx === hit.idx && (b.k == null || b.k === hit.k)) || b.d > radii.outer) continue;
-        if (!blastReaches(e, b)) continue; // still under its plate
         const sx = shotDamage(mode, e.parts[b.idx], e, { ...o, noProj: true, exDist: b.d });
         rows.push({ idx: b.idx, k: b.k, dist: b.d, s: sx }); // listed even when the armor stops it
       }
@@ -1336,10 +1335,6 @@
     return { mode, band, rows, radii, thru, shrap };
   }
 
-  /** The 3D blast isn't stopped by the enemy's own plating (viewer3d blastHits), so a part still covered by
-   *  armor (fire mode: its plate not broken yet) is left out here instead. */
-  const blastReaches = (e, b) => !state.fire || !state.sim || isExposed(e, b.idx, state.sim, b.k);
-
   /** A shot into the ground next to the enemy (3D view): no part is struck, so only the explosion counts:
    *  every piece the blast rays reach takes falloff damage (Main's share once per blast), plus shrapnel. */
   function resolveGround(hit, mode, band, o) {
@@ -1348,7 +1343,7 @@
     const rows = [];
     if (radii) {
       for (const b of hit.blastHits || []) {
-        if (b.d > radii.outer || !blastReaches(e, b)) continue;
+        if (b.d > radii.outer) continue;
         rows.push({ idx: b.idx, k: b.k, dist: b.d, s: shotDamage(mode, e.parts[b.idx], e, { ...o, noProj: true, exDist: b.d }) });
       }
       rows.sort((a, b) => a.dist - b.dist);
