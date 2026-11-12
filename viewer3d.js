@@ -469,6 +469,8 @@ function hitzoneMaterial() {
   return mat;
 }
 
+// editing with a mesh selected: how see-through every other part is
+const DIM = 0.12;
 function paint() {
   if (!current || !lastDetail) return;
   const { colors, gone, goneInst, colorMode, ap4, avs, bands } = lastDetail;
@@ -491,7 +493,7 @@ function paint() {
     } else if (i >= 0 && editing && i !== selPart) {
       u.uAngle.value = 0;
       u.uFlat.value.copy(OTHER_PART);
-      mat.opacity = 1;
+      mat.opacity = selectedKey ? DIM : 1; // see-through while a mesh is selected, so the selected part stands out
     } else if (i >= 0) {
       u.uAngle.value = angleMode ? 1 : 0;
       u.uFlat.value.set(colors[i]);
@@ -502,7 +504,7 @@ function paint() {
     } else {
       u.uAngle.value = 0;
       u.uFlat.value.copy(UNMAPPED);
-      mat.opacity = editing ? 0.9 : 0.5;
+      mat.opacity = editing ? (selectedKey && key !== selectedKey ? DIM : 0.9) : 0.5;
     }
     if (bands) u.uMax.value.set(bands[0].max, bands[1].max, bands[2].max);
     mat.depthWrite = mat.opacity >= 1;
