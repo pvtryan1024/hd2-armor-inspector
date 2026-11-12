@@ -25,12 +25,17 @@
     "hip": "Crotch Armor",
     "arm_right_whole": "Right Arm",
     "arm_right_lower_armor": "Limb Armor",
-    "leg_right_upper": "Legs (2)"
+    "leg_right_upper": "Legs (2)",
+    "torso_damaged": "Torso",
+    "hip_damaged": "Main"
   },
   "hidden": [
     "arm_left_lower_armor_damaged",
-    "hip_gib",
+    "hip_damaged",
     "head_gib",
-    "torso_gib"
+    "torso_damaged"
+  ],
+  "vanish": [
+    "Limb Armor"
   ]
 }

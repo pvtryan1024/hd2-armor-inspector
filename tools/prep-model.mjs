@@ -587,6 +587,8 @@ const OVERSEER = [
   [/^jetpack$/, 'Jetpack'],
 ];
 // the Elevated / Crescent Overseer list their limb plates as one "Limb Armor" hitzone
+// the body under the chest and crotch armor: shown (and shot) once the armor breaks, like the Agitator's
+const OVERSEER_INSIDE = { torso_gib: 'torso_damaged', hip_gib: 'hip_damaged' };
 const OVERSEER_1 = OVERSEER.map(([re, p]) => [re, p === 'Limb Armor (8)' ? 'Limb Armor' : p]);
 const IL = 'content/fac_illuminate/';
 
@@ -880,9 +882,9 @@ const SOURCES = {
   'light-voteless': { src: IL + 'cha_corrupted/cha_corrupted.unit.glb', rules: VOTELESS },
   'medium-voteless': { src: IL + 'cha_corrupted/cha_corrupted_v2.unit.glb', rules: VOTELESS },
   'heavy-voteless': { src: IL + 'cha_corrupted/cha_corrupted_v3.unit.glb', rules: VOTELESS },
-  overseer: { src: IL + 'cha_illuminate_guy_staff/cha_illuminate_guy_staff.unit.glb', rules: OVERSEER },
-  'elevated-overseer': { src: IL + 'cha_jet_champion/cha_jet_champion.unit.glb', rules: OVERSEER_1 },
-  'crescent-overseer': { src: IL + 'cha_beamer_champion/cha_beamer_champion.unit.glb', rules: [[/^beamer_champion_pack/, 'Backpack'], ...OVERSEER_1] },
+  overseer: { src: IL + 'cha_illuminate_guy_staff/cha_illuminate_guy_staff.unit.glb', names: OVERSEER_INSIDE, rules: OVERSEER },
+  'elevated-overseer': { src: IL + 'cha_jet_champion/cha_jet_champion.unit.glb', names: OVERSEER_INSIDE, rules: OVERSEER_1 },
+  'crescent-overseer': { src: IL + 'cha_beamer_champion/cha_beamer_champion.unit.glb', names: OVERSEER_INSIDE, rules: [[/^beamer_champion_pack/, 'Backpack'], ...OVERSEER_1] },
   watcher: {
     src: IL + 'cha_observer/cha_observer.unit.glb',
     rules: [[/^base$/, 'Body'], [/^eye(_whole)?$/, 'Eye'], [/^wing_top(_whole)?$/, 'Upper Fin'], [/^wing_bottom(_whole)?$/, 'Lower Fin'], [/^wing_(left|right)(_whole)?$/, 'Side Fins (2)']],

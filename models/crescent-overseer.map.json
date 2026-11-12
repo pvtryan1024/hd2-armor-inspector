@@ -24,12 +24,17 @@
     "leg_left_lower": "Legs (2)",
     "leg_left_upper": "Legs (2)",
     "arm_left_whole": "Left Arm",
-    "beamer_champion_pack_LOD1": "Backpack"
+    "beamer_champion_pack_LOD1": "Backpack",
+    "torso_damaged": "Torso",
+    "hip_damaged": "Main"
   },
   "hidden": [
     "head_gib",
-    "hip_gib",
+    "hip_damaged",
     "arm_left_lower_armor_damaged",
-    "torso_gib"
+    "torso_damaged"
+  ],
+  "vanish": [
+    "Limb Armor"
   ]
 }

@@ -23,12 +23,17 @@
     "leg_right_lower_armor": "Limb Armor (8)",
     "leg_left_whole": "Legs (2)",
     "arm_right_upper": "Right Arm",
-    "leg_right_upper_armor": "Limb Armor (8)"
+    "leg_right_upper_armor": "Limb Armor (8)",
+    "torso_damaged": "Torso",
+    "hip_damaged": "Main"
   },
   "hidden": [
-    "torso_gib",
+    "torso_damaged",
     "arm_left_lower_armor_damaged",
     "head_gib",
-    "hip_gib"
+    "hip_damaged"
+  ],
+  "vanish": [
+    "Limb Armor (8)"
   ]
 }
