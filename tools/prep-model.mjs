@@ -511,8 +511,15 @@ function cutBox(doc, node, cut) {
     if (!inside.length) continue;
     const p = prim.clone(); p.setIndices(idx(inside)); out.push(p);
     prim.setIndices(idx(rest));
+    if (!rest.length) node.getMesh().removePrimitive(prim); // nothing left of it (an empty primitive breaks the encoder)
   }
-  if (!out.length) { console.warn(`cut ${cut.name}: nothing inside the box`); return []; }
+  if (!out.length) { console.warn(`cut ${cut.name || cut.into}: nothing inside the box`); return []; }
+  // into: the cut joins an existing mesh (the Factory Strider's ankle plates go with their lower leg plate)
+  if (cut.into) {
+    const target = doc.getRoot().listNodes().find((x) => x.getMesh() && x.getName() === cut.into);
+    if (target) { out.forEach((p) => target.getMesh().addPrimitive(p)); return []; }
+    console.warn(`cut into ${cut.into}: no such mesh`); return [];
+  }
   if (cut.rest) { node.setName(cut.rest); node.getMesh().setName(cut.rest); }
   const m = doc.createMesh(cut.name);
   out.forEach((p) => m.addPrimitive(p));
@@ -872,8 +879,21 @@ const SOURCES = {
       'g_body 0x16ce220f': 'side_left',
       'g_body 0xa6f944fb': 'side_left_damaged'
     },
+    // body_static is the frame with everything hung on it (wiki hitzone images): per leg the small ankle plate
+    // (Leg Armor, joined to the lower leg plate) and the rest of the leg's joints and feet (Leg Assembly); the eight
+    // hanging pods and the flat panels under the belly, left and right (Belly Panels)
+    cuts: [['l', 'left'], ['r', 'right']].flatMap(([b, side]) => ['front', 'back'].flatMap((fb) => [
+      { mesh: 'body_static', into: `leg_lower_${side}_${fb}`, tris: true, bone: new RegExp(`^${b}_${fb}_leg_knee_front_shield$`) },
+      { mesh: 'body_static', name: `leg_assembly_${side}_${fb}`, tris: true, bone: new RegExp(`^${b}_${fb}_leg_`) },
+    ]).concat([
+      { mesh: 'body_static', name: `belly_${side}`, tris: true, bone: new RegExp(`^${b}_clamp\\d_2$`) },
+      { mesh: 'body_static', name: `belly_${side}_plate`, tris: true, box: b === 'l' ? [[-0.9, 5.6, -3.5], [0, 6.0, 4.1]] : [[0, 5.6, -3.5], [0.9, 6.0, 4.1]] },
+    ])),
     rules: [
-      [/^armor_head(_whole)?$/, 'Head Armor'], [/^(head(_whole)?|head)$/, 'Head Body'], [/^neck(_whole)?$/, 'Neck'],
+      [/^armor_head(_whole)?$/, 'Head Armor'], [/^(head(_whole)?|head)$/, 'Head Body'], [/^neck(_whole)?$/, 'Neck Armor'], [/^neck_damaged$/, 'Neck'],
+      [/^(top)_(left|right)$/, 'Front Engine Weakspot'], [/^side_(left|right)$/, 'Side Armor (2)'], [/^side_(left|right)_damaged$/, 'Side Circuits (2)'],
+      [/^armor_front_damaged$/, 'Circuits Front'], [/^armor_rear_damaged$/, 'Rear Circuits'],
+      [/^leg_assembly_(left|right)_(front|back)$/, 'Leg Assembly (4)'], [/^belly_(left|right)(_plate)?$/, 'Belly Panels (2)'],
       [/^armor_front(_whole)?$/, 'Front Armor'], [/^front(_whole)?$/, 'Front Top Armor'], [/^armor_rear(_whole)?$/, 'Rear Armor'],
       [/^engine_rear(_whole)?$/, 'Rear Engine Armor'], [/^body_static$/, 'Main'], [/^(top|side)_(left|right)$/, 'Main'],
       [/^knee_(armor|(left|right)_(front|back))$/, 'Knee Armor (4)'], [/^leg_(armor|(upper|lower)_(left|right)_(front|back))$/, 'Leg Armor (8)'], [/^leg_assembly$/, 'Leg Assembly (4)'], [/^neck$/, 'Neck'], [/^body$/, 'Main'],
