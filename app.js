@@ -210,17 +210,19 @@
 
     let partEx = 0, exMult = null;
     const mainExBy = []; // Main's redirected share, per explosion (each blast gives it once)
+    const partExBy = []; // the part's own blast damage, per explosion
     // an explosive round that ricochets doesn't go off (explosion-only weapons always do)
     const ricochet = !mode.explosionOnly && !mode.proximity && !opts.noProj && (mode.damage || 0) > 0 && !m;
     if (opts.explosion && !ricochet) exList(mode).forEach((ex, j) => {
-      mainExBy[j] = 0;
+      mainExBy[j] = 0; partExBy[j] = 0;
       if (!(ex.damage || ex.durable)) return;
       const blast = blastAt(ex, opts.exDist || 0);
       const e = (ex.durable ?? ex.damage) * blast.mult;
       const pm = blast.mult > 0 ? penMult(blast.ap, part.av) : 0;
       if (pm != null && (exMult == null || pm > exMult)) exMult = pm;
       const exdr = part.exdr ?? 0;
-      partEx += pm == null ? 0 : Math.floor(e * (1 - exdr) * pm);
+      partExBy[j] = pm == null ? 0 : Math.floor(e * (1 - exdr) * pm);
+      partEx += partExBy[j];
       // redirected share skips Main's ExDR but still needs AP ≥ Main's AV
       const main = mainPart(enemy);
       if (blast.mult > 0 && !isMainRow(part) && (!main || blast.ap >= main.av)) mainExBy[j] = Math.floor(e * exdr);
@@ -244,7 +246,7 @@
       const f = shotDamage(shrapnelMode(mode), part, enemy, { ...opts, noShrap: true, explosion: false });
       shrap = f.proj * mode.shrapnel.count;
     }
-    return { proj: proj + shrap, partEx, mainEx, mainExBy, demo, pen: opts.noProj ? null : m, exPen: exMult, total: proj + shrap + partEx, ap, range: rangeMult(mode, opts.dist), ricochet, shrap };
+    return { proj: proj + shrap, partEx, partExBy, mainEx, mainExBy, demo, pen: opts.noProj ? null : m, exPen: exMult, total: proj + shrap + partEx, ap, range: rangeMult(mode, opts.dist), ricochet, shrap };
   }
 
   /** One shrapnel fragment of a mode, as a projectile of its own. */
@@ -1283,15 +1285,29 @@
 
   /** Main takes each explosion's redirected share once: per explosion, only the row with the biggest share
    *  keeps it (ties: the first row, the struck piece or the nearest). */
-  function onceMain(rows) {
+  // Main takes each explosion once: when the blast also reaches Main's own hitbox (a Hulk's body next to the leg
+  // that was shot), Main takes the larger of its own blast damage and the redirected share, not both (in game a
+  // full-charge Epoch on a Hulk leg doesn't kill: 382 impact share + 800 blast, not + another 800)
+  function onceMain(rows, enemy) {
     const n = Math.max(0, ...rows.map((r) => r.s.mainExBy?.length || 0));
     const keep = rows.map(() => []);
+    const mainRows = enemy ? rows.filter((r) => isMainRow(enemy.parts[r.idx]) && r.s.partExBy) : [];
+    const own = mainRows.map((r) => [...r.s.partExBy]);
     for (let j = 0; j < n; j++) {
-      const top = Math.max(0, ...rows.map((r) => r.s.mainExBy?.[j] || 0));
+      let top = Math.max(0, ...rows.map((r) => r.s.mainExBy?.[j] || 0));
       const at = top > 0 ? rows.findIndex((r) => (r.s.mainExBy?.[j] || 0) === top) : -1;
+      const mine = Math.max(0, ...own.map((x) => x[j] || 0));
+      if (top > 0 && mine > 0) {
+        if (mine >= top) top = 0; // Main's own hit counts
+        else own.forEach((x) => { x[j] = 0; }); // the redirected share counts
+      }
       rows.forEach((r, i) => { keep[i][j] = i === at ? top : 0; });
     }
     rows.forEach((r, i) => { r.s = { ...r.s, mainExBy: keep[i], mainEx: keep[i].reduce((x, y) => x + y, 0) }; });
+    mainRows.forEach((r, m) => {
+      const partEx = own[m].reduce((x, y) => x + y, 0), d = r.s.partEx - partEx;
+      if (d) r.s = { ...r.s, partExBy: own[m], partEx, total: r.s.total - d };
+    });
   }
 
   /** Damage from one shot at a 3D impact point: the struck part takes projectile + full blast, other parts
@@ -1342,7 +1358,7 @@
         const sx = shotDamage(mode, e.parts[b.idx], e, { ...o, noProj: true, exDist: b.d });
         rows.push({ idx: b.idx, k: b.k, dist: b.d, s: sx }); // listed even when the armor stops it
       }
-      onceMain(rows);
+      onceMain(rows, e);
     }
     // shrapnel: each fragment ray hits one piece at its own angle; fragments on the same piece add up
     let shrap = null;
@@ -1379,7 +1395,7 @@
         rows.push({ idx: b.idx, k: b.k, dist: b.d, s: shotDamage(mode, e.parts[b.idx], e, { ...o, noProj: true, exDist: b.d }) });
       }
       rows.sort((a, b) => a.dist - b.dist);
-      onceMain(rows);
+      onceMain(rows, e);
     }
     let shrap = null;
     if (mode.shrapnel && state.explosion && hit.shrapHits) {
