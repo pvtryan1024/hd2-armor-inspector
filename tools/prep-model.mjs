@@ -1131,7 +1131,11 @@ const SOURCES = {
   'illuminate-overship': { src: 'extra/0xe7074f10233cd0b8.unit.glb', boneNames: false, rules: MAIN_ONLY },
   veracitor: {
     src: IL + 'cha_exomech_melee/cha_exomech_melee.unit.glb',
-    names: { ...EXO_NAMES, '0x2ff60211': 'head', '0xf8af7b9b': 'head_damaged', 'udim 64': 'pilot_bit' },
+    // the Veracitor's carapace plates and rear leg plates have their intact and broken copies the other way round from
+    // the Gatekeeper's (the intact rear leg keeps its hoses; the broken carapace is shards)
+    names: { ...EXO_NAMES, '0x2ff60211': 'head', '0xf8af7b9b': 'head_damaged', 'udim 64': 'pilot_bit',
+      '0xcfa4901f': 'carapace_left', '0x9a7fe8aa': 'carapace_left_damaged', '0xfa94cb4a': 'carapace_right', '0x56621e5b': 'carapace_right_damaged',
+      '0x4ef4c920': 'legarmor_upper_back', '0x77e2d756': 'legarmor_upper_back_damaged', '0x5293aa9c': 'legarmor_lower_back', '0xb92d4db2': 'legarmor_lower_back_damaged' },
     cuts: [
       ...EXO_HIPS,
       // the Arm Weakspots: the oval cell on the outer side of each forearm, by the elbow
