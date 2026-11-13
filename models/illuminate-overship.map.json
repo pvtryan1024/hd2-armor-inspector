@@ -1,7 +1,22 @@
 {
   "enemy": "illuminate-overship",
   "meshes": {
-    "g_il_mothership": "Main"
+    "g_il_mothership": "Main",
+    "port_0x": "Port",
+    "port_1x": "Port",
+    "port_2x": "Port",
+    "port_3x": "Port",
+    "port_4x": "Port",
+    "port_5x": "Port",
+    "port_6x": "Port",
+    "port_7x": "Port",
+    "shield_bubble": "Shield"
   },
-  "hidden": []
+  "hidden": [],
+  "vanish": [
+    "Shield"
+  ],
+  "glass": [
+    "Shield"
+  ]
 }

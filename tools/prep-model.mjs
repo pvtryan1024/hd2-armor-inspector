@@ -545,7 +545,13 @@ function cutBox(doc, node, cut) {
         const I = prim.getIndices(), tri = [I.getScalar(t), I.getScalar(t + 1), I.getScalar(t + 2)], c = [0, 0, 0];
         for (const i of tri) posed(i).forEach((v, k) => { c[k] += v / 3; });
         // with bone: the triangle goes when that bone drives most of its corners (a jaw welded to the head)
-        const ok = cut.bone ? tri.filter(byBone).length >= 2 : c.every((v, k) => v >= cut.box[0][k] && v <= cut.box[1][k]);
+        // cyl: { a, b, r }: the triangle's centre within r of the segment a-b (a round hole along any axis)
+        const inCyl = (cy) => {
+          const ab = [0, 1, 2].map((k) => cy.b[k] - cy.a[k]), ac = [0, 1, 2].map((k) => c[k] - cy.a[k]);
+          const t = Math.max(0, Math.min(1, (ab[0] * ac[0] + ab[1] * ac[1] + ab[2] * ac[2]) / (ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2)));
+          return Math.hypot(...[0, 1, 2].map((k) => ac[k] - ab[k] * t)) <= cy.r;
+        };
+        const ok = cut.bone ? tri.filter(byBone).length >= 2 : cut.cyl ? inCyl(cut.cyl) : c.every((v, k) => v >= cut.box[0][k] && v <= cut.box[1][k]);
         (ok ? inside : rest).push(...tri);
       }
     } else for (const sh of shellsOf(prim)) {
@@ -1105,7 +1111,7 @@ const SOURCES = {
     src: IL + 'cha_exomech_ranged/cha_exomech_ranged.unit.glb',
     // wiki hitzone images; a broken leg plate (upper or lower) opens the leg under it, a broken arm plate the arm;
     // the pilot's shield goes when the shield generator is destroyed (build-data GONE_WITH) and leaves nothing behind
-    vanish: ['Shield'],
+    vanish: ['Shield'], glass: ['Shield'], // the pilot's shield is drawn see-through, like the warp ship's
     // the damaged arm meshes are the guns (the arm_*_whole meshes are split into gun, cells and arm)
     names: { ...EXO_NAMES, arm_left_whole: 'gun_left', arm_right_whole: 'gun_right', arm_left_damaged: 'gun_left_damaged', arm_right_damaged: 'gun_right_damaged' },
     cuts: [
@@ -1147,11 +1153,21 @@ const SOURCES = {
       holes: [[[-10.4, 2.2, -6.7], [-3.2, 4.8, -0.6]], [[3.2, 2.2, -6.7], [10.4, 4.8, -0.6]]], centre: [0, 5.2, 2.6], pad: 0.5, ring: 160, seg: 320, dilate: 2, smooth: 3 }],
     vanish: ['Shield'], glass: ['Shield'],
     rules: [[/^bay_door_(left|right)$/, 'Bay Door (2)'], [/^hull$/, 'Main'], [/^shield_bubble$/, 'Shield']] },
-  'illuminate-overship': { src: 'extra/0xe7074f10233cd0b8.unit.glb', boneNames: false, rules: MAIN_ONLY },
+  // wiki: the Ports are the glowing cavities in the eight ring housings under the cap (each a cup facing outward), cut
+  // out round each hole's axis; the shield follows the whole ship's outline (its surface pushed out), drawn see-through
+  'illuminate-overship': { src: 'extra/0xe7074f10233cd0b8.unit.glb', boneNames: false,
+    cuts: [...Array(8).keys()].map((k) => {
+      const t = (k * Math.PI) / 4, d = [Math.cos(t), 0, Math.sin(t)];
+      return { mesh: 'g_il_mothership', name: `port_${k}x`, tris: true, cyl: { a: [d[0] * 120, 245.4, d[2] * 120], b: [d[0] * 240, 245.4, d[2] * 240], r: 23 } };
+    }),
+    shapes: [{ name: 'shield_bubble', copyOf: ['g_il_mothership', ...[...Array(8).keys()].map((k) => `port_${k}x`)], centre: [0, 100, 0], scale: [1, 1, 1], inflate: 6 }],
+    vanish: ['Shield'], glass: ['Shield'],
+    rules: [[/^port_\dx$/, 'Port'], [/^shield_bubble$/, 'Shield'], [/^g_il_mothership$/, 'Main']] },
   veracitor: {
     src: IL + 'cha_exomech_melee/cha_exomech_melee.unit.glb',
     // the Veracitor's carapace plates and rear leg plates have their intact and broken copies the other way round from
     // the Gatekeeper's (the intact rear leg keeps its hoses; the broken carapace is shards)
+    glass: ['Shield'], // the pilot's shield is drawn see-through, like the warp ship's
     names: { ...EXO_NAMES, '0x2ff60211': 'head', '0xf8af7b9b': 'head_damaged', 'udim 64': 'pilot_bit',
       '0xcfa4901f': 'carapace_left', '0x9a7fe8aa': 'carapace_left_damaged', '0xfa94cb4a': 'carapace_right', '0x56621e5b': 'carapace_right_damaged',
       '0x4ef4c920': 'legarmor_upper_back', '0x77e2d756': 'legarmor_upper_back_damaged', '0x5293aa9c': 'legarmor_lower_back', '0xb92d4db2': 'legarmor_lower_back_damaged' },

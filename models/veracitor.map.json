@@ -70,5 +70,8 @@
     "hipbar_left_damaged",
     "hipbar_right_damaged",
     "hipbar_back_damaged"
+  ],
+  "glass": [
+    "Shield"
   ]
 }

@@ -89,6 +89,8 @@ const COVERS = [
   { enemy: /^(gatekeeper|veracitor)$/i, parts: { 'Pilot': ['Shield'] } },
   // the landed warp ship's bay doors are inside its shield bubble
   { enemy: /^grounded warp ship$/i, parts: { 'Bay Door (2)': ['Shield'] } },
+  // the Overship's ports are behind its shield (wiki: it has to be down before the ports can be hit)
+  { enemy: /^illuminate overship$/i, parts: { 'Port': ['Shield'] } },
 ];
 
 // What a projectile reaches after over-penetrating a part (inner hitboxes aren't meshes in the models).
