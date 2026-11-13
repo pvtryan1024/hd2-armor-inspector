@@ -154,9 +154,8 @@ const COVER_PIECES = [{ enemy: /overseer/i, parts: { 'Left Arm': [[0, 1]], 'Righ
 const THROW_KILL = [{ enemy: /^vox engine$/i, part: /^Hatches/ }];
 // gaps: covered parts the 3D view lets you hit wherever a shot gets between the plates (the Overseers' limbs: the
 // limb armor covers them for the tables and body map, but aiming for the gaps reaches the arm or leg)
-const GAPS = [{ enemy: /overseer/i, part: /^(Right Arm|Left Arm|Legs \(2\))$/ },
-  // the exomech pilot: in 3D a shot past the edge of the shield reaches him
-  { enemy: /^(gatekeeper|veracitor)$/i, part: /^Pilot$/ }];
+// (not the exomech pilot: the shield in front of him has no gaps in game, so in 3D too he needs the shield gone first)
+const GAPS = [{ enemy: /overseer/i, part: /^(Right Arm|Left Arm|Legs \(2\))$/ }];
 const ALSO_COVERED = [{ enemy: /^Rupture Charger$/, parts: { 'Leg Flesh (4)': 'Frontal Tarsal Plate Armor (2)' } }];
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
