@@ -374,7 +374,7 @@
    *  - the impact broke a plate that covers another part: the explosion lands on that part instead
    *    (Charger Behemoth leg: the AC-8's AP 3 blast can't hurt the AV 4 plate, but it hits the exposed AV 2
    *    flesh; verified in game: AC-8 kills in 8 where AMR needs 9 and Railgun 7 like the simulation, so surplus
-   *    damage itself never carries over)
+   *    damage itself never carries over; also: plate broken by AC-8 APHET then 7 Hot-Shots on the flesh, by AMR 8)
    *  - the impact destroyed the piece and nothing is under it: the explosion meets the destroyed piece
    *    (only an overflow part still passes damage on to Main)
    *  Plain rounds and explosion-only weapons are applied in one go. o.combined: the old all-at-once sum. */
