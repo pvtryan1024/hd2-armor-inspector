@@ -1101,7 +1101,9 @@ const SOURCES = {
   // archive clues: the ranged exomech is the Gatekeeper; the Obtruder shares the Watcher's body
   gatekeeper: {
     src: IL + 'cha_exomech_ranged/cha_exomech_ranged.unit.glb',
-    // wiki hitzone images; a broken leg plate (upper or lower) opens the leg under it, a broken arm plate the arm
+    // wiki hitzone images; a broken leg plate (upper or lower) opens the leg under it, a broken arm plate the arm;
+    // the pilot's shield goes when the shield generator is destroyed (build-data GONE_WITH) and leaves nothing behind
+    vanish: ['Shield'],
     // the damaged arm meshes are the guns (the arm_*_whole meshes are split into gun, cells and arm)
     names: { ...EXO_NAMES, arm_left_whole: 'gun_left', arm_right_whole: 'gun_right', arm_left_damaged: 'gun_left_damaged', arm_right_damaged: 'gun_right_damaged' },
     cuts: [
@@ -1444,6 +1446,7 @@ async function prep(id) {
       else if (rule) map.meshes[n] = rule[1];
       if (HIDE.test(n) || cfg.hide?.includes(n)) map.hidden.push(n);
     }
+    if (cfg.vanish) map.vanish = cfg.vanish; // parts that leave nothing behind once destroyed
     fs.writeFileSync(mapPath, JSON.stringify(map, null, 2) + '\n');
     const unassigned = names.filter((n) => !map.meshes[n] && !map.hidden.includes(n));
     note = `map: ${Object.keys(map.meshes).length} assigned, ${map.hidden.length} hidden, unassigned: ${unassigned.join(', ') || 'none'}`;

@@ -132,6 +132,9 @@ const GONE_WITH = [
   { enemy: /^leviathan$/i, part: /^Turrets \(4\)$/, with: 'Front Fins (2)', inst: 1, pieces: [2, 3] },
   // Vox Engine: a destroyed track takes the latch on its pod with it
   { enemy: /^vox engine$/i, part: /^Trackpod Latches \(4\)$/, with: 'Tracks (4)' },
+  // the Gatekeeper's shield over the pilot is powered by the shield generator (the spine at the front): destroying the
+  // generator drops the shield
+  { enemy: /^gatekeeper$/i, part: /^Shield$/, with: 'Shield Generator' },
 ];
 // which pieces of the covering part sit over each piece of this one (the Overseer's 8 limb plates, in the 3D
 // model's piece order: arm L lower/upper, arm R lower/upper, leg L lower/upper, leg R lower/upper)

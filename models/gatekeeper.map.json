@@ -75,5 +75,8 @@
     "hipbar_right_damaged",
     "hipbar_back_damaged",
     "rear_weakspot_damaged"
+  ],
+  "vanish": [
+    "Shield"
   ]
 }
