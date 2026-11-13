@@ -1145,15 +1145,13 @@ const SOURCES = {
       // (its top, the cylinders and pipes, the inner side by the spine) is Chassis
       { mesh: 'carapace_left', name: 'carapace_left', rest: 'chassis_block_left', tris: true, box: [[-1.5, 5.7, -1.6], [-0.62, 7.12, 1.8]] },
       { mesh: 'carapace_right', name: 'carapace_right', rest: 'chassis_block_right', tris: true, box: [[0.62, 5.7, -1.6], [1.5, 7.12, 1.8]] },
-      // the Arm Weakspots: the oval cell on the outer side of each forearm, by the elbow
-      { mesh: 'arm_left_whole', name: 'armweak_left', tris: true, box: [[-2.9, 2.9, -2.3], [-1.8, 3.8, -0.7]] },
-      { mesh: 'arm_right_whole', name: 'armweak_right', tris: true, box: [[1.8, 2.9, -2.3], [2.9, 3.8, -0.7]] },
     ],
     split: { mesh: /^generic_whole$/, bones: VR_BONES },
-    // the cell's grill inside the oval is on the body's forearm piece
+    // the Arm Weakspots: the grill inside the oval on the outer side of each forearm, by the elbow (on the body's forearm
+    // piece; the oval rim around it is the Lower Arm)
     cutsAfterSplit: [
-      { mesh: 'forearm_left', name: 'armvent_left', tris: true, box: [[-2.9, 2.9, -2.3], [-1.8, 3.8, -0.7]] },
-      { mesh: 'forearm_right', name: 'armvent_right', tris: true, box: [[1.8, 2.9, -2.3], [2.9, 3.8, -0.7]] },
+      { mesh: 'forearm_left', name: 'armvent_left', tris: true, box: [[-2.9, 2.95, -2.3], [-1.8, 3.62, -0.7]] },
+      { mesh: 'forearm_right', name: 'armvent_right', tris: true, box: [[1.8, 2.95, -2.3], [2.9, 3.62, -0.7]] },
     ],
     rules: [
       [/^cockpit(_whole|_frame)?$/, 'Cockpit'], [/^cockpit_weakspot$/, 'Cockpit Weakspot'],
