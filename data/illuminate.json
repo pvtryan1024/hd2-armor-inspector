@@ -1987,14 +1987,14 @@
     ]
   },
   {
-    "id": "warp-ship",
-    "name": "Warp Ship",
+    "id": "grounded-warp-ship",
+    "name": "Grounded Warp Ship",
     "faction": "Illuminate",
-    "url": "https://helldivers.wiki.gg/wiki/Warp_Ship",
+    "url": "https://helldivers.wiki.gg/wiki/Grounded_Warp_Ship",
     "parts": [
       {
         "name": "Main",
-        "health": 3500,
+        "health": 5000,
         "av": 5,
         "durable": 1,
         "toMain": null,
@@ -2002,82 +2002,24 @@
         "constitution": null,
         "fatal": true,
         "exdr": 0,
-        "location": ""
+        "location": "",
+        "demolition": 50
       },
       {
-        "name": "Beamer",
-        "health": 1000,
-        "av": 5,
-        "durable": 1,
-        "toMain": 1,
-        "overflow": false,
-        "constitution": "1,500 [-0/s]",
-        "fatal": true,
-        "exdr": 1,
-        "location": "Front, Side, Bottom"
-      },
-      {
-        "name": "Frontal Fuselage (2)",
+        "name": "Bay Door (2)",
         "count": 2,
-        "health": 1000,
-        "av": 5,
-        "durable": 1,
-        "toMain": 1,
-        "overflow": false,
-        "constitution": null,
-        "fatal": false,
-        "exdr": 1,
-        "location": "Front, Side, Bottom"
-      },
-      {
-        "name": "Rear Fuselage (2)",
-        "count": 2,
-        "health": 1000,
-        "av": 5,
-        "durable": 1,
-        "toMain": 1,
-        "overflow": false,
-        "constitution": null,
-        "fatal": false,
-        "exdr": 1,
-        "location": "Rear, Bottom, Side"
-      },
-      {
-        "name": "Engine",
         "health": "main",
-        "av": 5,
-        "durable": 1,
+        "av": 0,
+        "durable": 0,
         "toMain": 1,
-        "overflow": true,
+        "overflow": null,
         "constitution": null,
-        "fatal": false,
-        "exdr": 1,
-        "location": "Rear, Bottom, Side"
-      },
-      {
-        "name": "Stern (2)",
-        "count": 2,
-        "health": 1000,
-        "av": 5,
-        "durable": 1,
-        "toMain": 1,
-        "overflow": true,
-        "constitution": null,
-        "fatal": false,
-        "exdr": 1,
-        "location": "Rear, Bottom, Side"
-      },
-      {
-        "name": "Bow",
-        "health": 1000,
-        "av": 5,
-        "durable": 1,
-        "toMain": 1,
-        "overflow": true,
-        "constitution": null,
-        "fatal": false,
-        "exdr": 1,
-        "location": "Front, Side, Bottom"
+        "fatal": true,
+        "exdr": 0,
+        "location": "Side",
+        "demolition": 20,
+        "demolitionBlast": true,
+        "note": "Destroyed by an explosive with demolition force 20 or more (grenades, explosive primaries and support weapons); the wiki lists one door"
       },
       {
         "name": "Shield",
@@ -2089,7 +2031,8 @@
         "constitution": null,
         "fatal": false,
         "exdr": 0,
-        "location": "Front, Side, Bottom"
+        "location": "Front, Side, Rear",
+        "note": "Recharges 15 s after it breaks, at 200 HP/s"
       }
     ]
   },

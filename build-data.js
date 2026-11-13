@@ -87,6 +87,8 @@ const COVERS = [
   { enemy: /^gatekeeper$/i, parts: { 'Arms (Broken Armor) (2)': ['Arm Armor (2)'], 'Legs (Broken Armor) (3)': ['Leg Armor (6)'] } },
   // the exomechs' shield sits in front of the pilot like armor (gone once broken, or with the Gatekeeper's shield generator)
   { enemy: /^(gatekeeper|veracitor)$/i, parts: { 'Pilot': ['Shield'] } },
+  // the landed warp ship's bay doors are inside its shield bubble
+  { enemy: /^grounded warp ship$/i, parts: { 'Bay Door (2)': ['Shield'] } },
 ];
 
 // What a projectile reaches after over-penetrating a part (inner hitboxes aren't meshes in the models).

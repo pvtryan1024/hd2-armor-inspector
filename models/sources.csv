@@ -145,6 +145,6 @@ obtruder,Obtruder,Illuminate,models/obtruder.glb,body,,content/fac_illuminate/ch
 overseer,Overseer,Illuminate,models/overseer.glb,body,,content/fac_illuminate/cha_illuminate_guy_staff/cha_illuminate_guy_staff,,,cd552726e679d434 (Armored Overseer + Staff); 9230ae99f0ee6c03 (Overseer Only)
 stingray,Stingray,Illuminate,models/stingray.glb,body,,content/fac_illuminate/vehicles/illuminate_attack_ship/illuminate_attack_ship,,,9c42c3028d67fb2a
 veracitor,Veracitor,Illuminate,models/veracitor.glb,body,,content/fac_illuminate/cha_exomech_melee/cha_exomech_melee,,,687d548654b91be6
-warp-ship,Warp Ship,Illuminate,models/warp-ship.glb,body,0x43cca7488df95ad2,,,,046d4441a6dae0a9 (8422338628769435505)
+grounded-warp-ship,Grounded Warp Ship,Illuminate,models/grounded-warp-ship.glb,body,0x43cca7488df95ad2,,,,046d4441a6dae0a9 (8422338628769435505)
 watcher,Watcher,Illuminate,models/watcher.glb,body,,content/fac_illuminate/cha_observer/cha_observer,,,046d4441a6dae0a9 (12421182327299345565)
 wretch,Wretch,Illuminate,models/wretch.glb,body,,content/fac_illuminate/cha_bodyhorror_bladed/cha_bodyhorror_bladed,,,8cc398a6c1e8c051

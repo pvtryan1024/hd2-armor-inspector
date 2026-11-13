@@ -1134,7 +1134,14 @@ const SOURCES = {
     src: IL + 'cha_observer/cha_observer.unit.glb',
     rules: [[/^base$/, 'Body'], [/^eye(_whole)?$/, 'Eye'], [/^wing_(top|bottom)(_whole)?$/, 'Vertical Fins (2)'], [/^wing_(left|right)(_whole)?$/, 'Lateral Fins (2)']],
   },
-  'warp-ship': { src: 'extra/0x43cca7488df95ad2.unit.glb', rules: MAIN_ONLY },
+  // the landed Warp Ship (wiki: Grounded Warp Ship): the Bay Doors are the doorways at the top of the ramp on each side;
+  // the hull, ramps and legs are Main (the shield bubble has no mesh)
+  'grounded-warp-ship': { src: 'extra/0x43cca7488df95ad2.unit.glb', names: { '0x83da4c92': 'hull' },
+    cuts: [
+      { mesh: 'hull', name: 'bay_door_left', box: [[-10.1, 2.5, -6.4], [-3.5, 4.6, -0.9]] },
+      { mesh: 'hull', name: 'bay_door_right', box: [[3.5, 2.5, -6.4], [10.1, 4.6, -0.9]] },
+    ],
+    rules: [[/^bay_door_(left|right)$/, 'Bay Door (2)'], [/^hull$/, 'Main']] },
   'illuminate-overship': { src: 'extra/0xe7074f10233cd0b8.unit.glb', boneNames: false, rules: MAIN_ONLY },
   veracitor: {
     src: IL + 'cha_exomech_melee/cha_exomech_melee.unit.glb',

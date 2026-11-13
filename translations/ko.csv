@@ -386,6 +386,7 @@ enemy,Veracitor,버레이시터,enemy list,,真言者,check,真言者,check,ヴ�
 enemy,Crusher,크러셔,enemy list,,碾压者,check,碾壓者,check,クラッシャー,check,Crusher,check,Crusher,check,Crusher,check,Crusher,check,Крушитель,check,Crusher,check
 enemy,Wretch,렛치,enemy list,,可怜虫,check,可憐蟲,check,レッチ,check,Wretch,check,Wretch,check,Wretch,check,Wretch,check,Wretch,check,Wretch,check
 enemy,Warp Ship,워프 함선,enemy list,,跃迁舰,check,躍遷艦,check,ワープシップ,check,Warpschiff,check,Warp Ship,check,Warp Ship,check,Warp Ship,check,Варп-корабль,check,Warp Ship,check
+enemy,Grounded Warp Ship,착륙한 워프 함선,enemy list,check,着陆的跃迁舰,check,著陸的躍遷艦,check,着陸したワープシップ,check,Gelandetes Warpschiff,check,Vaisseau de distorsion au sol,check,Nave de distorsión aterrizada,check,Nave di curvatura atterrata,check,Приземлившийся варп-корабль,check,Приземлений варп-корабель,check
 enemy,Illuminate Overship,오버쉽,enemy list,,光能者母舰,check,光能者母艦,check,イルミネイト・オーバーシップ,check,Illuminate Overship,check,Illuminate Overship,check,Illuminate Overship,check,Illuminate Overship,check,Флагман иллюминатов,check,Illuminate Overship,check
 enemy,Gazer,게이저,enemy list,,凝视者,check,凝視者,check,ゲイザー,check,Gazer,check,Gazer,check,Gazer,check,Gazer,check,Gazer,check,Gazer,check
 enemy,Gazer Spire,게이저 스파이어,enemy list,,凝视者尖塔,check,凝視者尖塔,check,ゲイザー・スパイア,check,Gazer Spire,check,Gazer Spire,check,Gazer Spire,check,Gazer Spire,check,Шпиль Gazer,check,Gazer Spire,check
@@ -451,6 +452,7 @@ part,Shoulders,어깨,hitzones,check,双肩,check,雙肩,check,肩,check,Schulte
 part,Stomach,배,hitzones,check,腹部,check,腹部,check,腹,check,Bauch,check,Estomac,check,Estómago,check,Stomaco,check,Живот,check,Живіт,check
 part,Pelvis,골반,hitzones,check,骨盆,check,骨盆,check,骨盤,check,Becken,check,Bassin,check,Pelvis,check,Bacino,check,Таз,check,Таз,check
 part,Shield,방패,hitzones,check,盾牌,check,盾牌,check,シールド,check,Schild,check,Bouclier,check,Escudo,check,Scudo,check,Щит,check,Щит,check
+part,Bay Door (2),격납고 문 (2),hitzones,check,舱门 (2),check,艙門 (2),check,ベイドア (2),check,Hangartor (2),check,Porte de soute (2),check,Compuerta (2),check,Portellone (2),check,Створка отсека (2),check,Стулка відсіку (2),check
 part,Rockets,로켓,hitzones,check,火箭,check,火箭,check,ロケット,check,Raketen,check,Roquettes,check,Cohetes,check,Razzi,check,Ракеты,check,Ракети,check
 part,Rocket Pods,로켓 포드,hitzones,check,火箭巢,check,火箭巢,check,ロケットポッド,check,Raketenkapseln,check,Lance-roquettes,check,Lanzacohetes,check,Pod lanciarazzi,check,Ракетные блоки,check,Ракетні блоки,check
 part,Chest,가슴,hitzones,check,胸部,check,胸部,check,胸部,check,Brust,check,Poitrine,check,Pecho,check,Petto,check,Грудь,check,Груди,check
