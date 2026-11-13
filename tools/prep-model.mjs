@@ -1141,12 +1141,11 @@ const SOURCES = {
       { mesh: 'hull', name: 'bay_door_left', box: [[-10.1, 2.5, -6.4], [-3.5, 4.6, -0.9]] },
       { mesh: 'hull', name: 'bay_door_right', box: [[3.5, 2.5, -6.4], [10.1, 4.6, -0.9]] },
     ],
-    // the shield: a scaled-up copy of the saucer body hugging it (over the doorways too, as if shut); the legs and lowered
-    // ramps stick out below it. Main and the bay doors are behind it; it vanishes once broken and is drawn see-through (map glass)
-    shapes: [{ name: 'shield_bubble', copyOf: ['hull', 'bay_door_left', 'bay_door_right'], minY: 1.35, lowSmall: { maxY: 2.9, size: 3 }, centre: [0, 5.4, 2.6], scale: [1.03, 1.03, 1.02], inflate: 0.45 },
-      { name: 'shield_door_left', slab: [[-10.3, 2.15, -6.6], [-3.3, 2.35, -0.7]] }, { name: 'shield_door_right', slab: [[3.3, 2.15, -6.6], [10.3, 2.35, -0.7]] }],
+    // the shield: a scaled-up copy of the saucer body hugging it, the lowered ramps included (so it closes over the doorways
+    // and the inside); only the legs stick out. Main and the bay doors are behind it; it vanishes once broken and is drawn see-through (map glass)
+    shapes: [{ name: 'shield_bubble', copyOf: ['hull', 'bay_door_left', 'bay_door_right'], minY: 1.35, keep: [[[-10.3, -0.2, -6.4], [-5.1, 3.0, -1.2]], [[5.1, -0.2, -6.4], [10.3, 3.0, -1.2]]], lowSmall: { maxY: 2.9, size: 3 }, centre: [0, 5.4, 2.6], scale: [1.03, 1.03, 1.02], inflate: 0.45 }],
     vanish: ['Shield'], glass: ['Shield'],
-    rules: [[/^bay_door_(left|right)$/, 'Bay Door (2)'], [/^hull$/, 'Main'], [/^shield_(bubble|door_left|door_right)$/, 'Shield']] },
+    rules: [[/^bay_door_(left|right)$/, 'Bay Door (2)'], [/^hull$/, 'Main'], [/^shield_bubble$/, 'Shield']] },
   'illuminate-overship': { src: 'extra/0xe7074f10233cd0b8.unit.glb', boneNames: false, rules: MAIN_ONLY },
   veracitor: {
     src: IL + 'cha_exomech_melee/cha_exomech_melee.unit.glb',
@@ -1401,10 +1400,12 @@ async function prep(id) {
         for (const prim of node.getMesh().listPrimitives()) {
           const P = prim.getAttribute('POSITION'), N = prim.getAttribute('NORMAL'), remap = new Map();
           for (const shell of shellsOf(prim)) {
-            if (shell.box[0][1] < (sh.minY ?? -Infinity)) continue;
+            // keep: pieces kept whatever their height (the lowered ramps: the shield covers them too)
+            const kept = (sh.keep || []).some(([klo, khi]) => [0, 1, 2].every((d) => shell.box[0][d] >= klo[d] && shell.box[1][d] <= khi[d]));
+            if (!kept && shell.box[0][1] < (sh.minY ?? -Infinity)) continue;
             // small pieces low on the hull (the tops of the legs) stick out too
             const [lo, hi] = shell.box;
-            if (sh.lowSmall && hi[1] < sh.lowSmall.maxY && hi[0] - lo[0] < sh.lowSmall.size && hi[2] - lo[2] < sh.lowSmall.size) continue;
+            if (!kept && sh.lowSmall && hi[1] < sh.lowSmall.maxY && hi[0] - lo[0] < sh.lowSmall.size && hi[2] - lo[2] < sh.lowSmall.size) continue;
             for (const i of shell.tris) {
               if (!remap.has(i)) {
                 remap.set(i, pos.length / 3);
