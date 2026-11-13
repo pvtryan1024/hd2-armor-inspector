@@ -85,6 +85,8 @@ const COVERS = [
   { enemy: /^dragonroach$/i, parts: { 'Thorax Innards': ['Thorax Sac'], 'Abdomen Innards': ['Abdomen Sac'] } },
   // Gatekeeper: a broken arm plate opens that arm, a broken leg plate (upper or lower) that leg
   { enemy: /^gatekeeper$/i, parts: { 'Arms (Broken Armor) (2)': ['Arm Armor (2)'], 'Legs (Broken Armor) (3)': ['Leg Armor (6)'] } },
+  // the exomechs' shield sits in front of the pilot like armor (gone once broken, or with the Gatekeeper's shield generator)
+  { enemy: /^(gatekeeper|veracitor)$/i, parts: { 'Pilot': ['Shield'] } },
 ];
 
 // What a projectile reaches after over-penetrating a part (inner hitboxes aren't meshes in the models).
@@ -152,7 +154,9 @@ const COVER_PIECES = [{ enemy: /overseer/i, parts: { 'Left Arm': [[0, 1]], 'Righ
 const THROW_KILL = [{ enemy: /^vox engine$/i, part: /^Hatches/ }];
 // gaps: covered parts the 3D view lets you hit wherever a shot gets between the plates (the Overseers' limbs: the
 // limb armor covers them for the tables and body map, but aiming for the gaps reaches the arm or leg)
-const GAPS = [{ enemy: /overseer/i, part: /^(Right Arm|Left Arm|Legs \(2\))$/ }];
+const GAPS = [{ enemy: /overseer/i, part: /^(Right Arm|Left Arm|Legs \(2\))$/ },
+  // the exomech pilot: in 3D a shot past the edge of the shield reaches him
+  { enemy: /^(gatekeeper|veracitor)$/i, part: /^Pilot$/ }];
 const ALSO_COVERED = [{ enemy: /^Rupture Charger$/, parts: { 'Leg Flesh (4)': 'Frontal Tarsal Plate Armor (2)' } }];
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
