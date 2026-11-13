@@ -118,6 +118,7 @@ const W = 'content/fac_cyborgs/equipment/';
 const GEAR = {
   rifle: W + 'weapons/soldier_standard_rifle/soldier_standard_rifle.unit.glb',
   machinegun: W + 'weapons/soldier_machinegun/soldier_machinegun.unit.glb',
+  riotgun: W + 'weapons/soldier_riotgun/soldier_riotgun.unit.glb', // the Devastator shotgun (Conflagration Devastator)
   shield: W + 'weapons/soldier_shield/soldier_shield.unit.glb',
   chainsaw: W + 'weapons/soldier_chainsaw/soldier_chainsaw.unit.glb',
   hulkCannon: W + 'weapons/lieutenant_cannon/lieutenant_cannon.unit.glb',
@@ -213,8 +214,8 @@ const LOADOUT = {
   'jet-brigade-trooper': [JUMP],
   'jet-brigade-commissar': [JUMP, LEFT_BLADE],
   commissar: [LEFT_BLADE],
-  'jet-brigade-devastator': [{ src: GEAR.rifle, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.sJump, bone: 'attach_backpack', name: 'jetpack', part: 'Jetpack' }],
-  'conflagration-devastator': [{ src: GEAR.shield, bone: 'attach_shield', name: 'shield', part: 'Shield' }],
+  'jet-brigade-devastator': [{ src: GEAR.rifle, bone: 'attach_r_hand', name: 'weapon_right', part: 'Arms (2)' }, { src: GEAR.sJump, bone: 'attach_backpack', name: 'jetpack', part: 'Jetpack' }],
+  'conflagration-devastator': [{ src: GEAR.riotgun, bone: 'attach_r_hand', name: 'weapon_right', part: 'Arms (2)' }, { src: GEAR.shield, bone: 'attach_shield', name: 'shield', part: 'Shield' }],
   'incendiary-mg-devastator': [{ src: GEAR.machinegun, bone: 'attach_r_hand', name: 'weapon_right' }, { src: GEAR.shield, bone: 'attach_shield', name: 'shield', part: 'Shield' }],
   'annihilator-tank': [{ src: GEAR.tankCannon, bone: 'attach_turret', name: 'turret', part: 'Turret Front' }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
   'shredder-tank': [{ src: GEAR.tankAuto, bone: 'attach_turret', name: 'turret', part: 'Turret Front and Sides' }, { src: GEAR.tankMg, bone: 'attach_mg', name: 'hull_mg' }],
@@ -884,7 +885,8 @@ const SOURCES = {
       { mesh: 'skin_chest', name: 'skin_side_right', tris: true, box: [[0.24, 1.9, -1], [1, 2.4, 1]] }],
     rules: [[/^head(_whole)?$/, 'Head'], [/^armor_torso$/, 'Torso Circuits'], [/^(left|right)_shoulderpad$/, 'Pauldron'], [/^(left|right)_arm(_whole)?$/, 'Upper Arms (2)'], [/^skin_side_(left|right)$/, 'Main'], ...ELITE_SKIN('Torso Circuits')],
   },
-  'jet-brigade-devastator': { src: CY + 'cha_soldier/cha_soldier.unit.glb', rules: DEVASTATOR },
+  // the arms split and named like the Devastator's (left / right, the shoulders go with their arm: build-data GONE_WITH)
+  'jet-brigade-devastator': { src: CY + 'cha_soldier/cha_soldier.unit.glb', names: DEVASTATOR_ARMS, rules: [[/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] },
   'conflagration-devastator': { src: CY + 'cha_soldier/cha_soldier_heavy_weapon.unit.glb', pose: SHIELD_ARM_UP, stretch: SHIELD_ARM_REACH, names: DEVASTATOR_ARMS, rules: [[/^weapon_backpack(_whole)?$/, 'Main'], [/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] }, // the shield body
   'incendiary-mg-devastator': { src: CY + 'cha_soldier/cha_soldier_heavy_weapon.unit.glb', pose: SHIELD_ARM_UP, stretch: SHIELD_ARM_REACH, names: DEVASTATOR_ARMS, rules: [[/^weapon_backpack(_whole)?$/, 'Main'], [/^arm_(left|right)_/, 'Arms (2)'], ...DEVASTATOR] }, // the shield body
   'annihilator-tank': tank('Hull Sides (2)', ANNIHILATOR_HEATSINK),
