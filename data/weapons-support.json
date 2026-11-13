@@ -1330,6 +1330,32 @@
     ]
   },
   {
+    "id": "planetary-defense-cannon",
+    "name": "Planetary Defense Cannon",
+    "category": "Orbital",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/Take_Down_Overship#Detailed_Planetary_Defense_Cannon_Statistics",
+    "rpm": null,
+    "mag": null,
+    "modes": [
+      {
+        "name": "Shell",
+        "damage": 8400,
+        "durable": 8400,
+        "ap": 10,
+        "pellets": 1,
+        "explosion": {
+          "damage": 1000,
+          "durable": 1000,
+          "ap": 6,
+          "innerRadius": 4,
+          "outerRadius": 12
+        },
+        "note": "The Take Down Overship objective cannon (wiki: the only thing that destroys an Overship since patch 1.006.100). Shell AP Anti-Tank VI (10) except extreme angles (unarmored); blast AP Anti-Tank II (6) inside 4 m, I (5) out to 12 m"
+      }
+    ]
+  },
+  {
     "id": "a-mg-43-machine-gun-sentry",
     "name": "A/MG-43 Machine Gun Sentry",
     "category": "Sentry",

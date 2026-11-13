@@ -520,5 +520,13 @@
       10,
       10
     ]
+  },
+  "planetary-defense-cannon": {
+    "Shell": [
+      10,
+      10,
+      10,
+      0
+    ]
   }
 }

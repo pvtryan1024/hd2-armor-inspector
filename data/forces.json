@@ -2247,5 +2247,18 @@
    }
   },
   "note": ""
+ },
+ "planetary-defense-cannon": {
+  "modes": {
+   "Shell": {
+    "stagger": 60,
+    "push": 30,
+    "demolition": 60,
+    "exStagger": 70,
+    "exPush": 60,
+    "exDemolition": 50
+   }
+  },
+  "note": ""
  }
 }

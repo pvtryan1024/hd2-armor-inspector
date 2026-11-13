@@ -987,5 +987,16 @@
         "apOuter": 9
       }
     }
+  },
+  "planetary-defense-cannon": {
+    "Shell": {
+      "explosion": {
+        "inner": 4,
+        "outer": 12,
+        "shockwave": 18,
+        "ap": 6,
+        "apOuter": 5
+      }
+    }
   }
 }
