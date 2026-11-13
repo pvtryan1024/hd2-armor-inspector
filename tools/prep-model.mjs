@@ -1141,6 +1141,10 @@ const SOURCES = {
       '0x4ef4c920': 'legarmor_upper_back', '0x77e2d756': 'legarmor_upper_back_damaged', '0x5293aa9c': 'legarmor_lower_back', '0xb92d4db2': 'legarmor_lower_back_damaged' },
     cuts: [
       ...EXO_HIPS,
+      // Carapace (wiki images): only the outer side plate of each engine block, under the spine; the rest of the block
+      // (its top, the cylinders and pipes, the inner side by the spine) is Chassis
+      { mesh: 'carapace_left', name: 'carapace_left', rest: 'chassis_block_left', tris: true, box: [[-1.5, 5.7, -1.6], [-0.62, 7.12, 1.8]] },
+      { mesh: 'carapace_right', name: 'carapace_right', rest: 'chassis_block_right', tris: true, box: [[0.62, 5.7, -1.6], [1.5, 7.12, 1.8]] },
       // the Arm Weakspots: the oval cell on the outer side of each forearm, by the elbow
       { mesh: 'arm_left_whole', name: 'armweak_left', tris: true, box: [[-2.9, 2.9, -2.3], [-1.8, 3.8, -0.7]] },
       { mesh: 'arm_right_whole', name: 'armweak_right', tris: true, box: [[1.8, 2.9, -2.3], [2.9, 3.8, -0.7]] },
@@ -1154,7 +1158,7 @@ const SOURCES = {
     rules: [
       [/^cockpit(_whole|_frame)?$/, 'Cockpit'], [/^cockpit_weakspot$/, 'Cockpit Weakspot'],
       [/^pilot(_whole|_body|_bit)?$/, 'Pilot'], [/^shield(_whole)?$/, 'Shield'], [/^head$/, 'Head'],
-      [/^(chassis_top|body)$/, 'Chassis'], [/^carapace_(left|right)$/, 'Carapace (2)'], [/^carapace_(left|right)_damaged$/, 'Internals (2)'],
+      [/^(chassis_top|body|chassis_block_(left|right))$/, 'Chassis'], [/^carapace_(left|right)$/, 'Carapace (2)'], [/^carapace_(left|right)_damaged$/, 'Internals (2)'],
       [/^(shoulder|collar)_(left|right)(_whole)?$/, 'Shoulders (2)'], [/^(bicep|upperarm)_(left|right)(_whole)?$/, 'Upper Arms (2)'],
       [/^(arm|forearm)_(left|right)(_whole)?$/, 'Lower Arms (2)'], [/^arm(weak|vent)_(left|right)$/, 'Arm Weakspots (2)'],
       [/^(legarmor_upper|legup)_(left|right)$/, 'Upper Legs (2)'], [/^(legarmor_lower|leglow)_(left|right)$/, 'Lower Legs (2)'],
