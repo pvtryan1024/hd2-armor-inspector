@@ -509,6 +509,8 @@ function paint() {
       u.uAV.value = avs[i];
       const k = goneInst?.[i] ? instanceFor(current, key, i) : null;
       mat.opacity = (k != null ? goneInst[i][k] : gone[i]) ? 0.15 : 1;
+      // map glass: a see-through part (the Grounded Warp Ship's shield bubble), still hit by shots
+      if (current.map.glass?.includes(lastDetail.enemy.parts[i]?.name)) mat.opacity = Math.min(mat.opacity, 0.3);
     } else {
       u.uAngle.value = 0;
       u.uFlat.value.copy(UNMAPPED);
@@ -1024,7 +1026,7 @@ $('#v3Save').addEventListener('click', async () => {
   // inner hitboxes are saved too (the auto-placed ones become fixed once saved)
   const colliders = (current.colliders || []).map(({ def }) => (def.shape === 'box' ? { part: def.part, shape: 'box', centre: def.centre, size: def.size, ...(def.direct ? { direct: true } : {}), ...(def.detonate ? { detonate: true } : {}) }
     : { part: def.part, from: def.from.map((v) => +(+v).toFixed(4)), to: def.to.map((v) => +(+v).toFixed(4)), radius: def.radius, ...(def.direct ? { direct: true } : {}) }));
-  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(current.map.vanish ? { vanish: current.map.vanish } : {}), ...(current.map.opens ? { opens: current.map.opens } : {}), ...(colliders.length ? { colliders } : {}), ...(current.map.inside ? { inside: current.map.inside } : {}) }, null, 2);
+  const body = JSON.stringify({ enemy: currentId, meshes: current.map.meshes, hidden: current.map.hidden, ...(current.map.after ? { after: current.map.after } : {}), ...(current.map.vanish ? { vanish: current.map.vanish } : {}), ...(current.map.glass ? { glass: current.map.glass } : {}), ...(current.map.opens ? { opens: current.map.opens } : {}), ...(colliders.length ? { colliders } : {}), ...(current.map.inside ? { inside: current.map.inside } : {}) }, null, 2);
   if (SERVED) {
     try {
       const r = await fetch(`api/map/${encodeURIComponent(currentId)}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });

@@ -3,7 +3,14 @@
   "meshes": {
     "hull": "Main",
     "bay_door_left": "Bay Door (2)",
-    "bay_door_right": "Bay Door (2)"
+    "bay_door_right": "Bay Door (2)",
+    "shield_bubble": "Shield"
   },
-  "hidden": []
+  "hidden": [],
+  "vanish": [
+    "Shield"
+  ],
+  "glass": [
+    "Shield"
+  ]
 }

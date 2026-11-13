@@ -1135,13 +1135,17 @@ const SOURCES = {
     rules: [[/^base$/, 'Body'], [/^eye(_whole)?$/, 'Eye'], [/^wing_(top|bottom)(_whole)?$/, 'Vertical Fins (2)'], [/^wing_(left|right)(_whole)?$/, 'Lateral Fins (2)']],
   },
   // the landed Warp Ship (wiki: Grounded Warp Ship): the Bay Doors are the doorways at the top of the ramp on each side;
-  // the hull, ramps and legs are Main (the shield bubble has no mesh)
+  // the hull, ramps and legs are Main
   'grounded-warp-ship': { src: 'extra/0x43cca7488df95ad2.unit.glb', names: { '0x83da4c92': 'hull' },
     cuts: [
       { mesh: 'hull', name: 'bay_door_left', box: [[-10.1, 2.5, -6.4], [-3.5, 4.6, -0.9]] },
       { mesh: 'hull', name: 'bay_door_right', box: [[3.5, 2.5, -6.4], [10.1, 4.6, -0.9]] },
     ],
-    rules: [[/^bay_door_(left|right)$/, 'Bay Door (2)'], [/^hull$/, 'Main']] },
+    // the shield: a bubble over the saucer body (and over the doorways when shut); the legs and lowered ramps stick out
+    // below it. Main and the bay doors are behind it; it vanishes once broken and is drawn see-through (map glass)
+    shapes: [{ name: 'shield_bubble', ellipsoid: { centre: [0, 5.6, 2.6], radii: [12.4, 4.4, 17.6], e: [0.45, 0.6] } }],
+    vanish: ['Shield'], glass: ['Shield'],
+    rules: [[/^bay_door_(left|right)$/, 'Bay Door (2)'], [/^hull$/, 'Main'], [/^shield_bubble$/, 'Shield']] },
   'illuminate-overship': { src: 'extra/0xe7074f10233cd0b8.unit.glb', boneNames: false, rules: MAIN_ONLY },
   veracitor: {
     src: IL + 'cha_exomech_melee/cha_exomech_melee.unit.glb',
@@ -1365,6 +1369,43 @@ async function prep(id) {
     if (cut.rest && made.length) names[names.indexOf(cut.mesh)] = cut.rest, made.pop();
     names.push(...made);
   }
+  // shapes: [{ name, ellipsoid: { centre, radii } }]: a made-up mesh for a hitbox the export has no geometry for (the
+  // Grounded Warp Ship's shield bubble)
+  for (const sh of cfg.shapes || []) {
+    // e: [horizontal, vertical] roundness (1 = ellipsoid, smaller = boxier: a flat saucer needs a squarish bubble)
+    const { centre: c, radii: r, e = [1, 1] } = sh.ellipsoid, seg = 64, ring = 32, pos = [], nor = [], ix = [];
+    const sp = (w, k) => Math.sign(w) * Math.abs(w) ** k;
+    for (let i = 0; i <= ring; i++) {
+      const th = (i / ring) * Math.PI, st = Math.sin(th), ct = Math.cos(th);
+      for (let j = 0; j <= seg; j++) {
+        const ph = (j / seg) * Math.PI * 2, x = sp(st, e[1]) * sp(Math.cos(ph), e[0]), y = sp(ct, e[1]), z = sp(st, e[1]) * sp(Math.sin(ph), e[0]);
+        pos.push(c[0] + r[0] * x, c[1] + r[1] * y, c[2] + r[2] * z);
+        nor.push(0, 0, 0);
+      }
+    }
+    for (let i = 0; i < ring; i++) for (let j = 0; j < seg; j++) { const a = i * (seg + 1) + j, b = a + seg + 1; ix.push(a, a + 1, b, b, a + 1, b + 1); } // wound outward
+    // vertex normals from the faces round each vertex (outward)
+    for (let t = 0; t < ix.length; t += 3) {
+      const [p, q, s] = [ix[t], ix[t + 1], ix[t + 2]].map((k) => pos.slice(k * 3, k * 3 + 3));
+      const u = [q[0] - p[0], q[1] - p[1], q[2] - p[2]], v = [s[0] - p[0], s[1] - p[1], s[2] - p[2]];
+      const fn = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+      for (const k of [ix[t], ix[t + 1], ix[t + 2]]) for (let d = 0; d < 3; d++) nor[k * 3 + d] += fn[d];
+    }
+    for (let k = 0; k < nor.length; k += 3) {
+      const out = [pos[k] - c[0], pos[k + 1] - c[1], pos[k + 2] - c[2]];
+      let n = [nor[k], nor[k + 1], nor[k + 2]];
+      if (n[0] * out[0] + n[1] * out[1] + n[2] * out[2] < 0) n = n.map((x) => -x);
+      const l = Math.hypot(...n) || 1; nor[k] = n[0] / l; nor[k + 1] = n[1] / l; nor[k + 2] = n[2] / l;
+    }
+    const buffer = root.listBuffers()[0];
+    const prim = doc.createPrimitive()
+      .setAttribute('POSITION', doc.createAccessor().setType('VEC3').setArray(new Float32Array(pos)).setBuffer(buffer))
+      .setAttribute('NORMAL', doc.createAccessor().setType('VEC3').setArray(new Float32Array(nor)).setBuffer(buffer))
+      .setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(ix)).setBuffer(buffer))
+      .setMaterial(doc.createMaterial(sh.name).setBaseColorFactor([0.4, 0.7, 1, 0.3]).setAlphaMode('BLEND'));
+    root.listScenes()[0].addChild(doc.createNode(sh.name).setMesh(doc.createMesh(sh.name).addPrimitive(prim)));
+    names.push(sh.name);
+  }
   // copies: { mesh: copyName }: a second mesh with the same geometry (the Factory Strider's hull under its plates
   // shows again as the circuits once the plate breaks: hull_x_damaged)
   for (const [from, to] of Object.entries(cfg.copies || {})) {
@@ -1456,6 +1497,7 @@ async function prep(id) {
       if (HIDE.test(n) || cfg.hide?.includes(n)) map.hidden.push(n);
     }
     if (cfg.vanish) map.vanish = cfg.vanish; // parts that leave nothing behind once destroyed
+    if (cfg.glass) map.glass = cfg.glass; // parts drawn see-through (a shield bubble round the body)
     fs.writeFileSync(mapPath, JSON.stringify(map, null, 2) + '\n');
     const unassigned = names.filter((n) => !map.meshes[n] && !map.hidden.includes(n));
     note = `map: ${Object.keys(map.meshes).length} assigned, ${map.hidden.length} hidden, unassigned: ${unassigned.join(', ') || 'none'}`;
