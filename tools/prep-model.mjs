@@ -1141,9 +1141,10 @@ const SOURCES = {
       { mesh: 'hull', name: 'bay_door_left', box: [[-10.1, 2.5, -6.4], [-3.5, 4.6, -0.9]] },
       { mesh: 'hull', name: 'bay_door_right', box: [[3.5, 2.5, -6.4], [10.1, 4.6, -0.9]] },
     ],
-    // the shield: a scaled-up copy of the saucer body hugging it, the lowered ramps included (so it closes over the doorways
-    // and the inside); only the legs stick out. Main and the bay doors are behind it; it vanishes once broken and is drawn see-through (map glass)
-    shapes: [{ name: 'shield_bubble', copyOf: ['hull', 'bay_door_left', 'bay_door_right'], minY: 1.35, keep: [[[-10.3, -0.2, -6.4], [-5.1, 3.0, -1.2]], [[5.1, -0.2, -6.4], [10.3, 3.0, -1.2]]], lowSmall: { maxY: 2.9, size: 3 }, centre: [0, 5.4, 2.6], scale: [1.03, 1.03, 1.02], inflate: 0.45 }],
+    // the shield: a smooth shell hugging the saucer body, running straight across the doorway recesses (as if the doors
+    // were shut and covering the inside); the legs and lowered ramps stick out of it. Main and the bay doors are behind it; it vanishes once broken and is drawn see-through (map glass)
+    shapes: [{ name: 'shield_bubble', wrap: ['hull', 'bay_door_left', 'bay_door_right'], minY: 1.35, lowSmall: { maxY: 2.9, size: 3 },
+      holes: [[[-10.4, 2.2, -6.7], [-3.2, 4.8, -0.6]], [[3.2, 2.2, -6.7], [10.4, 4.8, -0.6]]], centre: [0, 5.2, 2.6], pad: 0.5, ring: 160, seg: 320, dilate: 2, smooth: 3 }],
     vanish: ['Shield'], glass: ['Shield'],
     rules: [[/^bay_door_(left|right)$/, 'Bay Door (2)'], [/^hull$/, 'Main'], [/^shield_bubble$/, 'Shield']] },
   'illuminate-overship': { src: 'extra/0xe7074f10233cd0b8.unit.glb', boneNames: false, rules: MAIN_ONLY },
@@ -1374,6 +1375,81 @@ async function prep(id) {
   for (const sh of cfg.shapes || []) {
     // copyOf: [meshes]: a scaled-up copy of those meshes round centre (a shield hugging the hull), leaving out pieces
     // that reach below minY (legs, lowered ramps: they stick out through it)
+    // wrap: a smooth shell round meshes (a shield bubble hugging a saucer): rays from centre in every direction, each taking
+    // the farthest hit on the meshes; pieces reaching below minY (legs, lowered ramps) and triangles inside holes (doorway
+    // recesses) are left out, and the directions that then hit nothing are filled in smoothly from their neighbours, so
+    // the shell runs straight across openings and the legs / ramps stick out of it; pad pushes it out
+    if (sh.wrap) {
+      const c = sh.centre, R = sh.ring || 72, S = sh.seg || 144, tris = [];
+      for (const nm of sh.wrap) {
+        const node = root.listNodes().find((x) => x.getMesh() && x.getName() === nm);
+        if (!node) { console.warn(`${id}: no mesh ${nm} to wrap for ${sh.name}`); continue; }
+        for (const prim of node.getMesh().listPrimitives()) {
+          const P = prim.getAttribute('POSITION');
+          for (const shell of shellsOf(prim)) {
+            const [lo, hi] = shell.box;
+            if (lo[1] < (sh.minY ?? -Infinity)) continue;
+            if (sh.lowSmall && hi[1] < sh.lowSmall.maxY && hi[0] - lo[0] < sh.lowSmall.size && hi[2] - lo[2] < sh.lowSmall.size) continue;
+            for (let t = 0; t < shell.tris.length; t += 3) {
+              const p = [0, 1, 2].map((q) => P.getElement(shell.tris[t + q], [0, 0, 0]).slice());
+              const m = [0, 1, 2].map((d) => (p[0][d] + p[1][d] + p[2][d]) / 3);
+              if ((sh.holes || []).some(([hl, hh]) => m.every((x, d) => x >= hl[d] && x <= hh[d]))) continue;
+              tris.push(p);
+            }
+          }
+        }
+      }
+      // farthest hit along each direction (Moller-Trumbore)
+      const dirOf = (i, j) => { const th = (i / R) * Math.PI, ph = (j / S) * Math.PI * 2; return [Math.sin(th) * Math.cos(ph), Math.cos(th), Math.sin(th) * Math.sin(ph)]; };
+      const far = (d) => {
+        let best = -1;
+        for (const [a, b, e] of tris) {
+          const e1 = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], e2 = [e[0] - a[0], e[1] - a[1], e[2] - a[2]];
+          const pv = [d[1] * e2[2] - d[2] * e2[1], d[2] * e2[0] - d[0] * e2[2], d[0] * e2[1] - d[1] * e2[0]];
+          const det = e1[0] * pv[0] + e1[1] * pv[1] + e1[2] * pv[2];
+          if (Math.abs(det) < 1e-9) continue;
+          const inv = 1 / det, tv = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+          const u = (tv[0] * pv[0] + tv[1] * pv[1] + tv[2] * pv[2]) * inv; if (u < 0 || u > 1) continue;
+          const qv = [tv[1] * e1[2] - tv[2] * e1[1], tv[2] * e1[0] - tv[0] * e1[2], tv[0] * e1[1] - tv[1] * e1[0]];
+          const v = (d[0] * qv[0] + d[1] * qv[1] + d[2] * qv[2]) * inv; if (v < 0 || u + v > 1) continue;
+          const t = (e2[0] * qv[0] + e2[1] * qv[1] + e2[2] * qv[2]) * inv;
+          if (t > best) best = t;
+        }
+        return best;
+      };
+      const r = [], hole = [];
+      for (let i = 0; i <= R; i++) { r.push([]); hole.push([]); for (let j = 0; j < S; j++) { const t = far(dirOf(i, j)); r[i].push(t > 0 ? t : 0); hole[i].push(!(t > 0)); } }
+      // fill the holes from their neighbours, then soften everything a little
+      const nb = (i, j) => [[i - 1, j], [i + 1, j], [i, (j + 1) % S], [i, (j + S - 1) % S]].filter(([a]) => a >= 0 && a <= R);
+      for (let it = 0; it < 400; it++) for (let i = 0; i <= R; i++) for (let j = 0; j < S; j++) if (hole[i][j]) { const n = nb(i, j); r[i][j] = n.reduce((s, [a, b]) => s + r[a][b], 0) / n.length; }
+      // grow sharp features (thin plates, spike tips) a cell or two so the shell doesn't cut through them
+      for (let it = 0; it < (sh.dilate ?? 0); it++) { const r2 = r.map((row) => row.slice()); for (let i = 0; i <= R; i++) for (let j = 0; j < S; j++) for (const [a2, b2] of nb(i, j)) r[i][j] = Math.max(r[i][j], r2[a2][b2]); }
+      for (let it = 0; it < (sh.smooth ?? 2); it++) { const r2 = r.map((row) => row.slice()); for (let i = 0; i <= R; i++) for (let j = 0; j < S; j++) { const n = nb(i, j); r[i][j] = Math.max(r2[i][j], (r2[i][j] * 2 + n.reduce((s, [a, b]) => s + r2[a][b], 0)) / (n.length + 2)); } }
+      const pos = [], ix = [];
+      for (let i = 0; i <= R; i++) for (let j = 0; j <= S; j++) { const d = dirOf(i, j % S), rr = r[i][j % S] + (sh.pad || 0); pos.push(c[0] + d[0] * rr, c[1] + d[1] * rr, c[2] + d[2] * rr); }
+      for (let i = 0; i < R; i++) for (let j = 0; j < S; j++) { const a = i * (S + 1) + j, b = a + S + 1; ix.push(a, a + 1, b, b, a + 1, b + 1); }
+      const nor = new Float32Array(pos.length);
+      for (let t = 0; t < ix.length; t += 3) {
+        const [p, q, s] = [ix[t], ix[t + 1], ix[t + 2]].map((k) => pos.slice(k * 3, k * 3 + 3));
+        const u = [q[0] - p[0], q[1] - p[1], q[2] - p[2]], v = [s[0] - p[0], s[1] - p[1], s[2] - p[2]];
+        const fn = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+        for (const k of [ix[t], ix[t + 1], ix[t + 2]]) for (let d = 0; d < 3; d++) nor[k * 3 + d] += fn[d];
+      }
+      for (let k = 0; k < nor.length; k += 3) {
+        const o = [pos[k] - c[0], pos[k + 1] - c[1], pos[k + 2] - c[2]];
+        if (nor[k] * o[0] + nor[k + 1] * o[1] + nor[k + 2] * o[2] < 0) { nor[k] *= -1; nor[k + 1] *= -1; nor[k + 2] *= -1; }
+        const l = Math.hypot(nor[k], nor[k + 1], nor[k + 2]) || 1; nor[k] /= l; nor[k + 1] /= l; nor[k + 2] /= l;
+      }
+      const buffer = root.listBuffers()[0];
+      const prim = doc.createPrimitive()
+        .setAttribute('POSITION', doc.createAccessor().setType('VEC3').setArray(new Float32Array(pos)).setBuffer(buffer))
+        .setAttribute('NORMAL', doc.createAccessor().setType('VEC3').setArray(nor).setBuffer(buffer))
+        .setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(ix)).setBuffer(buffer))
+        .setMaterial(doc.createMaterial(sh.name).setBaseColorFactor([0.4, 0.7, 1, 0.3]).setAlphaMode('BLEND').setDoubleSided(true));
+      root.listScenes()[0].addChild(doc.createNode(sh.name).setMesh(doc.createMesh(sh.name).addPrimitive(prim)));
+      names.push(sh.name);
+      continue;
+    }
     // slab: [[min], [max]]: a thin box (the shield closing a doorway recess as if the door were shut)
     if (sh.slab) {
       const [lo, hi] = sh.slab, P8 = [];
