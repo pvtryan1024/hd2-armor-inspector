@@ -691,7 +691,7 @@ const VR_BONES = (bone) => {
 const GK_BONES = (bone) => {
   const side = (bone.match(/(left|right|back)/) || [])[1];
   if (/^gun_(left|right)_cell/.test(bone)) return `gunweak_${side}`;
-  if (/^(gun_|attach_gun_|aim_arm_|hand_)/.test(bone) || /^arm_(left|right)_[23]$/.test(bone)) return `gun_${side}`;
+  if (/^(gun_|attach_gun_|aim_arm_|hand_)/.test(bone) || /^arm_(left|right)_[23]$/.test(bone)) return `gunmount_${side}`;
   if (/^(collar|arm)_(left|right)/.test(bone)) return `arm_${side}`;
   if (/^(leg|foot)_(left|right|back)/.test(bone)) return `leg_${side}`;
   if (/^hip_(left|right|back)$/.test(bone)) return `hip_${side}`;
@@ -1103,22 +1103,25 @@ const SOURCES = {
     src: IL + 'cha_exomech_ranged/cha_exomech_ranged.unit.glb',
     // wiki hitzone images; a broken leg plate (upper or lower) opens the leg under it, a broken arm plate the arm
     // the damaged arm meshes are the guns (the arm_*_whole meshes are split into gun, cells and arm)
-    names: { ...EXO_NAMES, arm_left_damaged: 'gun_left_damaged', arm_right_damaged: 'gun_right_damaged' },
+    names: { ...EXO_NAMES, arm_left_whole: 'gun_left', arm_right_whole: 'gun_right', arm_left_damaged: 'gun_left_damaged', arm_right_damaged: 'gun_right_damaged' },
     cuts: [
       ...EXO_HIPS,
+      // the Gun Weakspots: the battery pack under each gun (three cells in their holder, wiki images), boxed
+      { mesh: 'gun_left', name: 'gunweak_left', tris: true, box: [[-2.95, 2.55, -3.15], [-1.85, 3.42, -1.55]] },
+      { mesh: 'gun_right', name: 'gunweak_right', tris: true, box: [[1.85, 2.55, -3.15], [2.95, 3.42, -1.55]] },
       // the Rear Weakspot: the rear end of the shell under the top lid, between the carapace plates
       { mesh: 'chassis_top', name: 'rear_weakspot', tris: true, box: [[-0.55, 5.7, 1.3], [0.55, 6.9, 2.4]] },
       { mesh: 'chassis_top_damaged', name: 'rear_weakspot_damaged', tris: true, box: [[-0.55, 5.7, 1.3], [0.55, 6.9, 2.4]] },
     ],
     // the body, the guns and the arms: split by bone
-    split: { mesh: /^(generic_whole|arm_(left|right)_whole)$/, bones: GK_BONES },
+    split: { mesh: /^generic_whole$/, bones: GK_BONES },
     rules: [
       [/^cockpit(_whole|_frame)?$/, 'Cockpit'], [/^cockpit_weakspot$/, 'Cockpit Weakspot'],
       [/^pilot(_whole|_body)?$/, 'Pilot'], [/^shield(_whole)?$/, 'Shield'], [/^shield_generator$/, 'Shield Generator'],
       [/^chassis_top$/, 'Chassis'], [/^rear_weakspot$/, 'Rear Weakspot'], [/^carapace_(left|right)$/, 'Carapace (2)'], [/^carapace_(left|right)_damaged$/, 'Internals (2)'],
       [/^shoulder_(left|right)(_whole)?$/, 'Shoulder Armor (2)'], [/^bicep_(left|right)(_whole)?$/, 'Arm Armor (2)'],
       [/^bicep_(left|right)_damaged$/, 'Arms (Broken Armor) (2)'], [/^arm_(left|right)$/, 'Arms (2)'],
-      [/^gun_(left|right)$/, 'Guns (2)'], [/^gunweak_(left|right)$/, 'Gun Weakspots (2)'],
+      [/^gun(mount)?_(left|right)$/, 'Guns (2)'], [/^gunweak_(left|right)$/, 'Gun Weakspots (2)'],
       [/^legarmor_(upper|lower)_(left|right|back)$/, 'Leg Armor (6)'], [/^legarmor_(upper|lower)_(left|right|back)_damaged$/, 'Legs (Broken Armor) (3)'],
       [/^hip(bar)?_(left|right|back)$/, 'Hips (3)'], [/^leg_(left|right|back)$/, 'Legs (3)'], [/^body$/, 'Chassis'],
     ],
