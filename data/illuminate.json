@@ -2003,7 +2003,8 @@
         "fatal": true,
         "exdr": 0,
         "location": "",
-        "demolition": 50
+        "demolition": 50,
+        "note": "Destroyed outright by demolition force 50 or more (offensive stratagems)"
       },
       {
         "name": "Bay Door (2)",
@@ -2011,7 +2012,7 @@
         "health": "main",
         "av": 0,
         "durable": 0,
-        "toMain": 1,
+        "toMain": 0,
         "overflow": null,
         "constitution": null,
         "fatal": true,
@@ -2019,7 +2020,7 @@
         "location": "Side",
         "demolition": 20,
         "demolitionBlast": true,
-        "note": "Destroyed by an explosive with demolition force 20 or more (grenades, explosive primaries and support weapons); the wiki lists one door"
+        "note": "No health of its own and passes nothing to Main: only an explosion with demolition force 20 or more destroys it (and the ship), like the Automaton Fabricator's vents"
       },
       {
         "name": "Shield",
