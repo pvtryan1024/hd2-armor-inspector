@@ -2260,5 +2260,18 @@
    }
   },
   "note": ""
+ },
+ "b-100-portable-hellbomb": {
+  "modes": {
+   "Detonation": {
+    "stagger": null,
+    "push": null,
+    "demolition": null,
+    "exStagger": 50,
+    "exPush": 100,
+    "exDemolition": 60
+   }
+  },
+  "note": ""
  }
 }

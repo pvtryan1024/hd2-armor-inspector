@@ -858,6 +858,32 @@
     "note": "Explosion-only; damage/ap fields mirror explosion inner values."
   },
   {
+    "id": "b-100-portable-hellbomb",
+    "name": "B-100 Portable Hellbomb",
+    "category": "Support",
+    "type": "Special",
+    "url": "https://helldivers.wiki.gg/wiki/B-100_Portable_Hellbomb",
+    "rpm": null,
+    "mag": 1,
+    "modes": [
+      {
+        "name": "Detonation",
+        "damage": 0,
+        "durable": 0,
+        "ap": 10,
+        "pellets": 1,
+        "explosion": {
+          "damage": 10000,
+          "durable": 10000,
+          "ap": 10,
+          "innerRadius": 17,
+          "outerRadius": 25
+        },
+        "note": "Backpack bomb: goes off 10 s after it is armed. Blast AP Anti-Tank VI (10) inside 17 m, V (9) out to 25 m; shockwave 45 m"
+      }
+    ]
+  },
+  {
     "id": "eagle-500kg-bomb",
     "name": "Eagle 500kg Bomb",
     "category": "Eagle",

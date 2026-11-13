@@ -998,5 +998,16 @@
         "apOuter": 5
       }
     }
+  },
+  "b-100-portable-hellbomb": {
+    "Detonation": {
+      "explosion": {
+        "inner": 17,
+        "outer": 25,
+        "shockwave": 45,
+        "ap": 10,
+        "apOuter": 9
+      }
+    }
   }
 }

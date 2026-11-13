@@ -528,5 +528,13 @@
       10,
       0
     ]
+  },
+  "b-100-portable-hellbomb": {
+    "Detonation": [
+      10,
+      10,
+      10,
+      10
+    ]
   }
 }
