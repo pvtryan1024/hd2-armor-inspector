@@ -813,7 +813,8 @@ function pick(ev) {
   const hit = hits.find((h) => h.object.userData.collider || h.object.userData.deadHitbox || (h.object.material.opacity > 0.2 && !h.object.userData.remains && !noHitbox(current, h.object.userData.key)));
   if (groundActive()) {
     ground.updateMatrixWorld();
-    const g = ray.intersectObject(groundDisc, false)[0];
+    // one-sided: only a shot coming down from above lands on the ground; from below it passes through
+    const g = ray.ray.direction.y < 0 && ray.ray.origin.y > ground.position.y ? ray.intersectObject(groundDisc, false)[0] : null;
     if (g && (!hit || g.distance < hit.distance)) {
       const up = new THREE.Vector3(0, 1, 0);
       const deg = THREE.MathUtils.radToDeg(Math.acos(Math.min(1, Math.abs(up.dot(ray.ray.direction)))));
