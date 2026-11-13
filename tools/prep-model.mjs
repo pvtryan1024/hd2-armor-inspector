@@ -1141,11 +1141,12 @@ const SOURCES = {
       { mesh: 'hull', name: 'bay_door_left', box: [[-10.1, 2.5, -6.4], [-3.5, 4.6, -0.9]] },
       { mesh: 'hull', name: 'bay_door_right', box: [[3.5, 2.5, -6.4], [10.1, 4.6, -0.9]] },
     ],
-    // the shield: a bubble over the saucer body (and over the doorways when shut); the legs and lowered ramps stick out
-    // below it. Main and the bay doors are behind it; it vanishes once broken and is drawn see-through (map glass)
-    shapes: [{ name: 'shield_bubble', ellipsoid: { centre: [0, 5.6, 2.6], radii: [12.4, 4.4, 17.6], e: [0.45, 0.6] } }],
+    // the shield: a scaled-up copy of the saucer body hugging it (over the doorways too, as if shut); the legs and lowered
+    // ramps stick out below it. Main and the bay doors are behind it; it vanishes once broken and is drawn see-through (map glass)
+    shapes: [{ name: 'shield_bubble', copyOf: ['hull', 'bay_door_left', 'bay_door_right'], minY: 1.35, lowSmall: { maxY: 2.9, size: 3 }, centre: [0, 5.4, 2.6], scale: [1.03, 1.03, 1.02], inflate: 0.45 },
+      { name: 'shield_door_left', slab: [[-10.3, 2.15, -6.6], [-3.3, 2.35, -0.7]] }, { name: 'shield_door_right', slab: [[3.3, 2.15, -6.6], [10.3, 2.35, -0.7]] }],
     vanish: ['Shield'], glass: ['Shield'],
-    rules: [[/^bay_door_(left|right)$/, 'Bay Door (2)'], [/^hull$/, 'Main'], [/^shield_bubble$/, 'Shield']] },
+    rules: [[/^bay_door_(left|right)$/, 'Bay Door (2)'], [/^hull$/, 'Main'], [/^shield_(bubble|door_left|door_right)$/, 'Shield']] },
   'illuminate-overship': { src: 'extra/0xe7074f10233cd0b8.unit.glb', boneNames: false, rules: MAIN_ONLY },
   veracitor: {
     src: IL + 'cha_exomech_melee/cha_exomech_melee.unit.glb',
@@ -1372,6 +1373,64 @@ async function prep(id) {
   // shapes: [{ name, ellipsoid: { centre, radii } }]: a made-up mesh for a hitbox the export has no geometry for (the
   // Grounded Warp Ship's shield bubble)
   for (const sh of cfg.shapes || []) {
+    // copyOf: [meshes]: a scaled-up copy of those meshes round centre (a shield hugging the hull), leaving out pieces
+    // that reach below minY (legs, lowered ramps: they stick out through it)
+    // slab: [[min], [max]]: a thin box (the shield closing a doorway recess as if the door were shut)
+    if (sh.slab) {
+      const [lo, hi] = sh.slab, P8 = [];
+      for (const x of [lo[0], hi[0]]) for (const y of [lo[1], hi[1]]) for (const z of [lo[2], hi[2]]) P8.push([x, y, z]);
+      const F = [[0, 1, 3, 2], [4, 6, 7, 5], [0, 4, 5, 1], [2, 3, 7, 6], [0, 2, 6, 4], [1, 5, 7, 3]];
+      const pos = [], nor = [], ix = [], FN = [[-1, 0, 0], [1, 0, 0], [0, -1, 0], [0, 1, 0], [0, 0, -1], [0, 0, 1]];
+      F.forEach((f, fi) => { const b = pos.length / 3; for (const q of f) { pos.push(...P8[q]); nor.push(...FN[fi]); } ix.push(b, b + 1, b + 2, b, b + 2, b + 3); });
+      const buffer = root.listBuffers()[0];
+      const prim = doc.createPrimitive()
+        .setAttribute('POSITION', doc.createAccessor().setType('VEC3').setArray(new Float32Array(pos)).setBuffer(buffer))
+        .setAttribute('NORMAL', doc.createAccessor().setType('VEC3').setArray(new Float32Array(nor)).setBuffer(buffer))
+        .setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(ix)).setBuffer(buffer))
+        .setMaterial(doc.createMaterial(sh.name).setBaseColorFactor([0.4, 0.7, 1, 0.3]).setAlphaMode('BLEND').setDoubleSided(true));
+      root.listScenes()[0].addChild(doc.createNode(sh.name).setMesh(doc.createMesh(sh.name).addPrimitive(prim)));
+      names.push(sh.name);
+      continue;
+    }
+    if (sh.copyOf) {
+      const c = sh.centre, s = sh.scale, pos = [], nor = [], ix = [], v = [0, 0, 0];
+      for (const src of sh.copyOf) {
+        const nm = src.mesh || src, flip = !!src.flip;
+        const node = root.listNodes().find((x) => x.getMesh() && x.getName() === nm);
+        if (!node) { console.warn(`${id}: no mesh ${nm} to copy for ${sh.name}`); continue; }
+        for (const prim of node.getMesh().listPrimitives()) {
+          const P = prim.getAttribute('POSITION'), N = prim.getAttribute('NORMAL'), remap = new Map();
+          for (const shell of shellsOf(prim)) {
+            if (shell.box[0][1] < (sh.minY ?? -Infinity)) continue;
+            // small pieces low on the hull (the tops of the legs) stick out too
+            const [lo, hi] = shell.box;
+            if (sh.lowSmall && hi[1] < sh.lowSmall.maxY && hi[0] - lo[0] < sh.lowSmall.size && hi[2] - lo[2] < sh.lowSmall.size) continue;
+            for (const i of shell.tris) {
+              if (!remap.has(i)) {
+                remap.set(i, pos.length / 3);
+                // scaled round centre, then pushed out along the surface normal by inflate (an even skin over the hull)
+                const p = P.getElement(i, [0, 0, 0]).slice(), l = 1;
+                let n = N ? N.getElement(i, [0, 0, 0]).slice() : [0, 1, 0];
+                const nl = Math.hypot(...n) || 1; n = n.map((q) => q / nl);
+                if (flip) n = n.map((q) => -q); // a piece whose normals face into the hull
+                pos.push(...[0, 1, 2].map((k) => c[k] + (p[k] - c[k]) * s[k] + (n[k] / l) * (sh.inflate || 0)));
+                nor.push(n[0] / l, n[1] / l, n[2] / l);
+              }
+              ix.push(remap.get(i));
+            }
+          }
+        }
+      }
+      const buffer = root.listBuffers()[0];
+      const prim = doc.createPrimitive()
+        .setAttribute('POSITION', doc.createAccessor().setType('VEC3').setArray(new Float32Array(pos)).setBuffer(buffer))
+        .setAttribute('NORMAL', doc.createAccessor().setType('VEC3').setArray(new Float32Array(nor)).setBuffer(buffer))
+        .setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(ix)).setBuffer(buffer))
+        .setMaterial(doc.createMaterial(sh.name).setBaseColorFactor([0.4, 0.7, 1, 0.3]).setAlphaMode('BLEND').setDoubleSided(true));
+      root.listScenes()[0].addChild(doc.createNode(sh.name).setMesh(doc.createMesh(sh.name).addPrimitive(prim)));
+      names.push(sh.name);
+      continue;
+    }
     // e: [horizontal, vertical] roundness (1 = ellipsoid, smaller = boxier: a flat saucer needs a squarish bubble)
     const { centre: c, radii: r, e = [1, 1] } = sh.ellipsoid, seg = 64, ring = 32, pos = [], nor = [], ix = [];
     const sp = (w, k) => Math.sign(w) * Math.abs(w) ** k;

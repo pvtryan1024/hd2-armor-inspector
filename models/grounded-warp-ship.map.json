@@ -4,7 +4,9 @@
     "hull": "Main",
     "bay_door_left": "Bay Door (2)",
     "bay_door_right": "Bay Door (2)",
-    "shield_bubble": "Shield"
+    "shield_bubble": "Shield",
+    "shield_door_left": "Shield",
+    "shield_door_right": "Shield"
   },
   "hidden": [],
   "vanish": [
