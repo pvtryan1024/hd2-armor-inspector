@@ -69,6 +69,8 @@
   document.body.appendChild(bar);
   fold();
 
+  // the app's search boxes match the translated names too (HD2_I18N.tr: English → shown text)
+  window.HD2_I18N = { lang, tr: (s) => s };
   const dict = lang === 'en' ? null : DICTS[lang];
   if (!dict) return;
 
@@ -99,6 +101,8 @@
     const lead = text.match(/^\s*/)[0], trail = text.match(/\s*$/)[0];
     return lead + out + trail;
   }
+
+  window.HD2_I18N.tr = (s) => (s ? translate(s) ?? s : s);
 
   const ATTRS = ['title', 'placeholder', 'aria-label'];
   function walk(root) {

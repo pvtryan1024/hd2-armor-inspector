@@ -703,6 +703,16 @@
       <span class="fac-chip" style="--fc:${factionColor(state.faction)}">${FACTION_ICON[state.faction] || ''}${esc(state.faction)}</span>`;
   }
 
+  /** Search-box match: the English text or its translation in the picked language (i18n.js), ignoring case
+   *  and spaces (Korean "오토 캐논" / "오토캐논", English "las12" / "LAS-12" both find it). */
+  const squash = (s) => String(s || '').toLowerCase().replace(/[\s\-_/.·]+/g, '');
+  function searchHit(q, ...texts) {
+    const qq = squash(q);
+    if (!qq) return true;
+    const tr = window.HD2_I18N?.tr;
+    return texts.some((t) => t && (squash(t).includes(qq) || (tr && squash(tr(t)).includes(qq))));
+  }
+
   function renderEnemyList() {
     const q = $('#enemySearch').value.trim().toLowerCase();
     const list$ = $('#enemyList');
@@ -715,7 +725,7 @@
         </li>`).join('');
       return;
     }
-    const list = DATA.enemies.filter((e) => (!state.faction || q || e.faction === state.faction) && (!q || e.name.toLowerCase().includes(q)));
+    const list = DATA.enemies.filter((e) => (!state.faction || q || e.faction === state.faction) && (!q || searchHit(q, e.name)));
     list$.innerHTML = list.map((e) => `<li data-id="${esc(e.id)}" class="enemy ${e.id === state.enemyId ? 'on' : ''}">
         ${thumbHtml(e)}
         <span class="en-name">${esc(e.name)}${q && !state.faction ? ` <i class="muted">${esc(FACTION_INFO[e.faction]?.short || e.faction)}</i>` : ''}</span>
@@ -767,7 +777,7 @@
       }).join('');
       return;
     }
-    const list = DATA.weapons.filter((w) => (!state.cat || q || w.category === state.cat) && (!q || w.name.toLowerCase().includes(q) || (w.type || '').toLowerCase().includes(q)));
+    const list = DATA.weapons.filter((w) => (!state.cat || q || w.category === state.cat) && (!q || searchHit(q, w.name, w.type)));
     el.innerHTML = list.map((w) => {
       const aps = [...new Set(w.modes.map((m) => m.ap))].join('/');
       return `<li data-id="${esc(w.id)}" class="weapon ${w.id === state.weaponId ? 'on' : ''}">
