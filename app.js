@@ -145,10 +145,15 @@
   /** Velocity falloff from the wiki's simplified drag formula (ignores gravity):
    *  mult = 1 − 0.75 × (1 − e^(−2·D·x)),  D ≈ 0.0004712389 × caliber² × Cd / mass */
   /** The range slider's caption: what the range does to this mode's damage. */
+  /** The range used for a mode: the slider's, capped at a weapon's own maximum range (the Meltagun's 15 m beam,
+   *  whose slider only goes that far; other weapons keep the slider's value). */
+  function curDist(m) {
+    if (m === undefined) { const w = weapon(); m = w && (w.modes[state.mode] || w.modes[0]); }
+    return m?.falloff ? Math.min(state.dist, m.falloff.range) : state.dist;
+  }
   function rangeCaption(m) {
     const f = m.falloff;
-    if (f) return state.dist > f.range ? `<b>Out of range</b>: the beam reaches ${f.range} m`
-      : `Beam damage at ${state.dist} m: <b>${Math.round(rangeMult(m, state.dist) * 100)}%</b> (full to ${f.from} m, ${Math.round(f.min * 100)}% at ${f.to} m)`;
+    if (f) return `Beam damage at ${curDist(m)} m: <b>${Math.round(rangeMult(m, curDist(m)) * 100)}%</b> (full to ${f.from} m, at ${f.to} m: ${Math.round(f.min * 100)}%)`;
     return m.ballistics?.drag ? `Projectile damage at ${state.dist} m: <b>${Math.round(rangeMult(m, state.dist) * 100)}%</b> (drag falloff)`
       : m.ballistics ? 'No drag: no falloff over range' : '<span class="muted">No ballistics data: range has no effect</span>';
   }
@@ -707,7 +712,7 @@
     e.parts = e.variants[i].parts;
   }
   const weapon = () => weaponById(state.weaponId);
-  const opts = () => ({ explosion: state.explosion, allPellets: state.allPellets, allShrap: state.allShrap, band: state.band, dist: state.dist, exposeAll: state.showInner });
+  const opts = () => ({ explosion: state.explosion, allPellets: state.allPellets, allShrap: state.allShrap, band: state.band, dist: curDist(), exposeAll: state.showInner });
 
   /* ---------------- rendering: lists ---------------- */
 
@@ -860,8 +865,8 @@
         <div class="ap-caption">Armor this shot defeats at ${ANGLE_BANDS[state.band].name.toLowerCase()} (green = full, yellow-green = 65%, red = ricochet). Body map and tables use this angle; the 3D view uses the real angle from your camera.</div>
       </div>
       <div class="range">
-        <label class="opt">Range <b id="distVal">${state.dist} m</b></label>
-        <input type="range" id="distSlider" min="0" max="200" step="5" value="${state.dist}">
+        <label class="opt">Range <b id="distVal">${curDist(m)} m</b></label>
+        <input type="range" id="distSlider" min="0" max="${m.falloff ? m.falloff.range : 200}" step="${m.falloff ? 1 : 5}" value="${curDist(m)}">
         <div class="ap-caption">${rangeCaption(m)}</div>
       </div>
       ${w.charge ? `<div class="range charge">
@@ -1645,13 +1650,13 @@
       <div class="sp-sub">${Math.round(state.hit.deg)}° · ${ANGLE_BANDS[res.band].name} · AP ${d.s.ap} vs AV ${part.av}</div>
       ${res.dead ? '<div class="sp-verdict" style="--c:var(--pen-immune)">Destroyed</div><div class="muted">What\'s left of it still stops the round, which does no damage to it; only the explosion counts, from there</div>' : `<div class="sp-verdict" style="--c:${PEN_VAR[pc]}">${PEN_LABEL[pc]}</div>`}
       <dl>
-        <dt>Projectile</dt><dd>${fmt(d.s.proj)}${state.dist && d.s.range < 1 ? ` <span class="muted">(${Math.round(d.s.range * 100)}% at ${state.dist} m)</span>` : ''}</dd>
+        <dt>Projectile</dt><dd>${fmt(d.s.proj)}${curDist() && d.s.range < 1 ? ` <span class="muted">(${Math.round(d.s.range * 100)}% at ${curDist()} m)</span>` : ''}</dd>
         ${res.radii || d.s.partEx ? `<dt>Explosion</dt><dd>${fmt(d.s.partEx)}</dd>` : ''}
         <dt>Total to part</dt><dd><b>${fmt(d.s.total)}</b></dd>
         <dt>To Main</dt><dd>${fmt(main)}</dd>
       </dl>
       ${d.s.ricochet && res.mode.explosion && state.explosion ? '<div class="muted">Ricocheted: the round did not explode</div>' : ''}
-      ${res.pel ? `<div class="sp-blast"><b>Pellets</b> ${res.pel.count} fired, spread 5 cm per 20 m (${(5 * (state.dist || 0) / 20).toFixed(1)} cm radius at ${state.dist || 0} m)<ul>
+      ${res.pel ? `<div class="sp-blast"><b>Pellets</b> ${res.pel.count} fired, spread 5 cm per 20 m (${(5 * (curDist() || 0) / 20).toFixed(1)} cm radius at ${curDist() || 0} m)<ul>
         <li><span>${esc(pieceName(part, state.hit.k))} <i>×${res.pel.onPiece}</i></span><span>${d.s.proj > 0 ? fmt(d.s.proj) : '<span class="muted">0 · armor holds</span>'}</span></li>
         ${res.pel.rows.map((r) => `<li><span>${esc(pieceName(e.parts[r.idx], r.k))} <i>×${r.n}</i></span><span>${r.s.total > 0 ? fmt(r.s.total) : '<span class="muted">0 · armor holds</span>'}</span></li>`).join('')}
         ${res.pel.missed ? `<li><span class="muted">missed <i>×${res.pel.missed}</i></span><span></span></li>` : ''}</ul></div>` : ''}
@@ -1701,7 +1706,7 @@
     const exAp = state.explosion && m?.explosion ? m.explosion.ap ?? -1 : -1;
     const ap4 = m ? ANGLE_BANDS.map((_, b) => Math.max(m.explosionOnly ? -1 : apFor(m, b), exAp)) : null;
     window.dispatchEvent(new CustomEvent('hd2:update', { detail: {
-      pellets: (m?.pellets || 1) > 1 && state.allPellets ? { count: m.pellets, dist: state.dist || 0 } : null,
+      pellets: (m?.pellets || 1) > 1 && state.allPellets ? { count: m.pellets, dist: curDist(m) || 0 } : null,
       shrapnel: m?.shrapnel && state.explosion ? { count: m.shrapnel.count, spread: m.shrapnel.spread, range: blastRadii(m)?.outer || 7 } : null,
       // pieces with constitution whose health is gone but which still have a hitbox (Hulk legs): the 3D view
       // swaps in their damaged mesh
