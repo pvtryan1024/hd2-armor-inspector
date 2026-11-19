@@ -842,7 +842,16 @@ renderer.domElement.parentElement.addEventListener('pointerdown', (ev) => {
   press = h ? { x: ev.clientX, y: ev.clientY, h } : null;
   missAt = h ? null : [ev.clientX, ev.clientY];
   controls.enabled = !press;
+  // automatic weapons / sprays / beams: fire from the press and keep firing at the weapon's rate while held,
+  // aimed wherever the cursor is now (moving off the model just misses)
+  if (press && lastDetail?.fire && !editing && HD2.holdInterval?.() != null) {
+    press.auto = true;
+    holdAt = { clientX: ev.clientX, clientY: ev.clientY };
+    HD2.startHold(() => { const hh = pick(holdAt); if (hh) shoot(hh); });
+  }
 }, true);
+let holdAt = null;
+window.addEventListener('pointermove', (ev) => { if (press?.auto) holdAt = { clientX: ev.clientX, clientY: ev.clientY }; });
 window.addEventListener('pointerup', (ev) => {
   if (missAt && Math.hypot(ev.clientX - missAt[0], ev.clientY - missAt[1]) < 4 && lastDetail?.fire) status('Missed: no part of the model under the cursor');
   missAt = null;
@@ -850,6 +859,7 @@ window.addEventListener('pointerup', (ev) => {
   const p = press;
   press = null;
   controls.enabled = true;
+  if (p.auto) { HD2.stopHold(); holdAt = null; return; } // the held burst already fired
   if (Math.hypot(ev.clientX - p.x, ev.clientY - p.y) > 40) return; // dragged well away: cancel the shot
   shoot(p.h);
 });

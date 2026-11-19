@@ -1,0 +1,1005 @@
+{
+ "scavenger": {
+  "fire": {
+   "min": 0.5,
+   "max": 1,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 0.5,
+   "max": 1
+  }
+ },
+ "noxious-scavenger": {
+  "fire": {
+   "min": 0.5,
+   "max": 1,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 0.5,
+   "max": 1
+  },
+  "from": "scavenger"
+ },
+ "caustic-spitter": {
+  "fire": {
+   "min": 0.5,
+   "max": 1,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 0.5,
+   "max": 1
+  },
+  "from": "bile spitter"
+ },
+ "pouncer": {
+  "fire": {
+   "min": 0.5,
+   "max": 1,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 0.5,
+   "max": 1
+  }
+ },
+ "hunter": {
+  "fire": {
+   "min": 1,
+   "max": 2,
+   "dmg": 0.7
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "shrieker": {
+  "fire": {
+   "min": 1,
+   "max": 2,
+   "dmg": 1
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "warrior": {
+  "fire": {
+   "min": 2.1,
+   "max": 3.3,
+   "dmg": 0.8
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "alpha-warrior": {
+  "fire": {
+   "min": 2.1,
+   "max": 3.3,
+   "dmg": 0.8
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "caustic-warrior": {
+  "fire": {
+   "min": 2.1,
+   "max": 3.3,
+   "dmg": 0.8
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  },
+  "from": "warrior (tier ii) / bile warrior / alpha warrior"
+ },
+ "hive-guard": {
+  "fire": {
+   "min": 2.1,
+   "max": 3.3,
+   "dmg": 0.8
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "nursing-spewer": {
+  "fire": {
+   "min": 5,
+   "max": 6.5,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 8,
+   "max": 10
+  }
+ },
+ "noxious-spewer": {
+  "fire": {
+   "min": 5,
+   "max": 6.5,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 8,
+   "max": 10
+  },
+  "from": "bile spewer (tier ii)"
+ },
+ "caustic-spewer": {
+  "fire": {
+   "min": 5,
+   "max": 6.5,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 8,
+   "max": 10
+  },
+  "from": "bile spewer (tier ii)"
+ },
+ "brood-commander": {
+  "fire": {
+   "min": 4.1,
+   "max": 5.5,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 6,
+   "max": 8
+  }
+ },
+ "alpha-commander": {
+  "fire": {
+   "min": 4.1,
+   "max": 5.5,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 6,
+   "max": 8
+  }
+ },
+ "stalker": {
+  "fire": {
+   "min": 3,
+   "max": 5,
+   "dmg": 1.25
+  },
+  "stun": {
+   "min": 7,
+   "max": 9
+  }
+ },
+ "charger": {
+  "fire": {
+   "min": 8.5,
+   "max": 10,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": 10,
+   "max": 15
+  }
+ },
+ "caustic-charger": {
+  "fire": {
+   "min": 8.5,
+   "max": 10,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": 10,
+   "max": 15
+  },
+  "from": "charger"
+ },
+ "charger-behemoth": {
+  "fire": {
+   "min": 8.5,
+   "max": 10,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": 10,
+   "max": 15
+  }
+ },
+ "impaler": {
+  "fire": {
+   "min": 8.5,
+   "max": 13,
+   "dmg": 1.7
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "bile-titan": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1.7
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "dragonroach": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1.7
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "hive-lord": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 1
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "predator-hunter": {
+  "fire": {
+   "min": 1,
+   "max": 2,
+   "dmg": 0.7
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "predator-stalker": {
+  "fire": {
+   "min": 3,
+   "max": 5,
+   "dmg": 1.25
+  },
+  "stun": {
+   "min": 7,
+   "max": 9
+  }
+ },
+ "spore-burst-scavenger": {
+  "fire": {
+   "min": 0.5,
+   "max": 1,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 0.5,
+   "max": 1
+  }
+ },
+ "spore-burst-hunter": {
+  "fire": {
+   "min": 1,
+   "max": 2,
+   "dmg": 0.7
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "spore-burst-bile-titan": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1.7
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "spore-burst-warrior": {
+  "fire": {
+   "min": 2.1,
+   "max": 3.3,
+   "dmg": 0.8
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "rupture-warrior": {
+  "fire": {
+   "min": 2.1,
+   "max": 3.3,
+   "dmg": 0.8
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "rupture-spewer": {
+  "fire": {
+   "min": 5,
+   "max": 6.5,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 8,
+   "max": 10
+  }
+ },
+ "rupture-charger": {
+  "fire": {
+   "min": 8.5,
+   "max": 12,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": 10,
+   "max": 15
+  }
+ },
+ "trooper": {
+  "fire": {
+   "min": 2,
+   "max": 3,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "commissar": {
+  "fire": {
+   "min": 2,
+   "max": 3,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "rocket-raider": {
+  "fire": {
+   "min": 2,
+   "max": 3,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "assault-raider": {
+  "fire": {
+   "min": 2,
+   "max": 3,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  },
+  "from": "trooper / commissar / rocket raider"
+ },
+ "brawler": {
+  "fire": {
+   "min": 2,
+   "max": 3,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "marauder": {
+  "fire": {
+   "min": 2,
+   "max": 3,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "mg-raider": {
+  "fire": {
+   "min": 2,
+   "max": 3,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "berserker": {
+  "fire": {
+   "min": 5,
+   "max": 7,
+   "dmg": 1.25
+  },
+  "stun": {
+   "min": 6,
+   "max": 8
+  }
+ },
+ "devastator": {
+  "fire": {
+   "min": 6.2,
+   "max": 8,
+   "dmg": 1.25
+  },
+  "stun": {
+   "min": 6,
+   "max": 8
+  }
+ },
+ "rocket-devastator": {
+  "fire": {
+   "min": 6.2,
+   "max": 8,
+   "dmg": 1.25
+  },
+  "stun": {
+   "min": 6,
+   "max": 8
+  }
+ },
+ "heavy-devastator": {
+  "fire": {
+   "min": 6.2,
+   "max": 8,
+   "dmg": 1.25
+  },
+  "stun": {
+   "min": 6,
+   "max": 8
+  }
+ },
+ "scout-strider": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 8,
+   "max": 10
+  }
+ },
+ "scout-strider-pilot": {
+  "fire": {
+   "min": 2,
+   "max": 3,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "reinforced-scout-strider": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 8,
+   "max": 10
+  }
+ },
+ "hulk-bruiser": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": 11,
+   "max": 14
+  }
+ },
+ "hulk-scorcher": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": 11,
+   "max": 14
+  }
+ },
+ "hulk-obliterator": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": 11,
+   "max": 14
+  }
+ },
+ "war-strider": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": 14,
+   "max": 18
+  }
+ },
+ "annihilator-tank": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "shredder-tank": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "barrager-tank": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "gunship": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 1
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "dropship": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 1
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "factory-strider": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "factory-strider-armor-broken": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "jet-brigade-commissar": {
+  "fire": {
+   "min": 2,
+   "max": 3,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "jet-brigade-mg-raider": {
+  "fire": {
+   "min": 2,
+   "max": 3,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "jet-brigade-trooper": {
+  "fire": {
+   "min": 2,
+   "max": 3,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "jet-brigade-devastator": {
+  "fire": {
+   "min": 6.2,
+   "max": 8,
+   "dmg": 1.25
+  },
+  "stun": {
+   "min": 6,
+   "max": 8
+  }
+ },
+ "jet-brigade-hulk-bruiser": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": 11,
+   "max": 14
+  }
+ },
+ "jet-brigade-hulk-scorcher": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": 11,
+   "max": 14
+  }
+ },
+ "pyro-trooper": {
+  "fire": {
+   "min": 2,
+   "max": 3,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "incendiary-rocket-raider": {
+  "fire": {
+   "min": 2,
+   "max": 3,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "incendiary-mg-devastator": {
+  "fire": {
+   "min": 6.2,
+   "max": 8,
+   "dmg": 1.25
+  },
+  "stun": {
+   "min": 6,
+   "max": 8
+  }
+ },
+ "conflagration-devastator": {
+  "fire": {
+   "min": 6.2,
+   "max": 8,
+   "dmg": 1.25
+  },
+  "stun": {
+   "min": 6,
+   "max": 8
+  }
+ },
+ "hulk-firebomber": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": 11,
+   "max": 14
+  }
+ },
+ "radical": {
+  "fire": {
+   "min": 3,
+   "max": 4,
+   "dmg": 0.5
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "agitator": {
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "vox-engine": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "light-voteless": {
+  "fire": {
+   "min": 1,
+   "max": 2,
+   "dmg": 0.75
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "medium-voteless": {
+  "fire": {
+   "min": 1,
+   "max": 2,
+   "dmg": 0.75
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "heavy-voteless": {
+  "fire": {
+   "min": 1,
+   "max": 2,
+   "dmg": 0.75
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "watcher": {
+  "fire": {
+   "min": 7,
+   "max": 10,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "overseer": {
+  "fire": {
+   "min": 4,
+   "max": 5,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 5,
+   "max": 7
+  }
+ },
+ "elevated-overseer": {
+  "fire": {
+   "min": 4.5,
+   "max": 5.5,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 5,
+   "max": 7
+  }
+ },
+ "crescent-overseer": {
+  "fire": {
+   "min": 4.5,
+   "max": 5.5,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 5,
+   "max": 7
+  }
+ },
+ "fleshmob": {
+  "fire": {
+   "min": 4.5,
+   "max": 5,
+   "dmg": 1.8
+  },
+  "stun": {
+   "min": 10,
+   "max": 15
+  }
+ },
+ "harvester": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": 20,
+   "max": 25
+  }
+ },
+ "harvester-broken": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1.5
+  },
+  "stun": {
+   "min": 20,
+   "max": 25
+  }
+ },
+ "stingray": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 1
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "leviathan": {
+  "fire": {
+   "min": 0.5,
+   "max": 1,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "leviathan-broken": {
+  "fire": {
+   "min": 0.5,
+   "max": 1,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "obtruder": {
+  "fire": {
+   "min": 7,
+   "max": 10,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 2,
+   "max": 3
+  }
+ },
+ "gatekeeper": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 20,
+   "max": 25
+  }
+ },
+ "gatekeeper-broken": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 20,
+   "max": 25
+  }
+ },
+ "veracitor": {
+  "fire": {
+   "min": 9,
+   "max": 13,
+   "dmg": 1
+  },
+  "stun": {
+   "min": 20,
+   "max": 25
+  }
+ },
+ "illuminate-overship": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 1
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "gazer": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 2
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ },
+ "grounded-warp-ship": {
+  "fire": {
+   "min": null,
+   "max": null,
+   "dmg": 1
+  },
+  "stun": {
+   "min": null,
+   "max": null
+  }
+ }
+}

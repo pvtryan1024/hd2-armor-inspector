@@ -1167,7 +1167,7 @@
     const sim = state.sim, w = weapon();
     const key = `${w.id}:${state.mode}:${chargeOf(w) ?? ''}`;
     const fm = fireModel(w, w.modes[state.mode] || w.modes[0]);
-    if (fm?.kind === 'dot') sim.time += DOT_CLICK; // a flame / gas click is a second of spraying
+    if (fm?.kind === 'dot' || fm?.kind === 'beam') sim.time += DOT_CLICK; // a flame / gas / beam click is a second of it
     else if (sim.last === key && fm?.burst) { // burst weapon: a charge before each new burst
       sim.burstN = (sim.burstN || 0) + 1;
       sim.time += sim.burstN % fm.burst.size === 0 ? fm.burst.charge : 60 / fm.rpm;
@@ -1673,6 +1673,34 @@
     if (state.fire) fireAt(i, hit, k);
   }
 
+  /** Hold-to-fire: automatic weapons (w.auto / mode.auto from build-data), flame / gas sprays and beams keep firing
+   *  while the mouse button is held, in real time: the next shot comes after the fire interval, or after however
+   *  long the shot took in the simulation when that is longer (a reload, a second of spray / beam). null: one shot
+   *  per click. */
+  function holdInterval() {
+    const w = weapon();
+    if (!w || !state.fire) return null;
+    const mode = w.modes[state.mode] || w.modes[0];
+    const fm = fireModel(w, mode);
+    if (fm.kind === 'dot' || fm.kind === 'beam') return DOT_CLICK;
+    return (mode.auto ?? w.auto) && fm.interval ? fm.interval : null;
+  }
+  let holdTimer = null;
+  function startHold(fireOnce) {
+    stopHold();
+    const step = () => {
+      holdTimer = null;
+      const iv = holdInterval();
+      if (iv == null || !state.sim || state.sim.dead) return;
+      const t0 = state.sim.time || 0;
+      fireOnce();
+      const dt = Math.max(iv, (state.sim?.time || 0) - t0);
+      holdTimer = setTimeout(step, Math.max(16, dt * 1000));
+    };
+    step();
+  }
+  function stopHold() { clearTimeout(holdTimer); holdTimer = null; }
+
   /* ---------------- tooltip ---------------- */
 
   function showTip(i, x, y, hit) {
@@ -1943,10 +1971,24 @@
     hoverHost('#schematic');
     hoverHost('#partsTable');
 
-    const clickHost = (sel) => $(sel).addEventListener('click', (ev) => {
-      const n = ev.target.closest('[data-i]');
-      if (n) partClick(+n.dataset.i, null, n.dataset.k != null ? +n.dataset.k : undefined);
-    });
+    // automatic weapons fire from the press and keep firing while it is held; the click that follows is skipped
+    let held = false;
+    const clickHost = (sel) => {
+      const fireOn = (n) => partClick(+n.dataset.i, null, n.dataset.k != null ? +n.dataset.k : undefined);
+      $(sel).addEventListener('pointerdown', (ev) => {
+        const n = ev.button === 0 && ev.target.closest('[data-i]');
+        if (!n || holdInterval() == null) return;
+        held = true;
+        startHold(() => fireOn(n));
+      });
+      $(sel).addEventListener('click', (ev) => {
+        if (held) { held = false; return; }
+        const n = ev.target.closest('[data-i]');
+        if (n) fireOn(n);
+      });
+    };
+    window.addEventListener('pointerup', stopHold);
+    window.addEventListener('blur', stopHold);
     clickHost('#schematic');
     clickHost('#partsTable');
 
@@ -2004,7 +2046,7 @@
   window.HD2 = {
     simulate, shotDamage, penMult, evalEnemy,
     // used by viewer3d.js
-    enemy, tip: showTip, hideTip, click: partClick, hit: placeHit,
+    enemy, tip: showTip, hideTip, click: partClick, hit: placeHit, holdInterval, startHold, stopHold,
     refresh: () => render(),
   };
   init();

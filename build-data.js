@@ -225,6 +225,17 @@ enemies.forEach((e) => {
   }
 });
 
+// Fire and stun thresholds (data/status.json, from the community damage sheet "tribute to The Helldivers Index",
+// patch 6.3.0): status buildup from hits has to reach between min and max before the enemy ignites / is stunned
+// (min/max null = immune); fire.dmg multiplies the burn damage it takes. "from": an enemy the sheet doesn't list,
+// given the thresholds of the one named (caustic / noxious variants)
+const statusPath = path.join(__dirname, 'data', 'status.json');
+if (fs.existsSync(statusPath)) {
+  const st = JSON.parse(fs.readFileSync(statusPath, 'utf8'));
+  for (const e of enemies) if (st[e.id]) e.status = st[e.id];
+  console.log(`status: ${enemies.filter((e) => e.status).length} enemies with fire / stun thresholds`);
+}
+
 // Game archive IDs per enemy, from the HD2 modding community's ID sheet (Enemies & NPC IDs tab),
 // so you know which archive to open in Filediver. The CSV holds four side-by-side column groups.
 const ARCHIVE_ALIASES = {
@@ -452,6 +463,28 @@ const IMPACT_FUSE = [
 for (const [id, mode] of IMPACT_FUSE) {
   const m = weapons.find((w) => w.id === id)?.modes.find((x) => x.name === mode);
   if (m) m.impactFuse = true; else console.warn(`impactFuse: ${id} / ${mode} not found`);
+}
+
+// Automatic fire: holding the mouse button on the target keeps firing at the weapon's RPM (flame / gas sprays and
+// beams always do). The wiki's weapon lists don't give fire modes, so this list is by hand: [id] for the whole
+// weapon, [id, mode] for one mode of it. Semi-auto, pump, bolt and charge weapons stay one shot per click.
+const AUTO = [
+  'ar-23-liberator', 'ar-23p-liberator-penetrator', 'ar-23c-liberator-concussive', 'ar-23a-liberator-carbine', 'ar-23l-liberator-legacy',
+  'sta-52-assault-rifle', 'ar-32-pacifier', 'ma5c-assault-rifle', 'ar-2-coyote', 'ar-59-suppressor', 'ar-61-tenderizer', 'br-14-adjudicator',
+  ['ar-gl-21-one-two', '8mm Rifle'], ['ar-11-arbitrator', '4mm Rifle'],
+  'mp-98-knight', 'smg-37-defender', 'smg-72-pummeler', 'smg-32-reprimand', 'sta-11-smg', 'm7s-smg', ['smg-flam-34-stoker', '12mm'], 'smg-203-gallant',
+  'sg-225-breaker', 'sg-225sp-breaker-sprayandpray', 'sg-225ie-breaker-incendiary',
+  'las-16-sickle', 'las-17-double-edge-sickle', 'las-12-sai', ['vg-70-variable', 'Auto'],
+  'p-19-redeemer',
+  'mg-43-machine-gun', 'm-105-stalwart', 'mg-206-heavy-machine-gun', 'm-1000-maxigun', 'mgx-42-bullet-storm', 'gl-28-belt-fed-grenade-launcher',
+  'a-mg-43-machine-gun-sentry', 'a-g-16-gatling-sentry', 'a-ac-8-autocannon-sentry', 'a-mls-4x-rocket-sentry', 'e-mg-101-hmg-emplacement',
+];
+for (const a of AUTO) {
+  const [id, mode] = Array.isArray(a) ? a : [a];
+  const w = weapons.find((x) => x.id === id);
+  const m = mode && w?.modes.find((x) => x.name === mode);
+  if (!w || (mode && !m)) { console.warn(`auto: ${id}${mode ? ' / ' + mode : ''} not found`); continue; }
+  if (m) m.auto = true; else w.auto = true;
 }
 
 // Display names: drop the "A/" (sentry) and "E/" (emplacement) prefixes; ids stay the same so links keep working
