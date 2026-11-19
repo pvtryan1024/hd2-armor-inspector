@@ -412,7 +412,7 @@ const CLIP_LOADERS = ['ac-8-autocannon', 'p-69-veto', 'r-2124-constitution'];
 // and "must be charged to fire"; its charge table starts at 0.45 s (damage ×1.00 at every charge). 0.7 s is the
 // usual charge in play (the user's call), so that is used per burst.
 // heat weapons that wait out a cooldown between shots (seconds; the user's figure, ignoring hot / cold planets)
-const COOLDOWN = { 'las-99-quasar-cannon': 15 };
+const COOLDOWN = { 'las-99-quasar-cannon': 15, 'orbital-airburst-strike': 4 }; // the airburst's salvos are 4 s apart (wiki)
 for (const [id, c] of Object.entries(COOLDOWN)) { const w = weapons.find((x) => x.id === id); if (w) w.cooldown = c; else console.warn(`cooldown: no weapon ${id}`); }
 const BURST = { 'plas-39-accelerator-rifle': { size: 3, charge: 0.7 } };
 for (const [id, b] of Object.entries(BURST)) { const w = weapons.find((x) => x.id === id); if (w) w.burst = b; else console.warn(`burst: no weapon ${id}`); }
@@ -481,11 +481,13 @@ const CLUSTER = [
   { id: 'g-7-pineapple', main: 'Grenade', bomblet: 'Bomblets', count: 18, range: 6, merge: true },
   { id: 'eat-700-expendable-napalm', main: 'Rocket', bomblet: 'Napalm bomblet', count: 20, range: 8, merge: true },
   // Eagle Cluster: the whole strike's bomblets (4 bombs x 8) fall straight down like rain, spread evenly over a
-  // 28 m wide circle centred on the click (the user's call); the casing still hits where you click
-  { id: 'eagle-cluster-bomb', main: 'Bomb casing', bomblet: 'Bomblet', count: 32, range: 0, merge: true, pattern: 'rain', diameter: 28 },
+  // 28 m wide circle centred on the click, from 18 m up where the bomb separates (the user's call); the casing hits
+  // where you click, but nothing above 18 m (it has separated by then)
+  { id: 'eagle-cluster-bomb', main: 'Bomb casing', bomblet: 'Bomblet', count: 32, range: 0, merge: true, pattern: 'rain', diameter: 28, separate: 18 },
   // Orbital Airburst: the shell always bursts 30 m above the ground over the click and its 12 fragments fly down in
-  // a cone (half-angle 30 degrees, a guess); nothing hits where you click
-  { id: 'orbital-airburst-strike', main: 'Shell', bomblet: 'Shrapnel', count: 12, range: 0, merge: true, pattern: 'cone', height: 30, halfAngle: 30 },
+  // a cone (wiki: cone angle 27 since patch 1.007.200, taken as the half-angle); nothing hits where you click.
+  // One click is one salvo (wiki: 4 salvos of 1 shell, 4 s apart)
+  { id: 'orbital-airburst-strike', main: 'Shell', bomblet: 'Shrapnel', count: 12, range: 0, merge: true, pattern: 'cone', height: 30, halfAngle: 27 },
   { id: 'rl-77-airburst-rocket-launcher', main: 'Rocket (direct)', bomblet: 'Bomblet', count: 25, range: 8, merge: false },
 ];
 for (const c of CLUSTER) {
@@ -495,7 +497,7 @@ for (const c of CLUSTER) {
   // bomblets go off on contact: never a ricochet without its explosion, whatever their AP
   const bomblet = { ...bm, name: c.bomblet, pellets: 1, impactFuse: true };
   delete bomblet.cluster;
-  const cluster = { count: c.count, range: c.range, bomblet, ...(c.pattern ? { pattern: c.pattern, diameter: c.diameter, height: c.height, halfAngle: c.halfAngle } : {}) };
+  const cluster = { count: c.count, range: c.range, bomblet, ...(c.pattern ? { pattern: c.pattern, diameter: c.diameter, height: c.height, halfAngle: c.halfAngle, separate: c.separate } : {}) };
   if (c.merge) {
     main.cluster = cluster;
     w.modes = w.modes.filter((x) => x !== bm);

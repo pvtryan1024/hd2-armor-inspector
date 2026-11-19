@@ -698,7 +698,8 @@ function clusterHits(h, spec, from) {
   const up = new THREE.Vector3(0, 1, 0), down = new THREE.Vector3(0, -1, 0);
   const lines = []; // [origin, direction, how far]
   if (spec.pattern === 'rain') {
-    const top = new THREE.Box3().setFromObject(current.root).max.y + 5;
+    // from where the bomb separates (18 m over the floor), else from just above the enemy
+    const top = spec.separate ? floorY + spec.separate : new THREE.Box3().setFromObject(current.root).max.y + 5;
     const R = (spec.diameter || 28) / 2, turn = Math.random() * Math.PI * 2;
     for (let i = 0; i < spec.count; i++) {
       const r = R * Math.sqrt((i + 0.5) / spec.count), a = turn + i * 2.399963;
@@ -742,10 +743,10 @@ function clusterHits(h, spec, from) {
 
 /** Orbital Airburst: wherever you click, the shell bursts `height` m above the floor straight over that spot and only
  *  its fragments come down (nothing hits the spot itself). Sent as a ground shot at the spot under the click. */
-function airburst(h) {
+function airburst(h, height) {
   const spec = lastDetail?.cluster;
   const spot = new THREE.Vector3(h.point.x, ground.position.y, h.point.z);
-  const tip = spot.clone().add(new THREE.Vector3(0, spec.height || 30, 0));
+  const tip = spot.clone().add(new THREE.Vector3(0, height || spec.height || 30, 0));
   const g = { point: spot, normal: new THREE.Vector3(0, 1, 0) };
   const said = HD2.hit({ ground: true, idx: -1, k: null, blastHits: [], bomblets: clusterHits(g, spec, tip), tip: tip.toArray(), deg: 0, point: spot.toArray(), normal: [0, 1, 0], origin: h.origin.toArray() });
   if (said) status(said);
@@ -960,6 +961,9 @@ function insideParts(h) {
 }
 function shoot(h) {
   if (lastDetail?.fire && !editing && lastDetail?.cluster?.pattern === 'cone') { airburst(h); return; }
+  // Eagle Cluster: the bomb separates 18 m up, so a click higher than that is only the bomblets raining down
+  const sep = lastDetail?.fire && !editing && lastDetail?.cluster?.separate;
+  if (sep && h.point.y - ground.position.y > sep) { airburst(h, sep); return; }
   if (h.ground) { // only the explosion (and shrapnel) reaches the enemy
     const blast = blastHits(h, lastDetail?.radii?.outer, lastDetail?.radii?.inner);
     const said = HD2.hit({ ground: true, idx: -1, k: null, blastHits: blast, inside: insideParts(h), shrapHits: shrapnelHits(h, lastDetail?.shrapnel), bomblets: clusterHits(h, lastDetail?.cluster), deg: h.deg, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
