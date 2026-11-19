@@ -439,6 +439,14 @@ for (const r of SHRAPNEL) {
   Object.assign(m, r.set || {}, { shrapnel: r.shrapnel });
 }
 
+// Impact-fused explosives: the round goes off on whatever it touches, so a low AP (0) never makes it glance off
+// unexploded the way a plain bullet does (the user's in-game call for the GL-21)
+const IMPACT_FUSE = [['gl-21-grenade-launcher', 'Standard']];
+for (const [id, mode] of IMPACT_FUSE) {
+  const m = weapons.find((w) => w.id === id)?.modes.find((x) => x.name === mode);
+  if (m) m.impactFuse = true; else console.warn(`impactFuse: ${id} / ${mode} not found`);
+}
+
 // Display names: drop the "A/" (sentry) and "E/" (emplacement) prefixes; ids stay the same so links keep working
 weapons.forEach((w) => {
   if (['Sentry', 'Emplacement'].includes(w.category)) w.name = w.name.replace(/^[AE]\//, '');

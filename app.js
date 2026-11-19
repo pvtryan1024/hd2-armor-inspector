@@ -211,8 +211,8 @@
     let partEx = 0, exMult = null;
     const mainExBy = []; // Main's redirected share, per explosion (each blast gives it once)
     const partExBy = []; // the part's own blast damage, per explosion
-    // an explosive round that ricochets doesn't go off (explosion-only weapons always do)
-    const ricochet = !mode.explosionOnly && !mode.proximity && !opts.noProj && (mode.damage || 0) > 0 && !m;
+    // an explosive round that ricochets doesn't go off (explosion-only, proximity- and impact-fused ones always do)
+    const ricochet = !mode.explosionOnly && !mode.proximity && !mode.impactFuse && !opts.noProj && (mode.damage || 0) > 0 && !m;
     if (opts.explosion && !ricochet) exList(mode).forEach((ex, j) => {
       mainExBy[j] = 0; partExBy[j] = 0;
       if (!(ex.damage || ex.durable)) return;
