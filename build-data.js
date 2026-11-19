@@ -440,8 +440,15 @@ for (const r of SHRAPNEL) {
 }
 
 // Impact-fused explosives: the round goes off on whatever it touches, so a low AP (0) never makes it glance off
-// unexploded the way a plain bullet does (the user's in-game call for the GL-21)
-const IMPACT_FUSE = [['gl-21-grenade-launcher', 'Standard']];
+// unexploded the way a plain bullet does (the user's in-game call for the GL-21; the other AP 0 explosive rounds
+// follow it. Explosive rounds with some AP still glance off armor above it, unexploded)
+const IMPACT_FUSE = [
+  ['gl-21-grenade-launcher', 'Standard'],
+  ['a-m-12-mortar-sentry', 'Standard'],
+  ['eagle-cluster-bomb', 'Bomblet'],
+  ['eat-700-expendable-napalm', 'Napalm bomblet'],
+  ['sta-x3-w-a-s-p-launcher', 'Artillery (carrier)'],
+];
 for (const [id, mode] of IMPACT_FUSE) {
   const m = weapons.find((w) => w.id === id)?.modes.find((x) => x.name === mode);
   if (m) m.impactFuse = true; else console.warn(`impactFuse: ${id} / ${mode} not found`);
