@@ -434,14 +434,33 @@
    *  part clicked (applied like a shot), and a second of the burn / gas (dot.dps) goes to Main, as the
    *  time-to-kill numbers count it, if its AP gets through Main's armor. Returns the log text. */
   const DOT_CLICK = 1;
+  /** Burning (wiki Status Effects: Fire, 3 s of 100 fire damage a second, Heavy penetration = AP 4) and how much of
+   *  it an enemy takes: the community sheet's fire damage multiplier (Scavenger 0.5, Hulk 1.5, Fleshmob 1.8);
+   *  0 for an enemy that can't be set on fire (no ignition threshold: tanks, Factory Strider, Hive Lord). */
+  const BURN = { dps: 100, ap: 4 };
+  const fireMult = (enemy) => (enemy.status?.fire ? (enemy.status.fire.min == null ? 0 : enemy.status.fire.dmg ?? 1) : 1);
+  const isFire = (dot) => /burn|flame|fire/i.test(dot?.label || '');
+  const multNote = (m) => (m !== 1 ? ` (fire ×${m})` : '');
   function dotSecond(sim, enemy, mode) {
     const dot = mode.dot, main = mainPart(enemy), mi = enemy.parts.indexOf(main);
     if (!dot || sim.dead || mi < 0 || typeof main.health !== 'number') return '';
     const pen = penMult(dot.ap, main.av) || 0;
     if (!pen) return ` · ${dot.label} can't get through Main's armor (AP ${dot.ap} vs AV ${main.av})`;
-    const dmg = Math.floor(dot.dps * DOT_CLICK * pen);
+    const fm = isFire(dot) ? fireMult(enemy) : 1;
+    if (!fm) return ` · can't be set on fire`;
+    const dmg = Math.floor(dot.dps * DOT_CLICK * pen * fm);
     applyShot(sim, enemy, mi, { proj: 0, partEx: 0, mainEx: 0, total: dmg }, true);
-    return ` + ${DOT_CLICK} s ${dot.label.toLowerCase()}: ${fmt(dmg)} to Main`;
+    return ` + ${DOT_CLICK} s ${dot.label.toLowerCase()}: ${fmt(dmg)} to Main${multNote(fm)}`;
+  }
+  /** An ignition by a weapon that isn't itself a spray (incendiary rounds, grenades, napalm): the 3 s burn on Main. */
+  function igniteBurn(sim, enemy, duration) {
+    const main = mainPart(enemy), mi = enemy.parts.indexOf(main);
+    if (sim.dead || mi < 0 || typeof main.health !== 'number') return '';
+    const pen = penMult(BURN.ap, main.av) || 0, fm = fireMult(enemy);
+    if (!pen || !fm) return '';
+    const dmg = Math.floor(BURN.dps * duration * pen * fm);
+    applyShot(sim, enemy, mi, { proj: 0, partEx: 0, mainEx: 0, total: dmg }, true);
+    return `, burns ${fmt(dmg)} into Main over ${duration} s${multNote(fm)}`;
   }
 
   /** Log text for a piece this shot broke or destroyed: with constitution (Hulk legs) "broken" means its health
@@ -573,7 +592,8 @@
         r.why = t.why;
       } else {
         const pen = main && typeof main.health === 'number' && p.av >= 0 && p.av < 11 ? penMult(fm.ap, main.av) : 0;
-        r.ttk = pen ? main.health / (fm.dps * pen) : null;
+        const fx = isFire(fm) ? fireMult(enemy) : 1; // burning: the enemy's fire damage multiplier
+        r.ttk = pen && fx ? main.health / (fm.dps * pen * fx) : null;
         r.killAt = null;
         r.why = pen ? `${fm.label} on Main health` : '';
       }
@@ -1264,6 +1284,37 @@
   /** hit = { deg } when fired from the 3D view, so the real impact angle picks the AP. */
   /** Stagger needs damage that lands with Stagger Force ≥ the enemy's threshold (no build-up between hits);
    *  a staggered enemy is shoved back by the Push Force. Explosions bring their own forces. */
+  /** Fire / stun buildup (mode.status vs the enemy's thresholds, enemy.status): every hit that lands adds the
+   *  weapon's status strength (per pellet that hits, or per 0.1 s tick of a spray / beam: n). Reaching the enemy's
+   *  minimum threshold may set it off and its maximum always does (the sheet gives a range, as if each enemy rolls
+   *  its own); buildup then starts over. Buildup doesn't wear off over time here (no decay data). */
+  function statusNote(mode, enemy, s, n = 1) {
+    const st = mode.status, sim = state.sim;
+    if (!st || !sim || !(s.total > 0 || s.mainEx > 0 || s.pen > 0)) return '';
+    const word = st.kind === 'fire' ? 'fire' : 'stun';
+    const thr = enemy.status?.[st.kind];
+    if (!thr) return ` · ${word} buildup (no threshold listed)`;
+    if (thr.min == null) return ` · immune to ${word}`;
+    sim.status ||= {};
+    const v = Math.round(((sim.status[st.kind] || 0) + st.strength * n) * 100) / 100;
+    const rng = thr.min === thr.max ? `${thr.min}` : `${thr.min}–${thr.max}`;
+    const what = st.kind === 'fire' ? 'Ignited' : 'Stunned';
+    if (v >= thr.max) {
+      sim.status[st.kind] = 0;
+      // set on fire by a weapon that isn't a spray (a spray's burn is already counted every second)
+      const burn = st.kind === 'fire' && !mode.dot ? igniteBurn(sim, enemy, st.duration || 3) : '';
+      return ` [[${what}]] ${word} ${v} ≥ ${thr.max}${st.kind === 'stun' ? ` (${st.tier ? st.tier + ', ' : ''}${st.duration} s)` : burn}`;
+    }
+    sim.status[st.kind] = v;
+    return v >= thr.min ? ` · may be ${what.toLowerCase()}: ${word} ${v} within ${rng}` : ` · ${word} ${v} / ${rng}`;
+  }
+  /** How many status applications one sim hit is: a spray / beam click is a second of 0.1 s ticks. */
+  function statusCount(w, mode, pellets) {
+    if (mode.status?.perPellet) return pellets;
+    const fm = fireModel(w, mode);
+    return (fm.kind === 'dot' || fm.kind === 'beam') && !fm.burst ? Math.round(DOT_CLICK / BEAM_TICK) : 1;
+  }
+
   function forceNote(mode, enemy, s, blast) {
     const st = Math.max(mode.explosionOnly ? -1 : mode.stagger ?? -1, blast ? mode.explosion?.stagger ?? -1 : -1);
     const push = Math.max(mode.explosionOnly ? -1 : mode.push ?? -1, blast ? mode.explosion?.push ?? -1 : -1);
@@ -1299,7 +1350,7 @@
     const o2 = thru ? applyShot(state.sim, e, thru.idx, thru.s, true) : null;
     const dotNote = dotSecond(state.sim, e, mode);
     const label = k != null && (part.count || 1) > 1 ? `${part.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${part.count}` : part.name;
-    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : s.demo ? 'demolished' : s.ricochet ? 'ricochet' : 'no damage'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke || o.gone ? ` — ${consOf(part) && !o.gone ? 'broken' : 'destroyed'}` : ''}${o.alsoGone?.length ? ` (${o.alsoGone.join(', ')} gone with it)` : ''}${hangNote(state.sim)}${underNote(e, o)}${dotNote}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}`);
+    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : s.demo ? 'demolished' : s.ricochet ? 'ricochet' : 'no damage'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke || o.gone ? ` — ${consOf(part) && !o.gone ? 'broken' : 'destroyed'}` : ''}${o.alsoGone?.length ? ` (${o.alsoGone.join(', ')} gone with it)` : ''}${hangNote(state.sim)}${underNote(e, o)}${dotNote}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}${statusNote(mode, e, s, statusCount(w, mode, state.allPellets ? Math.max(1, mode.pellets || 1) : 1))}`);
     state.sim.log.length = Math.min(state.sim.log.length, 8);
     render();
   }
@@ -1331,7 +1382,7 @@
           <span class="hud-v">${fmt(Math.max(0, sim.pool[i]))}</span>${deadTag(i)}`).join('')}
         <button class="btn ghost sm" id="resetSim">Reset</button>
       </div>
-      <div class="hud-log">${sim.log.length ? sim.log.map((l) => esc(l).replace(/\[\[(\w+)\]\]/g, '<span class="force-tag">$1</span>')).join('<br>') : 'Click a hitzone to fire one shot of the selected weapon.'}</div>`;
+      <div class="hud-log">${sim.log.length ? sim.log.map((l) => esc(l).replace(/\[\[(\w+)\]\]/g, '<span class="force-tag tag-$1">$1</span>')).join('<br>') : 'Click a hitzone to fire one shot of the selected weapon.'}</div>`;
     if (sim.dead) {
       banner.classList.remove('hidden');
       banner.innerHTML = `<div class="kb-title">${sim.dead.how === 'downed' ? 'Downed' : 'Killed'}</div>
@@ -1602,7 +1653,7 @@
       const dotNote = dotSecond(state.sim, e, res.mode);
       if (dotNote) notes.push(dotNote.replace(/^ [+·] /, ''));
       const d = res.rows[0];
-      state.sim.log.unshift(`#${state.sim.shots} ${tag}${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : d.s.demo ? 'demolished' : d.s.ricochet ? 'ricochet' : 'no damage'}${(() => { const n = res.rows.slice(1).filter((r) => r.s.partEx > 0 || r.s.mainEx > 0).length; return n ? ` + blast on ${n} part${n > 1 ? 's' : ''}` : ''; })()}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}`);
+      state.sim.log.unshift(`#${state.sim.shots} ${tag}${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : d.s.demo ? 'demolished' : d.s.ricochet ? 'ricochet' : 'no damage'}${(() => { const n = res.rows.slice(1).filter((r) => r.s.partEx > 0 || r.s.mainEx > 0).length; return n ? ` + blast on ${n} part${n > 1 ? 's' : ''}` : ''; })()}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}${statusNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, statusCount(weapon(), res.mode || weapon().modes[state.mode] || weapon().modes[0], res.pel ? res.pel.count - (res.pel.missed || 0) : 1))}`);
       state.sim.log.length = Math.min(state.sim.log.length, 8);
       render();
       return `Fired #${state.sim.shots}: ${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°`;

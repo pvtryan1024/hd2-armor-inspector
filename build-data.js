@@ -465,6 +465,23 @@ for (const [id, mode] of IMPACT_FUSE) {
   if (m) m.impactFuse = true; else console.warn(`impactFuse: ${id} / ${mode} not found`);
 }
 
+// Fire / stun status per weapon mode (data/status-weapons.json): mode.status = { kind, strength, duration, tier, perPellet }
+const statusWPath = path.join(__dirname, 'data', 'status-weapons.json');
+if (fs.existsSync(statusWPath)) {
+  let n = 0;
+  for (const [id, modes] of Object.entries(JSON.parse(fs.readFileSync(statusWPath, 'utf8')))) {
+    if (id.startsWith('_')) continue;
+    const w = weapons.find((x) => x.id === id);
+    if (!w) { console.warn(`status-weapons: no weapon ${id}`); continue; }
+    for (const [name, st] of Object.entries(modes)) {
+      const ms = name === '*' ? w.modes : w.modes.filter((m) => m.name === name);
+      if (!ms.length) console.warn(`status-weapons: ${id} has no mode ${name}`);
+      for (const m of ms) { m.status = st; n++; }
+    }
+  }
+  console.log(`status-weapons: ${n} weapon modes apply fire / stun`);
+}
+
 // Beam bursts (wiki, 40-K Meltagun): the 2600 is damage per second; once charged the beam "fires continuously for
 // roughly 1.4 seconds" (3,640 max per burst), in 0.1 s ticks like other beams, each tick hitting whatever is first
 // along the line then (a plate it breaks lets the rest of the burst through). Its own range falloff: full damage

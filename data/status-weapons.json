@@ -1,0 +1,225 @@
+{
+  "_doc": "Fire / stun status each weapon mode applies (helldivers.wiki.gg weapon pages, 'Status' + 'Status Strength', collected 2026-11-19; most pages are flagged potentially outdated). weaponId -> modeName ('*' = every mode) -> { kind: fire | stun, strength, duration (s), tier, perPellet: each pellet that hits adds it }. Sprays and beams add it per 0.1 s tick (10 a second; the wiki gives no rate). Not listed: BurningHeavy (no threshold for it in the sheet), Incendiary Mines (no strength on its page), and weapons the site doesn't have.",
+  "b-flam-80-cremator": {
+    "*": {
+      "kind": "fire",
+      "strength": 3,
+      "duration": 3
+    }
+  },
+  "flam-40-flamethrower": {
+    "*": {
+      "kind": "fire",
+      "strength": 2,
+      "duration": 3
+    }
+  },
+  "flam-66-torcher": {
+    "*": {
+      "kind": "fire",
+      "strength": 2,
+      "duration": 3
+    }
+  },
+  "p-72-crisper": {
+    "*": {
+      "kind": "fire",
+      "strength": 2,
+      "duration": 3
+    }
+  },
+  "smg-flam-34-stoker": {
+    "Flamethrower": {
+      "kind": "fire",
+      "strength": 2,
+      "duration": 3
+    }
+  },
+  "las-5-scythe": {
+    "*": {
+      "kind": "fire",
+      "strength": 1,
+      "duration": 3
+    }
+  },
+  "las-7-dagger": {
+    "*": {
+      "kind": "fire",
+      "strength": 1,
+      "duration": 3
+    }
+  },
+  "las-98-laser-cannon": {
+    "*": {
+      "kind": "fire",
+      "strength": 1.5,
+      "duration": 3
+    }
+  },
+  "orbital-laser": {
+    "*": {
+      "kind": "fire",
+      "strength": 2,
+      "duration": 3
+    }
+  },
+  "sg-451-cookout": {
+    "*": {
+      "kind": "fire",
+      "strength": 0.6,
+      "duration": 3,
+      "perPellet": true
+    }
+  },
+  "sg-225ie-breaker-incendiary": {
+    "*": {
+      "kind": "fire",
+      "strength": 0.6,
+      "duration": 3,
+      "perPellet": true
+    }
+  },
+  "ar-2-coyote": {
+    "*": {
+      "kind": "fire",
+      "strength": 2,
+      "duration": 3
+    }
+  },
+  "r-4-hyena": {
+    "*": {
+      "kind": "fire",
+      "strength": 3,
+      "duration": 3
+    }
+  },
+  "g-142-pyrotech": {
+    "*": {
+      "kind": "fire",
+      "strength": 100,
+      "duration": 3
+    }
+  },
+  "g-10-incendiary": {
+    "*": {
+      "kind": "fire",
+      "strength": 50,
+      "duration": 3
+    }
+  },
+  "g-13-incendiary-impact": {
+    "*": {
+      "kind": "fire",
+      "strength": 100,
+      "duration": 3
+    }
+  },
+  "g-8-immolation": {
+    "*": {
+      "kind": "fire",
+      "strength": 100,
+      "duration": 3
+    }
+  },
+  "eat-700-expendable-napalm": {
+    "*": {
+      "kind": "fire",
+      "strength": 100,
+      "duration": 3
+    }
+  },
+  "seaf-artillery": {
+    "Napalm": {
+      "kind": "fire",
+      "strength": 100,
+      "duration": 3
+    },
+    "Static Field": {
+      "kind": "stun",
+      "strength": 100,
+      "duration": 3,
+      "tier": "Medium"
+    }
+  },
+  "ar-32-pacifier": {
+    "*": {
+      "kind": "stun",
+      "strength": 2,
+      "duration": 3,
+      "tier": "Medium"
+    }
+  },
+  "smg-72-pummeler": {
+    "*": {
+      "kind": "stun",
+      "strength": 2,
+      "duration": 3,
+      "tier": "Medium"
+    }
+  },
+  "sg-20-halt": {
+    "Stun": {
+      "kind": "stun",
+      "strength": 1,
+      "duration": 5,
+      "tier": "Large",
+      "perPellet": true
+    }
+  },
+  "arc-3-arc-thrower": {
+    "*": {
+      "kind": "stun",
+      "strength": 8,
+      "duration": 1.5,
+      "tier": "Small"
+    }
+  },
+  "arc-12-blitzer": {
+    "*": {
+      "kind": "stun",
+      "strength": 0.9,
+      "duration": 1.5,
+      "tier": "Small"
+    }
+  },
+  "g-31-arc": {
+    "*": {
+      "kind": "stun",
+      "strength": 8,
+      "duration": 1.5,
+      "tier": "Small"
+    }
+  },
+  "gl-52-de-escalator": {
+    "Arc discharge": {
+      "kind": "stun",
+      "strength": 1.75,
+      "duration": 1.5,
+      "tier": "Small"
+    }
+  },
+  "g-11-caltrops": {
+    "*": {
+      "kind": "stun",
+      "strength": 5,
+      "duration": 1.5,
+      "tier": "Small"
+    }
+  },
+  "cqc-19-stun-lance": {
+    "*": {
+      "kind": "stun",
+      "strength": 5,
+      "duration": 5,
+      "tier": "Large"
+    }
+  },
+  "cqc-30-stun-baton": {
+    "*": {
+      "kind": "stun",
+      "strength": 5,
+      "duration": 5,
+      "tier": "Large"
+    }
+  }
+}

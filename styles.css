@@ -328,6 +328,8 @@ table.data tr.click { cursor: pointer; }
 .hud-log { color: var(--muted); font: 12px/1.5 var(--font-mono); height: 7.5em; overflow-y: auto; }
 .hpbars { display: flex; gap: 3px; }
 .force-tag { display: inline-block; margin: 0 2px; padding: 0 5px; border-radius: 3px; background: var(--accent); color: #111; font-weight: 700; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.03em; }
+.force-tag.tag-Ignited { background: #ff8a3d; }
+.force-tag.tag-Stunned { background: #7cc8ff; }
 .hpbars .hpbar { flex: 1; }
 .hpbar { height: 5px; border-radius: 3px; background: rgba(0,0,0,0.45); overflow: hidden; }
 .hpbar b { display: block; height: 100%; background: var(--text); transition: width 0.15s; }
