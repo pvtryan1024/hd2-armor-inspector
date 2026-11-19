@@ -465,6 +465,35 @@ for (const [id, mode] of IMPACT_FUSE) {
   if (m) m.impactFuse = true; else console.warn(`impactFuse: ${id} / ${mode} not found`);
 }
 
+// Cluster munitions: the main round lands (its impact and explosion as usual) and throws `count` bomblets out in
+// every direction (a full sphere, like the Autocannon flak / Eruptor shrapnel); each flies up to `range` m and goes
+// off where it lands (on the enemy, the ground or at the end of its flight) with its own impact and explosion.
+// merge: the wiki's separate bomblet mode is folded into the main one (one weapon, one shot: impact + explosion +
+// bomblets); otherwise the bomblet mode becomes a "Cluster" mode that fires the main round with bomblets (RL-77).
+// count / range: wiki counts; the ranges are a guess (the wiki gives no spread), for the user to check in game.
+const CLUSTER = [
+  { id: 'g-7-pineapple', main: 'Grenade', bomblet: 'Bomblets', count: 18, range: 6, merge: true },
+  { id: 'eat-700-expendable-napalm', main: 'Rocket', bomblet: 'Napalm bomblet', count: 20, range: 8, merge: true },
+  { id: 'eagle-cluster-bomb', main: 'Bomb casing', bomblet: 'Bomblet', count: 8, range: 10, merge: true },
+  { id: 'orbital-airburst-strike', main: 'Shell', bomblet: 'Shrapnel', count: 12, range: 10, merge: true },
+  { id: 'rl-77-airburst-rocket-launcher', main: 'Rocket (direct)', bomblet: 'Bomblet', count: 25, range: 8, merge: false },
+];
+for (const c of CLUSTER) {
+  const w = weapons.find((x) => x.id === c.id);
+  const main = w?.modes.find((x) => x.name === c.main), bm = w?.modes.find((x) => x.name === c.bomblet);
+  if (!main || !bm) { console.warn(`cluster: ${c.id} / ${c.main} + ${c.bomblet} not found`); continue; }
+  // bomblets go off on contact: never a ricochet without its explosion, whatever their AP
+  const bomblet = { ...bm, name: c.bomblet, pellets: 1, impactFuse: true };
+  delete bomblet.cluster;
+  const cluster = { count: c.count, range: c.range, bomblet };
+  if (c.merge) {
+    main.cluster = cluster;
+    w.modes = w.modes.filter((x) => x !== bm);
+  } else {
+    w.modes[w.modes.indexOf(bm)] = { ...main, name: 'Cluster', cluster };
+  }
+}
+
 // Fire / stun status per weapon mode (data/status-weapons.json): mode.status = { kind, strength, duration, tier, perPellet }
 const statusWPath = path.join(__dirname, 'data', 'status-weapons.json');
 if (fs.existsSync(statusWPath)) {

@@ -680,6 +680,40 @@ function shrapnelHits(h, spec) {
   return out;
 }
 
+/** Cluster bomblets (Pineapple, Napalm EAT, Airburst Rocket, Eagle Cluster, Orbital Airburst): `count` bomblets fly
+ *  out from the burst point in every direction (a full sphere), each along its own line up to `range` m. A bomblet
+ *  goes off on the first piece in its way (impact at its own angle), on the floor, or in the air at the end of its
+ *  flight, and its blast is traced from there like any explosion. */
+function clusterHits(h, spec) {
+  if (!spec?.count || !current) return null;
+  const targets = [...current.meshes.map((m) => m.mesh).filter((m) => m.userData.deadHitbox || (m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key))), ...directColliders()];
+  const origin = h.point.clone().addScaledVector(h.normal, 0.05);
+  const floorY = ground.position.y; // the floor under the enemy's feet
+  const up = new THREE.Vector3(0, 1, 0);
+  const out = [];
+  for (const dir of fibDirs(spec.count)) {
+    blastRay.set(origin, dir);
+    blastRay.far = spec.range;
+    const first = blastRay.intersectObjects(targets, false)[0];
+    const toFloor = dir.y < -1e-6 ? (origin.y - floorY) / -dir.y : Infinity;
+    let b;
+    if (first && first.distance <= toFloor) {
+      const idx = partIndexFor(current, first.object.userData.key);
+      let n = dir.clone().negate(), deg = 0;
+      if (first.face) {
+        n = first.face.normal.clone().applyMatrix3(nm.getNormalMatrix(first.object.matrixWorld)).normalize();
+        if (n.dot(dir) > 0) n.negate();
+        deg = THREE.MathUtils.radToDeg(Math.acos(Math.min(1, Math.abs(n.dot(dir)))));
+      }
+      b = { idx, k: idx >= 0 ? instanceFor(current, first.object.userData.key, idx) : null, deg, dead: !!first.object.userData.deadHitbox, point: first.point.clone(), normal: n };
+    } else if (toFloor <= spec.range) b = { idx: -1, point: origin.clone().addScaledVector(dir, toFloor), normal: up.clone() };
+    else b = { idx: -1, point: origin.clone().addScaledVector(dir, spec.range), normal: dir.clone().negate() };
+    b.blastHits = spec.radii ? blastHits(b, spec.radii.outer, spec.radii.inner) : [];
+    out.push({ ...b, point: b.point.toArray(), normal: b.normal.toArray() });
+  }
+  return out;
+}
+
 /** Pellets (shotguns, the Variable's rounds): one ray per pellet, parallel to the shot. The first pellet goes where
  *  the cursor is; the rest land uniformly inside the spread cone, 5 cm radius at 20 m (spec.dist = the range
  *  setting), around it. Each pellet hits the first piece in its way at its own angle; one that hits nothing misses. */
@@ -890,7 +924,7 @@ function insideParts(h) {
 function shoot(h) {
   if (h.ground) { // only the explosion (and shrapnel) reaches the enemy
     const blast = blastHits(h, lastDetail?.radii?.outer, lastDetail?.radii?.inner);
-    const said = HD2.hit({ ground: true, idx: -1, k: null, blastHits: blast, inside: insideParts(h), shrapHits: shrapnelHits(h, lastDetail?.shrapnel), deg: h.deg, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+    const said = HD2.hit({ ground: true, idx: -1, k: null, blastHits: blast, inside: insideParts(h), shrapHits: shrapnelHits(h, lastDetail?.shrapnel), bomblets: clusterHits(h, lastDetail?.cluster), deg: h.deg, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
     if (said) status(said);
     return;
   }
@@ -909,7 +943,7 @@ function shoot(h) {
   for (const m of bv.revealed) { const ri = partIndexFor(current, m.userData.key); if (ri >= 0 && !(ri in revealedK)) revealedK[ri] = instanceFor(current, m.userData.key, ri); }
   const parts = {};
   for (const b of blast) if (parts[b.idx] == null || b.d < parts[b.idx]) parts[b.idx] = b.d;
-  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, inside: insideParts(h), detonate: !!h.mesh.userData.collider?.detonate, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), pelletHits: pelletHits(h, lastDetail?.pellets), thru: thruAlong(h), revealed: !!h.mesh.userData.revealed, dead: !!h.mesh.userData.deadHitbox, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, inside: insideParts(h), detonate: !!h.mesh.userData.collider?.detonate, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), pelletHits: pelletHits(h, lastDetail?.pellets), bomblets: clusterHits(h, lastDetail?.cluster), thru: thruAlong(h), revealed: !!h.mesh.userData.revealed, dead: !!h.mesh.userData.deadHitbox, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
   if (said) status(said);
 }
 
@@ -936,6 +970,21 @@ function drawShot(hit, blast) {
   dot.scale.setScalar(size * 0.008);
   dot.position.copy(p);
   [ray, normal, dot].forEach((m) => { m.renderOrder = 12; shotGroup.add(m); });
+
+  // cluster bomblets: a thin line from the burst to where each one went off, and a dot there (orange: it landed on
+  // the enemy; grey: the floor or the air)
+  if (hit.bomblets?.length) {
+    const from = p.clone().addScaledVector(n, 0.05);
+    for (const b of hit.bomblets) {
+      const at = new THREE.Vector3().fromArray(b.point);
+      const col = b.idx >= 0 ? 0xff8a1f : 0xa7b0ba;
+      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([from, at]), new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.55, depthTest: false }));
+      const bd = new THREE.Mesh(unitSphere, new THREE.MeshBasicMaterial({ color: col, depthTest: false }));
+      bd.scale.setScalar(size * 0.005);
+      bd.position.copy(at);
+      [line, bd].forEach((m) => { m.renderOrder = 12; shotGroup.add(m); });
+    }
+  }
 
   // a ricochet: the round glances off, mirrored about the surface normal (grey, with an arrowhead)
   if (hit.ricochet && !hit.ground && !hit.covered) {

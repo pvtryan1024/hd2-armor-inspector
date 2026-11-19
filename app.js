@@ -1439,10 +1439,10 @@
 
   /** Damage from one shot at a 3D impact point: the struck part takes projectile + full blast, other parts
    *  inside the outer radius take falloff blast, and Main gets the redirected share only once per blast. */
-  function resolveHit(hit) {
+  function resolveHit(hit, modeOverride) {
     const e = enemy(), w = weapon();
     if (!e || !w || !hit) return null;
-    const mode = hitMode(w);
+    const mode = modeOverride || hitMode(w);
     const band = bandOf(hit.deg);
     const o = { ...opts(), band, ...(hit.inside ? { inside: hit.inside } : {}) };
     if (hit.ground) return resolveGround(hit, mode, band, o);
@@ -1555,11 +1555,40 @@
     return { mode, band, rows, radii, thru: null, shrap, ground: true };
   }
 
+  /** Cluster bomblets (mode.cluster): the 3D view sends where each one landed (hit.bomblets: a piece it struck at
+   *  its angle, or the ground / the end of its flight) and what its blast reached. Each is its own small shot:
+   *  its impact on the piece, its explosion on what it reaches (Main's share once per bomblet). Adds a log note. */
+  function applyBomblets(mode, hit, notes) {
+    const c = mode?.cluster, e = enemy(), sim = state.sim;
+    if (!c || !hit.bomblets || !state.explosion || !sim || sim.dead) return;
+    let onEnemy = 0, dealt = 0, reached = 0;
+    for (const b of hit.bomblets) {
+      if (sim.dead) break;
+      if (b.idx >= 0) onEnemy++;
+      const r2 = resolveHit(b.idx >= 0 ? b : { ...b, ground: true, idx: -1 }, c.bomblet);
+      if (!r2) continue;
+      let shared = false, any = false;
+      r2.rows.forEach((r, k) => {
+        if (sim.dead) return;
+        if (shared && r.s.mainEx) r = { ...r, s: { ...r.s, mainEx: 0 } };
+        const direct = k === 0 && b.idx >= 0;
+        const o = direct ? applyHit(sim, e, r.idx, r.s, c.bomblet, { ...opts(), band: bandOf(b.deg || 0) }, true, b.k ?? undefined)
+          : applyShot(sim, e, r.idx, r.s, true, r.k ?? undefined);
+        if (r.s.mainEx) shared = true;
+        if (direct && o.under) shared = true;
+        if (r.s.total > 0 || r.s.mainEx > 0) { any = true; dealt += r.s.total + (r.s.mainEx || 0); }
+        if (o.broke || o.gone) notes.push(`${brokeNote(e.parts[r.idx], direct ? b.k : r.k, o)} by a bomblet`);
+      });
+      if (any) reached++;
+    }
+    notes.push(`bomblets: ${onEnemy}/${c.count} landed on it, ${reached} did damage (${fmt(dealt)} in all)`);
+  }
+
   function placeGround(hit) {
     state.hit = hit;
     const res = resolveHit(hit);
     state.hit = { ...state.hit, blast: res?.radii || null };
-    if (!res?.radii && !res?.shrap) { render(); return 'Ground: no explosion with this weapon, nothing happens'; }
+    if (!res?.radii && !res?.shrap && !res?.mode?.cluster) { render(); return 'Ground: no explosion with this weapon, nothing happens'; }
     if (state.fire && state.sim && !state.sim.dead) {
       const e = enemy(), notes = [];
       const tag = shotClock();
@@ -1579,6 +1608,7 @@
         }
         notes.push(`shrapnel ${res.shrap.hit}/${res.shrap.count} hit`);
       }
+      applyBomblets(res.mode, hit, notes);
       state.sim.log.unshift(`#${state.sim.shots} ${tag}ground: ${res.rows.length ? `blast reached ${res.rows.length} part${res.rows.length > 1 ? 's' : ''}, ${n} damaged` : 'blast reached nothing'}${notes.length ? ' — ' + notes.join(', ') : ''}`);
       state.sim.log.length = Math.min(state.sim.log.length, 8);
       render();
@@ -1652,6 +1682,7 @@
           notes.push(`through into ${pieceName(e.parts[res.thru.idx], res.thru.k)} (AP ${res.thru.ap}): ${fmt(res.thru.s.total)} dmg${o2.broke ? ', destroyed' : ''}`);
         }
       });
+      applyBomblets(res.mode, hit, notes);
       const dotNote = dotSecond(state.sim, e, res.mode);
       if (dotNote) notes.push(dotNote.replace(/^ [+·] /, ''));
       const d = res.rows[0];
@@ -1761,12 +1792,14 @@
     window.dispatchEvent(new CustomEvent('hd2:update', { detail: {
       pellets: (m?.pellets || 1) > 1 && state.allPellets ? { count: m.pellets, dist: curDist(m) || 0 } : null,
       shrapnel: m?.shrapnel && state.explosion ? { count: m.shrapnel.count, spread: m.shrapnel.spread, range: blastRadii(m)?.outer || 7 } : null,
+      // cluster bomblets: how many, how far they fly, and each one's blast radii
+      cluster: m?.cluster && state.explosion ? { count: m.cluster.count, range: m.cluster.range, radii: blastRadii(m.cluster.bomblet) } : null,
       // pieces with constitution whose health is gone but which still have a hitbox (Hulk legs): the 3D view
       // swaps in their damaged mesh
       brokenInst: e.parts.map((p, i) => (state.fire && consOf(p) && state.sim?.hp[i] ? state.sim.hp[i].map((h) => h <= 0 && !instGone(p, h)) : null)),
       enemy: e, colors, gone, goneInst, hitHp, fire: state.fire, stageView: state.stageView,
       colorMode: state.color, ap4, avs: e.parts.map((p) => p.av), bands: ANGLE_BANDS,
-      hit: state.hit, blast: state.hit?.blast || null, radii: blastRadii(m), exvm: e.exvm || 'all', explosive: !!(blastRadii(m) || (m?.shrapnel && state.explosion)),
+      hit: state.hit, blast: state.hit?.blast || null, radii: blastRadii(m), exvm: e.exvm || 'all', explosive: !!(blastRadii(m) || ((m?.shrapnel || m?.cluster) && state.explosion)),
     } }));
   }
 
