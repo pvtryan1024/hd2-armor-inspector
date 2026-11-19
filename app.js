@@ -432,20 +432,22 @@
   }
   /** Flame and gas weapons in fire mode: a click is one second of spraying. The spray's own hit lands on the
    *  part clicked (applied like a shot), and a second of the burn / gas (dot.dps) goes to Main, as the
-   *  time-to-kill numbers count it, if its AP gets through Main's armor. Returns the log text. */
+   *  time-to-kill numbers count it, whatever Main's armor. Returns the log text. */
   const DOT_CLICK = 1;
-  /** Burning (wiki Status Effects: Fire, 3 s of 100 fire damage a second, Heavy penetration = AP 4) and how much of
+  /** Burning (wiki Status Effects: Fire, 3 s of 100 fire damage a second, ignoring armor, like gas) and how much of
    *  it an enemy takes: the community sheet's fire damage multiplier (Scavenger 0.5, Hulk 1.5, Fleshmob 1.8);
    *  0 for an enemy that can't be set on fire (no ignition threshold: tanks, Factory Strider, Hive Lord). */
-  const BURN = { dps: 100, ap: 4 };
+  // burning and gas ignore armor: they reach any Main that can take damage at all (not an indestructible one)
+  const BURN = { dps: 100 };
+  const dotPen = (main) => (main && main.av >= 0 && main.av < 11 ? 1 : 0);
   const fireMult = (enemy) => (enemy.status?.fire ? (enemy.status.fire.min == null ? 0 : enemy.status.fire.dmg ?? 1) : 1);
   const isFire = (dot) => /burn|flame|fire/i.test(dot?.label || '');
   const multNote = (m) => (m !== 1 ? ` (fire ×${m})` : '');
   function dotSecond(sim, enemy, mode) {
     const dot = mode.dot, main = mainPart(enemy), mi = enemy.parts.indexOf(main);
     if (!dot || sim.dead || mi < 0 || typeof main.health !== 'number') return '';
-    const pen = penMult(dot.ap, main.av) || 0;
-    if (!pen) return ` · ${dot.label} can't get through Main's armor (AP ${dot.ap} vs AV ${main.av})`;
+    const pen = dotPen(main);
+    if (!pen) return '';
     const fm = isFire(dot) ? fireMult(enemy) : 1;
     if (!fm) return ` · can't be set on fire`;
     const dmg = Math.floor(dot.dps * DOT_CLICK * pen * fm);
@@ -456,7 +458,7 @@
   function igniteBurn(sim, enemy, duration) {
     const main = mainPart(enemy), mi = enemy.parts.indexOf(main);
     if (sim.dead || mi < 0 || typeof main.health !== 'number') return '';
-    const pen = penMult(BURN.ap, main.av) || 0, fm = fireMult(enemy);
+    const pen = dotPen(main), fm = fireMult(enemy);
     if (!pen || !fm) return '';
     const dmg = Math.floor(BURN.dps * duration * pen * fm);
     applyShot(sim, enemy, mi, { proj: 0, partEx: 0, mainEx: 0, total: dmg }, true);
@@ -516,7 +518,7 @@
  *        (reloads = ceil(shots / mag) − 1, reload time from the weapon's wiki page); weapons that load one round
  *        at a time instead add one round's reload for every shot past the magazine
    *  beam: damage listed per second, applied in 0.1 s ticks
-   *  dot:  flame / gas sprays; the burn or gas cloud hits Main only and must beat Main's AV */
+   *  dot:  flame / gas sprays; the burn or gas cloud hits Main only, ignoring armor */
   const BEAM_TICK = 0.1;
   /** The mode one simulated hit uses: a beam burst's hit is one 0.1 s tick of its per-second damage. */
   function hitMode(w) {
@@ -591,7 +593,7 @@
         }
         r.why = t.why;
       } else {
-        const pen = main && typeof main.health === 'number' && p.av >= 0 && p.av < 11 ? penMult(fm.ap, main.av) : 0;
+        const pen = main && typeof main.health === 'number' && p.av >= 0 && p.av < 11 ? dotPen(main) : 0;
         const fx = isFire(fm) ? fireMult(enemy) : 1; // burning: the enemy's fire damage multiplier
         r.ttk = pen && fx ? main.health / (fm.dps * pen * fx) : null;
         r.killAt = null;
