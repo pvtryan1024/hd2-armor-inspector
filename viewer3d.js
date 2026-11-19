@@ -54,6 +54,7 @@ const groundRing = new THREE.Mesh(new THREE.RingGeometry(0.985, 1, 96).rotateX(-
 ground.add(groundDisc, groundRing);
 ground.visible = false;
 scene.add(ground);
+let groundBase = 1;
 const groundActive = () => !!(current && !editing && lastDetail?.fire && lastDetail.explosive);
 
 function resize() {
@@ -250,7 +251,8 @@ function frame() {
   grid.position.y = box.min.y;
   grid.scale.setScalar(Math.max(0.1, r / 8));
   ground.position.set(center.x, box.min.y + 0.002, center.z);
-  ground.scale.setScalar(Math.max(size.x, size.z) / 2 + 2); // its footprint plus 2 m
+  groundBase = Math.max(size.x, size.z) / 2 + 2; // its footprint plus 2 m
+  ground.scale.setScalar(groundBase);
 }
 
 function show(entry) {
@@ -485,6 +487,11 @@ function paint() {
   applyHidden();
   swapBroken();
   ground.visible = groundActive();
+  // a cluster weapon's bomblets land well past the enemy: the floor reaches as far as they spread, so a ground
+  // shot out there still counts
+  const cl = lastDetail?.cluster;
+  const reach = !cl ? 0 : cl.pattern === 'rain' ? (cl.diameter || 28) / 2 : cl.pattern === 'cone' ? (cl.height || 30) * Math.tan(THREE.MathUtils.degToRad(cl.halfAngle || 30)) : (cl.range || 0) + (cl.radii?.outer || 0);
+  ground.scale.setScalar(Math.max(groundBase, reach + 2));
   const angleMode = colorMode === 'pen' && !!ap4;
   // editing: only the selected mesh's part keeps its colour; the other parts go plain grey
   const selPart = editing && selectedKey ? partIndexFor(current, selectedKey) : -1;
@@ -736,7 +743,7 @@ function clusterHits(h, spec, from) {
     } else if (toFloor <= far) b = { idx: -1, point: origin.clone().addScaledVector(dir, toFloor), normal: up.clone() };
     else b = { idx: -1, point: origin.clone().addScaledVector(dir, far), normal: dir.clone().negate() };
     b.blastHits = spec.radii ? blastHits(b, spec.radii.outer, spec.radii.inner) : [];
-    out.push({ ...b, point: b.point.toArray(), normal: b.normal.toArray(), from: origin.toArray() });
+    out.push({ ...b, point: b.point.toArray(), normal: b.normal.toArray(), from: origin.toArray(), radii: spec.radii || null });
   }
   return out;
 }
@@ -1030,6 +1037,17 @@ function drawShot(hit, blast) {
       bd.scale.setScalar(size * 0.005);
       bd.position.copy(at);
       [line, bd].forEach((m) => { m.renderOrder = 12; shotGroup.add(m); });
+      // its explosion: a faint red core and orange edge at its blast radii
+      if (b.radii) {
+        for (const [r, col, op] of [[b.radii.inner, 0xff2a1a, 0.12], [b.radii.outer, 0xff8a1f, 0.06]]) {
+          if (!(r > 0)) continue;
+          const s = new THREE.Mesh(unitSphere, fx(col, op));
+          s.scale.setScalar(r);
+          s.position.copy(at);
+          s.renderOrder = 11;
+          shotGroup.add(s);
+        }
+      }
     }
   }
 

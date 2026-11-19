@@ -1561,10 +1561,13 @@
   function applyBomblets(mode, hit, notes) {
     const c = mode?.cluster, e = enemy(), sim = state.sim;
     if (!c || !hit.bomblets || !state.explosion || !sim || sim.dead) return;
-    let onEnemy = 0, dealt = 0, reached = 0;
+    let onEnemy = 0, dealt = 0, reached = 0, inBlast = 0, after = 0;
+    const outer = blastRadii(c.bomblet)?.outer || 0;
     for (const b of hit.bomblets) {
-      if (sim.dead) break;
       if (b.idx >= 0) onEnemy++;
+      const near = b.idx >= 0 || (b.blastHits || []).some((x) => x.d <= outer);
+      if (near) inBlast++;
+      if (sim.dead) { if (near) after++; continue; }
       const r2 = resolveHit(b.idx >= 0 ? b : { ...b, ground: true, idx: -1 }, c.bomblet);
       if (!r2) continue;
       let shared = false, any = false;
@@ -1581,7 +1584,7 @@
       });
       if (any) reached++;
     }
-    notes.push(`bomblets: ${onEnemy}/${c.count} landed on it, ${reached} did damage (${fmt(dealt)} in all)`);
+    notes.push(`bomblets: ${onEnemy}/${c.count} landed on it, ${inBlast} caught it in their blast, ${reached} did damage (${fmt(dealt)} in all)${after ? `; down before the last ${after}` : ''}`);
   }
 
   function placeGround(hit) {
