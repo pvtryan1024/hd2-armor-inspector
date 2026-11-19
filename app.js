@@ -144,7 +144,22 @@
   /** Damage a single trigger pull does to one part, before HP caps. */
   /** Velocity falloff from the wiki's simplified drag formula (ignores gravity):
    *  mult = 1 − 0.75 × (1 − e^(−2·D·x)),  D ≈ 0.0004712389 × caliber² × Cd / mass */
+  /** The range slider's caption: what the range does to this mode's damage. */
+  function rangeCaption(m) {
+    const f = m.falloff;
+    if (f) return state.dist > f.range ? `<b>Out of range</b>: the beam reaches ${f.range} m`
+      : `Beam damage at ${state.dist} m: <b>${Math.round(rangeMult(m, state.dist) * 100)}%</b> (full to ${f.from} m, ${Math.round(f.min * 100)}% at ${f.to} m)`;
+    return m.ballistics?.drag ? `Projectile damage at ${state.dist} m: <b>${Math.round(rangeMult(m, state.dist) * 100)}%</b> (drag falloff)`
+      : m.ballistics ? 'No drag: no falloff over range' : '<span class="muted">No ballistics data: range has no effect</span>';
+  }
   function rangeMult(mode, dist) {
+    // a weapon's own falloff (Meltagun beam): full to `from` m, linear down to `min` at `to` m, nothing past `range`
+    const f = mode.falloff;
+    if (f) {
+      const d = dist || 0;
+      if (d > f.range) return 0;
+      return d <= f.from ? 1 : d >= f.to ? f.min : 1 - (1 - f.min) * (d - f.from) / (f.to - f.from);
+    }
     const b = mode.ballistics;
     if (!dist || !b || !b.drag || !b.caliber || !b.mass) return 1;
     const D = (0.0004712389 * b.caliber * b.caliber * b.drag) / b.mass;
@@ -479,8 +494,18 @@
    *  beam: damage listed per second, applied in 0.1 s ticks
    *  dot:  flame / gas sprays; the burn or gas cloud hits Main only and must beat Main's AV */
   const BEAM_TICK = 0.1;
+  /** The mode one simulated hit uses: a beam burst's hit is one 0.1 s tick of its per-second damage. */
+  function hitMode(w) {
+    const m = w.modes[state.mode] || w.modes[0];
+    return m.beam && m.beamBurst ? { ...m, damage: m.damage * BEAM_TICK, durable: (m.durable ?? m.damage) * BEAM_TICK } : m;
+  }
   function fireModel(weapon, mode) {
     if (mode.dot) return { kind: 'dot', ...mode.dot };
+    // a beam burst (Meltagun): `ticks` 0.1 s ticks a burst, a charge of `gap` s between bursts, a magazine of bursts
+    if (mode.beam && mode.beamBurst) {
+      return { kind: 'beam', burst: { ticks: Math.round(mode.beamBurst.duration / BEAM_TICK), gap: weapon.rpm ? 60 / weapon.rpm : 0 },
+        mag: weapon.mag, reload: weapon.reload, ammoKey: weapon.id };
+    }
     if (mode.beam) return { kind: 'beam' };
     const rpm = mode.rpm ?? weapon.rpm;
     // a charged shot waits for its charge; a heat weapon (Quasar) waits out its cooldown between shots
@@ -533,6 +558,13 @@
         const t = simulate(tickMode, enemy, i, opts);
         r.ttk = t.killAt == null ? null : t.killAt * BEAM_TICK;
         r.killAt = null;
+        if (fm.burst && t.killAt != null) { // bursts: a charge between them, a reload per magazine of bursts
+          const bursts = Math.ceil(t.killAt / fm.burst.ticks);
+          const reloads = fm.mag ? Math.max(0, Math.ceil(bursts / fm.mag) - 1) : 0;
+          r.ttk = t.killAt * BEAM_TICK + (bursts - 1) * fm.burst.gap + reloads * (fm.reload || 0);
+          r.reloads = reloads;
+          r.bursts = bursts;
+        }
         r.why = t.why;
       } else {
         const pen = main && typeof main.health === 'number' && p.av >= 0 && p.av < 11 ? penMult(fm.ap, main.av) : 0;
@@ -830,7 +862,7 @@
       <div class="range">
         <label class="opt">Range <b id="distVal">${state.dist} m</b></label>
         <input type="range" id="distSlider" min="0" max="200" step="5" value="${state.dist}">
-        <div class="ap-caption">${m.ballistics?.drag ? `Projectile damage at ${state.dist} m: <b>${Math.round(rangeMult(m, state.dist) * 100)}%</b> (drag falloff)` : m.ballistics ? 'No drag: no falloff over range' : '<span class="muted">No ballistics data: range has no effect</span>'}</div>
+        <div class="ap-caption">${rangeCaption(m)}</div>
       </div>
       ${w.charge ? `<div class="range charge">
         <label class="opt">Charge time <b id="chargeVal">${m.chargeTime.toFixed(2)} s</b></label>
@@ -1167,7 +1199,18 @@
     const sim = state.sim, w = weapon();
     const key = `${w.id}:${state.mode}:${chargeOf(w) ?? ''}`;
     const fm = fireModel(w, w.modes[state.mode] || w.modes[0]);
-    if (fm?.kind === 'dot' || fm?.kind === 'beam') sim.time += DOT_CLICK; // a flame / gas / beam click is a second of it
+    if (fm?.kind === 'beam' && fm.burst) { // one tick of a beam burst; a new burst charges first and uses a round
+      const same = sim.last === key;
+      const j = same ? (sim.burstN || 0) + 1 : 0;
+      sim.burstN = j;
+      if (j % fm.burst.ticks) sim.time += BEAM_TICK;
+      else {
+        if (same) sim.time += BEAM_TICK + fm.burst.gap;
+        sim.ammo ||= {};
+        if (fm.mag && (sim.ammo[fm.ammoKey] || 0) >= fm.mag) { sim.time += fm.reload || 0; sim.ammo[fm.ammoKey] = 0; sim.reloads = (sim.reloads || 0) + 1; }
+        sim.ammo[fm.ammoKey] = (sim.ammo[fm.ammoKey] || 0) + 1;
+      }
+    } else if (fm?.kind === 'dot' || fm?.kind === 'beam') sim.time += DOT_CLICK; // a flame / gas / beam click is a second of it
     else if (sim.last === key && fm?.burst) { // burst weapon: a charge before each new burst
       sim.burstN = (sim.burstN || 0) + 1;
       sim.time += sim.burstN % fm.burst.size === 0 ? fm.burst.charge : 60 / fm.rpm;
@@ -1230,7 +1273,7 @@
   function fireAt(i, hit, k) {
     const e = enemy(), w = weapon();
     if (!e || !w || !state.sim || state.sim.dead) return;
-    const mode = w.modes[state.mode] || w.modes[0];
+    const mode = hitMode(w);
     const part = e.parts[i];
     // destroyed parts have no hitbox anymore
     const left = partLeft(i);
@@ -1341,7 +1384,7 @@
   function resolveHit(hit) {
     const e = enemy(), w = weapon();
     if (!e || !w || !hit) return null;
-    const mode = w.modes[state.mode] || w.modes[0];
+    const mode = hitMode(w);
     const band = bandOf(hit.deg);
     const o = { ...opts(), band, ...(hit.inside ? { inside: hit.inside } : {}) };
     if (hit.ground) return resolveGround(hit, mode, band, o);
@@ -1682,24 +1725,47 @@
     if (!w || !state.fire) return null;
     const mode = w.modes[state.mode] || w.modes[0];
     const fm = fireModel(w, mode);
+    if (fm.kind === 'beam' && fm.burst) return BEAM_TICK;
     if (fm.kind === 'dot' || fm.kind === 'beam') return DOT_CLICK;
     return (mode.auto ?? w.auto) && fm.interval ? fm.interval : null;
   }
-  let holdTimer = null;
+  /** Beam burst weapon (Meltagun): its fire model, and whether the next tick starts a new burst. */
+  function burstState() {
+    const w = weapon(), sim = state.sim;
+    const fm = w && fireModel(w, w.modes[state.mode] || w.modes[0]);
+    if (!fm?.burst || fm.kind !== 'beam' || !sim) return null;
+    const same = sim.last === `${w.id}:${state.mode}:${chargeOf(w) ?? ''}`;
+    return { fm, fresh: !same || ((sim.burstN || 0) + 1) % fm.burst.ticks === 0 };
+  }
+  let holdTimer = null, holding = false;
   function startHold(fireOnce) {
     stopHold();
+    holding = true;
     const step = () => {
       holdTimer = null;
       const iv = holdInterval();
       if (iv == null || !state.sim || state.sim.dead) return;
       const t0 = state.sim.time || 0;
       fireOnce();
-      const dt = Math.max(iv, (state.sim?.time || 0) - t0);
+      let dt = Math.max(iv, (state.sim?.time || 0) - t0);
+      // a beam burst runs its full length once started, button held or not; holding on starts the next one
+      // after its charge (and a reload when the magazine is out)
+      const b = burstState();
+      if (b?.fresh) {
+        if (!holding) return;
+        const out = b.fm.mag && (state.sim.ammo?.[b.fm.ammoKey] || 0) >= b.fm.mag;
+        dt = BEAM_TICK + b.fm.burst.gap + (out ? b.fm.reload || 0 : 0);
+      }
       holdTimer = setTimeout(step, Math.max(16, dt * 1000));
     };
     step();
   }
-  function stopHold() { clearTimeout(holdTimer); holdTimer = null; }
+  function stopHold() { clearTimeout(holdTimer); holdTimer = null; holding = false; }
+  /** Button released: stop firing, except that a beam burst already under way finishes. */
+  function releaseHold() {
+    holding = false;
+    if (holdTimer && !(burstState() && !burstState().fresh)) stopHold();
+  }
 
   /* ---------------- tooltip ---------------- */
 
@@ -1815,7 +1881,7 @@
     else if (weapon()) { // dragging the range slider: refresh only its caption so the drag isn't interrupted
       const m = weapon().modes[state.mode] || weapon().modes[0];
       const cap = $('#distSlider')?.parentElement.querySelector('.ap-caption');
-      if (cap && m.ballistics?.drag) cap.innerHTML = `Projectile damage at ${state.dist} m: <b>${Math.round(rangeMult(m, state.dist) * 100)}%</b> (drag falloff)`;
+      if (cap && (m.ballistics?.drag || m.falloff)) cap.innerHTML = rangeCaption(m);
     }
     renderStage();
     $$('#viewTabs button').forEach((b) => b.classList.toggle('on', b.dataset.view === state.view));
@@ -1987,8 +2053,8 @@
         if (n) fireOn(n);
       });
     };
-    window.addEventListener('pointerup', stopHold);
-    window.addEventListener('blur', stopHold);
+    window.addEventListener('pointerup', releaseHold);
+    window.addEventListener('blur', releaseHold);
     clickHost('#schematic');
     clickHost('#partsTable');
 
@@ -2046,7 +2112,7 @@
   window.HD2 = {
     simulate, shotDamage, penMult, evalEnemy,
     // used by viewer3d.js
-    enemy, tip: showTip, hideTip, click: partClick, hit: placeHit, holdInterval, startHold, stopHold,
+    enemy, tip: showTip, hideTip, click: partClick, hit: placeHit, holdInterval, startHold, stopHold, releaseHold,
     refresh: () => render(),
   };
   init();

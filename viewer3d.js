@@ -859,7 +859,7 @@ window.addEventListener('pointerup', (ev) => {
   const p = press;
   press = null;
   controls.enabled = true;
-  if (p.auto) { HD2.stopHold(); holdAt = null; return; } // the held burst already fired
+  if (p.auto) { HD2.releaseHold(); return; } // the held burst already fired
   if (Math.hypot(ev.clientX - p.x, ev.clientY - p.y) > 40) return; // dragged well away: cancel the shot
   shoot(p.h);
 });

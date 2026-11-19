@@ -465,6 +465,18 @@ for (const [id, mode] of IMPACT_FUSE) {
   if (m) m.impactFuse = true; else console.warn(`impactFuse: ${id} / ${mode} not found`);
 }
 
+// Beam bursts (wiki, 40-K Meltagun): the 2600 is damage per second; once charged the beam "fires continuously for
+// roughly 1.4 seconds" (3,640 max per burst), in 0.1 s ticks like other beams, each tick hitting whatever is first
+// along the line then (a plate it breaks lets the rest of the burst through). Its own range falloff: full damage
+// to 5 m, down to 0.6x at its 15 m maximum range, nothing past it. Between bursts it charges for 60 / RPM (50 rpm:
+// 1.2 s; the wiki doesn't say how its 50 rpm fits with the 1.4 s beam), 3 bursts a magazine.
+const BEAM_BURST = { '40-k-meltagun': { mode: 'Standard', duration: 1.4, falloff: { from: 5, to: 15, min: 0.6, range: 15 } } };
+for (const [id, b] of Object.entries(BEAM_BURST)) {
+  const m = weapons.find((w) => w.id === id)?.modes.find((x) => x.name === b.mode);
+  if (!m) { console.warn(`beam burst: ${id} / ${b.mode} not found`); continue; }
+  Object.assign(m, { beam: true, beamBurst: { duration: b.duration }, falloff: b.falloff });
+}
+
 // Automatic fire: holding the mouse button on the target keeps firing at the weapon's RPM (flame / gas sprays and
 // beams always do). The wiki's weapon lists don't give fire modes, so this list is by hand: [id] for the whole
 // weapon, [id, mode] for one mode of it. Semi-auto, pump, bolt and charge weapons stay one shot per click.
