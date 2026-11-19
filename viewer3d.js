@@ -1039,7 +1039,7 @@ function drawShot(hit, blast) {
       [line, bd].forEach((m) => { m.renderOrder = 12; shotGroup.add(m); });
       // its explosion: a faint red core and orange edge at its blast radii
       if (b.radii) {
-        for (const [r, col, op] of [[b.radii.inner, 0xff2a1a, 0.12], [b.radii.outer, 0xff8a1f, 0.06]]) {
+        for (const [r, col, op] of [[b.radii.inner, 0xff2a1a, 0.2], [b.radii.outer, 0xff8a1f, 0.12]]) {
           if (!(r > 0)) continue;
           const s = new THREE.Mesh(unitSphere, fx(col, op));
           s.scale.setScalar(r);
@@ -1065,11 +1065,13 @@ function drawShot(hit, blast) {
   }
 
   if (blast) {
+    // an airburst's own blast is up where the shell burst, not on the spot below it
+    const bp = hit.tip ? new THREE.Vector3().fromArray(hit.tip) : p;
     // inner radius: translucent red; outer: orange shells fading out toward the edge
     if (blast.inner > 0) {
       const inner = new THREE.Mesh(unitSphere, fx(0xff2a1a, 0.32));
       inner.scale.setScalar(blast.inner);
-      inner.position.copy(p);
+      inner.position.copy(bp);
       inner.renderOrder = 11;
       shotGroup.add(inner);
     }
@@ -1079,7 +1081,7 @@ function drawShot(hit, blast) {
         const r = blast.inner + ((blast.outer - blast.inner) * k) / SHELLS;
         const shell = new THREE.Mesh(unitSphere, fx(0xff8a1f, 0.16 * (1 - (k - 1) / SHELLS) ** 1.5));
         shell.scale.setScalar(r);
-        shell.position.copy(p);
+        shell.position.copy(bp);
         shell.renderOrder = 11;
         shotGroup.add(shell);
       }

@@ -877,6 +877,11 @@
           ${(x.inner ?? x.innerRadius) != null ? `<div class="stat"><div class="k">Radius${n}</div><div class="v">${x.inner ?? x.innerRadius}/${x.outer ?? x.outerRadius ?? '?'}m</div></div>` : ''}
           <div class="stat"><div class="k">Expl.${n} dmg</div><div class="v">${fmt(x.durable ?? x.damage)}</div></div>
           <div class="stat"><div class="k">Expl.${n} AP</div><div class="v">${x.ap ?? '—'}</div></div>`; }).join('')}
+        ${m.cluster ? (() => { const b = m.cluster.bomblet, bx = b.explosion; return `
+          <div class="stat"><div class="k">Bomblets</div><div class="v">${m.cluster.count}</div></div>
+          ${b.damage ? `<div class="stat"><div class="k">Bomblet dmg</div><div class="v">${fmt(b.damage)} · AP ${b.ap}</div></div>` : ''}
+          ${bx ? `<div class="stat"><div class="k">Bomblet radius</div><div class="v">${bx.inner ?? bx.innerRadius ?? 0}/${bx.outer ?? bx.outerRadius ?? '?'}m</div></div>
+          <div class="stat"><div class="k">Bomblet expl. dmg</div><div class="v">${fmt(bx.durable ?? bx.damage)} · AP ${bx.ap}</div></div>` : ''}`; })() : ''}
       </div>
       <div class="angles">
         <div class="ap-caption">AP by impact angle${m.apAngles ? '' : ' <span class="muted">(no angle data — same AP at every angle)</span>'}</div>
