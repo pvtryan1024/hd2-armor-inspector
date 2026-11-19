@@ -1609,7 +1609,7 @@
         notes.push(`shrapnel ${res.shrap.hit}/${res.shrap.count} hit`);
       }
       applyBomblets(res.mode, hit, notes);
-      state.sim.log.unshift(`#${state.sim.shots} ${tag}ground: ${res.rows.length ? `blast reached ${res.rows.length} part${res.rows.length > 1 ? 's' : ''}, ${n} damaged` : 'blast reached nothing'}${notes.length ? ' — ' + notes.join(', ') : ''}`);
+      state.sim.log.unshift(`#${state.sim.shots} ${tag}${hit.tip ? `airburst ${Math.round(hit.tip[1] - hit.point[1])} m up: shell burst overhead` : `ground: ${res.rows.length ? `blast reached ${res.rows.length} part${res.rows.length > 1 ? 's' : ''}, ${n} damaged` : 'blast reached nothing'}`}${notes.length ? ' — ' + notes.join(', ') : ''}`);
       state.sim.log.length = Math.min(state.sim.log.length, 8);
       render();
       return `Fired #${state.sim.shots}: ground, blast reached ${res.rows.length} part${res.rows.length === 1 ? '' : 's'}`;
@@ -1793,7 +1793,7 @@
       pellets: (m?.pellets || 1) > 1 && state.allPellets ? { count: m.pellets, dist: curDist(m) || 0 } : null,
       shrapnel: m?.shrapnel && state.explosion ? { count: m.shrapnel.count, spread: m.shrapnel.spread, range: blastRadii(m)?.outer || 7 } : null,
       // cluster bomblets: how many, how far they fly, and each one's blast radii
-      cluster: m?.cluster && state.explosion ? { count: m.cluster.count, range: m.cluster.range, radii: blastRadii(m.cluster.bomblet) } : null,
+      cluster: m?.cluster && state.explosion ? { count: m.cluster.count, range: m.cluster.range, radii: blastRadii(m.cluster.bomblet), pattern: m.cluster.pattern || 'sphere', diameter: m.cluster.diameter, height: m.cluster.height, halfAngle: m.cluster.halfAngle } : null,
       // pieces with constitution whose health is gone but which still have a hitbox (Hulk legs): the 3D view
       // swaps in their damaged mesh
       brokenInst: e.parts.map((p, i) => (state.fire && consOf(p) && state.sim?.hp[i] ? state.sim.hp[i].map((h) => h <= 0 && !instGone(p, h)) : null)),

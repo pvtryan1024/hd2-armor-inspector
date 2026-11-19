@@ -443,11 +443,17 @@ const AC8_P2 = { count: 30, damage: 110, durable: 35, apAngles: [3, 3, 2, 0], ba
 const SHRAPNEL = [
   { id: 'ac-8-autocannon', mode: 'Flak', set: { damage: 150, durable: 150, ap: 2, apAngles: [2, 2, 2, 0], pellets: 1, proximity: true }, shrapnel: { ...AC8_P2, spread: 'sphere' } },
   { id: 'r-36-eruptor', mode: 'Standard', shrapnel: { ...AC8_P2, spread: 'sphere' } },
+  // G-6 Frag: 35 fragments of 110 / 35 (wiki; its AP isn't listed, so the Lure Mine's 3/3/2/0) in every direction
+  { id: 'g-6-frag', mode: 'Standard', shrapnel: { count: 35, damage: 110, durable: 35, apAngles: [3, 3, 2, 0], spread: 'sphere' } },
+  // TM-1 Lure Mine: 35 fragments of 110 / 35, AP 3/3/2/0, only away from what it sits on (a half sphere; the user's
+  // call); its separate Shrapnel mode is folded into the explosion
+  { id: 'tm-1-lure-mine', mode: 'Explosion', shrapnel: { count: 35, damage: 110, durable: 35, apAngles: [3, 3, 2, 0], spread: 'away' }, drop: 'Shrapnel' },
 ];
 for (const r of SHRAPNEL) {
   const m = weapons.find((w) => w.id === r.id)?.modes.find((x) => x.name === r.mode);
   if (!m) { console.warn(`shrapnel: ${r.id} / ${r.mode} not found`); continue; }
   Object.assign(m, r.set || {}, { shrapnel: r.shrapnel });
+  if (r.drop) { const w = weapons.find((x) => x.id === r.id); w.modes = w.modes.filter((x) => x.name !== r.drop); }
 }
 
 // Impact-fused explosives: the round goes off on whatever it touches, so a low AP (0) never makes it glance off
@@ -474,8 +480,12 @@ for (const [id, mode] of IMPACT_FUSE) {
 const CLUSTER = [
   { id: 'g-7-pineapple', main: 'Grenade', bomblet: 'Bomblets', count: 18, range: 6, merge: true },
   { id: 'eat-700-expendable-napalm', main: 'Rocket', bomblet: 'Napalm bomblet', count: 20, range: 8, merge: true },
-  { id: 'eagle-cluster-bomb', main: 'Bomb casing', bomblet: 'Bomblet', count: 8, range: 10, merge: true },
-  { id: 'orbital-airburst-strike', main: 'Shell', bomblet: 'Shrapnel', count: 12, range: 10, merge: true },
+  // Eagle Cluster: the whole strike's bomblets (4 bombs x 8) fall straight down like rain, spread evenly over a
+  // 28 m wide circle centred on the click (the user's call); the casing still hits where you click
+  { id: 'eagle-cluster-bomb', main: 'Bomb casing', bomblet: 'Bomblet', count: 32, range: 0, merge: true, pattern: 'rain', diameter: 28 },
+  // Orbital Airburst: the shell always bursts 30 m above the ground over the click and its 12 fragments fly down in
+  // a cone (half-angle 30 degrees, a guess); nothing hits where you click
+  { id: 'orbital-airburst-strike', main: 'Shell', bomblet: 'Shrapnel', count: 12, range: 0, merge: true, pattern: 'cone', height: 30, halfAngle: 30 },
   { id: 'rl-77-airburst-rocket-launcher', main: 'Rocket (direct)', bomblet: 'Bomblet', count: 25, range: 8, merge: false },
 ];
 for (const c of CLUSTER) {
@@ -485,7 +495,7 @@ for (const c of CLUSTER) {
   // bomblets go off on contact: never a ricochet without its explosion, whatever their AP
   const bomblet = { ...bm, name: c.bomblet, pellets: 1, impactFuse: true };
   delete bomblet.cluster;
-  const cluster = { count: c.count, range: c.range, bomblet };
+  const cluster = { count: c.count, range: c.range, bomblet, ...(c.pattern ? { pattern: c.pattern, diameter: c.diameter, height: c.height, halfAngle: c.halfAngle } : {}) };
   if (c.merge) {
     main.cluster = cluster;
     w.modes = w.modes.filter((x) => x !== bm);

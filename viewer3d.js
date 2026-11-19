@@ -657,7 +657,10 @@ function shrapnelHits(h, spec) {
   if (!spec?.count) return null;
   const into = h.ground ? new THREE.Vector3(0, 1, 0) : h.normal.clone().negate();
   let dirs;
-  if (spec.spread === 'surface') {
+  if (spec.spread === 'away') { // a half sphere out of the surface (Lure Mine): nothing into what it sits on
+    const out = h.ground ? new THREE.Vector3(0, 1, 0) : h.normal.clone();
+    dirs = fibDirs(spec.count * 2).filter((d) => d.dot(out) > 0).slice(0, spec.count);
+  } else if (spec.spread === 'surface') {
     dirs = fibDirs(spec.count * 2).filter((d) => d.dot(into) > 0).slice(0, spec.count);
   } else dirs = fibDirs(spec.count);
   const targets = [...current.meshes.map((m) => m.mesh).filter((m) => m.userData.deadHitbox || (m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key))), ...directColliders()];
@@ -680,20 +683,43 @@ function shrapnelHits(h, spec) {
   return out;
 }
 
-/** Cluster bomblets (Pineapple, Napalm EAT, Airburst Rocket, Eagle Cluster, Orbital Airburst): `count` bomblets fly
- *  out from the burst point in every direction (a full sphere), each along its own line up to `range` m. A bomblet
- *  goes off on the first piece in its way (impact at its own angle), on the floor, or in the air at the end of its
- *  flight, and its blast is traced from there like any explosion. */
-function clusterHits(h, spec) {
+/** Cluster bomblets. Where they come from (spec.pattern):
+ *  - sphere (Pineapple, Napalm EAT, Airburst Rocket): `count` bomblets fly out from the burst in every direction,
+ *    each along its own line up to `range` m
+ *  - rain (Eagle Cluster): they fall straight down, spread evenly over a circle `diameter` m wide centred under the
+ *    burst (a sunflower pattern, turned at random each strike)
+ *  - cone (Orbital Airburst): they fly down from `from` (the burst high above) in a cone of `halfAngle` degrees
+ *  A bomblet goes off on the first piece in its way (impact at its own angle), on the floor, or in the air at the end
+ *  of its flight, and its blast is traced from there like any explosion. Each keeps `from`, where its line starts. */
+function clusterHits(h, spec, from) {
   if (!spec?.count || !current) return null;
   const targets = [...current.meshes.map((m) => m.mesh).filter((m) => m.userData.deadHitbox || (m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key))), ...directColliders()];
-  const origin = h.point.clone().addScaledVector(h.normal, 0.05);
   const floorY = ground.position.y; // the floor under the enemy's feet
-  const up = new THREE.Vector3(0, 1, 0);
+  const up = new THREE.Vector3(0, 1, 0), down = new THREE.Vector3(0, -1, 0);
+  const lines = []; // [origin, direction, how far]
+  if (spec.pattern === 'rain') {
+    const top = new THREE.Box3().setFromObject(current.root).max.y + 5;
+    const R = (spec.diameter || 28) / 2, turn = Math.random() * Math.PI * 2;
+    for (let i = 0; i < spec.count; i++) {
+      const r = R * Math.sqrt((i + 0.5) / spec.count), a = turn + i * 2.399963;
+      lines.push([new THREE.Vector3(h.point.x + r * Math.cos(a), top, h.point.z + r * Math.sin(a)), down, top - floorY + 1]);
+    }
+  } else if (spec.pattern === 'cone') {
+    const tip = from || h.point.clone().add(new THREE.Vector3(0, spec.height || 30, 0));
+    const cosA = Math.cos(THREE.MathUtils.degToRad(spec.halfAngle || 30));
+    const far = (tip.y - floorY) / cosA + 1;
+    for (let i = 0; i < spec.count; i++) { // evenly over the cap of directions around straight down
+      const c = 1 - (1 - cosA) * (i + 0.5) / spec.count, s = Math.sqrt(1 - c * c), a = i * 2.399963;
+      lines.push([tip, new THREE.Vector3(s * Math.cos(a), -c, s * Math.sin(a)), far]);
+    }
+  } else {
+    const origin = h.point.clone().addScaledVector(h.normal, 0.05);
+    for (const dir of fibDirs(spec.count)) lines.push([origin, dir, spec.range]);
+  }
   const out = [];
-  for (const dir of fibDirs(spec.count)) {
+  for (const [origin, dir, far] of lines) {
     blastRay.set(origin, dir);
-    blastRay.far = spec.range;
+    blastRay.far = far;
     const first = blastRay.intersectObjects(targets, false)[0];
     const toFloor = dir.y < -1e-6 ? (origin.y - floorY) / -dir.y : Infinity;
     let b;
@@ -706,12 +732,23 @@ function clusterHits(h, spec) {
         deg = THREE.MathUtils.radToDeg(Math.acos(Math.min(1, Math.abs(n.dot(dir)))));
       }
       b = { idx, k: idx >= 0 ? instanceFor(current, first.object.userData.key, idx) : null, deg, dead: !!first.object.userData.deadHitbox, point: first.point.clone(), normal: n };
-    } else if (toFloor <= spec.range) b = { idx: -1, point: origin.clone().addScaledVector(dir, toFloor), normal: up.clone() };
-    else b = { idx: -1, point: origin.clone().addScaledVector(dir, spec.range), normal: dir.clone().negate() };
+    } else if (toFloor <= far) b = { idx: -1, point: origin.clone().addScaledVector(dir, toFloor), normal: up.clone() };
+    else b = { idx: -1, point: origin.clone().addScaledVector(dir, far), normal: dir.clone().negate() };
     b.blastHits = spec.radii ? blastHits(b, spec.radii.outer, spec.radii.inner) : [];
-    out.push({ ...b, point: b.point.toArray(), normal: b.normal.toArray() });
+    out.push({ ...b, point: b.point.toArray(), normal: b.normal.toArray(), from: origin.toArray() });
   }
   return out;
+}
+
+/** Orbital Airburst: wherever you click, the shell bursts `height` m above the floor straight over that spot and only
+ *  its fragments come down (nothing hits the spot itself). Sent as a ground shot at the spot under the click. */
+function airburst(h) {
+  const spec = lastDetail?.cluster;
+  const spot = new THREE.Vector3(h.point.x, ground.position.y, h.point.z);
+  const tip = spot.clone().add(new THREE.Vector3(0, spec.height || 30, 0));
+  const g = { point: spot, normal: new THREE.Vector3(0, 1, 0) };
+  const said = HD2.hit({ ground: true, idx: -1, k: null, blastHits: [], bomblets: clusterHits(g, spec, tip), tip: tip.toArray(), deg: 0, point: spot.toArray(), normal: [0, 1, 0], origin: h.origin.toArray() });
+  if (said) status(said);
 }
 
 /** Pellets (shotguns, the Variable's rounds): one ray per pellet, parallel to the shot. The first pellet goes where
@@ -922,6 +959,7 @@ function insideParts(h) {
   return [...new Set(boxes.filter((b) => [0, 1, 2].every((k) => Math.abs(at.getComponent(k) - b.centre[k]) <= b.size[k] / 2)).map((b) => b.part))];
 }
 function shoot(h) {
+  if (lastDetail?.fire && !editing && lastDetail?.cluster?.pattern === 'cone') { airburst(h); return; }
   if (h.ground) { // only the explosion (and shrapnel) reaches the enemy
     const blast = blastHits(h, lastDetail?.radii?.outer, lastDetail?.radii?.inner);
     const said = HD2.hit({ ground: true, idx: -1, k: null, blastHits: blast, inside: insideParts(h), shrapHits: shrapnelHits(h, lastDetail?.shrapnel), bomblets: clusterHits(h, lastDetail?.cluster), deg: h.deg, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
@@ -975,10 +1013,15 @@ function drawShot(hit, blast) {
   // the enemy; grey: the floor or the air)
   if (hit.bomblets?.length) {
     const from = p.clone().addScaledVector(n, 0.05);
+    if (hit.tip) { // airburst: a vertical line from the burst down to the spot clicked
+      const v = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3().fromArray(hit.tip), p]), new THREE.LineBasicMaterial({ color: 0xffe710, transparent: true, opacity: 0.9, depthTest: false }));
+      v.renderOrder = 12; shotGroup.add(v);
+    }
     for (const b of hit.bomblets) {
       const at = new THREE.Vector3().fromArray(b.point);
+      const start = b.from ? new THREE.Vector3().fromArray(b.from) : from;
       const col = b.idx >= 0 ? 0xff8a1f : 0xa7b0ba;
-      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([from, at]), new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.55, depthTest: false }));
+      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([start, at]), new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.55, depthTest: false }));
       const bd = new THREE.Mesh(unitSphere, new THREE.MeshBasicMaterial({ color: col, depthTest: false }));
       bd.scale.setScalar(size * 0.005);
       bd.position.copy(at);
