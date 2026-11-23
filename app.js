@@ -1432,7 +1432,7 @@
       let top = Math.max(0, ...rows.map((r) => r.s.mainExBy?.[j] || 0));
       const at = top > 0 ? rows.findIndex((r) => (r.s.mainExBy?.[j] || 0) === top) : -1;
       const mine = Math.max(0, ...own.map((x) => x[j] || 0));
-      if (top > 0 && mine > 0) {
+      if (top > 0 && mine > 0 && !enemy.mainStacks) { // mainStacks (Agitator, Radical): its own hit and the share both count
         if (mine >= top) top = 0; // Main's own hit counts
         else own.forEach((x) => { x[j] = 0; }); // the redirected share counts
       }
