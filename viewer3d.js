@@ -42,6 +42,9 @@ scene.add(sun);
 const rim = new THREE.DirectionalLight(0xffe710, 0.6);
 rim.position.set(-6, 4, -8);
 scene.add(rim);
+// extra fill light only while the model shows its own materials (they render much darker than the hitzone colours)
+const texFill = new THREE.AmbientLight(0xffffff, 0);
+scene.add(texFill);
 const grid = new THREE.GridHelper(40, 40, 0x323c47, 0x1d242c);
 scene.add(grid);
 // the ground around the enemy's feet: with an explosive weapon in Fire mode a press there is a ground shot
@@ -230,11 +233,28 @@ function prepare(root) {
     if (n) key = `${key}#${n + 1}`;
     o.userData.key = key;
     o.geometry.computeBoundsTree();
-    o.userData.orig = o.material;
+    o.userData.orig = ownMaterial(o.material);
     o.userData.hz = hitzoneMaterial();
     meshes.push({ key, mesh: o });
   });
   return meshes;
+}
+
+/** The game's composite-shader materials (most Automatons) get their colour from an ID mask and a palette the
+ *  export doesn't bake: as exported they are plain white with the packed base_data texture as a normal map, which
+ *  renders as white and yellow blocks. Shown instead as plain gunmetal (still lit, no fake normals). */
+const gunmetal = new Map();
+function ownMaterial(m) {
+  if (!m || Array.isArray(m) || m.map || m.userData?.base_data == null) return m;
+  if (!gunmetal.has(m)) {
+    const g = m.clone();
+    g.normalMap = null;
+    g.color.set(0x4a4f55);
+    g.metalness = 0.55;
+    g.roughness = 0.6;
+    gunmetal.set(m, g);
+  }
+  return gunmetal.get(m);
 }
 
 function frame() {
@@ -495,6 +515,7 @@ function paint() {
   const angleMode = colorMode === 'pen' && !!ap4;
   // editing: only the selected mesh's part keeps its colour; the other parts go plain grey
   const selPart = editing && selectedKey ? partIndexFor(current, selectedKey) : -1;
+  texFill.intensity = showTex && !editing ? 3 : 0;
   for (const { key, mesh } of current.meshes) {
     if (showTex && !editing) { mesh.material = mesh.userData.orig; continue; }
     const i = partIndexFor(current, key);
