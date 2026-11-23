@@ -249,10 +249,26 @@ function prepare(root) {
 const gunmetal = new Map();
 function ownMaterial(m) {
   if (!m || Array.isArray(m)) return m;
-  if ('envMapIntensity' in m) m.envMapIntensity = 1.6;
+  if ('envMapIntensity' in m) m.envMapIntensity = 1;
+  // map-driven metal (Illuminate, Automaton gear): the game's roughness maps read glossier here than in game, so the
+  // map is lifted to at least 0.45 rough (keeping its variation) and the studio reflection is halved
+  if (m.isMeshStandardMaterial && m.roughnessMap && !m.userData.matte) {
+    m.userData.matte = true;
+    m.envMapIntensity = 0.5;
+    m.onBeforeCompile = (sh) => {
+      sh.fragmentShader = sh.fragmentShader.replace('#include <roughnessmap_fragment>', [
+        'float roughnessFactor = roughness;',
+        '#ifdef USE_ROUGHNESSMAP',
+        '  vec4 texelRoughness = texture2D( roughnessMap, vRoughnessMapUv );',
+        '  roughnessFactor *= mix( 0.45, 1.0, texelRoughness.g );',
+        '#endif'].join(String.fromCharCode(10)));
+    };
+    m.customProgramCacheKey = () => 'matte';
+    m.needsUpdate = true;
+  }
   // plain textured materials (Terminids, Illuminate) are not metal in game (Metallic 0, glossy clearcoat); with no
   // metalness map glTF makes them fully metal, which renders them nearly black
-  if (m.isMeshStandardMaterial && !m.metalnessMap && m.userData?.base_data == null && m.metalness === 1) { m.metalness = 0; m.roughness = Math.min(m.roughness, 0.55); }
+  if (m.isMeshStandardMaterial && !m.metalnessMap && m.userData?.base_data == null && m.metalness === 1) { m.metalness = 0; m.roughness = 0.8; } // matte: a glossier finish made the Illuminate look wet
   // HD2 vertex colours are shader masks, not tint: multiplied in they turn whole models black (Factory Strider)
   if (m.vertexColors) { if (!gunmetal.has(m)) { const v = m.clone(); v.vertexColors = false; gunmetal.set(m, v); } m = gunmetal.get(m); }
   // placeholder emissive materials (Devastator eyes, bot lights): glow in their colour instead of flat pink
@@ -527,7 +543,7 @@ function paint() {
   const angleMode = colorMode === 'pen' && !!ap4;
   // editing: only the selected mesh's part keeps its colour; the other parts go plain grey
   const selPart = editing && selectedKey ? partIndexFor(current, selectedKey) : -1;
-  texFill.intensity = showTex && !editing ? 2 : 0;
+  texFill.intensity = showTex && !editing ? 0.8 : 0;
   scene.environment = showTex && !editing ? texEnv : null;
   for (const { key, mesh } of current.meshes) {
     if (showTex && !editing) { mesh.material = mesh.userData.orig; continue; }
@@ -1203,6 +1219,7 @@ $('#v3Save').addEventListener('click', async () => {
 });
 
 $('#v3Reset').addEventListener('click', frame);
+window.HD2_3D = { camera, controls, frame }; // for tests and the console: look from any angle
 $('#v3Tex').addEventListener('change', (ev) => { showTex = ev.target.checked; paint(); });
 
 $('#v3File').addEventListener('change', async (ev) => {
