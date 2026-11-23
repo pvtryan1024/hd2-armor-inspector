@@ -251,7 +251,7 @@ function ownMaterial(m) {
   if (!m || Array.isArray(m)) return m;
   if ('envMapIntensity' in m) m.envMapIntensity = 1;
   // map-driven metal (Illuminate, Automaton gear): the game's roughness maps read glossier here than in game, so the
-  // map is lifted to at least 0.45 rough (keeping its variation) and the studio reflection is halved
+  // map is lifted to at least 0.6 rough (keeping its variation) and the studio reflection is halved
   if (m.isMeshStandardMaterial && m.roughnessMap && !m.userData.matte) {
     m.userData.matte = true;
     m.envMapIntensity = 0.5;
@@ -260,7 +260,7 @@ function ownMaterial(m) {
         'float roughnessFactor = roughness;',
         '#ifdef USE_ROUGHNESSMAP',
         '  vec4 texelRoughness = texture2D( roughnessMap, vRoughnessMapUv );',
-        '  roughnessFactor *= mix( 0.45, 1.0, texelRoughness.g );',
+        '  roughnessFactor *= mix( 0.6, 1.0, texelRoughness.g );',
         '#endif'].join(String.fromCharCode(10)));
     };
     m.customProgramCacheKey = () => 'matte';

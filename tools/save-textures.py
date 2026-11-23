@@ -36,6 +36,9 @@ for m in bpy.data.materials:
     bc = p.inputs['Base Color']
     if bc.is_linked and bc.links[0].from_node.type == 'TEX_IMAGE':
         save(bc.links[0].from_node.image, os.path.join(outdir, r + '.png'))
+    elif bc.is_linked and bc.links[0].from_node.type == 'MIX':  # albedo x vertex colour masks (Illuminate)
+        tex = next((i.links[0].from_node for i in bc.links[0].from_node.inputs if i.is_linked and i.links[0].from_node.type == 'TEX_IMAGE'), None)
+        if tex: save(tex.image, os.path.join(outdir, r + '.png'))
     met, rough = p.inputs['Metallic'], p.inputs['Roughness']
     if met.is_linked and rough.is_linked and met.links[0].from_node == rough.links[0].from_node and met.links[0].from_node.type in ('SEPARATE_COLOR', 'SEPARATE_RGB'):
         save(upstream_image(met), os.path.join(outdir, r + '.mr.png'))

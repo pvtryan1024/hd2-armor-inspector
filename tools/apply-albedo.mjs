@@ -52,7 +52,20 @@ for (const id of ids) {
   const done = [];
   for (const mat of doc.getRoot().listMaterials()) {
     const tex = mat.getBaseColorTexture();
-    if (!tex || mat.getBaseColorTextureInfo().getTexCoord() !== 0) continue; // atlas bakes (TEXCOORD_1) stay
+    if (tex && mat.getBaseColorTextureInfo().getTexCoord() !== 0) continue; // atlas bakes (TEXCOORD_1) stay
+    if (!tex) {
+      // no colour texture in the export at all (Hunter / Pouncer wings): add one when the game has an albedo for it
+      // and the material's meshes have UVs (composite Automaton materials are handled by apply-bakes)
+      if (mat.getExtras()?.base_data != null) continue;
+      const prims = doc.getRoot().listMeshes().flatMap((m) => m.listPrimitives()).filter((p) => p.getMaterial() === mat);
+      if (!prims.length || !prims.every((p) => p.getAttribute('TEXCOORD_0'))) continue;
+      const r = (mat.getName() || '').split(' ').pop();
+      const buf = await jpeg(r, id, null);
+      if (!buf) continue;
+      mat.setBaseColorTexture(doc.createTexture(r).setImage(buf).setMimeType('image/jpeg')).setBaseColorFactor([1, 1, 1, 1]);
+      done.push(r + ' (added)');
+      continue;
+    }
     const r = (mat.getName() || '').split(' ').pop();
     const buf = await jpeg(r, id, tex.getImage());
     if (!buf) continue;

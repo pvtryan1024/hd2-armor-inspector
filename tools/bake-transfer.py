@@ -48,7 +48,12 @@ for m in {s.material for o in fresh for s in o.material_slots if s.material}:
     if not p or not out: continue
     em = nt.nodes.new('ShaderNodeEmission')
     bc = p.inputs['Base Color']
-    if bc.is_linked: nt.links.new(bc.links[0].from_socket, em.inputs['Color'])
+    src = bc.links[0].from_socket if bc.is_linked else None
+    # albedo x vertex colour (Illuminate): the vertex colours are shader masks, not tint; take the albedo itself
+    if src and src.node.type == 'MIX':
+        tex = next((i.links[0].from_socket for i in src.node.inputs if i.is_linked and i.links[0].from_node.type == 'TEX_IMAGE'), None)
+        if tex: src = tex
+    if src: nt.links.new(src, em.inputs['Color'])
     else: em.inputs['Color'].default_value = bc.default_value
     nt.links.new(em.outputs[0], out.inputs['Surface'])
 for o in fresh:
