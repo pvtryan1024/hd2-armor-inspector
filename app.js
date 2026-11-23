@@ -1895,6 +1895,8 @@
     const mode = w ? w.modes[state.mode] || w.modes[0] : null;
     const r = w ? evalEnemy(w, state.mode, e, { ...opts(), band })[i].r : null;
     const pc = r ? penClass(r, part) : null;
+    // the round explodes whatever its own AP does (impact-fused, explosion-only, or no projectile damage)
+    const blasts = !!(mode?.explosion && (mode.explosionOnly || mode.impactFuse || mode.proximity || !(mode.damage > 0) || (r?.pen ?? 0) > 0));
     let verdict = '';
     if (r) {
       if (pc === 'immune') verdict = 'This zone cannot be damaged.';
@@ -1904,19 +1906,22 @@
       else if (r.killAt) verdict = `Kills in <b>${r.killAt}</b> shot${r.killAt > 1 ? 's' : ''}${r.ttk != null ? ` (<b>${fmtTime(r.ttk)}</b>)` : ''}${r.downs ? ' (downs it)' : r.breakAt === r.killAt && part.fatal === true ? ' by destroying this part' : ' via Main health'}.`;
       else if (r.breakAt) verdict = `Breaks in <b>${r.breakAt}</b> shot${r.breakAt > 1 ? 's' : ''}, but that alone won't kill it.`;
       else if (r.total > 0) verdict = 'Deals damage but can’t kill through this zone.';
-      else verdict = 'Ricochets — no damage.';
+      else if (blasts) { // the round goes off; only its blast is stopped (a Harvester joint: 100% explosive resist, AV 4 Main)
+        const exAp = mode.explosion.ap ?? 0, main = mainPart(e);
+        verdict = part.exdr >= 1 && main ? `Explodes, but does no damage here: this zone sends all its blast damage to Main (100% explosive resist), and the AP ${exAp} blast can't get through Main's AV ${main.av}.` : `Explodes, but the AP ${exAp} blast can't get through AV ${part.av}.`;
+      } else verdict = 'Ricochets — no damage.';
     }
     const tip = $('#tooltip');
     tip.innerHTML = `<h4>${esc(part.name)}</h4>
       <dl>
         <dt>Armor</dt><dd>AV${part.av} · ${esc(avName(part.av))}</dd>
-        ${w ? `<dt>Impact</dt><dd>${hit ? Math.round(hit.deg) + '° · ' : ''}${ANGLE_BANDS[band].name} → AP ${apFor(mode, band)}</dd>` : ''}
+        ${w ? `<dt>Impact</dt><dd>${hit ? Math.round(hit.deg) + '° · ' : ''}${ANGLE_BANDS[band].name} → AP ${apFor(mode, band)}${mode.explosion ? ` · blast AP ${mode.explosion.ap ?? 0}` : ''}</dd>` : ''}
         <dt>Health</dt><dd>${typeof part.health === 'number' ? fmt(part.health) : 'uses Main'}</dd>
         <dt>Durable</dt><dd>${pct(part.durable)}</dd>
         ${isMainRow(part) ? '' : `<dt>To Main</dt><dd>${pct(part.toMain)}${part.overflow ? ' (overflow)' : ''}</dd>`}
         <dt>Explosive resist</dt><dd>${pct(part.exdr)}</dd>
         ${part.location ? `<dt>Visible from</dt><dd>${esc(part.location)}</dd>` : ''}
-        ${r ? `<dt>Hit result</dt><dd>${PEN_LABEL[pc]}</dd>
+        ${r ? `<dt>Hit result</dt><dd>${pc === 'none' && blasts ? 'Explodes · no damage' : PEN_LABEL[pc]}</dd>
         <dt>Dmg / shot</dt><dd>${fmt(r.proj)}${r.partEx ? ' + ' + fmt(r.partEx) + ' expl' : ''}</dd>
         <dt>Main / shot</dt><dd>${fmt(r.perMain)}</dd>` : ''}
       </dl>

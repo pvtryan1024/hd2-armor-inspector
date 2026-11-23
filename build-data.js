@@ -468,6 +468,7 @@ for (const r of SHRAPNEL) {
 // follow it. Explosive rounds with some AP still glance off armor above it, unexploded)
 const IMPACT_FUSE = [
   ['gl-21-grenade-launcher', 'Standard'],
+  ['sg-8p-punisher-plasma', 'Standard'], // the plasma ball goes off on whatever it hits
   ['a-m-12-mortar-sentry', 'Standard'],
   ['eagle-cluster-bomb', 'Bomblet'],
   ['eat-700-expendable-napalm', 'Napalm bomblet'],
