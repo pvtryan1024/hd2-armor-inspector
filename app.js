@@ -44,6 +44,7 @@
     enemyId: null,
     weaponId: null,
     mode: 0,
+    single: false, // burst weapons (PLAS-39): fire single shots instead of the burst
     explosion: true,
     allPellets: true,
     allShrap: false, // body map: shrapnel fragments all on the struck part (off: the 3D view traces them)
@@ -100,7 +101,7 @@
   function chooseWeapon(id, mode = 0) {
     const w = weaponById(id);
     if (!w) return;
-    state.weaponId = id; state.mode = mode; state.cat = w.category;
+    state.weaponId = id; state.mode = mode; state.single = false; state.cat = w.category;
     if (SLOTS.includes(w.category)) { state.loadout[w.category] = id; state.slot = w.category; saveLoadout(); }
   }
 
@@ -540,7 +541,7 @@
     const own = mode.mag != null;
     return { kind: 'shot', interval: t || null, rpm, mag: own ? mode.mag : weapon.mag, reload: own ? mode.reload : weapon.reload,
       reloadRound: own ? mode.reloadRound : weapon.reloadRound, ammoKey: own ? `${weapon.id}:${mode.name}` : weapon.id,
-      burst: !own && weapon.burst && rpm ? weapon.burst : null };
+      burst: !own && weapon.burst && rpm ? (state.single ? { ...weapon.burst, size: 1 } : weapon.burst) : null };
   }
 
   /** Time for n shots: (n − 1) × interval + reloads × reload time. Without a fire interval it is only known when
@@ -905,6 +906,8 @@
       <div class="opts">
         ${w.modes.length > 1 ? `<label class="opt">Ammo / mode
           <select id="modeSel">${w.modes.map((mm, i) => `<option value="${i}" ${i === state.mode ? 'selected' : ''}>${esc(mm.name || 'Mode ' + (i + 1))}</option>`).join('')}</select></label>` : ''}
+        ${w.burst ? `<label class="opt">Fire mode
+          <select id="fireSel"><option value="burst" ${state.single ? '' : 'selected'}>Burst (${w.burst.size} rounds)</option><option value="single" ${state.single ? 'selected' : ''}>Single shot</option></select></label>` : ''}
         ${ex ? `<label class="opt">Include explosion (direct hit) <input type="checkbox" id="exChk" ${state.explosion ? 'checked' : ''}></label>` : ''}
         ${pellets > 1 ? `<label class="opt">All ${pellets} pellets hit <input type="checkbox" id="pelChk" ${state.allPellets ? 'checked' : ''}></label>` : ''}
         ${m.shrapnel ? `<label class="opt" title="Body map and time to kill: count every fragment on the struck part (an upper bound). The 3D view traces each fragment instead.">All ${m.shrapnel.count} shrapnel hit the part <input type="checkbox" id="shrapChk" ${state.allShrap ? 'checked' : ''}></label>` : ''}
@@ -1812,7 +1815,7 @@
   }
 
   function partClick(i, hit, k) {
-    if (state.fire) fireAt(i, hit, k);
+    if (state.fire) for (let n = alignBurst() || 1; n > 0 && !state.sim?.dead; n--) fireAt(i, hit, k);
   }
 
   /** Hold-to-fire: automatic weapons (w.auto / mode.auto from build-data), flame / gas sprays and beams keep firing
@@ -1826,7 +1829,20 @@
     const fm = fireModel(w, mode);
     if (fm.kind === 'beam' && fm.burst) return BEAM_TICK;
     if (fm.kind === 'dot' || fm.kind === 'beam') return DOT_CLICK;
+    if (fm.kind === 'shot' && fm.burst?.size > 1) return 60 / fm.rpm;
     return (mode.auto ?? w.auto) && fm.interval ? fm.interval : null;
+  }
+  /** Burst weapon in burst mode (PLAS-39): rounds per click, else null. */
+  function shotBurst() {
+    const w = weapon();
+    const fm = w && state.fire && fireModel(w, w.modes[state.mode] || w.modes[0]);
+    return fm?.kind === 'shot' && fm.burst?.size > 1 ? fm.burst.size : null;
+  }
+  /** Line the burst count up so the next shot starts a new burst (its charge first). */
+  function alignBurst() {
+    const sim = state.sim, w = weapon(), n = shotBurst();
+    if (n && sim && sim.last === `${w.id}:${state.mode}:${chargeOf(w) ?? ''}`) sim.burstN = n - 1;
+    return n;
   }
   /** Beam burst weapon (Meltagun): its fire model, and whether the next tick starts a new burst. */
   function burstState() {
@@ -1836,16 +1852,18 @@
     const same = sim.last === `${w.id}:${state.mode}:${chargeOf(w) ?? ''}`;
     return { fm, fresh: !same || ((sim.burstN || 0) + 1) % fm.burst.ticks === 0 };
   }
-  let holdTimer = null, holding = false;
+  let holdTimer = null, holding = false, burstLeft = 0;
   function startHold(fireOnce) {
     stopHold();
     holding = true;
+    burstLeft = alignBurst() || 0; // a burst click fires its whole burst, held or not, and no more
     const step = () => {
       holdTimer = null;
       const iv = holdInterval();
       if (iv == null || !state.sim || state.sim.dead) return;
       const t0 = state.sim.time || 0;
       fireOnce();
+      if (burstLeft && --burstLeft === 0) return;
       let dt = Math.max(iv, (state.sim?.time || 0) - t0);
       // a beam burst runs its full length once started, button held or not; holding on starts the next one
       // after its charge (and a reload when the magazine is out)
@@ -1859,11 +1877,11 @@
     };
     step();
   }
-  function stopHold() { clearTimeout(holdTimer); holdTimer = null; holding = false; }
+  function stopHold() { clearTimeout(holdTimer); holdTimer = null; holding = false; burstLeft = 0; }
   /** Button released: stop firing, except that a beam burst already under way finishes. */
   function releaseHold() {
     holding = false;
-    if (holdTimer && !(burstState() && !burstState().fresh)) stopHold();
+    if (holdTimer && !burstLeft && !(burstState() && !burstState().fresh)) stopHold();
   }
 
   /* ---------------- tooltip ---------------- */
@@ -1926,6 +1944,7 @@
     if (state.weaponId) p.set('w', state.weaponId);
     if (enemy()?.variants && enemy().variant !== 1) p.set('ev', enemy().variant);
     if (state.mode) p.set('m', state.mode);
+    if (state.single) p.set('fm', 'single');
     if (weapon()?.charge && state.charge[state.weaponId] != null) p.set('ch', state.charge[state.weaponId]);
     if (!state.explosion) p.set('x', '0');
     if (!state.allPellets) p.set('p', '0');
@@ -1947,6 +1966,7 @@
     if (p.get('w') && weaponById(p.get('w'))) state.weaponId = p.get('w');
     if (p.has('ev')) setVariant(enemyById(state.enemyId), +p.get('ev'));
     state.mode = +p.get('m') || 0;
+    state.single = p.get('fm') === 'single';
     const cw = weaponById(state.weaponId);
     if (cw?.charge) {
       const old = p.has('m') ? cw.chargeModes[state.mode] : null; // a link from before the slider: m picked a charge mode
@@ -2060,7 +2080,7 @@
       state.slot = cat; state.cat = null;
       if ($('#weaponSearch').value) $('#weaponSearch').value = '';
       const id = state.loadout[cat];
-      if (weaponById(id) && id !== state.weaponId) { state.weaponId = id; state.mode = 0; swapWeapon(); }
+      if (weaponById(id) && id !== state.weaponId) { state.weaponId = id; state.mode = 0; state.single = false; swapWeapon(); }
       render();
       $('#weaponList').scrollTop = 0;
     });
@@ -2096,6 +2116,7 @@
       const t = ev.target;
       if (t.id === 'chargeSlider') { renderWeaponCard(); writeHash(); return; } // released: explosion stats may have switched
       if (t.id === 'modeSel') state.mode = +t.value;
+      if (t.id === 'fireSel') state.single = t.value === 'single';
       if (t.id === 'exChk') state.explosion = t.checked;
       if (t.id === 'pelChk') state.allPellets = t.checked;
       if (t.id === 'shrapChk') state.allShrap = t.checked;
