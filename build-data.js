@@ -101,13 +101,7 @@ const BEHIND = [{ enemy: /charger/i, parts: { 'Butt': 'Inner Flesh' } }];
 // Explosion verification (wiki: part-dependent; explosions are raycasts): 'all' = inner and outer radius need line
 // of sight (the default: Chargers, Hulks, Bile Titans, Harvesters…), 'outer' = the inner radius ignores it (reaches
 // every part in range through the body), 'none' = neither needs it. Set per enemy from in-game results.
-// the inner radius reaches every piece in it, line of sight or not; the outer ring still needs it (in game: the
-// Punisher Plasma kills an Agitator / Radical in two shots, as it only can with the blast reaching through the body)
-const EXVM = [{ enemy: /^(factory strider|vox engine|agitator|radical)$/i, mode: 'outer' }];
-// Main takes the blast on its own hitbox and the biggest redirected share both (elsewhere only the larger of the two,
-// see onceMain in app.js): with the blast through the body that gives the in-game two-shot Punisher Plasma kill
-// (225 own + 225 redirected a shot, Main 750)
-const MAIN_STACKS = /^(agitator|radical)$/i;
+const EXVM = [{ enemy: /^(factory strider|vox engine)$/i, mode: 'outer' }];
 // explosion damage resistance the wiki has wrong (the user's call): no Illuminate energy shield resists blasts
 const EXDR_FIX = [{ enemy: /^(gatekeeper|veracitor|overseer)$/i, part: /^shield$/i, exdr: 0 }]; // Illuminate energy shields all break to blasts
 const LOCATION_FIX = [{ enemy: /hulk/i, part: /^heatsink$/i, location: 'Rear, Side' }];
@@ -172,7 +166,6 @@ const ALSO_COVERED = [{ enemy: /^Rupture Charger$/, parts: { 'Leg Flesh (4)': 'F
 enemies.forEach((e) => {
   e.parts = (e.parts || []).map(normPart);
   for (const c of EXVM) if (c.enemy.test(e.name)) e.exvm = c.mode;
-  if (MAIN_STACKS.test(e.name)) e.mainStacks = true;
   for (const c of PIECE_COUNT) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.count = c.count; });
   for (const c of DOWNS) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = 'downs'; if (c.allBroken) p.downsAllBroken = true; } });
   for (const c of MAIN_TO_ON_GONE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) { p.fatal = false; p.mainToOnGone = c.value; if (c.killAllBroken) p.killAllBroken = true; if (c.keepHitbox) p.keepsHitbox = true; } });
