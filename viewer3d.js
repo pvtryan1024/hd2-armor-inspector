@@ -546,7 +546,22 @@ function paint() {
   texFill.intensity = showTex && !editing ? 0.8 : 0;
   scene.environment = showTex && !editing ? texEnv : null;
   for (const { key, mesh } of current.meshes) {
-    if (showTex && !editing) { mesh.material = mesh.userData.orig; continue; }
+    if (showTex && !editing) {
+      // destroyed pieces fade as in the other modes (a broken Gatekeeper / Veracitor shield), and so stop counting
+      // as hit targets (picking skips meshes at opacity 0.2 or less); what's left of one (remains) stays dimmer
+      const ti = partIndexFor(current, key);
+      const tk = ti >= 0 && goneInst?.[ti] ? instanceFor(current, key, ti) : null;
+      const isGone = ti >= 0 && (tk != null ? goneInst[ti][tk] : gone[ti]);
+      const fade = mesh.userData.remains ? 0.4 : isGone ? 0.15 : 1;
+      const orig = mesh.userData.orig;
+      if (fade < 1 && orig && !Array.isArray(orig)) {
+        let f = mesh.userData.origFaint;
+        if (!f || f.userData.src !== orig) { f = orig.clone(); f.userData = { ...orig.userData, src: orig }; f.transparent = true; f.depthWrite = false; mesh.userData.origFaint = f; }
+        f.opacity = fade;
+        mesh.material = f;
+      } else mesh.material = orig;
+      continue;
+    }
     const i = partIndexFor(current, key);
     const mat = mesh.userData.hz;
     const u = mat.userData.u;
