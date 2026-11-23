@@ -235,6 +235,16 @@ enemies.forEach((e) => {
   }
 });
 
+// a part whose stats are copied from the same part on another enemy (the user's call): the Incendiary MG
+// Devastator's shield is the Heavy Devastator's shield (the wiki has it unbreakable: 1e12 health, AV 5, 100% ExDR)
+const PART_LIKE = [{ enemy: 'incendiary-mg-devastator', part: 'Shield', from: 'heavy-devastator' }];
+for (const c of PART_LIKE) {
+  const e = enemies.find((x) => x.id === c.enemy), src = enemies.find((x) => x.id === c.from);
+  const p = e?.parts.find((x) => x.name === c.part), q = src?.parts.find((x) => x.name === c.part);
+  if (!p || !q) { console.warn(`part like: ${c.enemy} / ${c.part} from ${c.from} not found`); continue; }
+  for (const k of ['health', 'av', 'durable', 'toMain', 'overflow', 'constitution', 'fatal', 'exdr']) p[k] = q[k];
+}
+
 // Fire and stun thresholds (data/status.json, from the community damage sheet "tribute to The Helldivers Index",
 // patch 6.3.0): status buildup from hits has to reach between min and max before the enemy ignites / is stunned
 // (min/max null = immune); fire.dmg multiplies the burn damage it takes. "from": an enemy the sheet doesn't list,
