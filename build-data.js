@@ -101,7 +101,8 @@ const BEHIND = [{ enemy: /charger/i, parts: { 'Butt': 'Inner Flesh' } }];
 // Explosion verification (wiki: part-dependent; explosions are raycasts): 'all' = inner and outer radius need line
 // of sight (the default: Chargers, Hulks, Bile Titans, Harvesters…), 'outer' = the inner radius ignores it (reaches
 // every part in range through the body), 'none' = neither needs it. Set per enemy from in-game results.
-const EXVM = [{ enemy: /^(factory strider|vox engine)$/i, mode: 'outer' }];
+// the Agitator and Radical too (the user's call: they take blasts like the Vox Engine / Factory Strider)
+const EXVM = [{ enemy: /^(factory strider|vox engine|agitator|radical)$/i, mode: 'outer' }];
 // explosion damage resistance the wiki has wrong (the user's call): no Illuminate energy shield resists blasts
 const EXDR_FIX = [{ enemy: /^(gatekeeper|veracitor|overseer)$/i, part: /^shield$/i, exdr: 0 }]; // Illuminate energy shields all break to blasts
 const LOCATION_FIX = [{ enemy: /hulk/i, part: /^heatsink$/i, location: 'Rear, Side' }];
