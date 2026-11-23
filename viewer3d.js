@@ -7,6 +7,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 
 THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
@@ -31,20 +32,22 @@ host.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(40, 1, 0.01, 2000);
-camera.position.set(4, 3, 6);
+camera.position.set(-4, 3, -6);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
 scene.add(new THREE.HemisphereLight(0xdfe8f2, 0x1a1f26, 1.6));
 const sun = new THREE.DirectionalLight(0xffffff, 2.2);
-sun.position.set(5, 10, 7);
+sun.position.set(-5, 10, -7); // the models face -z: key light on their front
 scene.add(sun);
 const rim = new THREE.DirectionalLight(0xffe710, 0.6);
-rim.position.set(-6, 4, -8);
+rim.position.set(6, 4, 8);
 scene.add(rim);
 // extra fill light only while the model shows its own materials (they render much darker than the hitzone colours)
 const texFill = new THREE.AmbientLight(0xffffff, 0);
 scene.add(texFill);
+// and a soft studio environment for them: metal surfaces with nothing to reflect render nearly black
+const texEnv = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
 const grid = new THREE.GridHelper(40, 40, 0x323c47, 0x1d242c);
 scene.add(grid);
 // the ground around the enemy's feet: with an explosive weapon in Fire mode a press there is a ground shot
@@ -246,8 +249,14 @@ function prepare(root) {
 const gunmetal = new Map();
 function ownMaterial(m) {
   if (!m || Array.isArray(m)) return m;
+  if ('envMapIntensity' in m) m.envMapIntensity = 1.6;
+  // plain textured materials (Terminids, Illuminate) are not metal in game (Metallic 0, glossy clearcoat); with no
+  // metalness map glTF makes them fully metal, which renders them nearly black
+  if (m.isMeshStandardMaterial && !m.metalnessMap && m.userData?.base_data == null && m.metalness === 1) { m.metalness = 0; m.roughness = Math.min(m.roughness, 0.55); }
   // HD2 vertex colours are shader masks, not tint: multiplied in they turn whole models black (Factory Strider)
   if (m.vertexColors) { if (!gunmetal.has(m)) { const v = m.clone(); v.vertexColors = false; gunmetal.set(m, v); } m = gunmetal.get(m); }
+  // placeholder emissive materials (Devastator eyes, bot lights): glow in their colour instead of flat pink
+  if (!m.map && /emissive/i.test(m.name) && m.color) { if (!gunmetal.has(m)) { const e = m.clone(); e.emissive.copy(m.color.r + m.color.g + m.color.b > 2.9 ? new THREE.Color(0xff2a10) : m.color); e.emissiveIntensity = 2.5; e.color.set(0x000000); gunmetal.set(m, e); } return gunmetal.get(m); }
   if (m.map || m.userData?.base_data == null) return m;
   if (!gunmetal.has(m)) {
     const g = m.clone();
@@ -269,7 +278,7 @@ function frame() {
   const center = box.getCenter(new THREE.Vector3());
   const r = Math.max(size.x, size.y, size.z) || 1;
   controls.target.copy(center);
-  camera.position.copy(center).add(new THREE.Vector3(r * 0.9, r * 0.5, r * 1.3));
+  camera.position.copy(center).add(new THREE.Vector3(-r * 0.9, r * 0.5, -r * 1.3)); // front three-quarter view (the models face -z)
   camera.near = r / 200; camera.far = r * 50; camera.updateProjectionMatrix();
   grid.position.y = box.min.y;
   grid.scale.setScalar(Math.max(0.1, r / 8));
@@ -518,7 +527,8 @@ function paint() {
   const angleMode = colorMode === 'pen' && !!ap4;
   // editing: only the selected mesh's part keeps its colour; the other parts go plain grey
   const selPart = editing && selectedKey ? partIndexFor(current, selectedKey) : -1;
-  texFill.intensity = showTex && !editing ? 3 : 0;
+  texFill.intensity = showTex && !editing ? 2 : 0;
+  scene.environment = showTex && !editing ? texEnv : null;
   for (const { key, mesh } of current.meshes) {
     if (showTex && !editing) { mesh.material = mesh.userData.orig; continue; }
     const i = partIndexFor(current, key);
