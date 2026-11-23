@@ -108,8 +108,8 @@ const EXVM = [{ enemy: /^(factory strider|vox engine|agitator|radical)$/i, mode:
 // see onceMain in app.js): with the blast through the body that gives the in-game two-shot Punisher Plasma kill
 // (225 own + 225 redirected a shot, Main 750)
 const MAIN_STACKS = /^(agitator|radical)$/i;
-// explosion damage resistance the wiki has wrong (the user's call): the Gatekeeper / Veracitor shield takes blasts
-const EXDR_FIX = [{ enemy: /^(gatekeeper|veracitor)$/i, part: /^shield$/i, exdr: 0 }];
+// explosion damage resistance the wiki has wrong (the user's call): no Illuminate energy shield resists blasts
+const EXDR_FIX = [{ enemy: /^(gatekeeper|veracitor|overseer)$/i, part: /^shield$/i, exdr: 0 }]; // Illuminate energy shields all break to blasts
 const LOCATION_FIX = [{ enemy: /hulk/i, part: /^heatsink$/i, location: 'Rear, Side' }];
 
 // Armor that never breaks: still passes its % to Main, but never exposes anything
