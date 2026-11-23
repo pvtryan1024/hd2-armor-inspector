@@ -245,7 +245,10 @@ function prepare(root) {
  *  renders as white and yellow blocks. Shown instead as plain gunmetal (still lit, no fake normals). */
 const gunmetal = new Map();
 function ownMaterial(m) {
-  if (!m || Array.isArray(m) || m.map || m.userData?.base_data == null) return m;
+  if (!m || Array.isArray(m)) return m;
+  // HD2 vertex colours are shader masks, not tint: multiplied in they turn whole models black (Factory Strider)
+  if (m.vertexColors) { if (!gunmetal.has(m)) { const v = m.clone(); v.vertexColors = false; gunmetal.set(m, v); } m = gunmetal.get(m); }
+  if (m.map || m.userData?.base_data == null) return m;
   if (!gunmetal.has(m)) {
     const g = m.clone();
     g.normalMap = null;
