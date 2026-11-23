@@ -108,6 +108,8 @@ const EXVM = [{ enemy: /^(factory strider|vox engine|agitator|radical)$/i, mode:
 // see onceMain in app.js): with the blast through the body that gives the in-game two-shot Punisher Plasma kill
 // (225 own + 225 redirected a shot, Main 750)
 const MAIN_STACKS = /^(agitator|radical)$/i;
+// explosion damage resistance the wiki has wrong (the user's call): the Gatekeeper / Veracitor shield takes blasts
+const EXDR_FIX = [{ enemy: /^(gatekeeper|veracitor)$/i, part: /^shield$/i, exdr: 0 }];
 const LOCATION_FIX = [{ enemy: /hulk/i, part: /^heatsink$/i, location: 'Rear, Side' }];
 
 // Armor that never breaks: still passes its % to Main, but never exposes anything
@@ -180,6 +182,7 @@ enemies.forEach((e) => {
   for (const c of GAPS) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.gaps = true; });
   for (const c of ALSO_COVERED) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.alsoCoveredBy = c.parts[p.name]; });
   for (const c of BEHIND) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.behind = c.parts[p.name]; });
+  for (const c of EXDR_FIX) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.exdr = c.exdr; });
   for (const c of LOCATION_FIX) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.location = c.location; });
   for (const c of INDESTRUCTIBLE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.indestructible = true; });
   for (const c of COVERS) {
