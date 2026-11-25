@@ -250,6 +250,18 @@ const gunmetal = new Map();
 function ownMaterial(m) {
   if (!m || Array.isArray(m)) return m;
   if ('envMapIntensity' in m) m.envMapIntensity = 1;
+  // wings are single sheets: draw both faces (the Shrieker's underside was missing)
+  if (/wing/i.test(m.name)) m.side = THREE.DoubleSide;
+  // the Dragonroach's wing membrane comes as alpha-mask with a zero colour and a cutoff of 1, so nothing at all is
+  // drawn: show it as a see-through membrane in its texture's colour
+  if (/wings_transparent/i.test(m.name) && m.map) {
+    m.alphaTest = 0;
+    m.color.set(0xffffff);
+    m.transparent = true;
+    m.opacity = 0.55;
+    m.depthWrite = false;
+    m.needsUpdate = true;
+  }
   // map-driven metal (Illuminate, Automaton gear): the game's roughness maps read glossier here than in game, so the
   // map is lifted to at least 0.6 rough (keeping its variation) and the studio reflection is halved
   if (m.isMeshStandardMaterial && m.roughnessMap && !m.userData.matte) {
