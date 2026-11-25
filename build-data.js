@@ -144,6 +144,10 @@ const GONE_WITH = [
   // the Gatekeeper's shield over the pilot is powered by the shield generator (the spine at the front): destroying the
   // generator drops the shield
   { enemy: /^gatekeeper$/i, part: /^Shield$/, with: 'Shield Generator' },
+  // Gatekeeper / Veracitor: a broken shoulder disables its arm (the user's call): the arm's pieces on that side lose
+  // their hitbox (same piece number: left with left, right with right)
+  { enemy: /^gatekeeper$/i, part: /^(Arm Armor|Arms|Guns|Gun Weakspots|Arms \(Broken Armor\)) \(2\)$/, with: 'Shoulder Armor (2)' },
+  { enemy: /^veracitor$/i, part: /^(Upper Arms|Lower Arms|Arm Weakspots) \(2\)$/, with: 'Shoulders (2)' },
 ];
 // which pieces of the covering part sit over each piece of this one (the Overseer's 8 limb plates, in the 3D
 // model's piece order: arm L lower/upper, arm R lower/upper, leg L lower/upper, leg R lower/upper)
