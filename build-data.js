@@ -104,6 +104,9 @@ const BEHIND = [{ enemy: /charger/i, parts: { 'Butt': 'Inner Flesh' } }];
 // the Agitator and Radical too (the user's call: they take blasts like the Vox Engine / Factory Strider)
 const EXVM = [{ enemy: /^(factory strider|vox engine|agitator|radical)$/i, mode: 'outer' }];
 // explosion damage resistance the wiki has wrong (the user's call): no Illuminate energy shield resists blasts
+// a sticky throwable that ends up on Main wherever it's thrown (the user's call, as an exception; wiki: it clips
+// through the shield to the hull): a Thermite on the Grounded Warp Ship
+const STICK_MAIN = { 'grounded-warp-ship': ['g-123-thermite'] };
 const EXDR_FIX = [{ enemy: /^(gatekeeper|veracitor|overseer)$/i, part: /^shield$/i, exdr: 0 }, // Illuminate energy shields all break to blasts
   // negative ExDR takes extra explosion damage (the wiki import lost the sign): the Grounded Warp Ship's hull takes
   // 250% (wiki: ExDR -150%, so one Thermite / C4 / Ultimatum / Melta Mine on the hull destroys it)
@@ -191,6 +194,7 @@ enemies.forEach((e) => {
   for (const c of GAPS) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.gaps = true; });
   for (const c of ALSO_COVERED) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.alsoCoveredBy = c.parts[p.name]; });
   for (const c of BEHIND) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.parts[p.name]) p.behind = c.parts[p.name]; });
+  if (STICK_MAIN[e.id]) e.stickMain = STICK_MAIN[e.id];
   for (const c of EXDR_FIX) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.exdr = c.exdr; });
   for (const c of LOCATION_FIX) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.location = c.location; });
   for (const c of INDESTRUCTIBLE) if (c.enemy.test(e.name)) e.parts.forEach((p) => { if (c.part.test(p.name)) p.indestructible = true; });

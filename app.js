@@ -1361,6 +1361,7 @@
   function fireAt(i, hit, k) {
     const e = enemy(), w = weapon();
     if (!e || !w || !state.sim || state.sim.dead) return;
+    if (e.stickMain?.includes(w.id)) { const mi = e.parts.indexOf(mainPart(e)); if (mi >= 0 && mi !== i) { i = mi; k = undefined; } }
     const mode = hitMode(w);
     const part = e.parts[i];
     // destroyed parts have no hitbox anymore
@@ -1679,9 +1680,19 @@
   /** "Torso Armor 2/2" for one piece of a counted part, the plain name otherwise. */
   const pieceName = (p, k) => (k != null && (p.count || 1) > 1 ? `${p.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${p.count}` : p.name);
 
+  /** Exceptions where a sticky throwable ends up on Main wherever it's thrown (build-data STICK_MAIN: a Thermite on
+   *  the Grounded Warp Ship clips through the shield and sticks to the hull). */
+  function stickToMain(e, hit) {
+    const w = weapon();
+    if (!e || !w || !e.stickMain?.includes(w.id)) return hit;
+    const mi = e.parts.indexOf(mainPart(e));
+    return mi < 0 || hit.idx === mi ? hit : { ...hit, idx: mi, k: null, covered: false, revealed: true, dead: false, blastHits: [] };
+  }
+
   function placeHit(hit) {
     if (hit.ground) return placeGround(hit);
     const e0 = enemy();
+    hit = stickToMain(e0, hit);
     if (state.fire && state.sim && e0) {
       const l = partLeft(hit.idx); // that piece is destroyed: no hitbox (the viewer normally shoots past it)
       // destroyed: no hitbox (the viewer normally shoots past it); a part that keeps its hitbox (a Hulk leg) still
