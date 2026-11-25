@@ -150,6 +150,10 @@ const GONE_WITH = [
   { enemy: /^veracitor$/i, part: /^(Upper Arms|Lower Arms|Arm Weakspots) \(2\)$/, with: 'Shoulders (2)' },
   // the Gatekeeper's arm also goes with its gun weakspot (the battery pack under the gun)
   { enemy: /^gatekeeper$/i, part: /^(Arm Armor|Arms|Guns|Arms \(Broken Armor\)) \(2\)$/, with: 'Gun Weakspots (2)' },
+  // a destroyed upper arm disables the lower arm below it: the Gatekeeper's bicep (Arms (Broken Armor), under the
+  // Arm Armor) takes the forearm (Arms) and the gun on it; the Veracitor's Upper Arms take Lower Arms and the arm vent
+  { enemy: /^gatekeeper$/i, part: /^(Arms|Guns|Gun Weakspots) \(2\)$/, with: 'Arms (Broken Armor) (2)' },
+  { enemy: /^veracitor$/i, part: /^(Lower Arms|Arm Weakspots) \(2\)$/, with: 'Upper Arms (2)' },
 ];
 // which pieces of the covering part sit over each piece of this one (the Overseer's 8 limb plates, in the 3D
 // model's piece order: arm L lower/upper, arm R lower/upper, leg L lower/upper, leg R lower/upper)
