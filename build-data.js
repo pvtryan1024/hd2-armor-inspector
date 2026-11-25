@@ -499,7 +499,8 @@ for (const r of SHRAPNEL) {
 // - Pyrotech: doesn't stick, sprays fire sparks for 4 s (20/s) before it goes off; area: also when it lands next to
 //   the enemy; not fire damage, so it hurts what can't burn too (its fire comes from the explosion's status)
 const PRE_DOT = {
-  'g-123-thermite': { dps: 150, duration: 6.5, ap: 7, label: 'Thermite' },
+  // area radius 0.5 m (the user's call): the pieces within half a metre of where it sticks
+  'g-123-thermite': { dps: 150, duration: 6.5, ap: 7, label: 'Thermite', area: true, radius: 0.5 },
   // the wiki's spray table says 0 damage; the user's call: 20/s at AP 7, as the infobox has it
   'g-142-pyrotech': { dps: 20, duration: 4, ap: 7, label: 'Sparks', area: true }, // sparks aren't fire (the user's call): no fire multiplier
 };

@@ -494,7 +494,7 @@
       n++; dealt += dmg; main += o.toMain || 0;
       if (o.broke || o.gone) notes.push(brokeNote(part, p.k, o));
     }
-    if (seen.size) notes.push(`${mode.preDot.label.toLowerCase()} ${mode.preDot.duration} s before it goes off, over the blast radius: ${n} of ${seen.size} piece${seen.size > 1 ? 's' : ''} hurt, ${fmt(dealt)} dmg, ${fmt(main)} to Main`);
+    if (seen.size) notes.push(`${mode.preDot.label.toLowerCase()} ${mode.preDot.duration} s before it goes off, ${mode.preDot.radius != null ? `within ${mode.preDot.radius} m` : "over the blast radius"}: ${n} of ${seen.size} piece${seen.size > 1 ? 's' : ''} hurt, ${fmt(dealt)} dmg, ${fmt(main)} to Main`);
   }
   function preBurn(sim, enemy, mode, idx, k) {
     const part = enemy.parts[idx];
@@ -1669,7 +1669,7 @@
       let n = 0;
       // sparks that don't stick (Pyrotech): they reach the enemy when it lands close enough for the blast to
       // on every piece its blast reaches
-      if (res.mode?.preDot?.area && res.rows.length) preBurnArea(state.sim, e, res.mode, res.rows.map((r) => ({ idx: r.idx, k: r.k })), notes);
+      if (res.mode?.preDot?.area && res.rows.length) { const sr = res.mode.preDot.radius; preBurnArea(state.sim, e, res.mode, res.rows.filter((r) => sr == null || (r.dist ?? 0) <= sr).map((r) => ({ idx: r.idx, k: r.k })), notes); }
       for (const r of res.rows) {
         if (state.sim.dead) break;
         if (r.s.total > 0 || r.s.mainEx > 0) n++;
@@ -1740,7 +1740,9 @@
       let mainShared = false; // Main's redirected share comes once per blast
       // an area spray (Pyrotech sparks): the struck piece and every piece the blast reaches, before it goes off
       const area = !!res.mode?.preDot?.area;
-      if (area) preBurnArea(state.sim, e, res.mode, res.rows.map((r, k) => ({ idx: r.idx, k: k === 0 ? hit.k : r.k })), notes);
+      // within its own radius when it has one (Thermite 0.5 m), else the blast radius (Pyrotech)
+      const sprayR = res.mode?.preDot?.radius;
+      if (area) preBurnArea(state.sim, e, res.mode, res.rows.filter((r, k) => k === 0 || sprayR == null || (r.dist ?? 0) <= sprayR).map((r, k) => ({ idx: r.idx, k: k === 0 ? hit.k : r.k })), notes);
       res.rows.forEach((r, k) => {
         const piece = k === 0 ? hit.k : r.k;
         if (k > 0 && mainShared && r.s.mainEx) r = { ...r, s: { ...r.s, mainEx: 0 } };
