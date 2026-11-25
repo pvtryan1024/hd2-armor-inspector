@@ -497,11 +497,11 @@ for (const r of SHRAPNEL) {
 // - Thermite: sticks to what it hits, 150/s for 6.5 s, then explodes (2000 + 975 = 2975, the wiki's total); its own
 //   status, not fire, so it burns tanks too (no fire multiplier)
 // - Pyrotech: doesn't stick, sprays fire sparks for 4 s (20/s) before it goes off; area: also when it lands next to
-//   the enemy; fire: scaled by the enemy's fire damage multiplier (none on what can't burn)
+//   the enemy; not fire damage, so it hurts what can't burn too (its fire comes from the explosion's status)
 const PRE_DOT = {
   'g-123-thermite': { dps: 150, duration: 6.5, ap: 7, label: 'Thermite' },
   // the wiki's spray table says 0 damage; the user's call: 20/s at AP 7, as the infobox has it
-  'g-142-pyrotech': { dps: 20, duration: 4, ap: 7, label: 'Sparks', fire: true, area: true },
+  'g-142-pyrotech': { dps: 20, duration: 4, ap: 7, label: 'Sparks', area: true }, // sparks aren't fire (the user's call): no fire multiplier
 };
 for (const [id, d] of Object.entries(PRE_DOT)) {
   const w = weapons.find((x) => x.id === id);
