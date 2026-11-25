@@ -148,6 +148,8 @@ const GONE_WITH = [
   // their hitbox (same piece number: left with left, right with right)
   { enemy: /^gatekeeper$/i, part: /^(Arm Armor|Arms|Guns|Gun Weakspots|Arms \(Broken Armor\)) \(2\)$/, with: 'Shoulder Armor (2)' },
   { enemy: /^veracitor$/i, part: /^(Upper Arms|Lower Arms|Arm Weakspots) \(2\)$/, with: 'Shoulders (2)' },
+  // the Gatekeeper's arm also goes with its gun weakspot (the battery pack under the gun)
+  { enemy: /^gatekeeper$/i, part: /^(Arm Armor|Arms|Guns|Arms \(Broken Armor\)) \(2\)$/, with: 'Gun Weakspots (2)' },
 ];
 // which pieces of the covering part sit over each piece of this one (the Overseer's 8 limb plates, in the 3D
 // model's piece order: arm L lower/upper, arm R lower/upper, leg L lower/upper, leg R lower/upper)
