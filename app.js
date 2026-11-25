@@ -400,6 +400,9 @@
    *    (only an overflow part still passes damage on to Main)
    *  Plain rounds and explosion-only weapons are applied in one go. o.combined: the old all-at-once sum. */
   function applyHit(sim, enemy, idx, s, mode, o, extra, want) {
+    // a throwable's damage over time comes first (the Thermite burns 6.5 s before it explodes)
+    const pre = mode.preDot && !extra ? preBurn(sim, enemy, mode) : '';
+    if (pre) { const r = applyHit(sim, enemy, idx, s, { ...mode, preDot: null }, o, extra, want); r.preNote = pre; return r; }
     const ex = o.explosion && mode.explosion && !s.ricochet && s.proj > 0;
     if (!ex || o.combined) return applyShot(sim, enemy, idx, s, extra, want);
     const part = enemy.parts[idx];
@@ -464,6 +467,24 @@
     const dmg = Math.floor(BURN.dps * duration * pen * fm);
     applyShot(sim, enemy, mi, { proj: 0, partEx: 0, mainEx: 0, total: dmg }, true);
     return `, burns ${fmt(dmg)} into Main over ${duration} s${multNote(fm)}`;
+  }
+
+  /** A throwable's damage over time before it goes off (build-data PRE_DOT: the Thermite stuck to the target, the
+   *  Pyrotech's sparks): straight into Main, ignoring armor; fire sparks scaled by the enemy's fire multiplier. */
+  function preBurnDmg(mode, enemy) {
+    const d = mode.preDot, main = mainPart(enemy);
+    if (!d || !main || typeof main.health !== 'number' || !dotPen(main)) return 0;
+    const fm = d.fire ? fireMult(enemy) : 1;
+    return Math.floor(d.dps * d.duration * fm);
+  }
+  function preBurn(sim, enemy, mode) {
+    const main = mainPart(enemy), mi = enemy.parts.indexOf(main);
+    if (!mode.preDot || sim.dead || mi < 0) return '';
+    const dmg = preBurnDmg(mode, enemy);
+    if (!dmg) return mode.preDot.fire && !fireMult(enemy) ? ` · ${mode.preDot.label.toLowerCase()}: can't be set on fire` : '';
+    applyShot(sim, enemy, mi, { proj: 0, partEx: 0, mainEx: 0, total: dmg }, true);
+    const fm = mode.preDot.fire ? fireMult(enemy) : 1;
+    return ` · ${mode.preDot.label.toLowerCase()} ${mode.preDot.duration} s before it goes off: ${fmt(dmg)} to Main${multNote(fm)}`;
   }
 
   /** Log text for a piece this shot broke or destroyed: with constitution (Hulk legs) "broken" means its health
@@ -1360,7 +1381,7 @@
     const o2 = thru ? applyShot(state.sim, e, thru.idx, thru.s, true) : null;
     const dotNote = dotSecond(state.sim, e, mode);
     const label = k != null && (part.count || 1) > 1 ? `${part.name.replace(/\s*\(\d+\)$/, '')} ${k + 1}/${part.count}` : part.name;
-    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : s.demo ? 'demolished' : s.ricochet ? 'ricochet' : 'no damage'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke || o.gone ? ` — ${consOf(part) && !o.gone ? 'broken' : 'destroyed'}` : ''}${o.alsoGone?.length ? ` (${o.alsoGone.join(', ')} gone with it)` : ''}${hangNote(state.sim)}${underNote(e, o)}${dotNote}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}${statusNote(mode, e, s, statusCount(w, mode, state.allPellets ? Math.max(1, mode.pellets || 1) : 1))}`);
+    state.sim.log.unshift(`#${state.sim.shots} ${tag}${label}${hit ? ` @ ${Math.round(hit.deg)}°` : ''}: ${s.total > 0 ? fmt(s.total) + ' dmg' : s.demo ? 'demolished' : s.ricochet ? 'ricochet' : 'no damage'}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke || o.gone ? ` — ${consOf(part) && !o.gone ? 'broken' : 'destroyed'}` : ''}${o.alsoGone?.length ? ` (${o.alsoGone.join(', ')} gone with it)` : ''}${hangNote(state.sim)}${underNote(e, o)}${dotNote}${thru ? ` → through into ${e.parts[thru.idx].name} (AP ${thru.ap}): ${fmt(thru.s.total)} dmg${o2.toMain > 0 ? `, ${fmt(o2.toMain)} to Main` : ''}${o2.broke ? ' — destroyed' : ''}` : ''}${o.preNote || ''}${state.sim.dead ? '' : forceNote(mode, e, s, state.explosion)}${statusNote(mode, e, s, statusCount(w, mode, state.allPellets ? Math.max(1, mode.pellets || 1) : 1))}`);
     state.sim.log.length = Math.min(state.sim.log.length, 8);
     render();
   }
@@ -1605,6 +1626,8 @@
       const tag = shotClock();
       state.sim.shots++;
       let n = 0;
+      // sparks that don't stick (Pyrotech): they reach the enemy when it lands close enough for the blast to
+      if (res.mode?.preDot?.area && res.rows.length) { const t = preBurn(state.sim, e, res.mode); if (t) notes.push(t.replace(/^ · /, '')); }
       for (const r of res.rows) {
         if (state.sim.dead) break;
         if (r.s.total > 0 || r.s.mainEx > 0) n++;
@@ -1667,6 +1690,7 @@
         if (k > 0 && mainShared && r.s.mainEx) r = { ...r, s: { ...r.s, mainEx: 0 } };
         const o = k === 0 ? applyHit(state.sim, e, r.idx, r.s, res.mode, { ...opts(), band: res.band, revealedK: hit.revealedK }, false, piece ?? undefined)
           : applyShot(state.sim, e, r.idx, r.s, true, piece ?? undefined);
+        if (o.preNote) notes.push(o.preNote.replace(/^ · /, ''));
         if (o.broke || o.gone) notes.push(brokeNote(e.parts[r.idx], piece, o));
         if (state.sim.hanging) notes.push(hangNote(state.sim).replace(/^ — /, ''));
         if (o.under) notes.push(underNote(e, o).replace(/^ → /, ''));

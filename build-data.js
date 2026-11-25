@@ -485,6 +485,21 @@ for (const r of SHRAPNEL) {
 // Impact-fused explosives: the round goes off on whatever it touches, so a low AP (0) never makes it glance off
 // unexploded the way a plain bullet does (the user's in-game call for the GL-21; the other AP 0 explosive rounds
 // follow it. Explosive rounds with some AP still glance off armor above it, unexploded)
+// damage over time before a throwable's explosion (wiki pages, potentially outdated): it goes straight into Main,
+// ignoring armor (wiki: "the damage of the Thermite DOT and the Fire DOT is applied directly to the Main health pool")
+// - Thermite: sticks to what it hits, 150/s for 6.5 s, then explodes (2000 + 975 = 2975, the wiki's total); its own
+//   status, not fire, so it burns tanks too (no fire multiplier)
+// - Pyrotech: doesn't stick, sprays fire sparks for 4 s (20/s) before it goes off; area: also when it lands next to
+//   the enemy; fire: scaled by the enemy's fire damage multiplier (none on what can't burn)
+const PRE_DOT = {
+  'g-123-thermite': { dps: 150, duration: 6.5, label: 'Thermite' },
+  'g-142-pyrotech': { dps: 20, duration: 4, label: 'Sparks', fire: true, area: true },
+};
+for (const [id, d] of Object.entries(PRE_DOT)) {
+  const w = weapons.find((x) => x.id === id);
+  if (w) w.modes.forEach((m) => { m.preDot = d; }); else console.warn(`preDot: no weapon ${id}`);
+}
+
 const IMPACT_FUSE = [
   ['gl-21-grenade-launcher', 'Standard'],
   ['sg-8p-punisher-plasma', 'Standard'], // the plasma ball goes off on whatever it hits
