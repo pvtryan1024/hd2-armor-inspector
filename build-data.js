@@ -504,8 +504,8 @@ for (const [id, d] of Object.entries(PRE_DOT)) {
 }
 
 // the Melta Mine's flamewall (wiki: 600 Fire, AP 7, "hits twice in short succession"): a column of fire rising from
-// where it went off; the size isn't on the wiki, so the user's call: 2.5 m radius, 10 m tall (3D view only)
-const FLAMEWALL = { 'g-40-k-melta-mine': { damage: 600, ap: 7, hits: 2, radius: 2.5, height: 10, demolition: 10, stagger: 40 } };
+// where it went off; the size isn't on the wiki, so the user's call: 2.5 m across (1.25 m radius), 10 m tall (3D view only)
+const FLAMEWALL = { 'g-40-k-melta-mine': { damage: 600, ap: 7, hits: 2, radius: 1.25, height: 10, demolition: 10, stagger: 40 } };
 for (const [id, f] of Object.entries(FLAMEWALL)) {
   const w = weapons.find((x) => x.id === id);
   if (w) w.modes.forEach((m) => { m.flamewall = f; }); else console.warn(`flamewall: no weapon ${id}`);
