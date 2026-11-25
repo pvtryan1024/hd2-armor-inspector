@@ -148,8 +148,8 @@ const GONE_WITH = [
   // their hitbox (same piece number: left with left, right with right)
   { enemy: /^gatekeeper$/i, part: /^(Arm Armor|Arms|Guns|Gun Weakspots|Arms \(Broken Armor\)) \(2\)$/, with: 'Shoulder Armor (2)' },
   { enemy: /^veracitor$/i, part: /^(Upper Arms|Lower Arms|Arm Weakspots) \(2\)$/, with: 'Shoulders (2)' },
-  // the Gatekeeper's arm also goes with its gun weakspot (the battery pack under the gun)
-  { enemy: /^gatekeeper$/i, part: /^(Arm Armor|Arms|Guns|Arms \(Broken Armor\)) \(2\)$/, with: 'Gun Weakspots (2)' },
+  // the Gatekeeper's gun goes with its gun weakspot (the battery pack under the gun); the arm stays
+  { enemy: /^gatekeeper$/i, part: /^Guns \(2\)$/, with: 'Gun Weakspots (2)' },
   // a destroyed upper arm disables the lower arm below it: the Gatekeeper's bicep (Arms (Broken Armor), under the
   // Arm Armor) takes the forearm (Arms) and the gun on it; the Veracitor's Upper Arms take Lower Arms and the arm vent
   { enemy: /^gatekeeper$/i, part: /^(Arms|Guns|Gun Weakspots) \(2\)$/, with: 'Arms (Broken Armor) (2)' },
