@@ -5,12 +5,12 @@
     "body": "Body Armor",
     "head": "Head",
     "claw_right": "Claws (2)",
-    "leg_right_front": "Legs (4)",
-    "leg_right_back": "Legs (4)",
+    "leg_right_front": "Right Legs (2)",
+    "leg_right_back": "Right Legs (2)",
     "wing_right": "Wings",
     "wing_left": "Wings",
-    "leg_left_front": "Legs (4)",
-    "leg_left_back": "Legs (4)"
+    "leg_left_front": "Left Legs (2)",
+    "leg_left_back": "Left Legs (2)"
   },
   "hidden": []
 }
