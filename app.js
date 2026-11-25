@@ -471,12 +471,13 @@
   }
 
   /** A throwable's damage over time before it goes off (build-data PRE_DOT: the Thermite stuck to the target, the
-   *  Pyrotech's sparks): straight into Main, ignoring armor; fire sparks scaled by the enemy's fire multiplier. */
+   *  Pyrotech's sparks): straight into Main through its armor at the DoT's AP; fire sparks scaled by the fire multiplier. */
   function preBurnDmg(mode, enemy) {
     const d = mode.preDot, main = mainPart(enemy);
     if (!d || !main || typeof main.health !== 'number' || !dotPen(main)) return 0;
+    const pen = d.ap != null ? penMult(d.ap, main.av) ?? 0 : 1; // its AP against Main's armor (AP 7: full below AV 7)
     const fm = d.fire ? fireMult(enemy) : 1;
-    return Math.floor(d.dps * d.duration * fm);
+    return Math.floor(d.dps * d.duration * pen * fm);
   }
   function preBurn(sim, enemy, mode) {
     const main = mainPart(enemy), mi = enemy.parts.indexOf(main);

@@ -493,14 +493,15 @@ for (const r of SHRAPNEL) {
 // unexploded the way a plain bullet does (the user's in-game call for the GL-21; the other AP 0 explosive rounds
 // follow it. Explosive rounds with some AP still glance off armor above it, unexploded)
 // damage over time before a throwable's explosion (wiki pages, potentially outdated): it goes straight into Main,
-// ignoring armor (wiki: "the damage of the Thermite DOT and the Fire DOT is applied directly to the Main health pool")
+// through Main's armor at its AP (AP 7: full below AV 7, 65% at AV 7) (wiki: "the damage of the Thermite DOT and the Fire DOT is applied directly to the Main health pool")
 // - Thermite: sticks to what it hits, 150/s for 6.5 s, then explodes (2000 + 975 = 2975, the wiki's total); its own
 //   status, not fire, so it burns tanks too (no fire multiplier)
 // - Pyrotech: doesn't stick, sprays fire sparks for 4 s (20/s) before it goes off; area: also when it lands next to
 //   the enemy; fire: scaled by the enemy's fire damage multiplier (none on what can't burn)
 const PRE_DOT = {
-  'g-123-thermite': { dps: 150, duration: 6.5, label: 'Thermite' },
-  'g-142-pyrotech': { dps: 20, duration: 4, label: 'Sparks', fire: true, area: true },
+  'g-123-thermite': { dps: 150, duration: 6.5, ap: 7, label: 'Thermite' },
+  // the wiki's spray table says 0 damage; the user's call: 20/s at AP 7, as the infobox has it
+  'g-142-pyrotech': { dps: 20, duration: 4, ap: 7, label: 'Sparks', fire: true, area: true },
 };
 for (const [id, d] of Object.entries(PRE_DOT)) {
   const w = weapons.find((x) => x.id === id);
