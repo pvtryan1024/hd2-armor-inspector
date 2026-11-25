@@ -402,7 +402,7 @@
    *  Plain rounds and explosion-only weapons are applied in one go. o.combined: the old all-at-once sum. */
   function applyHit(sim, enemy, idx, s, mode, o, extra, want) {
     // a throwable's damage over time comes first (the Thermite burns 6.5 s before it explodes)
-    const pre = mode.preDot && !extra ? preBurn(sim, enemy, mode) : '';
+    const pre = mode.preDot && !extra && !(mode.preDot.area && o.areaDone) ? preBurn(sim, enemy, mode, idx, want) : '';
     if (pre) { const r = applyHit(sim, enemy, idx, s, { ...mode, preDot: null }, o, extra, want); r.preNote = pre; return r; }
     const ex = o.explosion && mode.explosion && !s.ricochet && s.proj > 0;
     if (!ex || o.combined) return applyShot(sim, enemy, idx, s, extra, want);
@@ -471,22 +471,39 @@
   }
 
   /** A throwable's damage over time before it goes off (build-data PRE_DOT: the Thermite stuck to the target, the
-   *  Pyrotech's sparks): straight into Main through its armor at the DoT's AP; fire sparks scaled by the fire multiplier. */
-  function preBurnDmg(mode, enemy) {
-    const d = mode.preDot, main = mainPart(enemy);
-    if (!d || !main || typeof main.health !== 'number' || !dotPen(main)) return 0;
-    const pen = d.ap != null ? penMult(d.ap, main.av) ?? 0 : 1; // its AP against Main's armor (AP 7: full below AV 7)
+   *  Pyrotech's sparks): on the part it touches, through that part's armor at the DoT's AP. */
+  function preBurnDmg(mode, enemy, part) {
+    const d = mode.preDot;
+    if (!d || !part || part.av < 0 || part.av >= 11) return 0;
+    const pen = d.ap != null ? penMult(d.ap, part.av) ?? 0 : 1; // its AP against the part's armor (AP 7: full below AV 7)
     const fm = d.fire ? fireMult(enemy) : 1;
     return Math.floor(d.dps * d.duration * pen * fm);
   }
-  function preBurn(sim, enemy, mode) {
-    const main = mainPart(enemy), mi = enemy.parts.indexOf(main);
-    if (!mode.preDot || sim.dead || mi < 0) return '';
-    const dmg = preBurnDmg(mode, enemy);
-    if (!dmg) return mode.preDot.fire && !fireMult(enemy) ? ` · ${mode.preDot.label.toLowerCase()}: can't be set on fire` : '';
-    applyShot(sim, enemy, mi, { proj: 0, partEx: 0, mainEx: 0, total: dmg }, true);
+  /** On the piece it touches (k: which piece): the part takes it and passes its share to Main as with any damage. */
+  /** An area spray (Pyrotech sparks, 3D): every piece the blast reaches takes it, each once. pieces: [{ idx, k }] */
+  function preBurnArea(sim, enemy, mode, pieces, notes) {
+    const seen = new Set();
+    let n = 0, dealt = 0, main = 0;
+    for (const p of pieces) {
+      const id = p.idx + ':' + (p.k ?? '');
+      if (seen.has(id) || sim.dead) continue;
+      seen.add(id);
+      const part = enemy.parts[p.idx], dmg = preBurnDmg(mode, enemy, part);
+      if (!dmg) continue;
+      const o = applyShot(sim, enemy, p.idx, { proj: dmg, partEx: 0, mainEx: 0, total: dmg }, true, p.k ?? undefined);
+      n++; dealt += dmg; main += o.toMain || 0;
+      if (o.broke || o.gone) notes.push(brokeNote(part, p.k, o));
+    }
+    if (seen.size) notes.push(`${mode.preDot.label.toLowerCase()} ${mode.preDot.duration} s before it goes off, over the blast radius: ${n} of ${seen.size} piece${seen.size > 1 ? 's' : ''} hurt, ${fmt(dealt)} dmg, ${fmt(main)} to Main`);
+  }
+  function preBurn(sim, enemy, mode, idx, k) {
+    const part = enemy.parts[idx];
+    if (!mode.preDot || sim.dead || !part) return '';
+    const dmg = preBurnDmg(mode, enemy, part);
+    if (!dmg) return ` · ${mode.preDot.label.toLowerCase()}: no damage on ${part.name} (AP ${mode.preDot.ap} vs AV ${part.av})`;
+    const o = applyShot(sim, enemy, idx, { proj: dmg, partEx: 0, mainEx: 0, total: dmg }, true, k);
     const fm = mode.preDot.fire ? fireMult(enemy) : 1;
-    return ` · ${mode.preDot.label.toLowerCase()} ${mode.preDot.duration} s before it goes off: ${fmt(dmg)} to Main${multNote(fm)}`;
+    return ` · ${mode.preDot.label.toLowerCase()} ${mode.preDot.duration} s before it goes off: ${fmt(dmg)} on ${pieceName(part, k)}${o.toMain > 0 ? `, ${fmt(o.toMain)} to Main` : ''}${o.broke || o.gone ? ` — ${brokeNote(part, k, o)}` : ''}${multNote(fm)}`;
   }
 
   /** Log text for a piece this shot broke or destroyed: with constitution (Hulk legs) "broken" means its health
@@ -1651,7 +1668,8 @@
       state.sim.shots++;
       let n = 0;
       // sparks that don't stick (Pyrotech): they reach the enemy when it lands close enough for the blast to
-      if (res.mode?.preDot?.area && res.rows.length) { const t = preBurn(state.sim, e, res.mode); if (t) notes.push(t.replace(/^ · /, '')); }
+      // on every piece its blast reaches
+      if (res.mode?.preDot?.area && res.rows.length) preBurnArea(state.sim, e, res.mode, res.rows.map((r) => ({ idx: r.idx, k: r.k })), notes);
       for (const r of res.rows) {
         if (state.sim.dead) break;
         if (r.s.total > 0 || r.s.mainEx > 0) n++;
@@ -1720,10 +1738,13 @@
       const notes = [];
       const tag = shotClock();
       let mainShared = false; // Main's redirected share comes once per blast
+      // an area spray (Pyrotech sparks): the struck piece and every piece the blast reaches, before it goes off
+      const area = !!res.mode?.preDot?.area;
+      if (area) preBurnArea(state.sim, e, res.mode, res.rows.map((r, k) => ({ idx: r.idx, k: k === 0 ? hit.k : r.k })), notes);
       res.rows.forEach((r, k) => {
         const piece = k === 0 ? hit.k : r.k;
         if (k > 0 && mainShared && r.s.mainEx) r = { ...r, s: { ...r.s, mainEx: 0 } };
-        const o = k === 0 ? applyHit(state.sim, e, r.idx, r.s, res.mode, { ...opts(), band: res.band, revealedK: hit.revealedK }, false, piece ?? undefined)
+        const o = k === 0 ? applyHit(state.sim, e, r.idx, r.s, res.mode, { ...opts(), band: res.band, revealedK: hit.revealedK, areaDone: area }, false, piece ?? undefined)
           : applyShot(state.sim, e, r.idx, r.s, true, piece ?? undefined);
         if (o.preNote) notes.push(o.preNote.replace(/^ · /, ''));
         if (o.broke || o.gone) notes.push(brokeNote(e.parts[r.idx], piece, o));
