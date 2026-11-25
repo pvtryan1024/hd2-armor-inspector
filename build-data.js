@@ -104,7 +104,10 @@ const BEHIND = [{ enemy: /charger/i, parts: { 'Butt': 'Inner Flesh' } }];
 // the Agitator and Radical too (the user's call: they take blasts like the Vox Engine / Factory Strider)
 const EXVM = [{ enemy: /^(factory strider|vox engine|agitator|radical)$/i, mode: 'outer' }];
 // explosion damage resistance the wiki has wrong (the user's call): no Illuminate energy shield resists blasts
-const EXDR_FIX = [{ enemy: /^(gatekeeper|veracitor|overseer)$/i, part: /^shield$/i, exdr: 0 }]; // Illuminate energy shields all break to blasts
+const EXDR_FIX = [{ enemy: /^(gatekeeper|veracitor|overseer)$/i, part: /^shield$/i, exdr: 0 }, // Illuminate energy shields all break to blasts
+  // negative ExDR takes extra explosion damage (the wiki import lost the sign): the Grounded Warp Ship's hull takes
+  // 250% (wiki: ExDR -150%, so one Thermite / C4 / Ultimatum / Melta Mine on the hull destroys it)
+  { enemy: /^grounded warp ship$/i, part: /^main$/i, exdr: -1.5 }];
 const LOCATION_FIX = [{ enemy: /hulk/i, part: /^heatsink$/i, location: 'Rear, Side' }];
 
 // Armor that never breaks: still passes its % to Main, but never exposes anything
@@ -498,6 +501,14 @@ const PRE_DOT = {
 for (const [id, d] of Object.entries(PRE_DOT)) {
   const w = weapons.find((x) => x.id === id);
   if (w) w.modes.forEach((m) => { m.preDot = d; }); else console.warn(`preDot: no weapon ${id}`);
+}
+
+// the Melta Mine's flamewall (wiki: 600 Fire, AP 7, "hits twice in short succession"): a column of fire rising from
+// where it went off; the size isn't on the wiki, so the user's call: 2.5 m radius, 10 m tall (3D view only)
+const FLAMEWALL = { 'g-40-k-melta-mine': { damage: 600, ap: 7, hits: 2, radius: 2.5, height: 10, demolition: 10, stagger: 40 } };
+for (const [id, f] of Object.entries(FLAMEWALL)) {
+  const w = weapons.find((x) => x.id === id);
+  if (w) w.modes.forEach((m) => { m.flamewall = f; }); else console.warn(`flamewall: no weapon ${id}`);
 }
 
 const IMPACT_FUSE = [

@@ -249,7 +249,8 @@
       // 1800: 260 a grenade, not 400; 2 on a Brood Commander, AV 2 Main 800)
       const main = mainPart(enemy);
       const mpm = main ? penMult(blast.ap, main.av) ?? 0 : 1;
-      if (blast.mult > 0 && !isMainRow(part) && mpm > 0) mainExBy[j] = Math.floor(e * exdr * mpm);
+      // negative ExDR (extra explosion damage on the part itself) sends Main nothing
+      if (blast.mult > 0 && !isMainRow(part) && mpm > 0 && exdr > 0) mainExBy[j] = Math.floor(e * exdr * mpm);
     });
     const mainEx = mainExBy.reduce((x, y) => x + y, 0);
     // demolition: a structure part (the Fabricator) is destroyed outright by enough demolition force, from the
@@ -1616,6 +1617,27 @@
     notes.push(`bomblets: ${onEnemy}/${c.count} landed on it, ${inBlast} caught it in their blast, ${reached} did damage (${fmt(dealt)} in all)${after ? `; down before the last ${after}` : ''}`);
   }
 
+  /** The Melta Mine's flamewall (3D): every piece in the column takes its fire hit, `hits` times, through its armor like
+   *  a direct hit (AP vs AV), passing its share to Main as usual. */
+  function applyWall(hit, mode, e, notes) {
+    const w = mode?.flamewall;
+    if (!w || !hit.wallHits?.length || !state.explosion || state.sim.dead) return;
+    const wm = { name: 'Flamewall', damage: w.damage, durable: w.damage, ap: w.ap, pellets: 1 };
+    let dealt = 0, n = 0;
+    for (let t = 0; t < w.hits; t++) {
+      for (const b of hit.wallHits) {
+        if (state.sim.dead) break;
+        if (!isExposed(e, b.idx, state.sim, b.k)) continue;
+        const s = shotDamage(wm, e.parts[b.idx], e, { ...opts(), band: 0, explosion: false, noShrap: true });
+        const o = applyShot(state.sim, e, b.idx, s, true, b.k ?? undefined);
+        dealt += s.total;
+        if (t === 0 && s.total > 0) n++;
+        if (o.broke || o.gone) notes.push(brokeNote(e.parts[b.idx], b.k, o));
+      }
+    }
+    notes.push(`flamewall x${w.hits}: ${n} of ${hit.wallHits.length} piece${hit.wallHits.length > 1 ? 's' : ''} in the column hurt, ${fmt(dealt)} dmg`);
+  }
+
   function placeGround(hit) {
     state.hit = hit;
     const res = resolveHit(hit);
@@ -1643,6 +1665,7 @@
         notes.push(`shrapnel ${res.shrap.hit}/${res.shrap.count} hit`);
       }
       applyBomblets(res.mode, hit, notes);
+      applyWall(hit, res.mode, e, notes);
       state.sim.log.unshift(`#${state.sim.shots} ${tag}${hit.tip ? `airburst ${Math.round(hit.tip[1] - hit.point[1])} m up: burst overhead` : `ground: ${res.rows.length ? `blast reached ${res.rows.length} part${res.rows.length > 1 ? 's' : ''}, ${n} damaged` : 'blast reached nothing'}`}${notes.length ? ' — ' + notes.join(', ') : ''}`);
       state.sim.log.length = Math.min(state.sim.log.length, 8);
       render();
@@ -1721,6 +1744,7 @@
       const dotNote = dotSecond(state.sim, e, res.mode);
       if (dotNote) notes.push(dotNote.replace(/^ [+·] /, ''));
       const d = res.rows[0];
+      applyWall(hit, res.mode || weapon().modes[state.mode] || weapon().modes[0], e, notes);
       state.sim.log.unshift(`#${state.sim.shots} ${tag}${pieceName(e.parts[d.idx], hit.k)} @ ${Math.round(hit.deg)}°: ${d.s.total > 0 ? fmt(d.s.total) + ' dmg' : d.s.demo ? 'demolished' : d.s.ricochet ? 'ricochet' : 'no damage'}${(() => { const n = res.rows.slice(1).filter((r) => r.s.partEx > 0 || r.s.mainEx > 0).length; return n ? ` + blast on ${n} part${n > 1 ? 's' : ''}` : ''; })()}${notes.length ? ' — ' + notes.join(', ') : ''}${state.sim.dead ? '' : forceNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, state.explosion)}${statusNote(res.mode || weapon().modes[state.mode] || weapon().modes[0], e, d.s, statusCount(weapon(), res.mode || weapon().modes[state.mode] || weapon().modes[0], res.pel ? res.pel.count - (res.pel.missed || 0) : 1))}`);
       state.sim.log.length = Math.min(state.sim.log.length, 8);
       render();
@@ -1828,6 +1852,7 @@
       pellets: (m?.pellets || 1) > 1 && state.allPellets ? { count: m.pellets, dist: curDist(m) || 0 } : null,
       shrapnel: m?.shrapnel && state.explosion ? { count: m.shrapnel.count, spread: m.shrapnel.spread, range: blastRadii(m)?.outer || 7 } : null,
       // cluster bomblets: how many, how far they fly, and each one's blast radii
+      flamewall: m?.flamewall && state.explosion ? m.flamewall : null, // the Melta Mine's column of fire
       cluster: m?.cluster && state.explosion ? { count: m.cluster.count, range: m.cluster.range, radii: blastRadii(m.cluster.bomblet), pattern: m.cluster.pattern || 'sphere', diameter: m.cluster.diameter, height: m.cluster.height, halfAngle: m.cluster.halfAngle, separate: m.cluster.separate } : null,
       // pieces with constitution whose health is gone but which still have a hitbox (Hulk legs): the 3D view
       // swaps in their damaged mesh

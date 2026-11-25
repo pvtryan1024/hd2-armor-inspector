@@ -904,6 +904,33 @@ function pelletHits(h, spec) {
  *  reaches the legs, claws and sacs and kills it; one landing on its back mostly meets the back plates.
  *  A plate the impact breaks is not measured again: the model is a hollow shell, and in game the flesh
  *  under the plate fills that spot (it takes the explosion itself, see applyHit in app.js). */
+/** The Melta Mine's flamewall: a vertical column of fire (radius, height from build-data) rising from where it went
+ *  off. Every hitzone piece with surface inside the column is caught, line of sight or not (the fire fills it). */
+function wallHits(point, spec) {
+  if (!spec?.radius || !current) return null;
+  const base = new THREE.Vector3().fromArray(point.toArray ? point.toArray() : point);
+  const out = new Map(), v = new THREE.Vector3();
+  const live = (m) => m.userData.deadHitbox || (m.visible && m.material.opacity > 0.2 && !m.userData.remains && !noHitbox(current, m.userData.key));
+  for (const { key, mesh } of current.meshes) {
+    if (mesh.userData.deadHitbox || !live(mesh)) continue;
+    const idx = partIndexFor(current, key);
+    if (idx < 0) continue;
+    const k = instanceFor(current, key, idx), id = idx + ':' + k;
+    if (out.has(id)) continue;
+    mesh.updateMatrixWorld();
+    const pos = mesh.geometry.attributes.position, step = Math.max(1, Math.floor(pos.count / 600));
+    for (let i = 0; i < pos.count; i += step) {
+      v.fromBufferAttribute(pos, i); mesh.localToWorld(v);
+      const up = v.y - base.y;
+      if (up < -0.1 || up > spec.height) continue;
+      if (Math.hypot(v.x - base.x, v.z - base.z) > spec.radius) continue;
+      out.set(id, { idx, k, d: Math.max(0, up) });
+      break;
+    }
+  }
+  return [...out.values()];
+}
+
 const BLAST_SAMPLES = 24; // surface points tried per mesh besides its closest point
 function blastHits(h, outer, inner = 0) {
   const out = new Map(); // "part:piece" -> { idx, k, d }
@@ -1076,7 +1103,7 @@ function shoot(h) {
   if (sep && h.point.y - ground.position.y > sep) { airburst(h, sep); return; }
   if (h.ground) { // only the explosion (and shrapnel) reaches the enemy
     const blast = blastHits(h, lastDetail?.radii?.outer, lastDetail?.radii?.inner);
-    const said = HD2.hit({ ground: true, idx: -1, k: null, blastHits: blast, inside: insideParts(h), shrapHits: shrapnelHits(h, lastDetail?.shrapnel), bomblets: clusterHits(h, lastDetail?.cluster), deg: h.deg, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+    const said = HD2.hit({ ground: true, idx: -1, k: null, blastHits: blast, inside: insideParts(h), shrapHits: shrapnelHits(h, lastDetail?.shrapnel), bomblets: clusterHits(h, lastDetail?.cluster), wallHits: wallHits(h.point, lastDetail?.flamewall), wall: lastDetail?.flamewall || null, deg: h.deg, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
     if (said) status(said);
     return;
   }
@@ -1095,7 +1122,7 @@ function shoot(h) {
   for (const m of bv.revealed) { const ri = partIndexFor(current, m.userData.key); if (ri >= 0 && !(ri in revealedK)) revealedK[ri] = instanceFor(current, m.userData.key, ri); }
   const parts = {};
   for (const b of blast) if (parts[b.idx] == null || b.d < parts[b.idx]) parts[b.idx] = b.d;
-  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, inside: insideParts(h), detonate: !!h.mesh.userData.collider?.detonate, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), pelletHits: pelletHits(h, lastDetail?.pellets), bomblets: clusterHits(h, lastDetail?.cluster), thru: thruAlong(h), revealed: !!h.mesh.userData.revealed, dead: !!h.mesh.userData.deadHitbox, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
+  const said = HD2.hit({ idx: i, k: instanceFor(current, h.mesh.userData.key, i), blastHits: blast, inside: insideParts(h), detonate: !!h.mesh.userData.collider?.detonate, revealedK, shrapHits: shrapnelHits(h, lastDetail?.shrapnel), pelletHits: pelletHits(h, lastDetail?.pellets), bomblets: clusterHits(h, lastDetail?.cluster), wallHits: wallHits(h.point, lastDetail?.flamewall), wall: lastDetail?.flamewall || null, thru: thruAlong(h), revealed: !!h.mesh.userData.revealed, dead: !!h.mesh.userData.deadHitbox, deg: h.deg, parts, point: h.point.toArray(), normal: h.normal.toArray(), origin: h.origin.toArray() });
   if (said) status(said);
 }
 
@@ -1152,6 +1179,14 @@ function drawShot(hit, blast) {
         }
       }
     }
+  }
+
+  // the flamewall: a translucent orange column rising from where it went off
+  if (hit.wall?.radius) {
+    const col = new THREE.Mesh(new THREE.CylinderGeometry(hit.wall.radius, hit.wall.radius, hit.wall.height, 40, 1, true), fx(0xff6a1a, 0.16));
+    col.position.copy(p).add(new THREE.Vector3(0, hit.wall.height / 2, 0));
+    col.renderOrder = 11;
+    shotGroup.add(col);
   }
 
   // a ricochet: the round glances off, mirrored about the surface normal (grey, with an arrowhead)
