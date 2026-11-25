@@ -501,8 +501,9 @@ for (const r of SHRAPNEL) {
 const PRE_DOT = {
   // area radius 0.5 m (the user's call): the pieces within half a metre of where it sticks
   'g-123-thermite': { dps: 150, duration: 6.5, ap: 7, label: 'Thermite', area: true, radius: 0.5 },
-  // the wiki's spray table says 0 damage; the user's call: 20/s at AP 7, as the infobox has it
-  'g-142-pyrotech': { dps: 20, duration: 4, ap: 7, label: 'Sparks', area: true }, // sparks aren't fire (the user's call): no fire multiplier
+  // in game (the user): a Factory Strider foot (Leg Assembly, 1500 + 2000 constitution) takes about 12 throws, and
+  // maybe fewer as it kept moving: ~75/s over the 4 s (300 a throw), not the infobox's 20 DPS or the spray table's 0
+  'g-142-pyrotech': { dps: 75, duration: 4, ap: 7, label: 'Sparks', area: true }, // sparks aren't fire (the user's call): no fire multiplier
 };
 for (const [id, d] of Object.entries(PRE_DOT)) {
   const w = weapons.find((x) => x.id === id);
