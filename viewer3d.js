@@ -541,6 +541,31 @@ function hitzoneMaterial() {
 
 // editing with a mesh selected: how see-through every other part is
 const DIM = 0.12;
+/** The Hulk's eye: a thin red slit across the middle of its visor (the "chest_eye" piece, cut out around the eye in
+ *  prep-model), shown with Original materials on while the head is intact. Drawn only: not a mesh shots can hit. */
+const EYE_SLIT = { key: 'chest_eye', width: 0.5, height: 0.09, color: 0xff2a10 };
+function eyeGlow(gone, goneInst) {
+  const eye = current.meshes.find(({ key }) => key === EYE_SLIT.key)?.mesh;
+  if (!eye) return;
+  if (!current.eyeSlit) {
+    const box = new THREE.Box3().setFromObject(eye);
+    const size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+    const slit = new THREE.Mesh(new THREE.PlaneGeometry(size.x * EYE_SLIT.width, size.y * EYE_SLIT.height),
+      new THREE.MeshBasicMaterial({ color: EYE_SLIT.color, toneMapped: false, side: THREE.DoubleSide }));
+    // on the visor's front face, a hair in front of it (the models face -z)
+    const at = new THREE.Vector3(c.x, c.y, box.min.z - 0.004);
+    current.root.updateMatrixWorld(true);
+    slit.position.copy(current.root.worldToLocal(at));
+    slit.raycast = () => {}; // never in the way of a shot
+    current.root.add(slit);
+    current.eyeSlit = slit;
+  }
+  const i = partIndexFor(current, EYE_SLIT.key);
+  const k = i >= 0 && goneInst?.[i] ? instanceFor(current, EYE_SLIT.key, i) : null;
+  const dead = i >= 0 && (k != null ? goneInst[i][k] : gone?.[i]);
+  current.eyeSlit.visible = showTex && !editing && !dead && eye.visible;
+}
+
 function paint() {
   if (!current || !lastDetail) return;
   const { colors, gone, goneInst, colorMode, ap4, avs, bands } = lastDetail;
@@ -557,6 +582,7 @@ function paint() {
   const selPart = editing && selectedKey ? partIndexFor(current, selectedKey) : -1;
   texFill.intensity = showTex && !editing ? 0.8 : 0;
   scene.environment = showTex && !editing ? texEnv : null;
+  eyeGlow(gone, goneInst);
   for (const { key, mesh } of current.meshes) {
     if (showTex && !editing) {
       // destroyed pieces fade as in the other modes (a broken Gatekeeper / Veracitor shield), and so stop counting
